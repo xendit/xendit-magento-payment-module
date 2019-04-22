@@ -29,6 +29,13 @@
                 <title>Bank Transfer - BRI</title>
                 <order_status>pending_payment</order_status><!-- set default order -->
             </briva>
+            <cc>
+                <active>1</active>
+                <payment_action>authorize</payment_action><!-- You can use another methor like capture  -->
+                <model>Xendit\M2Invoice\Model\Payment\CC</model>
+                <title>Credit and Debit Cards</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
+            </cc>
         </payment>
     </default>
 </config>
