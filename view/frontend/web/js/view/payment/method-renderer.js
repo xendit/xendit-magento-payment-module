@@ -15,6 +15,10 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bniva'
             },
             {
+                type: 'briva',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/briva'
+            },
+            {
                 type: 'mandiriva',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/mandiriva'
             }
