@@ -7,11 +7,11 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/mandiriva'
+                template: 'Xendit_M2Invoice/payment/m2invoice'
             },
 
             getCode: function() {
-                return 'mandiriva';
+                return 'm2invoice';
             },
 
             getTest: function() {

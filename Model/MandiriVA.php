@@ -9,5 +9,5 @@ class MandiriVA extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @var string
      */
-    protected $_code = 'mandiriva';
+    protected $_code = 'm2invoice';
 }

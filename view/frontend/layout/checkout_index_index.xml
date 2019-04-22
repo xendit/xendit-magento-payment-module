@@ -20,7 +20,7 @@
                                 <item name="m2invoice" xsi:type="array">
                                   <item name="component" xsi:type="string">Xendit_M2Invoice/js/view/payment/method-renderer</item>
                                   <item name="methods" xsi:type="array">
-                                    <item name="mandiriva" xsi:type="array">
+                                    <item name="m2invoice" xsi:type="array">
                                       <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                     </item>
                                   </item>
