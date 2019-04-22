@@ -1,6 +1,6 @@
 <?php
 
-namespace Xendit\M2Invoice\Model\Payment;
+namespace Xendit\M2Invoice\Payment;
 
 class MandiriVA extends \Magento\Payment\Model\Method\AbstractMethod
 {

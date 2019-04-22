@@ -7,9 +7,10 @@
                 <xendit_env>test</xendit_env>
                 <active>1</active>
                 <payment_action>authorize</payment_action><!-- You can use another methor like capture  -->
-                <model>Xendit\M2Invoice\Model\Payment\Mandiri</model>
+                <model>Xendit\M2Invoice\Model\Payment\MandiriVA</model>
                 <title>Bank Transfer - Mandiri</title>
                 <order_status>pending_payment</order_status><!-- set default order -->
+                <can_use_checkout>1</can_use_checkout> 
             </m2invoice>
         </payment>
     </default>
