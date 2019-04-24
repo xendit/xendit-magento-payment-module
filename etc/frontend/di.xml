@@ -3,7 +3,7 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="xendit_bniva_config_provider" xsi:type="object">Xendit\M2Invoice\Model\ConfigProvider\BNIVA</item>
+                <item name="m2invoice_config_provider" xsi:type="object">Xendit\M2Invoice\Model\Ui\ConfigProvider</item>
             </argument>
         </arguments>
     </type>

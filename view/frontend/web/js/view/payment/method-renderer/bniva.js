@@ -19,7 +19,7 @@ define(
             },
 
             getDescription: function() {
-                return window.checkoutConfig.payment.bniva.description;
+                return 'Bayar pesanan dengan transfer bank BNI dengan virtual account melalui Xendit';
             }
         });
     }
