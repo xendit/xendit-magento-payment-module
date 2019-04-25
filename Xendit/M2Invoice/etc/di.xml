@@ -20,18 +20,61 @@
   <virtualType name="M2InvoiceCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
     <arguments>
       <argument name="commands" xsi:type="array">
-        <item name="process" xsi:type="string">M2InvoiceProcessCommand</item>
+        <item name="initialize" xsi:type="string">M2InvoiceInitializeCommand</item>
         <item name="refund" xsi:type="string">M2InvoiceRefundCommand</item>
       </argument>
     </arguments>
   </virtualType>
 
-  <!-- Process command -->
-  <virtualType name="M2InvoiceProcessCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+  <!-- Initialize command -->
+  <virtualType name="M2InvoiceInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
     <arguments>
-      <argument name="requestBuilder" xsi:type="object">M2InvoiceProcessRequest</argument>
-      <argument name="handler" xsi:type="object">Xendit\M2Invoice\Model\Payment</argument>
-      <argument name="client" xsi:type="object"></argument>
+      <argument name="requestBuilder" xsi:type="object">M2InvoiceInitializeRequest</argument>
+      <argument name="transferFactory" xsi:type="object">Xendit\M2Invoice\Gateway\Http\XenditTransferFactoryInterface</argument>
+      <argument name="client" xsi:type="object">Xendit\M2Invoice\Gateway\Http\Client\InitializeClient</argument>
     </arguments>
   </virtualType>
+
+  <!-- Refund command -->
+  <virtualType name="M2InvoiceRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+    <arguments>
+      <argument name="requestBuilder" xsi:type="object">M2InvoiceRefundRequest</argument>
+      <argument name="transferFactory" xsi:type="object">Xendit\M2Invoice\Gateway\Http\XenditTransferFactoryInterface</argument>
+      <argument name="handler" xsi:type="object">Xendit\M2Invoice\Model\Handler\RefundHandler</argument>
+      <argument name="client" xsi:type="object">Xendit\M2Invoice\Gateway\Http\Client\RefundClient</argument>
+    </arguments>
+  </virtualType>
+
+  <!-- Initialization Request -->
+  <virtualType name="M2InvoiceInitializeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+    <arguments>
+      <argument name="builders" xsi:type="array">
+        <item name="transaction" xsi:type="string">Xendit\M2Invoice\Gateway\Request\InitializationRequest</item>
+      </argument>
+    </arguments>
+  </virtualType>
+
+  <!-- Refund Request -->
+  <virtualType name="M2InvoiceRefundRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+    <arguments>
+      <argument name="builders" xsi:type="array">
+        <item name="transaction" xsi:type="string">Xendit\M2Invoice\Gateway\Request\RefundRequest</item>
+      </argument>
+    </arguments>
+  </virtualType>
+
+  <type name="Xendit\M2Invoice\Gateway\Request\InitializationRequest">
+    <arguments>
+      <argument name="config" xsi:type="object">Oxipay\OxipayPaymentGateway\Gateway\Config\Config</argument>
+    </arguments>
+  </type>
+
+  <type name="Magento\Framework\Model\Entity\RepositoryFactory">
+    <arguments>
+      <argument name="entities" xsi:type="array">
+        <item name="Xendit\M2Invoice\Api\Data\PostInterface" xsi:type="string">Xendit\M2Invoice\Api\Data\PostRepositoryInterface
+        </item>
+      </argument>
+    </arguments>
+  </type>
 </config>
