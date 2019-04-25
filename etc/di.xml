@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+  <!-- Facade configuration -->
+  <virtualType name="M2InvoiceFacade" type="Magento\Payment\Model\Method\Adapter">
+    <arguments>
+      <argument name="code" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
+      <argument name="commandPool" xsi:type="object">M2InvoiceCommandPool</argument>
+    </arguments>
+  </virtualType>
+
+  <!-- Config reader -->
+  <type name="Xendit\M2Invoice\Gateway\Config\Config">
+    <arguments>
+      <argument name="methodCode" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
+    </arguments>
+  </type>
+
+  <!-- Command pool -->
+  <virtualType name="M2InvoiceCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+    <arguments>
+      <argument name="commands" xsi:type="array">
+        <item name="process" xsi:type="string">M2InvoiceProcessCommand</item>
+        <item name="refund" xsi:type="string">M2InvoiceRefundCommand</item>
+      </argument>
+    </arguments>
+  </virtualType>
+
+  <!-- Process command -->
+  <virtualType name="M2InvoiceProcessCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+    <arguments>
+      <argument name="requestBuilder" xsi:type="object">M2InvoiceProcessRequest</argument>
+      <argument name="handler" xsi:type="object">Xendit\M2Invoice\Model\Payment</argument>
+      <argument name="client" xsi:type="object"></argument>
+    </arguments>
+  </virtualType>
+</config>

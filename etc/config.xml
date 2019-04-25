@@ -14,10 +14,11 @@
             </m2invoice>
             <bniva>
                 <active>1</active>
-                <payment_action>authorize</payment_action><!-- You can use another methor like capture  -->
+                <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\BNIVA</model>
                 <title>Bank Transfer - BNI</title>
-                <order_status>pending_payment</order_status><!-- set default order -->
+                <is_gateway>1</is_gateway>
+                <order_status>pending_payment</order_status>
             </bniva>
             <mandiriva>
                 <active>1</active>
