@@ -9,6 +9,8 @@
                 <active>1</active>
                 <model>Xendit\M2Invoice\Model\Payment\M2Invoice</model>
                 <title>M2Invoice</title>
+                <checkout_test_prefix>TEST MODE -</checkout_test_prefix>
+                <checkout_test_content>Bank account number below are for testing. Real payment will not be detected</checkout_test_content>
             </m2invoice>
             <bniva>
                 <active>1</active>

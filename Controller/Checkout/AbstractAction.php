@@ -7,6 +7,7 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\OrderFactory;
 use Psr\Log\LoggerInterface;
+use Xendit\M2Invoice\Helper\Data;
 
 abstract class AbstractAction extends Action
 {
@@ -20,11 +21,14 @@ abstract class AbstractAction extends Action
 
     private $_logger;
 
+    private $_dataHelper;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
         OrderFactory $orderFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Data $dataHelper
     ) {
         parent::__construct($context);
 
@@ -32,6 +36,7 @@ abstract class AbstractAction extends Action
         $this->_context = $context;
         $this->_orderFactory = $orderFactory;
         $this->_logger = $logger;
+        $this->_dataHelper = $dataHelper;
     }
 
     protected function getContext()
@@ -79,5 +84,10 @@ abstract class AbstractAction extends Action
     protected function getObjectManager()
     {
         return \Magento\Framework\App\ObjectManager::getInstance();
+    }
+
+    protected function getDataHelper()
+    {
+        return $this->_dataHelper;
     }
 }

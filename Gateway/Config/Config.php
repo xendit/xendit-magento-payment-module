@@ -32,7 +32,6 @@ class Config extends \Magento\Payment\Gateway\Config\Config
 
     public function getDescription()
     {
-        $this->_log->info('------------------Testing-------------------' . print_r( self::KEY_DESCRIPTION, true ) );
         return $this->getValue(self::KEY_DESCRIPTION);
     }
 

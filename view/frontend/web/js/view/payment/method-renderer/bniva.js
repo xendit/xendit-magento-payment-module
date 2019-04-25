@@ -7,7 +7,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/bniva'
+                template: 'Xendit_M2Invoice/payment/invoiceva'
             },
 
             getCode: function() {
@@ -20,7 +20,24 @@ define(
 
             getDescription: function() {
                 return 'Bayar pesanan dengan transfer bank BNI dengan virtual account melalui Xendit';
-            }
+            },
+
+            getTestDescription: function () {
+                var environment = window.checkoutConfig.payment.m2invoice.xendit_env;
+
+                if (environment !== 'test') {
+                    return;
+                }
+
+                return {
+                    prefix: window.checkoutConfig.payment.m2invoice.test_prefix,
+                    content: window.checkoutConfig.payment.m2invoice.test_content
+                };
+            },
+
+            afterPlaceOrder: function () {
+                window.location.replace(url.build('xendit/checkout/invoice'));
+            },
         });
     }
 );

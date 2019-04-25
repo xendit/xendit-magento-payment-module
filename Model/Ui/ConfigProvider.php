@@ -4,15 +4,16 @@ namespace Xendit\M2Invoice\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Xendit\M2Invoice\Gateway\Config\Config;
+use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
 final class ConfigProvider implements ConfigProviderInterface
 {
-    protected $_gatewayConfig;
+    protected $_m2Invoice;
 
     public function __construct(
-        Config $gatewayConfig
+        M2Invoice $m2Invoice
     ) {
-        $this->_gatewayConfig = $gatewayConfig;
+        $this->_m2Invoice = $m2Invoice;
     }
 
     public function getConfig()
@@ -20,7 +21,9 @@ final class ConfigProvider implements ConfigProviderInterface
         $config = [
             'payment' => [
                 Config::CODE => [
-                    'description' => $this->_gatewayConfig->getDescription()
+                    'xendit_env' => $this->_m2Invoice->getConfigData('xendit_env'),
+                    'test_prefix' => $this->_m2Invoice->getConfigData('checkout_test_prefix'),
+                    'test_content' => $this->_m2Invoice->getConfigData('checkout_test_content')
                 ]
             ]
         ];
