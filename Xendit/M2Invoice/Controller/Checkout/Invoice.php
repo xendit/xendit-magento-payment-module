@@ -10,10 +10,10 @@ class Invoice extends AbstractAction
     {
         try {
             $order = $this->getOrder();
-            $payload = $this->getRequestData($order);
+            $requestData = $this->getRequestData($order);
 
-            if ($order->getState() === Order::STATE_PENDING_PAYMENT) {
-                echo '<p>This is pending</p>';
+            if ($order->getState() === Order::STATE_PROCESSING) {
+                $this->postToCheckout($requestData);
             } else if ($order->getState() === Order::STATE_CANCELED) {
                 $this->_redirect('checkout/cart');
             } else {
@@ -44,7 +44,32 @@ class Invoice extends AbstractAction
             'x_url_failure' => $this->getDataHelper()->getFailureUrl($orderId),
             'x_amount' => $order->getTotalDue(),
             'x_external_id' => $this->getDataHelper()->getExternalId($orderId),
-            'x_preferred_method' => $preferredMethod
+            'x_preferred_method' => $preferredMethod,
+            'checkout_url' => $this->getDataHelper()->getCheckoutUrl()
         );
+
+        return $requestData;
+    }
+
+    private function postToCheckout($requestData)
+    {
+        $checkoutUrl = $requestData['checkout_url'];
+        echo
+        "
+        <html>
+            <body>
+                <form id='xencheckout' action='$checkoutUrl' method='post'>";
+                foreach ($requestData as $k => $v) {
+                    echo "<input type='hidden' id='$k' value='" . htmlspecialchars($v, ENT_QUOTES) . "'/>";
+                }
+                echo
+                "</form>
+            </body>";
+            echo
+            "<script>
+                var form = document.getElementById('xencheckout');
+            </script>
+        </html>
+        ";
     }
 }

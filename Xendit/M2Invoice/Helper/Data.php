@@ -3,32 +3,27 @@
 namespace Xendit\M2Invoice\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
-use Xendit\M2Invoice\Gateway\Config\Config;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\StoreManagerInterface;
+use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
 class Data extends AbstractHelper {
-    protected $_gatewayConfig;
-
     protected $_objectManager;
 
     protected $_storeManager;
 
+    protected $_m2Invoice;
+
     public function __construct(
-        Config $gatewayConfig,
         ObjectManagerInterface $objectManager,
         Context $context,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        M2Invoice $m2Invoice
     ) {
-        $this->_gatewayConfig = $gatewayConfig;
         $this->_objectManager = $objectManager;
         $this->_storeManager = $storeManager;
-    }
-
-    protected function getGatewayConfig()
-    {
-        return $this->_gatewayConfig;
+        $this->_m2Invoice = $m2Invoice;
     }
 
     protected function getStoreManager()
@@ -38,7 +33,7 @@ class Data extends AbstractHelper {
 
     public function getCheckoutUrl()
     {
-        return $this->getGatewayConfig()->getGatewayUrl();
+        return $this->_m2Invoice->getConfigData('xendit_url');
     }
 
     public function getSuccessUrl()
@@ -48,7 +43,7 @@ class Data extends AbstractHelper {
 
     public function getFailureUrl($orderId)
     {
-        return $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/failure?order_id=$order_id";
+        return $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/failure?order_id=$orderId";
     }
 
     public function getExternalId($orderId)

@@ -6,6 +6,7 @@ use Magento\Payment\Gateway\Request\BuilderInterface;
 use Xendit\M2Invoice\Gateway\Config\Config;
 use Psr\Log\LoggerInterface;
 use Magento\Checkout\Model\Session;
+use Magento\Payment\Gateway\Data\Order\OrderAdapter;
 
 class InitializationRequest implements BuilderInterface
 {
@@ -23,8 +24,36 @@ class InitializationRequest implements BuilderInterface
         $this->_session = $session;
     }
 
+    private function validateQuote(OrderAdapter $order)
+    {
+        $total = $order->getGrandTotalAmount();
+
+        return false;
+
+        if ($total < 30000) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function build(array $buildSubject)
     {
+        $payment = $buildSubject['payment'];
+        $stateObject = $buildSubject['stateObject'];
+
+        $order = $payment->getOrder();
+
+        if ($this->validateQuote($order)) {
+            $stateObject->setState(Order::STATE_PENDING_PAYMENT);
+            $stateObject->setStatus(Order::STATE_PENDING_PAYMENT);
+            $stateObject->setIsNotified(false);
+        } else {
+            $stateObject->setState(Order::STATE_CANCELED);
+            $stateObject->setStatus(Order::STATE_CANCELED);
+            $stateObject->setIsNotified(false);
+        }
+
         return [ 'IGNORED' => [ 'IGNORED' ] ];
     }
 }
