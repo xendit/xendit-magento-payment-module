@@ -45,7 +45,6 @@ class Invoice extends AbstractAction
             'x_amount' => $order->getTotalDue(),
             'x_external_id' => $this->getDataHelper()->getExternalId($orderId),
             'x_preferred_method' => $preferredMethod,
-            'checkout_url' => $this->getDataHelper()->getCheckoutUrl(),
             'x_validation_token' => $this->getDataHelper()->getValidationKey()
         );
 
@@ -57,7 +56,7 @@ class Invoice extends AbstractAction
 
     private function postToCheckout($requestData)
     {
-        $checkoutUrl = $requestData['checkout_url'] . '/payment/xendit/invoice/public-generate';
+        $checkoutUrl = $this->getDataHelper()->getCheckoutUrl() . '/payment/xendit/invoice/public-generate';
 
         echo
         "
