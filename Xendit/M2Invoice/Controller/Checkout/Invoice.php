@@ -45,15 +45,20 @@ class Invoice extends AbstractAction
             'x_amount' => $order->getTotalDue(),
             'x_external_id' => $this->getDataHelper()->getExternalId($orderId),
             'x_preferred_method' => $preferredMethod,
-            'checkout_url' => $this->getDataHelper()->getCheckoutUrl()
+            'checkout_url' => $this->getDataHelper()->getCheckoutUrl(),
+            'x_validation_token' => $this->getDataHelper()->getValidationKey()
         );
+
+        $signature = $this->getCryptoHelper()->generateSignature($requestData, $this->getDataHelper()->getApiKey());
+        $requestData['x_signature'] = $signature;
 
         return $requestData;
     }
 
     private function postToCheckout($requestData)
     {
-        $checkoutUrl = $requestData['checkout_url'];
+        $checkoutUrl = $requestData['checkout_url'] . '/payment/xendit/invoice/public-generate';
+
         echo
         "
         <html>

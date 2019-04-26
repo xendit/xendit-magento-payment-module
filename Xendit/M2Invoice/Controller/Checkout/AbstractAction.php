@@ -8,6 +8,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Sales\Model\OrderFactory;
 use Psr\Log\LoggerInterface;
 use Xendit\M2Invoice\Helper\Data;
+use Xendit\M2Invoice\Helper\Crypto;
 
 abstract class AbstractAction extends Action
 {
@@ -23,12 +24,15 @@ abstract class AbstractAction extends Action
 
     private $_dataHelper;
 
+    private $_cryptoHelper;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
         OrderFactory $orderFactory,
         LoggerInterface $logger,
-        Data $dataHelper
+        Data $dataHelper,
+        Crypto $cryptoHelper
     ) {
         parent::__construct($context);
 
@@ -37,6 +41,7 @@ abstract class AbstractAction extends Action
         $this->_orderFactory = $orderFactory;
         $this->_logger = $logger;
         $this->_dataHelper = $dataHelper;
+        $this->_cryptoHelper = $cryptoHelper;
     }
 
     protected function getContext()
@@ -89,5 +94,10 @@ abstract class AbstractAction extends Action
     protected function getDataHelper()
     {
         return $this->_dataHelper;
+    }
+
+    protected function getCryptoHelper()
+    {
+        return $this->_cryptoHelper;
     }
 }

@@ -50,4 +50,19 @@ class Data extends AbstractHelper {
     {
         return "magento_xendit_$orderId";
     }
+
+    public function getValidationKey()
+    {
+        return $this->_m2Invoice->getValidationKey();
+    }
+
+    public function getApiKey()
+    {
+        return $this->_m2Invoice->getApiKey();
+    }
+
+    public function getPublicApiKey()
+    {
+        return $this->_m2Invoice->getPublicApiKey();
+    }
 }
