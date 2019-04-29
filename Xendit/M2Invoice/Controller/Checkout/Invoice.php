@@ -45,10 +45,10 @@ class Invoice extends AbstractAction
             'x_amount' => $order->getTotalDue(),
             'x_external_id' => $this->getDataHelper()->getExternalId($orderId),
             'x_preferred_method' => $preferredMethod,
-            'x_validation_token' => $this->getDataHelper()->getValidationKey(),
             'x_description' => $orderId,
             'x_environment' => $this->getDataHelper()->getEnvironment(),
-            'x_plugin_name' => 'MAGENTO2'
+            'x_plugin_name' => 'MAGENTO2',
+            'x_merchant_email' => $this->getDataHelper()->getValidationKey()
         );
 
         $signature = $this->getCryptoHelper()->generateSignature($requestData, $this->getDataHelper()->getApiKey());
@@ -67,7 +67,7 @@ class Invoice extends AbstractAction
             <body>
                 <form id='xencheckout' action='$checkoutUrl' method='post'>";
                 foreach ($requestData as $k => $v) {
-                    echo "<input type='hidden' id='$k' value='" . htmlspecialchars($v, ENT_QUOTES) . "'/>";
+                    echo "<input type='hidden' name='$k' value='" . htmlspecialchars($v, ENT_QUOTES) . "'/>";
                 }
                 echo
                 "</form>
