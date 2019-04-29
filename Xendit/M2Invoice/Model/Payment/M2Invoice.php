@@ -48,4 +48,9 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
 
         return false;
     }
+
+    public function getEnvironment()
+    {
+        return $this->getConfigData('xendit_env');
+    }
 }

@@ -45,7 +45,10 @@ class Invoice extends AbstractAction
             'x_amount' => $order->getTotalDue(),
             'x_external_id' => $this->getDataHelper()->getExternalId($orderId),
             'x_preferred_method' => $preferredMethod,
-            'x_validation_token' => $this->getDataHelper()->getValidationKey()
+            'x_validation_token' => $this->getDataHelper()->getValidationKey(),
+            'x_description' => $orderId,
+            'x_environment' => $this->getDataHelper()->getEnvironment(),
+            'x_plugin_name' => 'MAGENTO2'
         );
 
         $signature = $this->getCryptoHelper()->generateSignature($requestData, $this->getDataHelper()->getApiKey());
@@ -72,6 +75,7 @@ class Invoice extends AbstractAction
             echo
             "<script>
                 var form = document.getElementById('xencheckout');
+                form.submit();
             </script>
         </html>
         ";

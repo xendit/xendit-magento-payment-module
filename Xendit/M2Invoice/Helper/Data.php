@@ -65,4 +65,9 @@ class Data extends AbstractHelper {
     {
         return $this->_m2Invoice->getPublicApiKey();
     }
+
+    public function getEnvironment()
+    {
+        return $this->_m2Invoice->getEnvironment();
+    }
 }
