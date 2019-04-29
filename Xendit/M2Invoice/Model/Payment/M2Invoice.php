@@ -53,4 +53,9 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     {
         return $this->getConfigData('xendit_env');
     }
+
+    public function getBusinessEmail()
+    {
+        return $this->getConfigData('business_email');
+    }
 }

@@ -70,4 +70,9 @@ class Data extends AbstractHelper {
     {
         return $this->_m2Invoice->getEnvironment();
     }
+
+    public function getBusinessEmail()
+    {
+        return $this->_m2Invoice->getBusinessEmail();
+    }
 }

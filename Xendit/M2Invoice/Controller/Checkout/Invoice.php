@@ -48,7 +48,7 @@ class Invoice extends AbstractAction
             'x_description' => $orderId,
             'x_environment' => $this->getDataHelper()->getEnvironment(),
             'x_plugin_name' => 'MAGENTO2',
-            'x_merchant_email' => $this->getDataHelper()->getValidationKey()
+            'x_merchant_email' => $this->getDataHelper()->getBusinessEmail()
         );
 
         $signature = $this->getCryptoHelper()->generateSignature($requestData, $this->getDataHelper()->getApiKey());

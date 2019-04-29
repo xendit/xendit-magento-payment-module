@@ -22,7 +22,7 @@ class ReturnUrl extends BaseField
         foreach ($stores as $store) {
             $baseUrl = $store->getBaseUrl(UrlInterface::URL_TYPE_WEB, true);
             if ($baseUrl) {
-                $value      = $baseUrl . 'magento2/xendit/payment-notification';
+                $value      = $baseUrl . 'xendit/checkout/notification';
                 $urlArray[] = "<div>".$this->escapeHtml($value)."</div>";
             }
         }
