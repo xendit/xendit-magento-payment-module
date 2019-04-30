@@ -18,8 +18,6 @@ class Notification extends Action implements CsrfAwareActionInterface
 
     protected $checkoutHelper;
 
-    protected $messageManager;
-
     protected $orderFactory;
 
     public function __construct(
@@ -31,7 +29,6 @@ class Notification extends Action implements CsrfAwareActionInterface
         parent::__construct($context);
         $this->jsonResultFactory = $jsonResultFactory;
         $this->checkoutHelper = $checkoutHelper;
-        $this->messageManager = $context->getMessageManager();
         $this->orderFactory = $orderFactory;
     }
 
@@ -94,11 +91,24 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             $this->invoiceOrder($order, $transactionId);
             
-            $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
+            $result = $this->jsonResultFactory->create();
+            $result->setData([
+                'status' => __('SUCCESS'),
+                'message' => 'Invoice paid'
+            ]);
+
+            return $result;
         } else {
             $this->getCheckoutHelper()->cancelCurrentOrder("Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId.");
             $this->getCheckoutHelper()->restoreQuote(); //restore cart
-            $this->getMessageManager()->addErrorMessage(__("There was a failure in the Xendit payment"));
+            
+            $result = $this->jsonResultFactory->create();
+            $result->setData([
+                'status' => __('FAILED'),
+                'message' => 'Invoice not paid'
+            ]);
+
+            return $result;
         }
     }
 
@@ -139,9 +149,9 @@ class Notification extends Action implements CsrfAwareActionInterface
         return $this->checkoutHelper;
     }
 
-    protected function getMessageManager()
+    protected function getObjectManager()
     {
-        return $this->messageManager;
+        return \Magento\Framework\App\ObjectManager::getInstance();
     }
 
     protected function getOrderById($orderId)
