@@ -7,4 +7,11 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Checkout\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
+                <item name="xendit_m2invoice" xsi:type="const">Xendit\M2Invoice\Model\Payment\CC::CODE</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
