@@ -7,6 +7,7 @@ use Xendit\M2Invoice\Gateway\Config\Config;
 use Psr\Log\LoggerInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Payment\Gateway\Data\Order\OrderAdapter;
+use Magento\Sales\Model\Order;
 
 class InitializationRequest implements BuilderInterface
 {
@@ -27,8 +28,6 @@ class InitializationRequest implements BuilderInterface
     private function validateQuote(OrderAdapter $order)
     {
         $total = $order->getGrandTotalAmount();
-
-        return false;
 
         if ($total < 30000) {
             return false;
