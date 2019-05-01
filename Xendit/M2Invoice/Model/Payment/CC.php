@@ -6,7 +6,7 @@ namespace Xendit\M2Invoice\Model\Payment;
 
 class CC extends \Magento\Payment\Model\Method\Cc
 {
-    const CODE = 'CC';
+    const CODE = 'cc';
     /**
      * Payment code
      *

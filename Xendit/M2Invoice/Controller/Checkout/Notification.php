@@ -11,6 +11,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Action\Action;
 use Xendit\M2Invoice\Helper\Checkout;
 use Magento\Sales\Model\OrderFactory;
+use Xendit\M2Invoice\Helper\Data;
 
 class Notification extends Action implements CsrfAwareActionInterface
 {
@@ -20,16 +21,20 @@ class Notification extends Action implements CsrfAwareActionInterface
 
     protected $orderFactory;
 
+    protected $dataHelper;
+
     public function __construct(
         Context $context,
         JsonFactory $jsonResultFactory,
         Checkout $checkoutHelper,
-        OrderFactory $orderFactory
+        OrderFactory $orderFactory,
+        Data $dataHelper
     ) {
         parent::__construct($context);
         $this->jsonResultFactory = $jsonResultFactory;
         $this->checkoutHelper = $checkoutHelper;
         $this->orderFactory = $orderFactory;
+        $this->dataHelper = $dataHelper;
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
@@ -45,6 +50,7 @@ class Notification extends Action implements CsrfAwareActionInterface
     public function execute()
     {
         $post = $this->getRequest()->getContent();
+        $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
         $decodedPost = json_decode($post, true);
 
         if ( !isset($decodedPost['description']) || !isset($decodedPost['id']) || !isset($decodedPost['status']) ) {
@@ -71,6 +77,20 @@ class Notification extends Action implements CsrfAwareActionInterface
             $result->setData([
                 'status' => __('ERROR'),
                 'message' => 'Order not found'
+            ]);
+
+            return $result;
+        }
+
+        $validationToken = $this->dataHelper->getValidationKey();
+
+        if ($callbackToken !== $validationToken) {
+            $result = $this->jsonResultFactory->create();
+            /** You may introduce your own constants for this custom REST API */
+            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_FORBIDDEN);
+            $result->setData([
+                'status' => __('ERROR'),
+                'message' => 'Unauthorized callback request'
             ]);
 
             return $result;
