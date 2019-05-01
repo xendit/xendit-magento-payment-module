@@ -34,6 +34,7 @@ final class ConfigProvider implements ConfigProviderInterface
                     'xendit_env' => $this->_m2Invoice->getConfigData('xendit_env'),
                     'test_prefix' => $this->_m2Invoice->getConfigData('checkout_test_prefix'),
                     'test_content' => $this->_m2Invoice->getConfigData('checkout_test_content'),
+                    'public_api_key' => $this->_m2Invoice->getPublicApiKey(),
                     'availableTypes' => ['cc' => $this->_ccConfig->getCcAvailableTypes()],
                     'months' => ['cc' => $this->_ccConfig->getCcMonths()],
                     'years' => ['cc' => $this->_ccConfig->getCcYears()],

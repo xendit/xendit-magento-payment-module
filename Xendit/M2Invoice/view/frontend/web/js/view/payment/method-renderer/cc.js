@@ -3,13 +3,15 @@ define(
         'jquery',
         'Magento_Checkout/js/view/payment/default',
         'Magento_Payment/js/model/credit-card-validation/credit-card-data',
-        'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator'
+        'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
+        'Magento_Checkout/js/action/place-order',
     ],
     function (
         $,
         Component,
         creditCardData,
-        cardNumberValidator
+        cardNumberValidator,
+        placeOrderAction,
     ) {
         'use strict';
 
@@ -75,12 +77,17 @@ define(
                 });
  
                 this.creditCardExpMonth.subscribe(function(value) {
-                    creditCardData.expirationYear = value;
+                    creditCardData.expirationMonth = value;
                 });
  
                 this.creditCardVerificationNumber.subscribe(function(value) {
                     creditCardData.cvvCode = value;
                 });
+
+                var xenditJsUrl = 'https://js.xendit.co/v1/xendit.min.js';
+                var scriptTag = document.createElement('script');
+                scriptTag.src = xenditJsUrl;
+                document.body.appendChild(scriptTag);
             },
 
             context: function() {
@@ -158,6 +165,48 @@ define(
                     content: window.checkoutConfig.payment.m2invoice.test_content
                 };
             },
+
+            mapMonthValue: function (val) {
+                if (val.length !== 2) {
+                    return '0' + val;
+                }
+
+                return val;
+            },
+
+            placeOrder: function (data, event) {
+                var self = this;
+                var publicKey = window.checkoutConfig.payment.m2invoice.public_api_key;
+
+                Xendit.setPublishableKey(publicKey);
+                
+                var tokenData = {
+                    card_number: creditCardData.creditCardNumber,
+                    card_exp_month: this.mapMonthValue(creditCardData.expirationMonth),
+                    card_exp_year: creditCardData.expirationYear,
+                    is_multiple_use: true
+                };
+
+                if (!tokenData.card_number || !tokenData.card_exp_month || !tokenData.card_exp_year) {
+                    alert('Please fill out the information needed before proceeding');
+                    return;
+                }
+
+                Xendit.card.createToken(tokenData, function (err, token) {
+                    if (err) {
+                        // ?
+                        return;
+                    }
+
+                    var paymentData = self.getData();
+                    paymentData.additional_data = {
+                        token_id: token.id,
+                        masked_card_number: token.masked_card_number
+                    };
+
+                    var placeOrder = placeOrderAction(paymentData, false);
+                });
+            }
         });
     }
 );
