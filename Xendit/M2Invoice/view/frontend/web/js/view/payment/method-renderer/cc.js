@@ -169,6 +169,8 @@ define(
             },
 
             mapMonthValue: function (val) {
+                if (!val) return;
+
                 if (val.length !== 2) {
                     return '0' + val;
                 }

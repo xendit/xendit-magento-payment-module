@@ -17,4 +17,9 @@ class Crypto
 
         return $hash;
     }
+
+    public static function generateBasicAuth($userName, $password = "")
+    {
+        return 'Basic ' . base64_encode("$userName:$password");
+    }
 }
