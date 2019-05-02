@@ -12,7 +12,11 @@ class CC extends \Magento\Payment\Model\Method\Cc
      *
      * @var string
      */
-    protected $_code = 'cc';
+    protected $_code = self::CODE;
+
+    protected $_isGateway = true;
+    protected $_canAuthorize = true;
+    protected $_canCapture = true;
 
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
@@ -21,6 +25,6 @@ class CC extends \Magento\Payment\Model\Method\Cc
  
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        //todo add functionality later
+        echo 'something';
     }
 }

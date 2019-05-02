@@ -5,6 +5,7 @@ define(
         'Magento_Payment/js/model/credit-card-validation/credit-card-data',
         'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
         'Magento_Checkout/js/action/place-order',
+        'Magento_Checkout/js/action/redirect-on-success',
     ],
     function (
         $,
@@ -12,6 +13,7 @@ define(
         creditCardData,
         cardNumberValidator,
         placeOrderAction,
+        redirectOnSuccessAction,
     ) {
         'use strict';
 
@@ -201,10 +203,25 @@ define(
                     var paymentData = self.getData();
                     paymentData.additional_data = {
                         token_id: token.id,
-                        masked_card_number: token.masked_card_number
+                        masked_card_number: token.masked_card_number,
+                        cc_type: $('#cc_cc_type').val(),
+                        cc_number: $('#cc_cc_number').val(),
+                        cc_exp_month: $('#cc_expiration').val(),
+                        cc_exp_year: $('#cc_expiration_yr').val(),
+                        cc_cid: $('#cc_cc_cid').val()
                     };
 
                     var placeOrder = placeOrderAction(paymentData, false);
+
+                    $.when(placeOrder)
+                        .fail(function () {
+                            alert('Failed processing information');
+                        })
+                        .done(function () {
+                            redirectOnSuccessAction.execute();
+                        });
+
+                    return false;
                 });
             }
         });
