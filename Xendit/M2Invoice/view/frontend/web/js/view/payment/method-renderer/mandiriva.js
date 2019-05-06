@@ -11,7 +11,7 @@ define(
         ) {
         'use strict';
 
-        var self = this;
+        var self;
 
         return Component.extend({
             defaults: {

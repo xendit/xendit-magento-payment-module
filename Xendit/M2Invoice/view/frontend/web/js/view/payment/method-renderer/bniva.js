@@ -2,16 +2,16 @@ define(
     [
         'Magento_Checkout/js/view/payment/default',
         'mage/url',
-        'Magento_Checkout/js/model/quote'
+        'Magento_Checkout/js/model/quote',
     ],
     function (
         Component,
         url,
-        quote
+        quote,
         ) {
         'use strict';
 
-        var self = this;
+        var self;
 
         return Component.extend({
             defaults: {
