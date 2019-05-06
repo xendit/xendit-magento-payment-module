@@ -4,7 +4,10 @@
   <!-- Facade configuration -->
   <virtualType name="M2InvoiceFacade" type="Magento\Payment\Model\Method\Adapter">
     <arguments>
-      <argument name="code" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
+      <argument name="code" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::BNI_CODE</argument>
+      <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+      <argument name="infoBlockType" xsi:type="string">Xendit\M2Invoice\Block\Info</argument>
+      <argument name="valueHandlerPool" xsi:type="object">M2InvoiceValueHandlerPool</argument>
       <argument name="commandPool" xsi:type="object">M2InvoiceCommandPool</argument>
     </arguments>
   </virtualType>
@@ -75,6 +78,26 @@
         <item name="Xendit\M2Invoice\Api\Data\PostInterface" xsi:type="string">Xendit\M2Invoice\Api\Data\PostRepositoryInterface
         </item>
       </argument>
+    </arguments>
+  </type>
+
+  <!-- Value handlers infrastructure -->
+  <virtualType name="M2InvoiceValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+    <arguments>
+      <argument name="handlers" xsi:type="array">
+        <item name="default" xsi:type="string">M2InvoiceConfigValueHandler</item>
+      </argument>
+    </arguments>
+  </virtualType>
+  <virtualType name="M2InvoiceConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+    <arguments>
+      <argument name="configInterface" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
+    </arguments>
+  </virtualType>
+
+  <type name="Xendit\M2Invoice\Block\Info">
+    <arguments>
+      <argument name="config" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
     </arguments>
   </type>
 </config>
