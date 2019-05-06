@@ -13,6 +13,7 @@ class Invoice extends AbstractAction
             $requestData = $this->getRequestData($order);
 
             if ($order->getState() === Order::STATE_PROCESSING) {
+                $this->changePendingPaymentStatus($order);
                 $this->postToCheckout($requestData);
             } else if ($order->getState() === Order::STATE_CANCELED) {
                 $this->_redirect('checkout/cart');
@@ -75,9 +76,16 @@ class Invoice extends AbstractAction
             echo
             "<script>
                 var form = document.getElementById('xencheckout');
-                form.submit();
+                // form.submit();
             </script>
         </html>
         ";
+    }
+
+    private function changePendingPaymentStatus($order)
+    {
+        $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
+
+        $order->save();
     }
 }

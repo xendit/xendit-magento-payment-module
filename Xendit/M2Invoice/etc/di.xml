@@ -4,7 +4,7 @@
   <!-- Facade configuration -->
   <virtualType name="M2InvoiceFacade" type="Magento\Payment\Model\Method\Adapter">
     <arguments>
-      <argument name="code" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::BNI_CODE</argument>
+      <argument name="code" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
       <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
       <argument name="infoBlockType" xsi:type="string">Xendit\M2Invoice\Block\Info</argument>
       <argument name="valueHandlerPool" xsi:type="object">M2InvoiceValueHandlerPool</argument>
