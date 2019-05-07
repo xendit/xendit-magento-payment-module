@@ -138,4 +138,36 @@ abstract class AbstractAction extends Action
     {
         return $this->_apiHelper;
     }
+
+    private function invoiceOrder($order, $transactionId)
+    {
+        if(!$order->canInvoice()){
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('Cannot create an invoice.')
+            );
+        }
+        
+        $invoice = $this->getObjectManager()
+            ->create('Magento\Sales\Model\Service\InvoiceService')
+            ->prepareInvoice($order);
+        
+        if (!$invoice->getTotalQty()) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('You can\'t create an invoice without products.')
+            );
+        }
+        
+        /*
+         * Look Magento/Sales/Model/Order/Invoice.register() for CAPTURE_OFFLINE explanation.
+         * Basically, if !config/can_capture and config/is_gateway and CAPTURE_OFFLINE and 
+         * Payment.IsTransactionPending => pay (Invoice.STATE = STATE_PAID...)
+         */
+        $invoice->setTransactionId($transactionId);
+        $invoice->setRequestedCaptureCase(Order\Invoice::CAPTURE_OFFLINE);
+        $invoice->register();
+        $transaction = $this->getObjectManager()->create('Magento\Framework\DB\Transaction')
+            ->addObject($invoice)
+            ->addObject($invoice->getOrder());
+        $transaction->save();
+    }
 }

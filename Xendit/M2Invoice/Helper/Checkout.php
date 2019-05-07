@@ -4,6 +4,7 @@ namespace Xendit\M2Invoice\Helper;
 
 use Magento\Sales\Model\Order;
 use Magento\Checkout\Model\Session;
+use Magento\Sales\Model\OrderFactory;
 
 class Checkout
 {
@@ -14,10 +15,15 @@ class Checkout
     /**
      * @param \Magento\Checkout\Model\Session $session
      */
+
+    protected $orderFactory;
+
     public function __construct(
-        Session $session
+        Session $session,
+        OrderFactory $order
     ) {
         $this->session = $session;
+        $this->orderFactory = $order;
     }
     /**
      * Cancel last placed order with specified comment message
@@ -44,5 +50,22 @@ class Checkout
     public function restoreQuote()
     {
         return $this->session->restoreQuote();
+    }
+    /**
+     * Cancel specified order with specified comment message
+     *
+     * @param string $comment Comment appended to order history
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return bool True if order cancelled, false otherwise
+     */
+    public function cancelOrderById($orderId, $comment)
+    {
+        $order = $this->orderFactory->create()->loadByIncrementId($orderId);
+
+        if ($order->getId() && $order->getState() != Order::STATE_CANCELED) {
+            $order->registerCancellation($comment)->save();
+            return true;
+        }
+        return false;
     }
 }
