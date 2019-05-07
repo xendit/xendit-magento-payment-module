@@ -23,7 +23,7 @@
                         Your registered business email in Xendit
                     </comment>
                 </field>
-                <field id="test_public_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="test_public_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Public Key</label>
                     <comment>
                         Public API key that provided by Xendit Dashboard
@@ -32,8 +32,9 @@
                         <field id="xendit_env">test</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="test_private_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="test_private_key" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Private Key</label>
                     <comment>
                         Secret API key that provided by Xendit Dashboard
@@ -42,8 +43,9 @@
                         <field id="xendit_env">test</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="test_validation_key" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="test_validation_key" translate="label" type="obscure" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Validation Token</label>
                     <comment>
                         Validation token that provided by Xendit Dashboard
@@ -52,8 +54,9 @@
                         <field id="xendit_env">test</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="public_key" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="public_key" translate="label" type="obscure" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Public Key</label>
                     <comment>
                         Public API key that provided by Xendit Dashboard
@@ -62,8 +65,9 @@
                         <field id="xendit_env">live</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="private_key" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="private_key" translate="label" type="obscure" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Private Key</label>
                     <comment>
                         Secret API key that provided by Xendit Dashboard
@@ -72,8 +76,9 @@
                         <field id="xendit_env">live</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="validation_key" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="validation_key" translate="label" type="obscure" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Validation Token</label>
                     <comment>
                         Validation token that provided by Xendit Dashboard
@@ -82,6 +87,7 @@
                         <field id="xendit_env">live</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
                 <field id="return_url" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Callback URLs</label>

@@ -76,7 +76,7 @@ class Invoice extends AbstractAction
             echo
             "<script>
                 var form = document.getElementById('xencheckout');
-                // form.submit();
+                form.submit();
             </script>
         </html>
         ";

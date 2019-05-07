@@ -11,6 +11,12 @@
                 <title>M2Invoice</title>
                 <checkout_test_prefix>TEST MODE -</checkout_test_prefix>
                 <checkout_test_content>Bank account number below are for testing. Real payment will not be detected</checkout_test_content>
+                <test_public_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <public_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <test_private_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <private_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <test_validation_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <validation_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
             </m2invoice>
             <bniva>
                 <active>1</active>
