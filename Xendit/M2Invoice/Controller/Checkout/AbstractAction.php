@@ -10,6 +10,8 @@ use Psr\Log\LoggerInterface;
 use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Checkout;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Xendit\M2Invoice\Helper\ApiRequest;
 
 abstract class AbstractAction extends Action
 {
@@ -31,6 +33,10 @@ abstract class AbstractAction extends Action
 
     private $_messageManager;
 
+    private $_orderRepo;
+
+    private $_apiHelper;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
@@ -38,7 +44,9 @@ abstract class AbstractAction extends Action
         LoggerInterface $logger,
         Data $dataHelper,
         Crypto $cryptoHelper,
-        Checkout $checkoutHelper
+        Checkout $checkoutHelper,
+        OrderRepositoryInterface $orderRepo,
+        ApiRequest $apiHelper
     ) {
         parent::__construct($context);
 
@@ -50,6 +58,8 @@ abstract class AbstractAction extends Action
         $this->_cryptoHelper = $cryptoHelper;
         $this->_checkoutHelper = $checkoutHelper;
         $this->_messageManager = $context->getMessageManager();
+        $this->_orderRepo = $orderRepo;
+        $this->_apiHelper = $apiHelper;
     }
 
     protected function getContext()
@@ -117,5 +127,15 @@ abstract class AbstractAction extends Action
     protected function getMessageManager()
     {
         return $this->_messageManager;
+    }
+
+    protected function getOrderRepo()
+    {
+        return $this->_orderRepo;
+    }
+
+    protected function getApiHelper()
+    {
+        return $this->_apiHelper;
     }
 }
