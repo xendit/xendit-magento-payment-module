@@ -8,6 +8,8 @@ use Xendit\M2Invoice\Model\Payment\M2Invoice;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
 use Magento\Framework\Model\Context;
+use Xendit\M2Invoice\Helper\ApiRequest;
+use Magento\Sales\Model\Order;
 
 class CC extends \Magento\Payment\Model\Method\Cc
 {
@@ -21,12 +23,13 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
     protected $_isGateway = true;
     protected $_canAuthorize = true;
-    protected $_canCapture = true;
+    protected $_canCapture = false;
 
     protected $zendClient;
     protected $m2Invoice;
     protected $cryptoHelper;
     protected $dataHelper;
+    protected $apiHelper;
 
     public function __construct(
         Client $zendClient,
@@ -44,7 +47,8 @@ class CC extends \Magento\Payment\Model\Method\Cc
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
-        Data $dataHelper
+        Data $dataHelper,
+        ApiRequest $apiHelper
     ) {
         parent::__construct(
             $context,
@@ -65,6 +69,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $this->m2Invoice = $m2Invoice;
         $this->cryptoHelper = $cryptoHelper;
         $this->dataHelper = $dataHelper;
+        $this->apiHelper = $apiHelper;
     }
 
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -78,47 +83,56 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $orderId = $order->getRealOrderId();
         $additionalData = $this->getAdditionalData();
 
-        try {
-            $apiKey = $this->m2Invoice->getApiKey();
-            $apiUrl = $this->m2Invoice->getUrl();
-            $requestData = [
-                'token_id' => $additionalData['token_id'],
-                'amount' => $amount,
-                'external_id' => $this->dataHelper->getExternalId($orderId),
-                'card_cvn' => $additionalData['cc_cc_cid']
-            ];
+        $order->setStatus(Order::STATE_PENDING_PAYMENT);
+        $order->setState(Order::STATE_PENDING_PAYMENT);
+        $order->setIsNotified(false);
+        $order->save();
 
-            $this->zendClient->reset();
-            $this->zendClient->setUri($apiUrl . '/payment/xendit/credit-card/charges');
-            $this->zendClient->setMethod(\Zend\Http\Request::METHOD_POST);
-            $this->zendClient->setHeaders([
-                'Authorization' => $this->cryptoHelper->generateBasicAuth($apiKey),
-                'x-plugin-name' => 'MAGENTO2',
-                'x-plugin-method' => 'CREDIT_CARD',
-            ]);
-            $this->zendClient->setParameterPost($requestData);
+        $payment->setIsTransactionPending(true);
 
-            $adapter = new \Zend\Http\Client\Adapter\Curl();
-            $curlOptions = array(
-                CURLOPT_USERAGENT      => 'Zend_Curl_Adapter',
-                CURLOPT_HEADER         => 0,
-                CURLOPT_VERBOSE        => 0,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => false
-            );
-            $adapter->setOptions(array('curloptions' => $curlOptions));
-            $this->zendClient->setAdapter($adapter);
+        echo "test " . print_r($additionalData, true) . "!!!";
 
-            $this->zendClient->send();
+        // try {
+        //     $apiKey = $this->m2Invoice->getApiKey();
+        //     $apiUrl = $this->m2Invoice->getUrl();
+        //     $requestData = [
+        //         'token_id' => $additionalData['token_id'],
+        //         'amount' => $amount,
+        //         'external_id' => $this->dataHelper->getExternalId($orderId),
+        //         'card_cvn' => $additionalData['cc_cc_cid']
+        //     ];
 
-            $response = $this->zendClient->getResponse();
+        //     $this->zendClient->reset();
+        //     $this->zendClient->setUri($apiUrl . '/payment/xendit/credit-card/charges');
+        //     $this->zendClient->setMethod(\Zend\Http\Request::METHOD_POST);
+        //     $this->zendClient->setHeaders([
+        //         'Authorization' => $this->cryptoHelper->generateBasicAuth($apiKey),
+        //         'x-plugin-name' => 'MAGENTO2',
+        //         'x-plugin-method' => 'CREDIT_CARD',
+        //     ]);
+        //     $this->zendClient->setParameterPost($requestData);
 
-            return $this;
-        } catch (Exception $e) {
-            echo $e->getMessage();
+        //     $adapter = new \Zend\Http\Client\Adapter\Curl();
+        //     $curlOptions = array(
+        //         CURLOPT_USERAGENT      => 'Zend_Curl_Adapter',
+        //         CURLOPT_HEADER         => 0,
+        //         CURLOPT_VERBOSE        => 0,
+        //         CURLOPT_SSL_VERIFYPEER => false,
+        //         CURLOPT_SSL_VERIFYHOST => false
+        //     );
+        //     $adapter->setOptions(array('curloptions' => $curlOptions));
+        //     $this->zendClient->setAdapter($adapter);
 
-            return false;
-        }
+        //     $this->zendClient->send();
+
+        //     $response = $this->zendClient->getResponse();
+
+        //     return $this;
+        // } catch (Exception $e) {
+        //     echo $e->getMessage();
+
+        //     return false;
+        // }
     }
 
     private function log($param, $message)
