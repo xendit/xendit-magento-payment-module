@@ -56,7 +56,7 @@ class ThreeDSResult extends AbstractAction
 
     private function createCharge($hosted3DS, $orderId)
     {
-        $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charge";
+        $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charges";
         $chargeMethod = \Zend\Http\Request::METHOD_POST;
         $chargeData = array(
             'token_id' => $hosted3DS['token_id'],

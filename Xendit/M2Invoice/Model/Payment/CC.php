@@ -9,6 +9,8 @@ use Xendit\M2Invoice\Helper\ApiRequest;
 use Magento\Sales\Model\Order;
 use Magento\Framework\App\RequestInterface;
 use \Magento\Framework\Phrase;
+use Magento\Framework\UrlInterface;
+use Magento\Framework\App\ResponseFactory;
 
 class CC extends \Magento\Payment\Model\Method\Cc
 {
@@ -28,6 +30,8 @@ class CC extends \Magento\Payment\Model\Method\Cc
     protected $dataHelper;
     protected $apiHelper;
     protected $request;
+    protected $url;
+    protected $responseFactory;
 
     public function __construct(
         Crypto $cryptoHelper,
@@ -45,7 +49,9 @@ class CC extends \Magento\Payment\Model\Method\Cc
         array $data = [],
         Data $dataHelper,
         ApiRequest $apiHelper,
-        RequestInterface $httpRequest
+        RequestInterface $httpRequest,
+        UrlInterface $url,
+        ResponseFactory $responseFactory
     ) {
         parent::__construct(
             $context,
@@ -66,6 +72,8 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $this->dataHelper = $dataHelper;
         $this->apiHelper = $apiHelper;
         $this->request = $httpRequest;
+        $this->url = $url;
+        $this->responseFactory = $responseFactory;
     }
 
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -95,6 +103,15 @@ class CC extends \Magento\Payment\Model\Method\Cc
             );
 
             $hosted3DS = $this->request3DS($requestData);
+
+            if ('IN_REVIEW' === $hosted3DS['status']) {
+                $hostedUrl = $hosted3DS['redirect']['url'];
+                $CustomRedirectionUrl = $this->url->getUrl($hostedUrl);
+                $this->responseFactory->create()->setRedirect($CustomRedirectionUrl)->sendResponse();
+                exit();
+            }
+
+            $charge = $this->requestCharge($requestData);
         } catch (\Zend_Http_Client_Exception $e) {
             $errorMsg = $e->getMessage();
         } catch (\Exception $e) {
