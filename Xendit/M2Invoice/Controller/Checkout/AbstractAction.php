@@ -37,6 +37,8 @@ abstract class AbstractAction extends Action
 
     private $_apiHelper;
 
+    private $_resultRedirectFactory;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
@@ -60,6 +62,7 @@ abstract class AbstractAction extends Action
         $this->_messageManager = $context->getMessageManager();
         $this->_orderRepo = $orderRepo;
         $this->_apiHelper = $apiHelper;
+        $this->_resultRedirectFactory = $context->getResultRedirectFactory();
     }
 
     protected function getContext()
@@ -169,5 +172,10 @@ abstract class AbstractAction extends Action
             ->addObject($invoice)
             ->addObject($invoice->getOrder());
         $transaction->save();
+    }
+
+    protected function getRedirectFactory()
+    {
+        return $this->_resultRedirectFactory;
     }
 }

@@ -10,11 +10,16 @@ class Invoice extends AbstractAction
     {
         try {
             $order = $this->getOrder();
-            $requestData = $this->getRequestData($order);
+            $apiData = $this->getApiRequestData($order);
 
             if ($order->getState() === Order::STATE_PROCESSING) {
                 $this->changePendingPaymentStatus($order);
-                $this->postToCheckout($requestData);
+                $invoice = $this->createInvoice($apiData);
+                $redirectUrl = $this->getXenditRedirectUrl($invoice, $apiData['preferred_method']);
+
+                $resultRedirect = $this->getRedirectFactory()->create();
+                $resultRedirect->setUrl($redirectUrl);
+                return $resultRedirect;
             } else if ($order->getState() === Order::STATE_CANCELED) {
                 $this->_redirect('checkout/cart');
             } else {
@@ -28,7 +33,7 @@ class Invoice extends AbstractAction
         }
     }
 
-    private function getRequestData($order)
+    private function getApiRequestData($order)
     {
         if ($order == null) {
             $this->getLogger()->debug('Unable to get last order data from database');
@@ -41,45 +46,39 @@ class Invoice extends AbstractAction
         $preferredMethod = $this->getRequest()->getParam('preferred_method');
 
         $requestData = array(
-            'x_url_success' => $this->getDataHelper()->getSuccessUrl(),
-            'x_url_failure' => $this->getDataHelper()->getFailureUrl($orderId),
-            'x_amount' => $order->getTotalDue(),
-            'x_external_id' => $this->getDataHelper()->getExternalId($orderId),
-            'x_preferred_method' => $preferredMethod,
-            'x_description' => $orderId,
-            'x_environment' => $this->getDataHelper()->getEnvironment(),
-            'x_plugin_name' => 'MAGENTO2',
-            'x_merchant_email' => $this->getDataHelper()->getBusinessEmail()
+            'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(),
+            'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderId),
+            'amount' => $order->getTotalDue(),
+            'external_id' => $this->getDataHelper()->getExternalId($orderId) . "haha",
+            'description' => $orderId,
+            'payer_email' => $order->getCustomerEmail(),
+            'preferred_method' => $preferredMethod
         );
-
-        $signature = $this->getCryptoHelper()->generateSignature($requestData, $this->getDataHelper()->getApiKey());
-        $requestData['x_signature'] = $signature;
 
         return $requestData;
     }
 
-    private function postToCheckout($requestData)
+    private function createInvoice($requestData)
     {
-        $checkoutUrl = $this->getDataHelper()->getCheckoutUrl() . '/payment/xendit/invoice/public-generate';
+        $invoiceUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/invoice";
+        $invoiceMethod = \Zend\Http\Request::METHOD_POST;
 
-        echo
-        "
-        <html>
-            <body>
-                <form id='xencheckout' action='$checkoutUrl' method='post'>";
-                foreach ($requestData as $k => $v) {
-                    echo "<input type='hidden' name='$k' value='" . htmlspecialchars($v, ENT_QUOTES) . "'/>";
-                }
-                echo
-                "</form>
-            </body>";
-            echo
-            "<script>
-                var form = document.getElementById('xencheckout');
-                form.submit();
-            </script>
-        </html>
-        ";
+        try {
+            $invoice = $this->getApiHelper()->request($invoiceUrl, $invoiceMethod, $requestData, false, $requestData['preferred_method']);
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                $e->getMessage()
+            );
+        }
+
+        return $invoice;
+    }
+
+    private function getXenditRedirectUrl($invoice, $preferredMethod)
+    {
+        $url = $invoice['invoice_url'] . "#$preferredMethod";
+
+        return $url;
     }
 
     private function changePendingPaymentStatus($order)

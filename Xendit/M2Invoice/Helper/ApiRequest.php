@@ -28,10 +28,10 @@ class ApiRequest
         $this->_logger = $logger;
     }
 
-    public function request($url, $method, $requestData = null, $isPublicRequest = false)
+    public function request($url, $method, $requestData = null, $isPublicRequest = false, $preferredMethod = null)
     {
         $client = $this->_httpClientFactory->create();
-        $headers = $this->getHeaders($isPublicRequest);
+        $headers = $this->getHeaders($isPublicRequest, $preferredMethod);
 
         $client->setUri($url);
         $client->setMethod($method);
@@ -68,7 +68,7 @@ class ApiRequest
         return $jsonResponse;
     }
 
-    private function getHeaders($isPublicRequest)
+    private function getHeaders($isPublicRequest, $preferredMethod = null)
     {
         $apiKey = $isPublicRequest ? $this->_m2Invoice->getPublicApiKey() : $this->_m2Invoice->getApiKey();
         $auth = $this->_cryptoHelper->generateBasicAuth($apiKey);
@@ -79,6 +79,13 @@ class ApiRequest
             'x-plugin-name' => 'MAGENTO2',
             'user-agent' => 'Magento 2 Module'
         );
+
+        if ($preferredMethod !== null) {
+            array_push(
+                $headers,
+                array('x-plugin-method' => $preferredMethod)
+            );
+        }
 
         return $headers;
     }
