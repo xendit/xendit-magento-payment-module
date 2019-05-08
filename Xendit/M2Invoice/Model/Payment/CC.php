@@ -106,12 +106,10 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
             if ('IN_REVIEW' === $hosted3DS['status']) {
                 $hostedUrl = $hosted3DS['redirect']['url'];
-                $CustomRedirectionUrl = $this->url->getUrl($hostedUrl);
-                $this->responseFactory->create()->setRedirect($CustomRedirectionUrl)->sendResponse();
-                exit();
+                $payment->setAdditionalInformation('xendit_redirect_url', $hostedUrl);
+                $payment->setAdditionalInformation('xendit_hosted_3ds_id', $hosted3DS['id']);
+                $order->save();
             }
-
-            $charge = $this->requestCharge($requestData);
         } catch (\Zend_Http_Client_Exception $e) {
             $errorMsg = $e->getMessage();
         } catch (\Exception $e) {
@@ -123,6 +121,8 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 );
             }
         }
+
+        return $this;
     }
 
     private function getAdditionalData()

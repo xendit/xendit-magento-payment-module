@@ -5,7 +5,7 @@ define(
         'Magento_Payment/js/model/credit-card-validation/credit-card-data',
         'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
         'Magento_Checkout/js/action/place-order',
-        'Magento_Checkout/js/action/redirect-on-success',
+        'mage/url',
     ],
     function (
         $,
@@ -13,7 +13,7 @@ define(
         creditCardData,
         cardNumberValidator,
         placeOrderAction,
-        redirectOnSuccessAction,
+        url,
     ) {
         'use strict';
 
@@ -219,12 +219,16 @@ define(
                         .fail(function () {
                         })
                         .done(function () {
-                            redirectOnSuccessAction.execute();
+                            self.afterPlaceOrder();
                         });
 
                     return false;
                 });
-            }
+            },
+
+            afterPlaceOrder: function () {
+                window.location.replace(url.build('xendit/checkout/redirect'));
+            },
         });
     }
 );
