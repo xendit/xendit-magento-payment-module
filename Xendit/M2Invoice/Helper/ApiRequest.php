@@ -48,10 +48,19 @@ class ApiRequest
 
         try {
             $response = $client->request();
+
+            if (empty($response->getBody())) {
+                throw new \Exception(
+                    'There was a problem connecting to Xendit'
+                );
+            }
+
             $jsonResponse = json_decode($response->getBody(), true);
             $log['response'] = $jsonResponse;
         } catch (\Zend_Http_Client_Exception $e) {
             throw new \Magento\Payment\Gateway\Http\ClientException(__($e->getMessage()));
+        } catch (\Exception $e) {
+            throw $e;
         } finally {
             $this->_logger->debug('Xendit API Request', $log);
         }

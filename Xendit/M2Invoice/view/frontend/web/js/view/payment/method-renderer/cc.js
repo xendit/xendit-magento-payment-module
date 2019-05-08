@@ -217,7 +217,6 @@ define(
 
                     $.when(placeOrder)
                         .fail(function () {
-                            alert('Failed processing information');
                         })
                         .done(function () {
                             redirectOnSuccessAction.execute();
