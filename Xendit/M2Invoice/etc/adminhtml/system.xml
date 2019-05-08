@@ -17,12 +17,6 @@
                     </comment>
                     <attribute type="shared">1</attribute>
                 </field>
-                <field id="business_email" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Business Email</label>
-                    <comment>
-                        Your registered business email in Xendit
-                    </comment>
-                </field>
                 <field id="test_public_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Public Key</label>
                     <comment>

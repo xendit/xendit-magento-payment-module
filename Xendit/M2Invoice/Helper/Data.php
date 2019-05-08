@@ -83,11 +83,6 @@ class Data extends AbstractHelper {
         return $this->_m2Invoice->getEnvironment();
     }
 
-    public function getBusinessEmail()
-    {
-        return $this->_m2Invoice->getBusinessEmail();
-    }
-
     public function jsonData()
     {
         $inputs = json_decode((string) $this->_fileSystem->fileGetContents((string)'php://input'), (bool) true);
