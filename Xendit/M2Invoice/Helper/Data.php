@@ -2,12 +2,12 @@
 
 namespace Xendit\M2Invoice\Helper;
 
-use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Filesystem\Driver\File;
 use Magento\Store\Model\StoreManagerInterface;
 use Xendit\M2Invoice\Model\Payment\M2Invoice;
-use Magento\Framework\Filesystem\Driver\File;
 
 class Data extends AbstractHelper {
     protected $_objectManager;

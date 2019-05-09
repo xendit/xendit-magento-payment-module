@@ -3,6 +3,7 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\OrderFactory;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
@@ -10,7 +11,6 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Action\Action;
 use Xendit\M2Invoice\Helper\Checkout;
-use Magento\Sales\Model\OrderFactory;
 use Xendit\M2Invoice\Helper\Data;
 
 class Notification extends Action implements CsrfAwareActionInterface

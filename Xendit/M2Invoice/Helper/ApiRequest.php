@@ -3,8 +3,8 @@
 namespace Xendit\M2Invoice\Helper;
 
 use Magento\Framework\HTTP\ZendClientFactory;
-use Xendit\M2Invoice\Model\Payment\M2Invoice;
 use Psr\Log\LoggerInterface;
+use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
 class ApiRequest
 {

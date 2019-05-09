@@ -2,12 +2,12 @@
 
 namespace Xendit\M2Invoice\Gateway\Request;
 
-use Magento\Payment\Gateway\Request\BuilderInterface;
-use Xendit\M2Invoice\Gateway\Config\Config;
-use Psr\Log\LoggerInterface;
 use Magento\Checkout\Model\Session;
+use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Payment\Gateway\Data\Order\OrderAdapter;
 use Magento\Sales\Model\Order;
+use Psr\Log\LoggerInterface;
+use Xendit\M2Invoice\Gateway\Config\Config;
 
 class InitializationRequest implements BuilderInterface
 {

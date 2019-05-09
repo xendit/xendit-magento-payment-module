@@ -3,16 +3,16 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Framework\App\Action\Action;
-use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
+use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Checkout;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Xendit\M2Invoice\Helper\ApiRequest;
-use Magento\Sales\Model\Order;
 
 abstract class AbstractAction extends Action
 {

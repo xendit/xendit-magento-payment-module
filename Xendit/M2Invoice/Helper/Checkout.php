@@ -2,8 +2,8 @@
 
 namespace Xendit\M2Invoice\Helper;
 
-use Magento\Sales\Model\Order;
 use Magento\Checkout\Model\Session;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 
 class Checkout

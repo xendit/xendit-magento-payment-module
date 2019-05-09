@@ -2,15 +2,15 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-use Xendit\M2Invoice\Helper\Crypto;
-use Xendit\M2Invoice\Helper\Data;
-use Magento\Framework\Model\Context;
-use Xendit\M2Invoice\Helper\ApiRequest;
-use Magento\Sales\Model\Order;
-use Magento\Framework\App\RequestInterface;
 use \Magento\Framework\Phrase;
 use Magento\Framework\UrlInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseFactory;
+use Magento\Framework\Model\Context;
+use Magento\Sales\Model\Order;
+use Xendit\M2Invoice\Helper\ApiRequest;
+use Xendit\M2Invoice\Helper\Crypto;
+use Xendit\M2Invoice\Helper\Data;
 
 class CC extends \Magento\Payment\Model\Method\Cc
 {

@@ -3,10 +3,10 @@
 namespace Xendit\M2Invoice\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
-use Xendit\M2Invoice\Gateway\Config\Config;
-use Xendit\M2Invoice\Model\Payment\M2Invoice;
-use Xendit\M2Invoice\Model\Payment\CC;
 use Magento\Payment\Model\CcConfig;
+use Xendit\M2Invoice\Gateway\Config\Config;
+use Xendit\M2Invoice\Model\Payment\CC;
+use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
 final class ConfigProvider implements ConfigProviderInterface
 {
