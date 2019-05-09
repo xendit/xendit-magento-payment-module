@@ -5,6 +5,10 @@
             <group id="m2invoice" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Xendit</label>
                 <comment><![CDATA[<h2>Manage Payment Gateway Connection</h2>]]></comment>
+                <field id="active" translate="label comment" sortOrder="1" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="xendit_env" translate="label" type="radios" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Payment Mode</label>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\EnvRadioBtn</source_model>
@@ -13,7 +17,7 @@
                     </comment>
                     <attribute type="shared">1</attribute>
                 </field>
-                <field id="test_public_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="test_public_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Public Key</label>
                     <comment>
                         Public API key that provided by Xendit Dashboard
@@ -22,8 +26,9 @@
                         <field id="xendit_env">test</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="test_private_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="test_private_key" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Private Key</label>
                     <comment>
                         Secret API key that provided by Xendit Dashboard
@@ -32,8 +37,9 @@
                         <field id="xendit_env">test</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="test_validation_key" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="test_validation_key" translate="label" type="obscure" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Validation Token</label>
                     <comment>
                         Validation token that provided by Xendit Dashboard
@@ -42,8 +48,9 @@
                         <field id="xendit_env">test</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="public_key" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="public_key" translate="label" type="obscure" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Public Key</label>
                     <comment>
                         Public API key that provided by Xendit Dashboard
@@ -52,8 +59,9 @@
                         <field id="xendit_env">live</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="private_key" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="private_key" translate="label" type="obscure" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Private Key</label>
                     <comment>
                         Secret API key that provided by Xendit Dashboard
@@ -62,8 +70,9 @@
                         <field id="xendit_env">live</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="validation_key" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="validation_key" translate="label" type="obscure" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Validation Token</label>
                     <comment>
                         Validation token that provided by Xendit Dashboard
@@ -72,6 +81,7 @@
                         <field id="xendit_env">live</field>
                     </depends>
                     <attribute type="shared">1</attribute>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
                 <field id="return_url" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Callback URLs</label>
