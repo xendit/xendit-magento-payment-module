@@ -12,6 +12,7 @@ use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Checkout;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Xendit\M2Invoice\Helper\ApiRequest;
+use Magento\Sales\Model\Order;
 
 abstract class AbstractAction extends Action
 {
@@ -142,7 +143,7 @@ abstract class AbstractAction extends Action
         return $this->_apiHelper;
     }
 
-    private function invoiceOrder($order, $transactionId)
+    protected function invoiceOrder($order, $transactionId)
     {
         if(!$order->canInvoice()){
             throw new \Magento\Framework\Exception\LocalizedException(

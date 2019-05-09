@@ -17,7 +17,7 @@ class ThreeDSResult extends AbstractAction
             return;
         }
 
-        if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
+        if ($order->getState() !== Order::STATE_PAYMENT_REVIEW) {
             return;
         }
 
@@ -78,8 +78,9 @@ class ThreeDSResult extends AbstractAction
 
     private function processXenditPayment($charge, $order)
     {
-        if ($charge['status'] === 'CHARGED') {
+        if ($charge['status'] === 'CAPTURED') {
             $orderState = Order::STATE_PROCESSING;
+            $transactionId = $charge['id'];
 
             $order->setState($orderState)
                 ->setStatus($orderState)
@@ -96,16 +97,22 @@ class ThreeDSResult extends AbstractAction
             $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
             $this->_redirect('checkout/onepage/success', array('_secure'=> false));
         } else {
-            $this->processFailedPayment($order);
+            $this->processFailedPayment($order, $charge);
         }
     }
 
-    private function processFailedPayment($order)
+    private function processFailedPayment($order, $charge = array())
     {
         $this->getCheckoutHelper()->cancelOrderById($order->getId(), "Order #".($order->getId())." was rejected by Xendit");
         $this->getCheckoutHelper()->restoreQuote(); //restore cart
 
-        $this->getMessageManager()->addErrorMessage(__("There was an error in the Xendit payment"));
+        if ($charge === array()) {
+            $failureReason = 'Unexpected Error';
+        } else {
+            $failureReason = isset($charge['failure_reason']) ? $charge['failure_reason'] : 'Unexpected Error';
+        }
+
+        $this->getMessageManager()->addErrorMessage(__("There was an error in the Xendit payment. Failure reason: $failureReason"));
         $this->_redirect('checkout/cart', array('_secure'=> false));
     }
 }
