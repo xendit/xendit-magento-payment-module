@@ -4,6 +4,7 @@ Xendit PG integration plugin with Magento 2.x
 ## Setup
 ### System requirements
 This module has been tested against the following tech stacks:
+
 | Magento Version | OS | Database | PHP | Web Server |
 | --- | --- | --- | --- | --- |
 | 2.3.0 | Ubuntu 18.04.2 LTS | MariaDB 10.1.39 | 7.2.12 | Apache 2.4.37 |
