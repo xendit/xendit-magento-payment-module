@@ -49,10 +49,11 @@ class Invoice extends AbstractAction
             'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(),
             'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderId),
             'amount' => $order->getTotalDue(),
-            'external_id' => $this->getDataHelper()->getExternalId($orderId) . "haha",
+            'external_id' => $this->getDataHelper()->getExternalId($orderId),
             'description' => $orderId,
             'payer_email' => $order->getCustomerEmail(),
-            'preferred_method' => $preferredMethod
+            'preferred_method' => $preferredMethod,
+            'should_send_email' => "true"
         );
 
         return $requestData;

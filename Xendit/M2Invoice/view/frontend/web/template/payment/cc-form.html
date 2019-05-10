@@ -30,12 +30,16 @@
             <span><!-- ko i18n: 'Credit Card Number'--><!-- /ko --></span>
         </label>
         <div class="control">
-            <input type="number" name="payment[cc_number]" class="input-text" value=""
-                   data-bind="attr: {
+            <input type="text"
+                    autocomplete="off"
+                    name="payment[cc_number]"
+                    class="input-text"
+                    maxlength="16"
+                    value=""
+                    data-bind="attr: {
                                     autocomplete: off,
                                     id: getCode() + '_cc_number',
                                     title: $t('Credit Card Number'),
-                                    maxlength: 16,
                                     'data-container': getCode() + '-cc-number',
                                     'data-validate': JSON.stringify({'required-number':true, 'validate-card-type':getCcAvailableTypesValues(), 'validate-card-number':'#' + getCode() + '_cc_type', 'validate-cc-type':'#' + getCode() + '_cc_type'})},
                               enable: isActive($parents),
@@ -86,11 +90,12 @@
             <span><!-- ko i18n: 'Card Verification Number'--><!-- /ko --></span>
         </label>
         <div class="control _with-tooltip">
-            <input type="number"
+            <input type="password"
                    autocomplete="off"
                    class="input-text cvv"
                    name="payment[cc_cid]"
                    value=""
+                   maxlength="4"
                    data-bind="attr: {id: getCode() + '_cc_cid',
                         title: $t('Card Verification Number'),
                         'data-container': getCode() + '-cc-cvv',

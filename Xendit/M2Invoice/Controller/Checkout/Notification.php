@@ -10,6 +10,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Action\Action;
+use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Data;
 
@@ -23,18 +24,22 @@ class Notification extends Action implements CsrfAwareActionInterface
 
     protected $dataHelper;
 
+    protected $apiHelper;
+
     public function __construct(
         Context $context,
         JsonFactory $jsonResultFactory,
         Checkout $checkoutHelper,
         OrderFactory $orderFactory,
-        Data $dataHelper
+        Data $dataHelper,
+        ApiRequest $apiHelper
     ) {
         parent::__construct($context);
         $this->jsonResultFactory = $jsonResultFactory;
         $this->checkoutHelper = $checkoutHelper;
         $this->orderFactory = $orderFactory;
         $this->dataHelper = $dataHelper;
+        $this->apiHelper = $apiHelper;
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
@@ -53,7 +58,7 @@ class Notification extends Action implements CsrfAwareActionInterface
         $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
         $decodedPost = json_decode($post, true);
 
-        if ( !isset($decodedPost['description']) || !isset($decodedPost['id']) || !isset($decodedPost['status']) ) {
+        if ( !isset($decodedPost['description']) || !isset($decodedPost['id']) ) {
             $result = $this->jsonResultFactory->create();
             /** You may introduce your own constants for this custom REST API */
             $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
@@ -65,7 +70,6 @@ class Notification extends Action implements CsrfAwareActionInterface
             return $result;
         }
 
-        $paymentStatus = $decodedPost['status'];
         $orderId = $decodedPost['description'];
         $transactionId = $decodedPost['id'];
 
@@ -96,7 +100,24 @@ class Notification extends Action implements CsrfAwareActionInterface
             return $result;
         }
 
-        if ($paymentStatus === 'PAID') {
+        $invoice = $this->getXenditInvoice($transactionId);
+
+        $paymentStatus = $invoice['status'];
+        $invoiceOrderId = $invoice['description'];
+
+        if ($invoiceOrderId !== $orderId) {
+            $result = $this->jsonResultFactory->create();
+            /** You may introduce your own constants for this custom REST API */
+            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+            $result->setData([
+                'status' => __('ERROR'),
+                'message' => 'Invoice is not for this order'
+            ]);
+
+            return $result;
+        }
+
+        if ($paymentStatus === 'PAID' || $paymentStatus === 'SETTLED') {
             $orderState = Order::STATE_PROCESSING;
 
             $order->setState($orderState)
@@ -125,11 +146,27 @@ class Notification extends Action implements CsrfAwareActionInterface
             $result = $this->jsonResultFactory->create();
             $result->setData([
                 'status' => __('FAILED'),
-                'message' => 'Invoice not paid'
+                'message' => 'Invoice not paid' .print_r($invoice, true)
             ]);
 
             return $result;
         }
+    }
+
+    private function getXenditInvoice($invoiceId)
+    {
+        $invoiceUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/invoice/$invoiceId";
+        $invoiceMethod = \Zend\Http\Request::METHOD_GET;
+
+        try {
+            $invoice = $this->apiHelper->request($invoiceUrl, $invoiceMethod);
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                $e->getMessage()
+            );
+        }
+
+        return $invoice;
     }
 
     private function invoiceOrder($order, $transactionId)
