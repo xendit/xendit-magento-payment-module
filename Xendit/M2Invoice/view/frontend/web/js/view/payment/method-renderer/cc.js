@@ -159,7 +159,7 @@ define(
                 var environment = window.checkoutConfig.payment.m2invoice.xendit_env;
 
                 if (environment !== 'test') {
-                    return;
+                    return {};
                 }
 
                 return {
