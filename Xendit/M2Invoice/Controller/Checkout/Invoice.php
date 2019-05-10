@@ -68,7 +68,7 @@ class Invoice extends AbstractAction
             $invoice = $this->getApiHelper()->request($invoiceUrl, $invoiceMethod, $requestData, false, $requestData['preferred_method']);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             throw new \Magento\Framework\Exception\LocalizedException(
-                $e->getMessage()
+                new \Magento\Framework\Phrase($e->getMessage())
             );
         }
 
