@@ -68,20 +68,6 @@ define(
                     return false;
                 }
 
-                if (!billingAddress.firstname || 
-                    !billingAddress.lastname ||
-                    !billingAddress.street ||
-                    !billingAddress.city ||
-                    !billingAddress.postcode ||
-                    billingAddress.firstname.length == 0 ||
-                    billingAddress.lastname.length == 0 ||
-                    billingAddress.street.length == 0 ||
-                    billingAddress.city.length == 0 ||
-                    billingAddress.postcode.length == 0) {
-                    self.messageContainer.addErrorMessage({'message': 'Please enter your billing address details'});
-                    return false;
-                }
-
                 if (totals.grand_total < 11000) {
                     self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 11.000.'});
                     return false;
