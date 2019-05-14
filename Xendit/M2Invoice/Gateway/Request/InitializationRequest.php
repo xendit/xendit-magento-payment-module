@@ -11,18 +11,18 @@ use Xendit\M2Invoice\Gateway\Config\Config;
 
 class InitializationRequest implements BuilderInterface
 {
-    private $_gatewayConfig;
-    private $_logger;
-    private $_session;
+    private $gatewayConfig;
+    private $logger;
+    private $session;
 
     public function __construct(
         Config $gatewayConfig,
         LoggerInterface $logger,
         Session $session
     ) {
-        $this->_gatewayConfig = $gatewayConfig;
-        $this->_logger = $logger;
-        $this->_session = $session;
+        $this->gatewayConfig = $gatewayConfig;
+        $this->logger = $logger;
+        $this->session = $session;
     }
 
     private function validateQuote(OrderAdapter $order)

@@ -2,6 +2,7 @@
 
 namespace Xendit\M2Invoice\Helper;
 
+use Magento\Framework\Phrase;
 use Magento\Framework\HTTP\ZendClientFactory;
 use Psr\Log\LoggerInterface;
 use Xendit\M2Invoice\Model\Payment\M2Invoice;
@@ -51,7 +52,7 @@ class ApiRequest
 
             if (empty($response->getBody())) {
                 throw new \Magento\Framework\Exception\LocalizedException(
-                    new \Magento\Framework\Phrase('There was a problem connecting to Xendit')
+                    new Phrase('There was a problem connecting to Xendit')
                 );
             }
 

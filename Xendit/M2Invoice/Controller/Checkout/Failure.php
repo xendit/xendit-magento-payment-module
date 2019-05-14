@@ -10,9 +10,11 @@ class Failure extends AbstractAction {
 
         if ($order && $order->getId()) {
             $this->getLogger()->debug('Requested order cancellation by customer. OrderId: ' . $order->getIncrementId());
-            $this->getCheckoutHelper()->cancelCurrentOrder("Xendit: ".($order->getId())." was cancelled by the customer.");
+            $this->getCheckoutHelper()->cancelCurrentOrder("Xendit: ".($order->getId())." 
+                was cancelled by the customer.");
             $this->getCheckoutHelper()->restoreQuote(); //restore cart
-            $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. Please click on 'Update Shopping Cart'."));
+            $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. 
+                Please click on 'Update Shopping Cart'."));
         }
         $this->_redirect('checkout/cart');
     }
