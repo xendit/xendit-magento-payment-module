@@ -16,7 +16,7 @@ class Redirect extends AbstractAction
             $resultRedirect = $this->getRedirectFactory()->create();
             $resultRedirect->setUrl($redirectUrl);
             return $resultRedirect;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->getLogger()->debug('Exception caught on xendit/checkout/redirect: ' . $e->getMessage());
             $this->getLogger()->debug($e->getTraceAsString());
         }

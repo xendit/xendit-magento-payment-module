@@ -27,7 +27,7 @@ class Invoice extends AbstractAction
                 $this->_redirect('checkout/cart');
             }
             
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $e->getMessage());
             $this->getLogger()->debug($e->getTraceAsString());
         }
