@@ -11,12 +11,12 @@ class Checkout
     /**
      * @var \Magento\Checkout\Model\Session
      */
-    protected $session;
+    private $session;
     /**
      * @param \Magento\Checkout\Model\Session $session
      */
 
-    protected $orderFactory;
+    private $orderFactory;
 
     public function __construct(
         Session $session,

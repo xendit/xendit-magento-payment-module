@@ -14,7 +14,7 @@ class ReturnUrl extends BaseField
      * @return  string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function _renderValue(AbstractElement $element)
+    public function _renderValue(AbstractElement $element)
     {
         $stores = $this->_storeManager->getStores();
         $valueReturn = '';
@@ -46,7 +46,7 @@ class ReturnUrl extends BaseField
      * @return  string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function _renderInheritCheckbox(AbstractElement $element)
+    public function _renderInheritCheckbox(AbstractElement $element)
     {
         return '<td class="use-default"></td>';
     }

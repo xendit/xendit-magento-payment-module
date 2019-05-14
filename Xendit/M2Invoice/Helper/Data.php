@@ -9,14 +9,15 @@ use Magento\Framework\Filesystem\Driver\File;
 use Magento\Store\Model\StoreManagerInterface;
 use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
-class Data extends AbstractHelper {
-    protected $_objectManager;
+class Data extends AbstractHelper
+{
+    private $objectManager;
 
-    protected $_storeManager;
+    private $storeManager;
 
-    protected $_m2Invoice;
+    private $m2Invoice;
 
-    protected $_fileSystem;
+    private $fileSystem;
 
     public function __construct(
         ObjectManagerInterface $objectManager,
@@ -25,22 +26,22 @@ class Data extends AbstractHelper {
         M2Invoice $m2Invoice,
         File $fileSystem
     ) {
-        $this->_objectManager = $objectManager;
-        $this->_storeManager = $storeManager;
-        $this->_m2Invoice = $m2Invoice;
-        $this->_fileSystem = $fileSystem;
+        $this->objectManager = $objectManager;
+        $this->storeManager = $storeManager;
+        $this->m2Invoice = $m2Invoice;
+        $this->fileSystem = $fileSystem;
 
         parent::__construct($context);
     }
 
     protected function getStoreManager()
     {
-        return $this->_storeManager;
+        return $this->storeManager;
     }
 
     public function getCheckoutUrl()
     {
-        return $this->_m2Invoice->getConfigData('xendit_url');
+        return $this->m2Invoice->getConfigData('xendit_url');
     }
 
     public function getSuccessUrl()
@@ -65,27 +66,27 @@ class Data extends AbstractHelper {
 
     public function getValidationKey()
     {
-        return $this->_m2Invoice->getValidationKey();
+        return $this->m2Invoice->getValidationKey();
     }
 
     public function getApiKey()
     {
-        return $this->_m2Invoice->getApiKey();
+        return $this->m2Invoice->getApiKey();
     }
 
     public function getPublicApiKey()
     {
-        return $this->_m2Invoice->getPublicApiKey();
+        return $this->m2Invoice->getPublicApiKey();
     }
 
     public function getEnvironment()
     {
-        return $this->_m2Invoice->getEnvironment();
+        return $this->m2Invoice->getEnvironment();
     }
 
     public function jsonData()
     {
-        $inputs = json_decode((string) $this->_fileSystem->fileGetContents((string)'php://input'), (bool) true);
+        $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);
         $methods = $this->_request->getServer('REQUEST_METHOD');
         
         if (empty($inputs) === true && $methods === 'POST') {

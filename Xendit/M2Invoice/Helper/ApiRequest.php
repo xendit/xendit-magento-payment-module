@@ -8,13 +8,13 @@ use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
 class ApiRequest
 {
-    private $_httpClientFactory;
+    private $httpClientFactory;
 
-    private $_cryptoHelper;
+    private $cryptoHelper;
 
-    private $_m2Invoice;
+    private $m2Invoice;
 
-    private $_logger;
+    private $logger;
 
     public function __construct(
         ZendClientFactory $httpClientFactory,
@@ -22,15 +22,15 @@ class ApiRequest
         M2Invoice $m2Invoice,
         LoggerInterface $logger
     ) {
-        $this->_httpClientFactory = $httpClientFactory;
-        $this->_cryptoHelper = $cryptoHelper;
-        $this->_m2Invoice = $m2Invoice;
-        $this->_logger = $logger;
+        $this->httpClientFactory = $httpClientFactory;
+        $this->cryptoHelper = $cryptoHelper;
+        $this->m2Invoice = $m2Invoice;
+        $this->logger = $logger;
     }
 
     public function request($url, $method, $requestData = null, $isPublicRequest = false, $preferredMethod = null)
     {
-        $client = $this->_httpClientFactory->create();
+        $client = $this->httpClientFactory->create();
         $headers = $this->getHeaders($isPublicRequest, $preferredMethod);
 
         $client->setUri($url);
@@ -41,17 +41,17 @@ class ApiRequest
             $client->setParameterPost($requestData);
         }
 
-        $log = array(
+        $log = [
             'uri' => $url,
             'method' => $method
-        );
+        ];
 
         try {
             $response = $client->request();
 
             if (empty($response->getBody())) {
-                throw new \Exception(
-                    'There was a problem connecting to Xendit'
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    new \Magento\Framework\Phrase('There was a problem connecting to Xendit')
                 );
             }
 
@@ -62,7 +62,7 @@ class ApiRequest
         } catch (\Exception $e) {
             throw $e;
         } finally {
-            $this->_logger->debug('Xendit API Request', $log);
+            $this->logger->debug('Xendit API Request', $log);
         }
 
         return $jsonResponse;
@@ -70,20 +70,20 @@ class ApiRequest
 
     private function getHeaders($isPublicRequest, $preferredMethod = null)
     {
-        $apiKey = $isPublicRequest ? $this->_m2Invoice->getPublicApiKey() : $this->_m2Invoice->getApiKey();
-        $auth = $this->_cryptoHelper->generateBasicAuth($apiKey);
+        $apiKey = $isPublicRequest ? $this->m2Invoice->getPublicApiKey() : $this->m2Invoice->getApiKey();
+        $auth = $this->cryptoHelper->generateBasicAuth($apiKey);
 
-        $headers = array(
+        $headers = [
             'Authorization' => $auth,
             'Content-Type' => 'application/json',
             'x-plugin-name' => 'MAGENTO2',
             'user-agent' => 'Magento 2 Module'
-        );
+        ];
 
         if ($preferredMethod !== null) {
             array_push(
                 $headers,
-                array('x-plugin-method' => $preferredMethod)
+                [ 'x-plugin-method' => $preferredMethod ]
             );
         }
 
