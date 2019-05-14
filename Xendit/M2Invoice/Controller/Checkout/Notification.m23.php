@@ -8,6 +8,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Action\Action;
 use Xendit\M2Invoice\Helper\ApiRequest;
@@ -16,15 +17,15 @@ use Xendit\M2Invoice\Helper\Data;
 
 class Notification extends Action implements CsrfAwareActionInterface
 {
-    protected $jsonResultFactory;
+    private $jsonResultFactory;
 
-    protected $checkoutHelper;
+    private $checkoutHelper;
 
-    protected $orderFactory;
+    private $orderFactory;
 
-    protected $dataHelper;
+    private $dataHelper;
 
-    protected $apiHelper;
+    private $apiHelper;
 
     public function __construct(
         Context $context,
@@ -58,7 +59,7 @@ class Notification extends Action implements CsrfAwareActionInterface
         $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
         $decodedPost = json_decode($post, true);
 
-        if ( !isset($decodedPost['description']) || !isset($decodedPost['id']) ) {
+        if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
             $result = $this->jsonResultFactory->create();
             /** You may introduce your own constants for this custom REST API */
             $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
@@ -140,13 +141,15 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             return $result;
         } else {
-            $this->getCheckoutHelper()->cancelCurrentOrder("Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId.");
+            $this->getCheckoutHelper()->cancelCurrentOrder(
+                "Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId."
+            );
             $this->getCheckoutHelper()->restoreQuote(); //restore cart
             
             $result = $this->jsonResultFactory->create();
             $result->setData([
                 'status' => __('FAILED'),
-                'message' => 'Invoice not paid' .print_r($invoice, true)
+                'message' => 'Invoice not paid'
             ]);
 
             return $result;
@@ -161,7 +164,7 @@ class Notification extends Action implements CsrfAwareActionInterface
         try {
             $invoice = $this->apiHelper->request($invoiceUrl, $invoiceMethod);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                 $e->getMessage()
             );
         }
@@ -171,8 +174,8 @@ class Notification extends Action implements CsrfAwareActionInterface
 
     private function invoiceOrder($order, $transactionId)
     {
-        if(!$order->canInvoice()){
-            throw new \Magento\Framework\Exception\LocalizedException(
+        if (!$order->canInvoice()) {
+            throw new LocalizedException(
                 __('Cannot create an invoice.')
             );
         }
@@ -182,7 +185,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             ->prepareInvoice($order);
         
         if (!$invoice->getTotalQty()) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                     __('You can\'t create an invoice without products.')
                 );
         }

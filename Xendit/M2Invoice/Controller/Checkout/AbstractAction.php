@@ -4,6 +4,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -18,27 +19,27 @@ abstract class AbstractAction extends Action
 {
     const LOG_FILE = 'xendit.log';
 
-    private $_checkoutSession;
+    private $checkoutSession;
 
-    private $_context;
+    private $context;
 
-    private $_orderFactory;
+    private $orderFactory;
 
-    private $_logger;
+    private $logger;
 
-    private $_dataHelper;
+    private $dataHelper;
 
-    private $_cryptoHelper;
+    private $cryptoHelper;
 
-    private $_checkoutHelper;
+    private $checkoutHelper;
 
-    private $_messageManager;
+    protected $messageManager;
 
-    private $_orderRepo;
+    private $orderRepo;
 
-    private $_apiHelper;
+    private $apiHelper;
 
-    private $_resultRedirectFactory;
+    protected $resultRedirectFactory;
 
     public function __construct(
         Session $checkoutSession,
@@ -53,42 +54,42 @@ abstract class AbstractAction extends Action
     ) {
         parent::__construct($context);
 
-        $this->_checkoutSession = $checkoutSession;
-        $this->_context = $context;
-        $this->_orderFactory = $orderFactory;
-        $this->_logger = $logger;
-        $this->_dataHelper = $dataHelper;
-        $this->_cryptoHelper = $cryptoHelper;
-        $this->_checkoutHelper = $checkoutHelper;
-        $this->_messageManager = $context->getMessageManager();
-        $this->_orderRepo = $orderRepo;
-        $this->_apiHelper = $apiHelper;
-        $this->_resultRedirectFactory = $context->getResultRedirectFactory();
+        $this->checkoutSession = $checkoutSession;
+        $this->context = $context;
+        $this->orderFactory = $orderFactory;
+        $this->logger = $logger;
+        $this->dataHelper = $dataHelper;
+        $this->cryptoHelper = $cryptoHelper;
+        $this->checkoutHelper = $checkoutHelper;
+        $this->messageManager = $context->getMessageManager();
+        $this->orderRepo = $orderRepo;
+        $this->apiHelper = $apiHelper;
+        $this->resultRedirectFactory = $context->getResultRedirectFactory();
     }
 
     protected function getContext()
     {
-        return $this->_context;
+        return $this->context;
     }
 
     protected function getCheckoutSession()
     {
-        return $this->_checkoutSession;
+        return $this->checkoutSession;
     }
 
     protected function getOrderFactory()
     {
-        return $this->_orderFactory;
+        return $this->orderFactory;
     }
 
     protected function getLogger()
     {
-        return $this->_logger;
+        return $this->logger;
     }
     
     protected function getOrder()
     {
-        $orderId = $this->_checkoutSession->getLastRealOrderId();
+        $orderId = $this->checkoutSession->getLastRealOrderId();
 
         if (!isset($orderId)) {
             return null;
@@ -99,7 +100,7 @@ abstract class AbstractAction extends Action
 
     protected function getOrderById($orderId)
     {
-        $order = $this->_orderFactory->create()->loadByIncrementId($orderId);
+        $order = $this->orderFactory->create()->loadByIncrementId($orderId);
 
         if (!$order->getId()) {
             return null;
@@ -115,38 +116,38 @@ abstract class AbstractAction extends Action
 
     protected function getDataHelper()
     {
-        return $this->_dataHelper;
+        return $this->dataHelper;
     }
 
     protected function getCryptoHelper()
     {
-        return $this->_cryptoHelper;
+        return $this->cryptoHelper;
     }
 
     protected function getCheckoutHelper()
     {
-        return $this->_checkoutHelper;
+        return $this->checkoutHelper;
     }
 
     protected function getMessageManager()
     {
-        return $this->_messageManager;
+        return $this->messageManager;
     }
 
     protected function getOrderRepo()
     {
-        return $this->_orderRepo;
+        return $this->orderRepo;
     }
 
     protected function getApiHelper()
     {
-        return $this->_apiHelper;
+        return $this->apiHelper;
     }
 
     protected function invoiceOrder($order, $transactionId)
     {
-        if(!$order->canInvoice()){
-            throw new \Magento\Framework\Exception\LocalizedException(
+        if (!$order->canInvoice()) {
+            throw new LocalizedException(
                 __('Cannot create an invoice.')
             );
         }
@@ -156,7 +157,7 @@ abstract class AbstractAction extends Action
             ->prepareInvoice($order);
         
         if (!$invoice->getTotalQty()) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                 __('You can\'t create an invoice without products.')
             );
         }
@@ -177,6 +178,6 @@ abstract class AbstractAction extends Action
 
     protected function getRedirectFactory()
     {
-        return $this->_resultRedirectFactory;
+        return $this->resultRedirectFactory;
     }
 }
