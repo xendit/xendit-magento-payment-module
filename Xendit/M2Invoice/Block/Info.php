@@ -6,7 +6,7 @@ use Magento\Payment\Block\ConfigurableInfo;
 
 class Info extends ConfigurableInfo
 {
-    private function getLabel($field)
+    protected function getLabel($field)
     {
         return __($field);
     }
