@@ -13,7 +13,7 @@ class Crypto
             $text .= $k . $v;
         }
 
-        $hash = base64_encode(hash_hmac( 'sha256', $text, $apiKey, true ));
+        $hash = base64_encode(hash_hmac('sha256', $text, $apiKey, true));
 
         return $hash;
     }

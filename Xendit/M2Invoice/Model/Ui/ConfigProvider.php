@@ -10,20 +10,20 @@ use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
 final class ConfigProvider implements ConfigProviderInterface
 {
-    protected $_m2Invoice;
+    private $m2Invoice;
 
-    protected $_cc;
+    private $cc;
 
-    protected $_ccConfig;
+    private $ccConfig;
 
     public function __construct(
         M2Invoice $m2Invoice,
         CC $cc,
         CcConfig $ccConfig
     ) {
-        $this->_m2Invoice = $m2Invoice;
-        $this->_cc = $cc;
-        $this->_ccConfig = $ccConfig;
+        $this->m2Invoice = $m2Invoice;
+        $this->cc = $cc;
+        $this->ccConfig = $ccConfig;
     }
 
     public function getConfig()
@@ -31,14 +31,14 @@ final class ConfigProvider implements ConfigProviderInterface
         $config = [
             'payment' => [
                 Config::CODE => [
-                    'xendit_env' => $this->_m2Invoice->getConfigData('xendit_env'),
-                    'test_prefix' => $this->_m2Invoice->getConfigData('checkout_test_prefix'),
-                    'test_content' => $this->_m2Invoice->getConfigData('checkout_test_content'),
-                    'public_api_key' => $this->_m2Invoice->getPublicApiKey(),
-                    'availableTypes' => ['cc' => $this->_ccConfig->getCcAvailableTypes()],
-                    'months' => ['cc' => $this->_ccConfig->getCcMonths()],
-                    'years' => ['cc' => $this->_ccConfig->getCcYears()],
-                    'hasVerification' => $this->_ccConfig->hasVerification()
+                    'xendit_env' => $this->m2Invoice->getConfigData('xendit_env'),
+                    'test_prefix' => $this->m2Invoice->getConfigData('checkout_test_prefix'),
+                    'test_content' => $this->m2Invoice->getConfigData('checkout_test_content'),
+                    'public_api_key' => $this->m2Invoice->getPublicApiKey(),
+                    'availableTypes' => ['cc' => $this->ccConfig->getCcAvailableTypes()],
+                    'months' => ['cc' => $this->ccConfig->getCcMonths()],
+                    'years' => ['cc' => $this->ccConfig->getCcYears()],
+                    'hasVerification' => $this->ccConfig->hasVerification()
                 ]
             ]
         ];

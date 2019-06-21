@@ -12,12 +12,12 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     const KEY_DESCRIPTION = 'description';
     const KEY_TEST_MODE_DESCRIPTION = 'test_description';
 
-    protected $_log;
+    private $log;
 
     public function __construct(
         \Psr\Log\LoggerInterface $logger
     ) {
-        $this->_log = $logger;
+        $this->log = $logger;
     }
 
     public function getEnvironment()

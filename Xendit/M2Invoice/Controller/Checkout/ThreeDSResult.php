@@ -40,7 +40,8 @@ class ThreeDSResult extends AbstractAction
 
     private function getThreeDSResult($hosted3DSId)
     {
-        $hosted3DSUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds/$hosted3DSId";
+        $hosted3DSUrl = $this->getDataHelper()->getCheckoutUrl() 
+            . "/payment/xendit/credit-card/hosted-3ds/$hosted3DSId";
         $hosted3DSMethod = \Zend\Http\Request::METHOD_GET;
         
         try {
@@ -58,12 +59,12 @@ class ThreeDSResult extends AbstractAction
     {
         $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charges";
         $chargeMethod = \Zend\Http\Request::METHOD_POST;
-        $chargeData = array(
+        $chargeData = [
             'token_id' => $hosted3DS['token_id'],
             'authentication_id' => $hosted3DS['authentication_id'],
             'amount' => $hosted3DS['amount'],
             'external_id' => $this->getDataHelper()->getExternalId($orderId)
-        );
+        ];
 
         try {
             $charge = $this->getApiHelper()->request($chargeUrl, $chargeMethod, $chargeData, false);
@@ -95,24 +96,27 @@ class ThreeDSResult extends AbstractAction
             $this->invoiceOrder($order, $transactionId);
 
             $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-            $this->_redirect('checkout/onepage/success', array('_secure'=> false));
+            $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
         } else {
             $this->processFailedPayment($order, $charge);
         }
     }
 
-    private function processFailedPayment($order, $charge = array())
+    private function processFailedPayment($order, $charge = [])
     {
-        $this->getCheckoutHelper()->cancelOrderById($order->getId(), "Order #".($order->getId())." was rejected by Xendit");
+        $this->getCheckoutHelper()->cancelOrderById($order->getId(),
+            "Order #".($order->getId())." was rejected by Xendit");
         $this->getCheckoutHelper()->restoreQuote(); //restore cart
 
-        if ($charge === array()) {
+        if ($charge === []) {
             $failureReason = 'Unexpected Error';
         } else {
             $failureReason = isset($charge['failure_reason']) ? $charge['failure_reason'] : 'Unexpected Error';
         }
 
-        $this->getMessageManager()->addErrorMessage(__("There was an error in the Xendit payment. Failure reason: $failureReason"));
+        $this->getMessageManager()->addErrorMessage(__(
+            "There was an error in the Xendit payment. Failure reason: $failureReason"
+        ));
         $this->_redirect('checkout/cart', array('_secure'=> false));
     }
 }

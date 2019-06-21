@@ -2,7 +2,7 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-use \Magento\Framework\Phrase;
+use Magento\Framework\Phrase;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseFactory;

@@ -4,6 +4,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\Action\Context;
@@ -15,15 +16,15 @@ use Xendit\M2Invoice\Helper\Data;
 
 class Notification extends Action
 {
-    protected $jsonResultFactory;
+    private $jsonResultFactory;
 
-    protected $checkoutHelper;
+    private $checkoutHelper;
 
-    protected $orderFactory;
+    private $orderFactory;
 
-    protected $dataHelper;
+    private $dataHelper;
 
-    protected $apiHelper;
+    private $apiHelper;
 
     public function __construct(
         Context $context,
@@ -47,7 +48,7 @@ class Notification extends Action
         $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
         $decodedPost = json_decode($post, true);
 
-        if ( !isset($decodedPost['description']) || !isset($decodedPost['id']) ) {
+        if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
             $result = $this->jsonResultFactory->create();
             /** You may introduce your own constants for this custom REST API */
             $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
@@ -129,13 +130,15 @@ class Notification extends Action
 
             return $result;
         } else {
-            $this->getCheckoutHelper()->cancelCurrentOrder("Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId.");
+            $this->getCheckoutHelper()->cancelCurrentOrder(
+                "Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId."
+            );
             $this->getCheckoutHelper()->restoreQuote(); //restore cart
             
             $result = $this->jsonResultFactory->create();
             $result->setData([
                 'status' => __('FAILED'),
-                'message' => 'Invoice not paid' .print_r($invoice, true)
+                'message' => 'Invoice not paid'
             ]);
 
             return $result;
@@ -160,7 +163,7 @@ class Notification extends Action
 
     private function invoiceOrder($order, $transactionId)
     {
-        if(!$order->canInvoice()){
+        if (!$order->canInvoice()) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('Cannot create an invoice.')
             );
@@ -172,13 +175,13 @@ class Notification extends Action
         
         if (!$invoice->getTotalQty()) {
             throw new \Magento\Framework\Exception\LocalizedException(
-                    __('You can\'t create an invoice without products.')
-                );
+                __('You can\'t create an invoice without products.')
+            );
         }
         
         /*
          * Look Magento/Sales/Model/Order/Invoice.register() for CAPTURE_OFFLINE explanation.
-         * Basically, if !config/can_capture and config/is_gateway and CAPTURE_OFFLINE and 
+         * Basically, if !config/can_capture and config/is_gateway and CAPTURE_OFFLINE and
          * Payment.IsTransactionPending => pay (Invoice.STATE = STATE_PAID...)
          */
         $invoice->setTransactionId($transactionId);
