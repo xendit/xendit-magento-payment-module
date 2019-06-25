@@ -5,6 +5,10 @@ namespace Xendit\M2Invoice\Cron;
 use Magento\Framework\App\State;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
+use Magento\Sales\Model\OrderFactory;
+
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 use Psr\Log\LoggerInterface;
 
@@ -16,32 +20,45 @@ class CancelOrder
 
     protected $state;
 
+    protected $orderFactory;
+
+    protected $dateTime;
+
     public function __construct(
         State $state,
         LoggerInterface $logger,
-        CollectionFactory $collectionFactory
+        CollectionFactory $collectionFactory,
+        OrderFactory $orderFactory,
+        DateTime $dateTime
     ) {
         $this->logger = $logger;
         $this->orderCollectionFactory = $collectionFactory;
+        $this->orderFactory = $orderFactory;
+        $this->dateTime = $dateTime;
     }
 
     public function execute()
     {
-        // You Can filter collection as
         $collection = $this->orderCollectionFactory
             ->create()
-            ->addAttributeToSelect('entity_id')
+            ->addAttributeToSelect('increment_id')
             ->addFieldToFilter('status', Order::STATE_PENDING_PAYMENT);
 
-        $this->logger->info("CRON RUNNING!");
+        foreach ($collection as $doc) {
+            $order = $this->orderFactory->create()->loadByIncrementId($doc['increment_id']);
+            $payment = $order->getPayment();
 
-        foreach ($collection as $document) {
-            if ("140" === $document['entity_id']) {
-                $this->logger->info("inside the loop");
+            $invoiceExpDate = $payment->getAdditionalInformation('xendit_invoice_exp_date');
+
+            $date = $this->dateTime->timestamp($invoiceExpDate);
+            $now = $this->dateTime->timestamp();
+
+            if ($date < $now) {
+                $order->setState(Order::STATE_CANCELED)
+                    ->setStatus(Order::STATE_CANCELED)
+                    ->addStatusHistoryComment("Xendit payment cancelled due to expired invoice");
             }
         }
-
-        $this->logger->info(print_r($collection->getData(), true));
 
         return $this;
 	}

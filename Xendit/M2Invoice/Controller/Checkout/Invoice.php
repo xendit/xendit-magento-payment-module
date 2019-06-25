@@ -94,8 +94,9 @@ class Invoice extends AbstractAction
 
     private function addInvoiceData($order, $invoice)
     {
-        $order->setXenditInvoiceId($invoice['id']);
-        $order->setXenditInvoiceExpDate($invoice['expiry_date']);
+        $payment = $order->getPayment();
+        $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
+        $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
 
         $order->save();
     }

@@ -100,9 +100,4 @@
       <argument name="config" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
     </arguments>
   </type>
-
-  <type name="Magento\Sales\Api\OrderRepositoryInterface">
-    <plugin name="xendit_m2_invoice_add_order_extension_attribute"
-            type="Xendit\M2Invoice\Plugin\OrderRepositoryPlugin" />
-  </type>
 </config>
