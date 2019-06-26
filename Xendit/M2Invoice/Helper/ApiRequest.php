@@ -33,10 +33,14 @@ class ApiRequest
     {
         $client = $this->httpClientFactory->create();
         $headers = $this->getHeaders($isPublicRequest, $preferredMethod);
+        $options = [
+            'timeout' => 30
+        ];
 
         $client->setUri($url);
         $client->setMethod($method);
         $client->setHeaders($headers);
+        $client->setConfig($options);
 
         if ($requestData != null) {
             $client->setParameterPost($requestData);
