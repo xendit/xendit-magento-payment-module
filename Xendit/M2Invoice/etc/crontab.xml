@@ -4,5 +4,8 @@
         <job instance="Xendit\M2Invoice\Cron\CancelOrder" method="execute" name="xendit_m2invoice_cron_cancel_order">
             <schedule>* * * * *</schedule>
         </job>
+        <job instance="Xendit\M2Invoice\Cron\CancelOrderCC" method="execute" name="xendit_m2invoice_cron_cancel_order_cc">
+            <schedule>* * * * *</schedule>
+        </job>
     </group>
 </config>

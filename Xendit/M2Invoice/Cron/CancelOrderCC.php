@@ -14,7 +14,7 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 use Psr\Log\LoggerInterface;
 
-class CancelOrder
+class CancelOrderCC
 {
     protected $logger;
 
@@ -52,7 +52,7 @@ class CancelOrder
         $collection = $this->orderCollectionFactory
             ->create()
             ->addAttributeToSelect('increment_id')
-            ->addFieldToFilter('status', Order::STATE_PENDING_PAYMENT);
+            ->addFieldToFilter('status', Order::STATE_PAYMENT_REVIEW);
 
         $bulkCancelData = array();
 
@@ -60,25 +60,22 @@ class CancelOrder
             $order = $this->orderFactory->create()->loadByIncrementId($doc['increment_id']);
             $payment = $order->getPayment();
 
-            $invoiceId = $payment->getAdditionalInformation('xendit_invoice_id');
-            $invoiceExpDate = $payment->getAdditionalInformation('xendit_invoice_exp_date');
             $paymentGateway = $payment->getAdditionalInformation('payment_gateway');
+            $hosted3DSId = $payment->getAdditionalInformation('xendit_hosted_3ds_id');
+            $creationTime = $order->getCreatedAt();
 
             if ('xendit' !== $paymentGateway) {
                 continue;
             }
 
-            $date = $this->dateTime->timestamp($invoiceExpDate);
-            $now = $this->dateTime->timestamp();
-
-            if ($date < $now) {
+            if (strtotime($creationTime) < strtotime('-30 days')) {
                 $order->setState(Order::STATE_CANCELED)
                     ->setStatus(Order::STATE_CANCELED)
-                    ->addStatusHistoryComment("Xendit payment cancelled due to expired invoice");
+                    ->addStatusHistoryComment("Xendit payment cancelled due to stuck on payment review for 30 days");
 
                 $bulkCancelData[] = array(
-                    'id' => $invoiceId,
-                    'expiry_date' => $invoiceExpDate,
+                    'id' => $hosted3DSId,
+                    'expiry_date' => $this->dateTime->timestamp(),
                     'order_number' => $order->getId(),
                     'amount' => $order->getGrandTotal()
                 );
