@@ -24,6 +24,19 @@ To install this plugin, manually copy plugin files into your store's webserver a
 4. You can see Xendit's setting page by navigating to **Stores -> Configuration -> Sales -> Payment Method**
 5. Once you enable Xendit on the setting page, you should see Xendit's payment methods (credit card and bank transfer) on payment section during checkout flow.
 
+### Automatic Order Cancellation
+We provide a cron to help automatically cancel the pending order. This cron triggers when:
+1. The invoice linked to the order already expired
+2. Credit card payment stuck in pending for more than 1 day (meaning your end customer abandon the authentication attempt)
+
+To activate this feature, you need to follow this additional steps:
+- Ensure that cron daemon is already running. In ubuntu server, simply use `cron status` command
+  - If cron is not active yet, start it by using `cron start`
+  - [More info](http://www.dba-oracle.com/t_linux_cron.htm)
+- Initiate/install magento cron. `php bin/magento cron:install`
+  - [More info](https://devdocs.magento.com/guides/v2.3/config-guide/cli/config-cli-subcommands-cron.html)
+- Done! The cron should already scheduling and running in the background.
+
 ## Ownership
 
 Team: [TPI Team](https://www.draw.io/?state=%7B%22ids%22:%5B%221Vk1zqYgX2YqjJYieQ6qDPh0PhB2yAd0j%22%5D,%22action%22:%22open%22,%22userId%22:%22104938211257040552218%22%7D)

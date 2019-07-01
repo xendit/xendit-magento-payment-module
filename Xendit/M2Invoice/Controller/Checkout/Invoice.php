@@ -16,6 +16,7 @@ class Invoice extends AbstractAction
             if ($order->getState() === Order::STATE_PROCESSING) {
                 $this->changePendingPaymentStatus($order);
                 $invoice = $this->createInvoice($apiData);
+                $this->addInvoiceData($order, $invoice);
                 $redirectUrl = $this->getXenditRedirectUrl($invoice, $apiData['preferred_method']);
 
                 $resultRedirect = $this->getRedirectFactory()->create();
@@ -87,6 +88,16 @@ class Invoice extends AbstractAction
     private function changePendingPaymentStatus($order)
     {
         $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
+
+        $order->save();
+    }
+
+    private function addInvoiceData($order, $invoice)
+    {
+        $payment = $order->getPayment();
+        $payment->setAdditionalInformation('payment_gateway', 'xendit');
+        $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
+        $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
 
         $order->save();
     }

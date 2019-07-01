@@ -106,6 +106,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
             if ('IN_REVIEW' === $hosted3DS['status']) {
                 $hostedUrl = $hosted3DS['redirect']['url'];
+                $payment->setAdditionalInformation('payment_gateway', 'xendit');
                 $payment->setAdditionalInformation('xendit_redirect_url', $hostedUrl);
                 $payment->setAdditionalInformation('xendit_hosted_3ds_id', $hosted3DS['id']);
                 $order->save();
