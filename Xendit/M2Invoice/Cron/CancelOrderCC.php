@@ -68,7 +68,7 @@ class CancelOrderCC
                 continue;
             }
 
-            if (strtotime($creationTime) < strtotime('-30 days')) {
+            if (strtotime($creationTime) < strtotime('-1 day')) {
                 $order->setState(Order::STATE_CANCELED)
                     ->setStatus(Order::STATE_CANCELED)
                     ->addStatusHistoryComment("Xendit payment cancelled due to stuck on payment review for 30 days");
