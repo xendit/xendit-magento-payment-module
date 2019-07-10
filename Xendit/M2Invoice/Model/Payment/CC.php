@@ -87,11 +87,6 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $orderId = $order->getRealOrderId();
         $additionalData = $this->getAdditionalData();
 
-        $order->setStatus(Order::STATE_PENDING_PAYMENT);
-        $order->setState(Order::STATE_PENDING_PAYMENT);
-        $order->setIsNotified(false);
-        $order->save();
-
         $payment->setIsTransactionPending(true);
 
         try {
@@ -102,14 +97,27 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 'return_url' => $this->dataHelper->getThreeDSResultUrl($orderId)
             );
 
-            $hosted3DS = $this->request3DS($requestData);
+            $charge = $this->requestCharge($requestData);
 
-            if ('IN_REVIEW' === $hosted3DS['status']) {
-                $hostedUrl = $hosted3DS['redirect']['url'];
-                $payment->setAdditionalInformation('payment_gateway', 'xendit');
-                $payment->setAdditionalInformation('xendit_redirect_url', $hostedUrl);
-                $payment->setAdditionalInformation('xendit_hosted_3ds_id', $hosted3DS['id']);
-                $order->save();
+            $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
+            if ( $chargeError == 'AUTHENTICATION_ID_MISSING_ERROR' ) {
+                $this->handle3DSFlow($requestData, $payment, $order);
+
+                return $this;
+            }
+
+            if ( $chargeError !== null ) {
+                $this->processFailedPayment($order, $payment, $charge);
+            }
+
+            if ($charge['status'] === 'CAPTURED') {
+                $transactionId = $charge['id'];
+                $payment->setTransactionId($transactionId);
+                $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+
+                $payment->setAdditionalInformation('xendit_charge_id', $transactionId);
+            } else {
+                $this->processFailedPayment($order, $payment, $charge);
             }
         } catch (\Zend_Http_Client_Exception $e) {
             $errorMsg = $e->getMessage();
@@ -124,6 +132,11 @@ class CC extends \Magento\Payment\Model\Method\Cc
         }
 
         return $this;
+    }
+
+    protected function getObjectManager()
+    {
+        return \Magento\Framework\App\ObjectManager::getInstance();
     }
 
     private function getAdditionalData()
@@ -160,6 +173,37 @@ class CC extends \Magento\Payment\Model\Method\Cc
         return $r;
     }
 
+    private function handle3DSFlow($requestData, $payment, $order)
+    {
+        $hosted3DS = $this->request3DS($requestData);
+
+        if ('IN_REVIEW' === $hosted3DS['status']) {
+            $hostedUrl = $hosted3DS['redirect']['url'];
+            $hostedId = $hosted3DS['id'];
+            $payment->setAdditionalInformation('payment_gateway', 'xendit');
+            $payment->setAdditionalInformation('xendit_redirect_url', $hostedUrl);
+            $payment->setAdditionalInformation('xendit_hosted_3ds_id', $hostedId);
+
+            $order->setState(Order::STATE_PAYMENT_REVIEW)
+                ->setStatus(Order::STATE_PAYMENT_REVIEW)
+                ->addStatusHistoryComment("Xendit payment waiting authentication. Transaction ID: $hostedId");
+            $order->save();
+        }
+
+        return;
+    }
+
+    private function processFailedPayment($order, $payment, $charge = [])
+    {
+        if ($charge === []) {
+            $failureReason = 'Unexpected Error';
+        } else {
+            $failureReason = isset($charge['failure_reason']) ? $charge['failure_reason'] : 'Unexpected Error';
+        }
+
+        $payment->setAdditionalInformation('xendit_failure_reason', $failureReason);
+    }
+
     private function request3DS($requestData)
     {
         $hosted3DSUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds";
@@ -167,6 +211,20 @@ class CC extends \Magento\Payment\Model\Method\Cc
         
         try {
             $hosted3DS = $this->apiHelper->request($hosted3DSUrl, $hosted3DSMethod, $requestData, true);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $hosted3DS;
+    }
+
+    private function requestCharge($requestData)
+    {
+        $chargeUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges";
+        $chargeMethod = \Zend\Http\Request::METHOD_POST;
+
+        try {
+            $hosted3DS = $this->apiHelper->request($chargeUrl, $chargeMethod, $requestData);
         } catch (\Exception $e) {
             throw $e;
         }

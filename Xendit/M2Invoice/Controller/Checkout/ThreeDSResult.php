@@ -114,6 +114,13 @@ class ThreeDSResult extends AbstractAction
             $failureReason = isset($charge['failure_reason']) ? $charge['failure_reason'] : 'Unexpected Error';
         }
 
+        $orderState = Order::STATE_CANCELED;
+        $order->setState($orderState)
+            ->setStatus($orderState)
+            ->addStatusHistoryComment("Order #" . $order->getId() . " was rejected by Xendit because " .
+                $failureReason);
+        $order->save();
+
         $this->getMessageManager()->addErrorMessage(__(
             "There was an error in the Xendit payment. Failure reason: $failureReason"
         ));

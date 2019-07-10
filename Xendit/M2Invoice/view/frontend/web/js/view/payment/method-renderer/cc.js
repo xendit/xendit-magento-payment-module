@@ -5,7 +5,7 @@ define(
         'Magento_Payment/js/model/credit-card-validation/credit-card-data',
         'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
         'Magento_Checkout/js/action/place-order',
-        'mage/url',
+        'mage/url'
     ],
     function (
         $,
@@ -13,7 +13,7 @@ define(
         creditCardData,
         cardNumberValidator,
         placeOrderAction,
-        url,
+        url
     ) {
         'use strict';
 
@@ -152,7 +152,7 @@ define(
             },
 
             getDescription: function() {
-                return `Bayar pesanan dengan kartu kredit atau debit anda melalui Xendit`;
+                return 'Bayar pesanan dengan kartu kredit atau debit anda melalui Xendit';
             },
 
             getTestDescription: function () {
@@ -179,6 +179,7 @@ define(
             },
 
             placeOrder: function (data, event) {
+                this.isPlaceOrderActionAllowed(false);
                 var self = this;
                 var publicKey = window.checkoutConfig.payment.m2invoice.public_api_key;
 
@@ -199,6 +200,7 @@ define(
                 Xendit.card.createToken(tokenData, function (err, token) {
                     if (err) {
                         // ?
+                        self.isPlaceOrderActionAllowed(true);
                         return;
                     }
 
@@ -217,6 +219,7 @@ define(
 
                     $.when(placeOrder)
                         .fail(function () {
+                            self.isPlaceOrderActionAllowed(true);
                         })
                         .done(function () {
                             self.afterPlaceOrder();
