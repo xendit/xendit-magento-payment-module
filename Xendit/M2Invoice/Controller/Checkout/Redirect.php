@@ -3,6 +3,7 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
+use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class Redirect extends AbstractAction
 {
@@ -11,6 +12,10 @@ class Redirect extends AbstractAction
         try {
             $order = $this->getOrder();
             $payment = $order->getPayment();
+            $logresp = $this->getLogDNA()->log(LogDNALevel::INFO, "Testing logDNA magento");
+            $this->getLogger()->debug("Testing logDNA magento" . print_r($logresp));
+
+            return;
 
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
@@ -60,7 +65,9 @@ class Redirect extends AbstractAction
                 return;
             }
         } catch (\Exception $e) {
-            $this->getLogger()->debug('Exception caught on xendit/checkout/redirect: ' . $e->getMessage());
+            $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
+            $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
+            $this->getLogger()->debug($message);
             $this->getLogger()->debug($e->getTraceAsString());
         }
     }

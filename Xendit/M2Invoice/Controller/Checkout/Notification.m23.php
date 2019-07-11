@@ -11,9 +11,11 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Action\Action;
+use Xendit\M2Invoice\Enum\LogDNALevel;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Data;
+use Xendit\M2Invoice\Helper\LogDNA;
 
 class Notification extends Action implements CsrfAwareActionInterface
 {
@@ -27,13 +29,16 @@ class Notification extends Action implements CsrfAwareActionInterface
 
     private $apiHelper;
 
+    private $logDNA;
+
     public function __construct(
         Context $context,
         JsonFactory $jsonResultFactory,
         Checkout $checkoutHelper,
         OrderFactory $orderFactory,
         Data $dataHelper,
-        ApiRequest $apiHelper
+        ApiRequest $apiHelper,
+        LogDNA $logDNA
     ) {
         parent::__construct($context);
         $this->jsonResultFactory = $jsonResultFactory;
@@ -41,6 +46,7 @@ class Notification extends Action implements CsrfAwareActionInterface
         $this->orderFactory = $orderFactory;
         $this->dataHelper = $dataHelper;
         $this->apiHelper = $apiHelper;
+        $this->logDNA = $logDNA;
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
@@ -55,104 +61,109 @@ class Notification extends Action implements CsrfAwareActionInterface
 
     public function execute()
     {
-        $post = $this->getRequest()->getContent();
-        $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
-        $decodedPost = json_decode($post, true);
+        try {
+            $post = $this->getRequest()->getContent();
+            $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
+            $decodedPost = json_decode($post, true);
 
-        if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
-            $result = $this->jsonResultFactory->create();
-            /** You may introduce your own constants for this custom REST API */
-            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
-            $result->setData([
-                'status' => __('ERROR'),
-                'message' => 'Callback body is invalid'
-            ]);
+            if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
+                $result = $this->jsonResultFactory->create();
+                /** You may introduce your own constants for this custom REST API */
+                $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => 'Callback body is invalid'
+                ]);
 
-            return $result;
-        }
+                return $result;
+            }
 
-        $orderId = $decodedPost['description'];
-        $transactionId = $decodedPost['id'];
+            $orderId = $decodedPost['description'];
+            $transactionId = $decodedPost['id'];
 
-        $order = $this->getOrderById($orderId);
-        if (!$order) {
-            $result = $this->jsonResultFactory->create();
-            /** You may introduce your own constants for this custom REST API */
-            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
-            $result->setData([
-                'status' => __('ERROR'),
-                'message' => 'Order not found'
-            ]);
+            $order = $this->getOrderById($orderId);
+            if (!$order) {
+                $result = $this->jsonResultFactory->create();
+                /** You may introduce your own constants for this custom REST API */
+                $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => 'Order not found'
+                ]);
 
-            return $result;
-        }
+                return $result;
+            }
 
-        $validationToken = $this->dataHelper->getValidationKey();
+            $validationToken = $this->dataHelper->getValidationKey();
 
-        if ($callbackToken !== $validationToken) {
-            $result = $this->jsonResultFactory->create();
-            /** You may introduce your own constants for this custom REST API */
-            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_FORBIDDEN);
-            $result->setData([
-                'status' => __('ERROR'),
-                'message' => 'Unauthorized callback request'
-            ]);
+            if ($callbackToken !== $validationToken) {
+                $result = $this->jsonResultFactory->create();
+                /** You may introduce your own constants for this custom REST API */
+                $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_FORBIDDEN);
+                $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => 'Unauthorized callback request'
+                ]);
 
-            return $result;
-        }
+                return $result;
+            }
 
-        $invoice = $this->getXenditInvoice($transactionId);
+            $invoice = $this->getXenditInvoice($transactionId);
 
-        $paymentStatus = $invoice['status'];
-        $invoiceOrderId = $invoice['description'];
+            $paymentStatus = $invoice['status'];
+            $invoiceOrderId = $invoice['description'];
 
-        if ($invoiceOrderId !== $orderId) {
-            $result = $this->jsonResultFactory->create();
-            /** You may introduce your own constants for this custom REST API */
-            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
-            $result->setData([
-                'status' => __('ERROR'),
-                'message' => 'Invoice is not for this order'
-            ]);
+            if ($invoiceOrderId !== $orderId) {
+                $result = $this->jsonResultFactory->create();
+                /** You may introduce your own constants for this custom REST API */
+                $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => 'Invoice is not for this order'
+                ]);
 
-            return $result;
-        }
+                return $result;
+            }
 
-        if ($paymentStatus === 'PAID' || $paymentStatus === 'SETTLED') {
-            $orderState = Order::STATE_PROCESSING;
+            if ($paymentStatus === 'PAID' || $paymentStatus === 'SETTLED') {
+                $orderState = Order::STATE_PROCESSING;
 
-            $order->setState($orderState)
-                ->setStatus($orderState)
-                ->addStatusHistoryComment("Xendit payment completed. Transaction ID: $transactionId");
-            
+                $order->setState($orderState)
+                    ->setStatus($orderState)
+                    ->addStatusHistoryComment("Xendit payment completed. Transaction ID: $transactionId");
+
                 $payment = $order->getPayment();
                 $payment->setTransactionId($transactionId);
                 $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
-            $order->save();
+                $order->save();
 
-            $this->invoiceOrder($order, $transactionId);
-            
-            $result = $this->jsonResultFactory->create();
-            $result->setData([
-                'status' => __('SUCCESS'),
-                'message' => 'Invoice paid'
-            ]);
+                $this->invoiceOrder($order, $transactionId);
 
-            return $result;
-        } else {
-            $this->getCheckoutHelper()->cancelCurrentOrder(
-                "Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId."
-            );
-            $this->getCheckoutHelper()->restoreQuote(); //restore cart
-            
-            $result = $this->jsonResultFactory->create();
-            $result->setData([
-                'status' => __('FAILED'),
-                'message' => 'Invoice not paid'
-            ]);
+                $result = $this->jsonResultFactory->create();
+                $result->setData([
+                    'status' => __('SUCCESS'),
+                    'message' => 'Invoice paid'
+                ]);
 
-            return $result;
+                return $result;
+            } else {
+                $this->getCheckoutHelper()->cancelCurrentOrder(
+                    "Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId."
+                );
+                $this->getCheckoutHelper()->restoreQuote(); //restore cart
+
+                $result = $this->jsonResultFactory->create();
+                $result->setData([
+                    'status' => __('FAILED'),
+                    'message' => 'Invoice not paid'
+                ]);
+
+                return $result;
+            }
+        } catch (\Exception $e) {
+            $message = "Error invoice callback" . $e->getMessage();
+            $this->logDNA->log(LogDNALevel::ERROR, $message);
         }
     }
 

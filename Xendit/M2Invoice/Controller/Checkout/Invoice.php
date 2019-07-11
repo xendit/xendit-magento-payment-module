@@ -4,6 +4,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
 use Magento\Framework\Phrase;
+use Xendit\M2Invoice\Enum\LogDNA_Level;
 
 class Invoice extends AbstractAction
 {
@@ -29,7 +30,10 @@ class Invoice extends AbstractAction
                 $this->_redirect('checkout/cart');
             }
         } catch (\Exception $e) {
-            $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $e->getMessage());
+            $message = 'Exception caught on xendit/checkout/invoice: ' . $e->getMessage();
+
+            $this->getLogDNA()->log(LogDNA_Level::ERROR, $message);
+            $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $message);
             $this->getLogger()->debug($e->getTraceAsString());
         }
     }

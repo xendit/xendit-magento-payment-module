@@ -3,6 +3,7 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
+use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class ThreeDSResult extends AbstractAction
 {
@@ -39,6 +40,8 @@ class ThreeDSResult extends AbstractAction
 
             return $this->processXenditPayment($charge, $order);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            $message = 'Exception caught on xendit/checkout/threedsresult: ' . $e->getMessage();
+            $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
             return $this->processFailedPayment($order);
         }
     }

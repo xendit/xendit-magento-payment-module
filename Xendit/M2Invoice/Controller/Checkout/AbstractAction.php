@@ -14,6 +14,7 @@ use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\ApiRequest;
+use Xendit\M2Invoice\Helper\LogDNA;
 
 abstract class AbstractAction extends Action
 {
@@ -41,6 +42,8 @@ abstract class AbstractAction extends Action
 
     protected $resultRedirectFactory;
 
+    private $logDNA;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
@@ -50,7 +53,8 @@ abstract class AbstractAction extends Action
         Crypto $cryptoHelper,
         Checkout $checkoutHelper,
         OrderRepositoryInterface $orderRepo,
-        ApiRequest $apiHelper
+        ApiRequest $apiHelper,
+        LogDNA $logDNA
     ) {
         parent::__construct($context);
 
@@ -65,6 +69,7 @@ abstract class AbstractAction extends Action
         $this->orderRepo = $orderRepo;
         $this->apiHelper = $apiHelper;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
+        $this->logDNA = $logDNA;
     }
 
     protected function getContext()
@@ -179,5 +184,10 @@ abstract class AbstractAction extends Action
     protected function getRedirectFactory()
     {
         return $this->resultRedirectFactory;
+    }
+
+    protected  function getLogDNA()
+    {
+        return $this->logDNA;
     }
 }
