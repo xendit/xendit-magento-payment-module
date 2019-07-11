@@ -89,9 +89,12 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
         $payment->setIsTransactionPending(true);
 
+        $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
+
         try {
             $requestData = array(
                 'token_id' => $additionalData['token_id'],
+                'card_cvn' => $cvn,
                 'amount' => $amount,
                 'external_id' => $this->dataHelper->getExternalId($orderId),
                 'return_url' => $this->dataHelper->getThreeDSResultUrl($orderId)
@@ -179,6 +182,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
     private function handle3DSFlow($requestData, $payment, $order)
     {
+        unset($requestData['card_cvn']);
         $hosted3DS = $this->request3DS($requestData);
 
         if ('IN_REVIEW' === $hosted3DS['status']) {
