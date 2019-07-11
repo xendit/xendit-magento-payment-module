@@ -29,6 +29,9 @@ class Redirect extends AbstractAction
 
                 $order->save();
 
+                $payment->setTransactionId($chargeId);
+                $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+
                 $this->invoiceOrder($order, $chargeId);
 
                 $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));

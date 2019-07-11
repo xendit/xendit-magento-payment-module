@@ -80,7 +80,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     {
         //todo add functionality later
     }
- 
+
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $order = $payment->getOrder();
@@ -100,6 +100,13 @@ class CC extends \Magento\Payment\Model\Method\Cc
             $charge = $this->requestCharge($requestData);
 
             $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
+            if ( $chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR' ) {
+                $newRequestData = array_replace($requestData, array(
+                    'external_id' => $this->dataHelper->getExternalId($orderId, true)
+                ));
+                $charge = $this->requestCharge($newRequestData);
+            }
+
             if ( $chargeError == 'AUTHENTICATION_ID_MISSING_ERROR' ) {
                 $this->handle3DSFlow($requestData, $payment, $order);
 
@@ -112,8 +119,6 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
             if ($charge['status'] === 'CAPTURED') {
                 $transactionId = $charge['id'];
-                $payment->setTransactionId($transactionId);
-                $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
                 $payment->setAdditionalInformation('xendit_charge_id', $transactionId);
             } else {
@@ -159,7 +164,6 @@ class CC extends \Magento\Payment\Model\Method\Cc
         if (count($data) < 1) {
             $data = (array) $this->dataHelper->jsonData();
         }
-        $this->log($data, 'HPS\Heartland\Model\Payment getPaymentMethod Method Called:  ');
         return $this->elementFromArray($data, 'paymentMethod');
     }
 
@@ -208,7 +212,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     {
         $hosted3DSUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds";
         $hosted3DSMethod = \Zend\Http\Request::METHOD_POST;
-        
+
         try {
             $hosted3DS = $this->apiHelper->request($hosted3DSUrl, $hosted3DSMethod, $requestData, true);
         } catch (\Exception $e) {

@@ -32,6 +32,11 @@ class ThreeDSResult extends AbstractAction
 
             $charge = $this->createCharge($hosted3DS, $orderId);
 
+            $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
+            if ( $chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR' ) {
+                $charge = $this->createCharge($hosted3DS, $orderId, true);
+            }
+
             return $this->processXenditPayment($charge, $order);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             return $this->processFailedPayment($order);
@@ -55,15 +60,17 @@ class ThreeDSResult extends AbstractAction
         return $hosted3DS;
     }
 
-    private function createCharge($hosted3DS, $orderId)
+    private function createCharge($hosted3DS, $orderId, $duplicate = false)
     {
         $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charges";
         $chargeMethod = \Zend\Http\Request::METHOD_POST;
+        $originalExternalId = $this->getDataHelper()->getExternalId($orderId);
+        $duplicateExternalId = $this->getDataHelper()->getExternalId($orderId, true);
         $chargeData = [
             'token_id' => $hosted3DS['token_id'],
             'authentication_id' => $hosted3DS['authentication_id'],
             'amount' => $hosted3DS['amount'],
-            'external_id' => $this->getDataHelper()->getExternalId($orderId)
+            'external_id' => $duplicate ? $duplicateExternalId : $originalExternalId
         ];
 
         try {
