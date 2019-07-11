@@ -59,9 +59,15 @@ class Data extends AbstractHelper
         return $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/threedsresult?order_id=$orderId";
     }
 
-    public function getExternalId($orderId)
+    public function getExternalId($orderId, $duplicate = false)
     {
-        return "magento_xendit_$orderId";
+        $defaultExtId = "magento_xendit_$orderId";
+
+        if ($duplicate) {
+            return $defaultExtId . "_" . uniqid();
+        }
+
+        return $defaultExtId;
     }
 
     public function getValidationKey()
