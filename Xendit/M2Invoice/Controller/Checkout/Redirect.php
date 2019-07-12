@@ -12,10 +12,8 @@ class Redirect extends AbstractAction
         try {
             $order = $this->getOrder();
             $payment = $order->getPayment();
-            $logresp = $this->getLogDNA()->log(LogDNALevel::INFO, "Testing logDNA magento");
-            $this->getLogger()->debug("Testing logDNA magento" . print_r($logresp));
 
-            return;
+            throw new \Exception("Failed checkout on cards");
 
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
@@ -65,10 +63,17 @@ class Redirect extends AbstractAction
                 return;
             }
         } catch (\Exception $e) {
+            $this->getCheckoutHelper()->cancelOrderById($order->getId(),
+                "Order #".($order->getId())." was rejected by Xendit");
+            $this->getCheckoutHelper()->restoreQuote(); //restore cart
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
-            $this->getLogger()->debug($message);
-            $this->getLogger()->debug($e->getTraceAsString());
+
+            $this->getMessageManager()->addErrorMessage(__(
+                "There was an error in the Xendit payment. Failure reason: Unexpected Error"
+            ));
+            $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            return;
         }
     }
 }

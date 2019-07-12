@@ -183,50 +183,54 @@ define(
                 var self = this;
                 var publicKey = window.checkoutConfig.payment.m2invoice.public_api_key;
 
-                Xendit.setPublishableKey(publicKey);
-                
-                var tokenData = {
-                    card_number: creditCardData.creditCardNumber,
-                    card_exp_month: this.mapMonthValue(creditCardData.expirationMonth),
-                    card_exp_year: creditCardData.expirationYear,
-                    is_multiple_use: true
-                };
+                try {
+                    Xendit.setPublishableKey(publicKey);
 
-                if (!tokenData.card_number || !tokenData.card_exp_month || !tokenData.card_exp_year) {
-                    alert('Please fill out the information needed before proceeding');
-                    return;
-                }
+                    var tokenData = {
+                        card_number: creditCardData.creditCardNumber,
+                        card_exp_month: this.mapMonthValue(creditCardData.expirationMonth),
+                        card_exp_year: creditCardData.expirationYear,
+                        is_multiple_use: true
+                    };
 
-                Xendit.card.createToken(tokenData, function (err, token) {
-                    if (err) {
-                        // ?
-                        self.isPlaceOrderActionAllowed(true);
+                    if (!tokenData.card_number || !tokenData.card_exp_month || !tokenData.card_exp_year) {
+                        alert('Please fill out the information needed before proceeding');
                         return;
                     }
 
-                    var paymentData = self.getData();
-                    paymentData.additional_data = {
-                        token_id: token.id,
-                        masked_card_number: token.masked_card_number,
-                        cc_type: $('#cc_cc_type').val(),
-                        cc_number: $('#cc_cc_number').val(),
-                        cc_exp_month: $('#cc_expiration').val(),
-                        cc_exp_year: $('#cc_expiration_yr').val(),
-                        cc_cid: $('#cc_cc_cid').val()
-                    };
-
-                    var placeOrder = placeOrderAction(paymentData, false);
-
-                    $.when(placeOrder)
-                        .fail(function () {
+                    Xendit.card.createToken(tokenData, function (err, token) {
+                        if (err) {
+                            // ?
                             self.isPlaceOrderActionAllowed(true);
-                        })
-                        .done(function () {
-                            self.afterPlaceOrder();
-                        });
+                            return;
+                        }
 
-                    return false;
-                });
+                        var paymentData = self.getData();
+                        paymentData.additional_data = {
+                            token_id: token.id,
+                            masked_card_number: token.masked_card_number,
+                            cc_type: $('#cc_cc_type').val(),
+                            cc_number: $('#cc_cc_number').val(),
+                            cc_exp_month: $('#cc_expiration').val(),
+                            cc_exp_year: $('#cc_expiration_yr').val(),
+                            cc_cid: $('#cc_cc_cid').val()
+                        };
+
+                        var placeOrder = placeOrderAction(paymentData, false);
+
+                        $.when(placeOrder)
+                            .fail(function () {
+                                self.isPlaceOrderActionAllowed(true);
+                            })
+                            .done(function () {
+                                self.afterPlaceOrder();
+                            });
+
+                        return false;
+                    });
+                } catch (e) {
+                    this.isPlaceOrderActionAllowed(true);
+                }
             },
 
             afterPlaceOrder: function () {

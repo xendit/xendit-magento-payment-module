@@ -3,9 +3,8 @@
 namespace Xendit\M2Invoice\Helper;
 
 use Magento\Framework\Phrase;
-use Magento\Framework\HTTP\ZendClientFactory;
+use Magento\Framework\HTTP\Client\Curl;
 use Magento\Store\Model\StoreManagerInterface;
-use Xendit\M2Invoice\Helper\Crypto;
 
 class LogDNA
 {
@@ -14,16 +13,16 @@ class LogDNA
     public static $hostname = "xendit.co";
     public static $app_name = "magento2-module";
 
-    private $httpClientFactory;
+    private $curlClient;
     private $storeManager;
     private $cryptoHelper;
 
     public function __construct(
-        ZendClientFactory $httpClientFactory,
+        Curl $httpClientFactory,
         StoreManagerInterface $storeManager,
         Crypto $cryptoHelper
     ) {
-        $this->httpClientFactory = $httpClientFactory;
+        $this->curlClient = $httpClientFactory;
         $this->storeManager = $storeManager;
         $this->cryptoHelper = $cryptoHelper;
     }
@@ -44,55 +43,36 @@ class LogDNA
         $log_meta = array(
             'store_name' => $this->storeManager->getStore()->getName()
         );
-        return [
+        $content = array([
             'line' => $message,
             'app' => self::$app_name,
             'level' => $level,
             'env' => 'production',
             'meta' => $log_meta
+        ]);
+        return [
+            'lines' => $content
         ];
     }
 
     public function log( $level, $message )
     {
-        $client = $this->httpClientFactory->create();
-
         $headers = $this->getHeaders();
         $body = $this->getBody($level, $message);
-        $options = [
-            'timeout' => 30
-        ];
         $now = time();
-
-        $client->setUri(self::$url . '?hostname=' . self::$hostname . '&now=' . $now);
-        $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $client->setHeaders($headers);
-
-        $auth = $this->cryptoHelper->generateBasicAuth(self::$ingestion_key);
-        $client->setHeaders('Authorization', 'Basic blabla');
-
-        $client->setConfig($options);
-        $client->setParameterPost($body);
-
+        $url = self::$url . '?hostname=' . self::$hostname . '&now=' . $now;
 
         try {
-            $response = $client->request();
+            $this->curlClient->setHeaders($headers);
+            $this->curlClient->setCredentials(self::$ingestion_key, '');
+            $this->curlClient->post($url, json_encode($body));
+            $response = $this->curlClient->getBody();
 
-            return $response->getBody();
-
-            if (empty($response->getBody())) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    new Phrase('There was a problem connecting to LogDNA')
-                );
-            }
-
-            $jsonResponse = json_decode($response->getBody(), true);
+            return $response;
         } catch (\Zend_Http_Client_Exception $e) {
             return $e->getMessage();
         } catch (\Exception $e) {
-            return "from here? " .$e->getMessage();
+            return;
         }
-
-        return $response->getBody();
     }
 }
