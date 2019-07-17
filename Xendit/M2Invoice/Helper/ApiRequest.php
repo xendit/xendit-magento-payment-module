@@ -46,11 +46,6 @@ class ApiRequest
             $client->setParameterPost($requestData);
         }
 
-        $log = [
-            'uri' => $url,
-            'method' => $method
-        ];
-
         try {
             $response = $client->request();
 
@@ -61,13 +56,10 @@ class ApiRequest
             }
 
             $jsonResponse = json_decode($response->getBody(), true);
-            $log['response'] = $jsonResponse;
         } catch (\Zend_Http_Client_Exception $e) {
             throw new \Magento\Payment\Gateway\Http\ClientException(__($e->getMessage()));
         } catch (\Exception $e) {
             throw $e;
-        } finally {
-            $this->logger->debug('Xendit API Request', $log);
         }
 
         return $jsonResponse;
