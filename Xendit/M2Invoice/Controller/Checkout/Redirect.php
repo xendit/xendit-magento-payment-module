@@ -13,8 +13,6 @@ class Redirect extends AbstractAction
             $order = $this->getOrder();
             $payment = $order->getPayment();
 
-            throw new \Exception("Failed checkout on cards");
-
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
 
@@ -45,16 +43,7 @@ class Redirect extends AbstractAction
             if ($payment->getAdditionalInformation('xendit_failure_reason') !== null) {
                 $failureReason = $payment->getAdditionalInformation('xendit_failure_reason');
 
-                $orderState = Order::STATE_CANCELED;
-                $order->setState($orderState)
-                    ->setStatus($orderState)
-                    ->addStatusHistoryComment("Order #" . $order->getId() . " was rejected by Xendit because " .
-                        $failureReason);
-                $order->save();
-
-                $this->getCheckoutHelper()->cancelOrderById($order->getId(),
-                    "Order #".($order->getId())." was rejected by Xendit");
-                $this->getCheckoutHelper()->restoreQuote(); //restore cart
+                $this->cancelOrder($order, $failureReason);
 
                 $this->getMessageManager()->addErrorMessage(__(
                     "There was an error in the Xendit payment. Failure reason: $failureReason"
@@ -63,11 +52,10 @@ class Redirect extends AbstractAction
                 return;
             }
         } catch (\Exception $e) {
-            $this->getCheckoutHelper()->cancelOrderById($order->getId(),
-                "Order #".($order->getId())." was rejected by Xendit");
-            $this->getCheckoutHelper()->restoreQuote(); //restore cart
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
+
+            $this->cancelOrder($order, $e->getMessage());
 
             $this->getMessageManager()->addErrorMessage(__(
                 "There was an error in the Xendit payment. Failure reason: Unexpected Error"

@@ -152,7 +152,7 @@ class Notification extends Action
             }
         } catch (\Exception $e) {
             $message = "Error invoice callback" . $e->getMessage();
-            $this->logDNA->log(LogDNALevel::ERROR, $message);
+            $this->logDNA->log(LogDNALevel::ERROR, $message, $decodedPost);
         }
     }
 

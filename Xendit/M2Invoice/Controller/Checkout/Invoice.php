@@ -5,6 +5,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 use Magento\Sales\Model\Order;
 use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Enum\LogDNA_Level;
+use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class Invoice extends AbstractAction
 {
@@ -32,9 +33,16 @@ class Invoice extends AbstractAction
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/invoice: ' . $e->getMessage();
 
-            $this->getLogDNA()->log(LogDNA_Level::ERROR, $message);
             $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $message);
             $this->getLogger()->debug($e->getTraceAsString());
+
+            $this->getLogDNA()->log(LogDNALevel::ERROR, $message, $apiData);
+
+            $this->cancelOrder($order, $e->getMessage());
+            $this->getMessageManager()->addErrorMessage(__(
+                "There was an error in the Xendit payment. Failure reason: Unexpected Error"
+            ));
+            $this->_redirect('checkout/cart', [ '_secure'=> false ]);
         }
     }
 

@@ -38,11 +38,17 @@ class LogDNA
         return $headers;
     }
 
-    public function getBody( $level, $message )
+    public function getBody( $level, $message, $context )
     {
-        $log_meta = array(
+        $default_log_meta = [
             'store_name' => $this->storeManager->getStore()->getName()
-        );
+        ];
+        $log_meta = $default_log_meta;
+
+        if ($context !== null) {
+            $log_meta = array_merge($default_log_meta, $context);
+        }
+
         $content = array([
             'line' => $message,
             'app' => self::$app_name,
@@ -55,10 +61,10 @@ class LogDNA
         ];
     }
 
-    public function log( $level, $message )
+    public function log( $level, $message, $context = null )
     {
         $headers = $this->getHeaders();
-        $body = $this->getBody($level, $message);
+        $body = $this->getBody($level, $message, $context );
         $now = time();
         $url = self::$url . '?hostname=' . self::$hostname . '&now=' . $now;
 

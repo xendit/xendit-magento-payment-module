@@ -11,6 +11,8 @@ use Magento\Sales\Model\Order;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
+use Xendit\M2Invoice\Helper\LogDNA;
+use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class CC extends \Magento\Payment\Model\Method\Cc
 {
@@ -32,6 +34,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     protected $request;
     protected $url;
     protected $responseFactory;
+    protected $logdnaHelper;
 
     public function __construct(
         Crypto $cryptoHelper,
@@ -49,6 +52,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         RequestInterface $httpRequest,
         UrlInterface $url,
         ResponseFactory $responseFactory,
+        LogDNA $logdnaHelper,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -74,6 +78,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $this->request = $httpRequest;
         $this->url = $url;
         $this->responseFactory = $responseFactory;
+        $this->logdnaHelper = $logdnaHelper;
     }
 
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -133,6 +138,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
             $errorMsg = $e->getMessage();
         } finally {
             if (!empty($errorMsg)) {
+                $this->logdnaHelper->log(LogDNALevel::ERROR, 'HTTP Error: ' . $errorMsg);
                 throw new \Magento\Framework\Exception\LocalizedException(
                     new Phrase($errorMsg)
                 );
