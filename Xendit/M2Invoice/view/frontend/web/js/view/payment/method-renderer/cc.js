@@ -195,6 +195,7 @@ define(
 
                     if (!tokenData.card_number || !tokenData.card_exp_month || !tokenData.card_exp_year) {
                         alert('Please fill out the information needed before proceeding');
+                        this.isPlaceOrderActionAllowed(true);
                         return;
                     }
 

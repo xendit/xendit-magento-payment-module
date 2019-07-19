@@ -23,9 +23,13 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/mandiriva'
             },
             {
+                type: 'ovo',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/ovo'
+            },
+            {
                 type: 'cc',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc'
-            },
+            }
         );
         return Component.extend({});
     }

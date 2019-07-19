@@ -48,6 +48,15 @@
                 <can_use_checkout>1</can_use_checkout>
                 <!-- <order_status>pending_payment</order_status> -->
             </briva>
+            <ovo>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\OVO</model>
+                <title>OVO</title>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+            </ovo>
             <cc>
                 <active>1</active>
                 <payment_action>authorize</payment_action><!-- You can use another methor like capture  -->
