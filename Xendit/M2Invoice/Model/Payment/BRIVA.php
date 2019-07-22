@@ -2,7 +2,7 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-class BRIVA extends \Magento\Payment\Model\Method\AbstractMethod
+class BRIVA extends AbstractInvoice
 {
     /**
      * Payment code

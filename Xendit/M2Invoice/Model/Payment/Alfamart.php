@@ -2,7 +2,9 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-class Alfamart extends \Magento\Payment\Model\Method\AbstractMethod
+use Xendit\M2Invoice\Enum\LogDNALevel;
+
+class Alfamart extends AbstractInvoice
 {
     /**
      * Payment code

@@ -2,7 +2,7 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-class BNIVA extends \Magento\Payment\Model\Method\AbstractMethod
+class BNIVA extends AbstractInvoice
 {
     /**
      * Payment code

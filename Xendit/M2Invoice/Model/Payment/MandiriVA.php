@@ -2,7 +2,7 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-class MandiriVA extends \Magento\Payment\Model\Method\AbstractMethod
+class MandiriVA extends AbstractInvoice
 {
     /**
      * Payment code
