@@ -50,7 +50,7 @@
             </briva>
             <ovo>
                 <active>1</active>
-                <payment_action>initialize</payment_action>
+                <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\OVO</model>
                 <title>OVO</title>
                 <is_gateway>1</is_gateway>
