@@ -18,6 +18,26 @@
                 <test_validation_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <validation_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
             </m2invoice>
+            <bcava>
+                <active>1</active>
+                <payment_action>initialize</payment_action><!-- You can use another methor like capture  -->
+                <model>Xendit\M2Invoice\Model\Payment\Alfamart</model>
+                <title>Bank Transfer - BCA</title>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <!-- <order_status>pending_payment</order_status> -->
+            </bcava>
+            <alfamart>
+                <active>1</active>
+                <payment_action>initialize</payment_action><!-- You can use another methor like capture  -->
+                <model>Xendit\M2Invoice\Model\Payment\BCAVA</model>
+                <title>Alfamart</title>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <!-- <order_status>pending_payment</order_status> -->
+            </alfamart>
             <bniva>
                 <active>1</active>
                 <payment_action>initialize</payment_action>

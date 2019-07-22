@@ -11,6 +11,14 @@ define(
         'use strict';
         rendererList.push(
             {
+                type: 'bcava',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bcava'
+            },
+            {
+                type: 'alfamart',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/alfamart'
+            },
+            {
                 type: 'bniva',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bniva'
             },
