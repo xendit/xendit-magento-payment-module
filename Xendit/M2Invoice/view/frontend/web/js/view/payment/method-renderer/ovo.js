@@ -88,6 +88,7 @@ define(
 
             placeOrder: function (data, event) {
                 this.isPlaceOrderActionAllowed(false);
+                this.block();
                 var self = this;
 
                 try {
@@ -95,11 +96,10 @@ define(
 
                     if (!self.isPhoneNumber(ovoPhoneNumber)) {
                         alert('Invalid OVO phone number, please check again');
-                        this.isPlaceOrderActionAllowed(true);
+                        self.isPlaceOrderActionAllowed(true);
+                        self.unblock();
                         return;
                     }
-
-                    console.log(ovoPhoneNumber);
 
                     var paymentData = self.getData();
                     paymentData.additional_data = {
@@ -111,15 +111,17 @@ define(
                     $.when(placeOrder)
                         .fail(function () {
                             self.isPlaceOrderActionAllowed(true);
+                            self.unblock();
                         })
                         .done(function () {
                             self.afterPlaceOrder();
                         });
-
+                    self.unblock();
                     return false;
                 } catch (e) {
                     alert(e);
-                    this.isPlaceOrderActionAllowed(true);
+                    self.isPlaceOrderActionAllowed(true);
+                    self.unblock();
                 }
             },
 
@@ -127,6 +129,26 @@ define(
                 var pattern = /^\d+$/;
 
                 return pattern.test(string);
+            },
+
+            block: function() {
+                var overlayBox
+                if ($("[class='xendit-overlay-box']").length === 0) {
+                    var overlayDiv = $( "<div class='xendit-overlay-box'>" +
+                        "<div id='xendit-overlay-content'>\n" +
+                        "  <span class='xendit-overlay-text' style='margin-top: 80px;'>Periksa kembali telepon selular Anda, buka aplikasi Ovo anda dan</span>\n" +
+                        "  <span class='xendit-overlay-text'>konfirmasikan transaksi anda dengan memasukkan PIN</span>" +
+                        "</div>" +
+                        "</div>" );
+                    $( 'body' ).append(overlayDiv);
+                }
+
+                $( "[class='xendit-overlay-box']" ).css("display", "flex");
+                // return;
+            },
+
+            unblock: function() {
+                $('.xendit-overlay-box').css("display", "none");
             }
         });
     }
