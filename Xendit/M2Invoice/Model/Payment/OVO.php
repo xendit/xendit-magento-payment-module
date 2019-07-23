@@ -14,7 +14,7 @@ use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\LogDNA;
 use Xendit\M2Invoice\Enum\LogDNALevel;
 
-class OVO extends \Magento\Payment\Model\Method\AbstractMethod
+class OVO extends AbstractInvoice
 {
     const DEFAULT_EXTERNAL_ID_PREFIX = 'magento_xendit_';
     const DEFAULT_EWALLET_TYPE = 'OVO';
@@ -24,39 +24,9 @@ class OVO extends \Magento\Payment\Model\Method\AbstractMethod
      * @var string
      */
     protected $_code = 'ovo';
-    protected $_scopeConfig;
-
-    protected $dataHelper;
-    protected $apiHelper;
-    protected $logDNA;
-
-    public function __construct(
-        Context $context,
-        Registry $registry,
-        ExtensionAttributesFactory $extensionFactory,
-        AttributeValueFactory $customAttributeFactory,
-        Data $paymentData,
-        ScopeConfigInterface $scopeConfig,
-        Logger $logger,
-        ApiRequest $apiHelper,
-        \Xendit\M2Invoice\Helper\Data $dataHelper,
-        LogDNA $logDNA
-    ) {
-        parent::__construct(
-            $context,
-            $registry,
-            $extensionFactory,
-            $customAttributeFactory,
-            $paymentData,
-            $scopeConfig,
-            $logger
-        );
-        $this->_scopeConfig = $scopeConfig;
-
-        $this->dataHelper = $dataHelper;
-        $this->apiHelper = $apiHelper;
-        $this->logDNA = $logDNA;
-    }
+    protected $_minAmount = 10000;
+    protected $_maxAmount = 10000000;
+    protected $methodCode = 'OVO';
 
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
@@ -102,9 +72,19 @@ class OVO extends \Magento\Payment\Model\Method\AbstractMethod
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets";
         $ewalletMethod = \Zend\Http\Request::METHOD_POST;
+        $options = [
+            'timeout' => 60
+        ];
 
         try {
-            $ewalletPayment = $this->apiHelper->request($ewalletUrl, $ewalletMethod, $requestData);
+            $ewalletPayment = $this->apiHelper->request(
+                $ewalletUrl,
+                $ewalletMethod,
+                $requestData,
+                null,
+                null,
+                $options
+            );
         } catch (\Exception $e) {
             throw $e;
         }

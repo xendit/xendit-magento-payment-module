@@ -68,6 +68,16 @@
                 <can_use_checkout>1</can_use_checkout>
                 <!-- <order_status>pending_payment</order_status> -->
             </briva>
+            <permatava>
+                <active>1</active>
+                <payment_action>initialize</payment_action><!-- You can use another methor like capture  -->
+                <model>Xendit\M2Invoice\Model\Payment\PermataVA</model>
+                <title>Bank Transfer - Permata</title>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <!-- <order_status>pending_payment</order_status> -->
+            </permatava>
             <ovo>
                 <active>1</active>
                 <payment_action>authorize</payment_action>

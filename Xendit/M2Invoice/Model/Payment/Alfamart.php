@@ -12,4 +12,7 @@ class Alfamart extends AbstractInvoice
      * @var string
      */
     protected $_code = 'alfamart';
+    protected $_minAmount = 10000;
+    protected $_maxAmount = 1000000000;
+    protected $methodCode = 'ALFAMART';
 }

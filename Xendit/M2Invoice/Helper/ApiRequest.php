@@ -29,7 +29,7 @@ class ApiRequest
         $this->logger = $logger;
     }
 
-    public function request($url, $method, $requestData = null, $isPublicRequest = false, $preferredMethod = null)
+    public function request($url, $method, $requestData = null, $isPublicRequest = false, $preferredMethod = null, $customOptions = [])
     {
         $client = $this->httpClientFactory->create();
         $headers = $this->getHeaders($isPublicRequest, $preferredMethod);
@@ -40,7 +40,7 @@ class ApiRequest
         $client->setUri($url);
         $client->setMethod($method);
         $client->setHeaders($headers);
-        $client->setConfig($options);
+        $client->setConfig(array_merge($options, $customOptions));
 
         if ($requestData != null) {
             $client->setParameterPost($requestData);

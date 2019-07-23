@@ -10,4 +10,7 @@ class MandiriVA extends AbstractInvoice
      * @var string
      */
     protected $_code = 'mandiriva';
+    protected $_minAmount = 10000;
+    protected $_maxAmount = 1000000000;
+    protected $methodCode = 'MANDIRI';
 }

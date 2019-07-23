@@ -59,6 +59,10 @@ define(
                 };
             },
 
+            isActive: function() {
+                return true;
+            },
+
             afterPlaceOrder: function () {
                 window.location.replace(url.build('xendit/checkout/redirect'));
             },

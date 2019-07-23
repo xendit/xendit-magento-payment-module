@@ -23,6 +23,8 @@ class CC extends \Magento\Payment\Model\Method\Cc
      * @var string
      */
     protected $_code = self::CODE;
+    protected $_minAmount = 5000;
+    protected $_maxAmount = 200000000;
 
     protected $_isGateway = true;
     protected $_canAuthorize = true;
@@ -79,6 +81,35 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $this->url = $url;
         $this->responseFactory = $responseFactory;
         $this->logdnaHelper = $logdnaHelper;
+    }
+
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        if ($quote === null) {
+            return false;
+        }
+
+        $amount = $quote->getBaseGrandTotal();
+
+        if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
+            return false;
+        }
+
+        try {
+            $availableMethod = $this->getAvailableMethods();
+
+            if (empty($availableMethod)) {
+                return true;
+            }
+
+            if ( !in_array( strtoupper($this->methodCode), $availableMethod ) ) {
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            return true;
+        }
     }
 
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)

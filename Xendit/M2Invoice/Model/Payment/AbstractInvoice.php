@@ -22,6 +22,10 @@ use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class AbstractInvoice extends AbstractMethod
 {
+    protected $_minAmount;
+    protected $_maxAmount;
+    protected $methodCode;
+
     protected $dataHelper;
     protected $apiHelper;
     protected $logDNA;
@@ -65,21 +69,25 @@ class AbstractInvoice extends AbstractMethod
 
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
+        if ($quote === null) {
+            return false;
+        }
+
+        $amount = $quote->getBaseGrandTotal();
+
+        if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
+            return false;
+        }
+
         try {
             $availableMethod = $this->getAvailableMethods();
 
-            if (empty($invoiceSettings)) {
+            if (empty($availableMethod)) {
                 return true;
             }
 
-            if (isset($invoiceSettings['error_code'])) {
-                return true;
-            }
-
-            foreach ($availableMethod as $method) {
-                if (strpos(strtoupper($this->_code), $method) === FALSE) {
-                    return false;
-                }
+            if ( !in_array( strtoupper($this->methodCode), $availableMethod ) ) {
+                return false;
             }
 
             return true;
@@ -97,9 +105,12 @@ class AbstractInvoice extends AbstractMethod
 
         $url = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/settings/invoice";
         $method = \Zend\Http\Request::METHOD_GET;
+        $options = [
+            'timeout' => 5
+        ];
 
         try {
-            $response = $this->apiHelper->request($url, $method);
+            $response = $this->apiHelper->request($url, $method, null, null, null, $options);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -107,7 +118,6 @@ class AbstractInvoice extends AbstractMethod
         if ( !isset($response['available_method']) ) {
             return [];
         }
-        $this->logDNA->log(LogDNALevel::INFO, "before storing cache");
 
         $this->storeCache('xeninvoice_available_method', $response['available_method']);
 
@@ -118,9 +128,7 @@ class AbstractInvoice extends AbstractMethod
     {
         $unserializedData = $this->serializer->serialize($data);
 
-        $this->cache->save($unserializedData, $key, [], 120000);
-
-        $this->logDNA->log(LogDNALevel::INFO, "storing cache for");
+        $this->cache->save($unserializedData, $key, [], 120);
     }
 
     protected function getCache($key)
