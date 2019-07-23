@@ -11,6 +11,14 @@ define(
         'use strict';
         rendererList.push(
             {
+                type: 'bcava',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bcava'
+            },
+            {
+                type: 'alfamart',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/alfamart'
+            },
+            {
                 type: 'bniva',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bniva'
             },
@@ -23,9 +31,17 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/mandiriva'
             },
             {
+                type: 'permatava',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/permatava'
+            },
+            {
+                type: 'ovo',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/ovo'
+            },
+            {
                 type: 'cc',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc'
-            },
+            }
         );
         return Component.extend({});
     }

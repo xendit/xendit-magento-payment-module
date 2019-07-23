@@ -11,18 +11,29 @@ This module has been tested against the following tech stacks:
 | 2.2.5 | Debian GNU/Linux 9 | MariaDB 10.3 | 7.0.33 | Apache 2.2 |
 
 ### How to
-To install this plugin, manually copy plugin files into your store's webserver and enable it. Here's the detailed steps:
+A. Install via CLI
+
+To install this plugin, you can either manually copy plugin files into your store's webserver and enable it:
 1. Download and unzip plugin source code
 2. Copy the inner `Xendit` folder into your `MAGENTO_DIR/app/code` directory on your store's webserver. You may not have the `code` folder by default, you can proceed to create it manually.
-3. From `MAGENTO_DIR`, run these commands:
+
+Or, you can use get our [free plugin](https://marketplace.magento.com/xendit-m2invoice.html) from Magento marketplace, and install it via composer:
+1. From the `MAGENTO_DIR`, execute `composer require xendit/m2invoice:1.0.0`
+2. Enter your authentication keys. Public key is your Magento marketplace's username, your private key is your password.
+3. Wait until Composer finished updating the dependencies.
+
+After the code is inside the `MAGENTO_DIR`, proceed to run these commands:
+1. From `MAGENTO_DIR`, run these commands:
    1. `php bin/magento module:status`. You should see `Xendit_M2Invoice` on list of disabled modules.
    2. `php bin/magento module:enable Xendit_M2Invoice`
    3. `php bin/magento setup:upgrade`
    4. Run `php bin/magento module:status` again to ensure `Xendit_M2Invoice` is enabled already.
    5. You should flush Magento cache by using `php bin/magento cache:flush`
    6. Compile Magento with newly added module by using `php bin/magento setup:di:compile`
-4. You can see Xendit's setting page by navigating to **Stores -> Configuration -> Sales -> Payment Method**
-5. Once you enable Xendit on the setting page, you should see Xendit's payment methods (credit card and bank transfer) on payment section during checkout flow.
+2. You can see Xendit's setting page by navigating to **Stores -> Configuration -> Sales -> Payment Method**
+3. Once you enable Xendit on the setting page, you should see Xendit's payment methods (credit card and bank transfer) on payment section during checkout flow.
+
+B. Install via marketplace
 
 ### Automatic Order Cancellation
 We provide a cron to help automatically cancel the pending order. This cron triggers when:
@@ -36,6 +47,17 @@ To activate this feature, you need to follow this additional steps:
 - Initiate/install magento cron. `php bin/magento cron:install`
   - [More info](https://devdocs.magento.com/guides/v2.3/config-guide/cli/config-cli-subcommands-cron.html)
 - Done! The cron should already scheduling and running in the background.
+
+## Supported Payment Method
+Currently this plugins support collecting payment through Xendit from these payment channels:
+- Credit and Debit Card 
+- Mandiri VA
+- BNI VA
+- BCA VA
+- BRI VA
+- Permata VA
+- Alfamart
+
 
 ## Ownership
 

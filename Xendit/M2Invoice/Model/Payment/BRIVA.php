@@ -2,7 +2,7 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-class BRIVA extends \Magento\Payment\Model\Method\AbstractMethod
+class BRIVA extends AbstractInvoice
 {
     /**
      * Payment code
@@ -10,4 +10,7 @@ class BRIVA extends \Magento\Payment\Model\Method\AbstractMethod
      * @var string
      */
     protected $_code = 'briva';
+    protected $_minAmount = 10000;
+    protected $_maxAmount = 1000000000;
+    protected $methodCode = 'BRI';
 }

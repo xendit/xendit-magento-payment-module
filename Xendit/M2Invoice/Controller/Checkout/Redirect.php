@@ -40,6 +40,17 @@ class Redirect extends AbstractAction
                 return;
             }
 
+            if ($payment->getAdditionalInformation('xendit_ewallet_id') !== null) {
+                $paymentId = $payment->getAdditionalInformation('xendit_ewallet_id');
+
+                return $this->processSuccessfulTransaction(
+                    $order,
+                    $payment,
+                    'Xendit eWallet payment completed. Transaction ID: ',
+                    $paymentId
+                );
+            }
+
             if ($payment->getAdditionalInformation('xendit_failure_reason') !== null) {
                 $failureReason = $payment->getAdditionalInformation('xendit_failure_reason');
 
@@ -51,6 +62,17 @@ class Redirect extends AbstractAction
                 $this->_redirect('checkout/cart', [ '_secure'=> false ]);
                 return;
             }
+
+            $message = 'No action on xendit/checkout/redirect';
+            $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
+
+            $this->cancelOrder($order, 'No payment recorded');
+
+            $this->getMessageManager()->addErrorMessage(__(
+                "There was an error in the Xendit payment. Failure reason: No payment recorded"
+            ));
+            $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            return;
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
@@ -63,5 +85,24 @@ class Redirect extends AbstractAction
             $this->_redirect('checkout/cart', [ '_secure'=> false ]);
             return;
         }
+    }
+
+    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId)
+    {
+        $orderState = Order::STATE_PROCESSING;
+        $order->setState($orderState)
+            ->setStatus($orderState)
+            ->addStatusHistoryComment("$paymentMessage $transactionId");
+
+        $order->save();
+
+        $payment->setTransactionId($transactionId);
+        $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+
+        $this->invoiceOrder($order, $transactionId);
+
+        $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
+        $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+        return;
     }
 }
