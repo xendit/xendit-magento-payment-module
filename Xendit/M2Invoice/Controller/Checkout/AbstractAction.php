@@ -5,10 +5,12 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\UrlInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
+use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Helper\Crypto;
@@ -44,6 +46,8 @@ abstract class AbstractAction extends Action
 
     private $logDNA;
 
+    private $storeManager;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
@@ -54,7 +58,8 @@ abstract class AbstractAction extends Action
         Checkout $checkoutHelper,
         OrderRepositoryInterface $orderRepo,
         ApiRequest $apiHelper,
-        LogDNA $logDNA
+        LogDNA $logDNA,
+        StoreManagerInterface $storeManager
     ) {
         parent::__construct($context);
 
@@ -70,6 +75,7 @@ abstract class AbstractAction extends Action
         $this->apiHelper = $apiHelper;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
         $this->logDNA = $logDNA;
+        $this->storeManager = $storeManager;
     }
 
     protected function getContext()
@@ -204,5 +210,15 @@ abstract class AbstractAction extends Action
         $this->getCheckoutHelper()->restoreQuote(); //restore cart
 
         return;
+    }
+
+    protected function getStoreManager() {
+        return $this->storeManager;
+    }
+
+    protected function getXenditCallbackUrl() {
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB, true);
+
+        return $baseUrl . 'xendit/checkout/notification';
     }
 }

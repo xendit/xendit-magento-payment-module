@@ -39,17 +39,6 @@
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="test_validation_key" translate="label" type="obscure" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Test - Validation Token</label>
-                    <comment>
-                        Validation token that provided by Xendit Dashboard
-                    </comment>
-                    <depends>
-                        <field id="xendit_env">test</field>
-                    </depends>
-                    <attribute type="shared">1</attribute>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                </field>
                 <field id="public_key" translate="label" type="obscure" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Public Key</label>
                     <comment>
@@ -71,21 +60,6 @@
                     </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                </field>
-                <field id="validation_key" translate="label" type="obscure" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Validation Token</label>
-                    <comment>
-                        Validation token that provided by Xendit Dashboard
-                    </comment>
-                    <depends>
-                        <field id="xendit_env">live</field>
-                    </depends>
-                    <attribute type="shared">1</attribute>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                </field>
-                <field id="return_url" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Callback URLs</label>
-                    <frontend_model>Xendit\M2Invoice\Block\Adminhtml\Form\Field\ReturnUrl</frontend_model>
                 </field>
             </group>
         </section>

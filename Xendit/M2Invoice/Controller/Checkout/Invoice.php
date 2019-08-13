@@ -66,7 +66,8 @@ class Invoice extends AbstractAction
             'description' => $orderId,
             'payer_email' => $order->getCustomerEmail(),
             'preferred_method' => $preferredMethod,
-            'should_send_email' => "true"
+            'should_send_email' => "true",
+            'platform_callback_url' => $this->getXenditCallbackUrl()
         ];
 
         return $requestData;
