@@ -18,7 +18,7 @@ To install this plugin, you can either manually copy plugin files into your stor
 2. Copy the inner `Xendit` folder into your `MAGENTO_DIR/app/code` directory on your store's webserver. You may not have the `code` folder by default, you can proceed to create it manually.
 
 Or, you can use get our [free plugin](https://marketplace.magento.com/xendit-m2invoice.html) from Magento marketplace, and install it via composer:
-1. From the `MAGENTO_DIR`, execute `composer require xendit/m2invoice:1.0.0`
+1. From the `MAGENTO_DIR`, execute `composer require xendit/m2invoice`
 2. Enter your authentication keys. Public key is your Magento marketplace's username, your private key is your password.
 3. Wait until Composer finished updating the dependencies.
 
