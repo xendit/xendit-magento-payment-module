@@ -8,7 +8,7 @@ use Xendit\M2Invoice\Gateway\Config\Config;
 use Xendit\M2Invoice\Model\Payment\CC;
 use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
-final class ConfigProvider implements ConfigProviderInterface
+class ConfigProvider implements ConfigProviderInterface
 {
     private $m2Invoice;
 

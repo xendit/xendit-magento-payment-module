@@ -94,9 +94,7 @@ class Notification extends Action implements CsrfAwareActionInterface
                 return $result;
             }
 
-            $validationToken = $this->dataHelper->getValidationKey();
-
-            if ($callbackToken !== $validationToken) {
+            if (!empty($callbackToken)) {
                 $result = $this->jsonResultFactory->create();
                 /** You may introduce your own constants for this custom REST API */
                 $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_FORBIDDEN);
