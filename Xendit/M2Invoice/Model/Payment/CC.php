@@ -146,6 +146,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 $charge = $this->requestCharge($newRequestData);
             }
 
+            $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
             if ( $chargeError == 'AUTHENTICATION_ID_MISSING_ERROR' ) {
                 $this->handle3DSFlow($requestData, $payment, $order);
 
