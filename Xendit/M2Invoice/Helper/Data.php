@@ -70,11 +70,6 @@ class Data extends AbstractHelper
         return $defaultExtId;
     }
 
-    public function getValidationKey()
-    {
-        return $this->m2Invoice->getValidationKey();
-    }
-
     public function getApiKey()
     {
         return $this->m2Invoice->getApiKey();

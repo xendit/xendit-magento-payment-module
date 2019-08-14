@@ -217,7 +217,7 @@ abstract class AbstractAction extends Action
     }
 
     protected function getXenditCallbackUrl() {
-        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB, true);
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
 
         return $baseUrl . 'xendit/checkout/notification';
     }

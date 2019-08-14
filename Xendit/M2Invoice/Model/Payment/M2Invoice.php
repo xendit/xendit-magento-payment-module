@@ -29,15 +29,6 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         }
     }
 
-    public function getValidationKey()
-    {
-        if ($this->isLive()) {
-            return $this->getConfigData('validation_key');
-        } else {
-            return $this->getConfigData('test_validation_key');
-        }
-    }
-
     public function isLive()
     {
         $xenditEnv = $this->getConfigData('xendit_env');
