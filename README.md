@@ -58,6 +58,12 @@ Currently this plugins support collecting payment through Xendit from these paym
 - Permata VA
 - Alfamart
 
+## Unit Testing
+To run unit test, run this command from you `MAGENTO_DIR`:
+
+`php bin/magento dev:tests:run unit`
+
+Currently, haven't found out a way to run tests outside Magento environment.
 
 ## Ownership
 
