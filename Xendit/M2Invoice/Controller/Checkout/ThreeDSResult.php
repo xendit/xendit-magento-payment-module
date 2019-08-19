@@ -131,8 +131,9 @@ class ThreeDSResult extends AbstractAction
                 $failureReason);
         $order->save();
 
+        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
         $this->getMessageManager()->addErrorMessage(__(
-            "There was an error in the Xendit payment. Failure reason: $failureReason"
+            "$failureReason - $failureReasonInsight"
         ));
         $this->_redirect('checkout/cart', array('_secure'=> false));
     }

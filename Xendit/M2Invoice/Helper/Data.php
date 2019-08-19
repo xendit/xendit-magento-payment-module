@@ -100,4 +100,28 @@ class Data extends AbstractHelper
 
         return (array) $inputs;
     }
+
+    /**
+     * Map card's failure reason to more detailed explanation based on current insight.
+     *
+     * @param $failureReason
+     * @return string
+     */
+    public function failureReasonInsight($failureReason)
+    {
+        switch ($failureReason) {
+            case 'CARD_DECLINED':
+            case 'STOLEN_CARD': return 'The bank that issued this card declined the payment but didn\'t tell us why.
+                Try another card, or try calling your bank to ask why the card was declined.';
+            case 'INSUFFICIENT_BALANCE': return 'Your bank declined this payment due to insufficient balance. Ensure
+                that sufficient balance is available, or try another card';
+            case 'INVALID_CVN': return 'Your bank declined the payment due to incorrect card details entered. Try to
+                enter your card details again, including expiration date and CVV';
+            case 'INACTIVE_CARD': return 'This card number does not seem to be enabled for eCommerce payments. Try
+                another card that is enabled for eCommerce, or ask your bank to enable eCommerce payments for your card.';
+            case 'EXPIRED_CARD': return 'Your bank declined the payment due to the card being expired. Please try
+                another card that has not expired.';
+            default: return $failureReason;
+        }
+    }
 }
