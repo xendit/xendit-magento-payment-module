@@ -36,8 +36,7 @@ class Redirect extends AbstractAction
                 $this->invoiceOrder($order, $chargeId);
 
                 $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-                $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
-                return;
+                return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
             }
 
             if ($payment->getAdditionalInformation('xendit_ewallet_id') !== null) {
@@ -56,11 +55,11 @@ class Redirect extends AbstractAction
 
                 $this->cancelOrder($order, $failureReason);
 
+                $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
                 $this->getMessageManager()->addErrorMessage(__(
-                    "There was an error in the Xendit payment. Failure reason: $failureReason"
+                    $failureReasonInsight
                 ));
-                $this->_redirect('checkout/cart', [ '_secure'=> false ]);
-                return;
+                return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
             }
 
             $message = 'No action on xendit/checkout/redirect';
@@ -71,8 +70,7 @@ class Redirect extends AbstractAction
             $this->getMessageManager()->addErrorMessage(__(
                 "There was an error in the Xendit payment. Failure reason: No payment recorded"
             ));
-            $this->_redirect('checkout/cart', [ '_secure'=> false ]);
-            return;
+            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
@@ -82,8 +80,7 @@ class Redirect extends AbstractAction
             $this->getMessageManager()->addErrorMessage(__(
                 "There was an error in the Xendit payment. Failure reason: Unexpected Error"
             ));
-            $this->_redirect('checkout/cart', [ '_secure'=> false ]);
-            return;
+            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
         }
     }
 
