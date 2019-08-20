@@ -133,7 +133,7 @@ class ThreeDSResult extends AbstractAction
 
         $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
         $this->getMessageManager()->addErrorMessage(__(
-            "$failureReason - $failureReasonInsight"
+            $failureReasonInsight
         ));
         $this->_redirect('checkout/cart', array('_secure'=> false));
     }

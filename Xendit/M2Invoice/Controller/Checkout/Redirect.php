@@ -57,7 +57,7 @@ class Redirect extends AbstractAction
 
                 $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
                 $this->getMessageManager()->addErrorMessage(__(
-                    "$failureReason - $failureReasonInsight"
+                    $failureReasonInsight
                 ));
                 return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
             }
