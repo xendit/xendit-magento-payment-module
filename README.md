@@ -58,6 +58,9 @@ Currently this plugins support collecting payment through Xendit from these paym
 - Permata VA
 - Alfamart
 
+## Refund Support
+Since v1.3.0, online refund (full and partial) is supported for payment through credit and debit card channel.
+
 ## Unit Testing
 To run unit test, run this command from you `MAGENTO_DIR`:
 

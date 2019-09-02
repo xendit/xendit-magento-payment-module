@@ -28,7 +28,9 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
     protected $_isGateway = true;
     protected $_canAuthorize = true;
-    protected $_canCapture = false;
+    protected $_canCapture = true;
+    protected $_canRefund = true;
+    protected $_canRefundInvoicePartial = true;
 
     protected $cryptoHelper;
     protected $dataHelper;
@@ -102,7 +104,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 return true;
             }
 
-            if ( !in_array( strtoupper($this->methodCode), $availableMethod ) ) {
+            if (!in_array(strtoupper($this->methodCode), $availableMethod)) {
                 return false;
             }
 
@@ -115,6 +117,34 @@ class CC extends \Magento\Payment\Model\Method\Cc
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         //todo add functionality later
+    }
+
+    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        $chargeId = $payment->getParentTransactionId();
+
+        if ($chargeId) {
+            $order = $payment->getOrder();
+            $orderId = $order->getRealOrderId();
+            $canRefundMore = $payment->getCreditmemo()->getInvoice()->canRefund();
+            $isFullRefund = !$canRefundMore &&
+                0 == (double)$order->getBaseTotalOnlineRefunded() + (double)$order->getBaseTotalOfflineRefunded();
+
+            
+            $refundData = [
+                'amount' => $amount,
+                'external_id' => $this->dataHelper->getExternalId($orderId, true)
+            ];    
+            $refund = $this->requestRefund($chargeId, $refundData);
+
+            $this->handleRefundResult($payment, $refund, $canRefundMore);
+
+            return $this;
+        } else {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __("Refund not available because there is no capture")
+            );
+        }
     }
 
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -139,7 +169,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
             $charge = $this->requestCharge($requestData);
 
             $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-            if ( $chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR' ) {
+            if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
                 $newRequestData = array_replace($requestData, array(
                     'external_id' => $this->dataHelper->getExternalId($orderId, true)
                 ));
@@ -147,13 +177,13 @@ class CC extends \Magento\Payment\Model\Method\Cc
             }
 
             $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-            if ( $chargeError == 'AUTHENTICATION_ID_MISSING_ERROR' ) {
+            if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
                 $this->handle3DSFlow($requestData, $payment, $order);
 
                 return $this;
             }
 
-            if ( $chargeError !== null ) {
+            if ($chargeError !== null) {
                 $this->processFailedPayment($order, $payment, $charge);
             }
 
@@ -239,6 +269,29 @@ class CC extends \Magento\Payment\Model\Method\Cc
         return;
     }
 
+    private function handleRefundResult($payment, $refund, $canRefundMore)
+    {
+        if (isset($refund['error_code'])) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __($refund['message'])
+            );
+        }
+
+        if ($refund['status'] == 'FAILED') {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('Refund failed, please check Xendit dashboard')
+            );
+        }
+
+        $payment->setTransactionId(
+            $refund['id']
+        )->setIsTransactionClosed(
+            1
+        )->setShouldCloseParentTransaction(
+            !$canRefundMore
+        );
+    }
+
     private function processFailedPayment($order, $payment, $charge = [])
     {
         if ($charge === []) {
@@ -276,6 +329,20 @@ class CC extends \Magento\Payment\Model\Method\Cc
         }
 
         return $hosted3DS;
+    }
+
+    private function requestRefund($chargeId, $requestData)
+    {
+        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";
+        $refundMethod = \Zend\Http\Request::METHOD_POST;
+
+        try {
+            $refund = $this->apiHelper->request($refundUrl, $refundMethod, $requestData);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $refund;
     }
 
     private function log($param, $message)
