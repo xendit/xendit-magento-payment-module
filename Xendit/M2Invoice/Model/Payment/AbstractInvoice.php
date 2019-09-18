@@ -5,7 +5,6 @@ namespace Xendit\M2Invoice\Model\Payment;
 
 use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\Api\AttributeValueFactory;
-use Magento\Framework\App\CacheInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\Model\Context;
@@ -44,7 +43,6 @@ class AbstractInvoice extends AbstractMethod
         \Xendit\M2Invoice\Helper\Data $dataHelper,
         LogDNA $logDNA,
         DataObjectFactory $dataObjectFactory,
-        CacheInterface $cache,
         Json $serializer = null
     ) {
         parent::__construct(
@@ -62,7 +60,7 @@ class AbstractInvoice extends AbstractMethod
         $this->apiHelper = $apiHelper;
         $this->logDNA = $logDNA;
 
-        $this->cache = $cache;
+        $this->cache = $context->getCacheManager();
         $this->dataObjectFactory = $dataObjectFactory;
         $this->serializer = $serializer ?: \Magento\Framework\App\ObjectManager::getInstance()->get(Json::class);
     }
