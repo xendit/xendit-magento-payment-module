@@ -21,7 +21,7 @@
             <bcava>
                 <active>1</active>
                 <payment_action>initialize</payment_action><!-- You can use another methor like capture  -->
-                <model>Xendit\M2Invoice\Model\Payment\Alfamart</model>
+                <model>Xendit\M2Invoice\Model\Payment\BCAVA</model>
                 <title>Bank Transfer - BCA</title>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
@@ -31,7 +31,7 @@
             <alfamart>
                 <active>1</active>
                 <payment_action>initialize</payment_action><!-- You can use another methor like capture  -->
-                <model>Xendit\M2Invoice\Model\Payment\BCAVA</model>
+                <model>Xendit\M2Invoice\Model\Payment\Alfamart</model>
                 <title>Alfamart</title>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
