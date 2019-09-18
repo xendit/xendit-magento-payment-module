@@ -23,7 +23,7 @@
                         Public API key that provided by Xendit Dashboard
                     </comment>
                     <depends>
-                        <field id="xendit_env">test</field>
+                        <field id="*/*/xendit_env">test</field>
                     </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
@@ -34,7 +34,7 @@
                         Secret API key that provided by Xendit Dashboard
                     </comment>
                     <depends>
-                        <field id="xendit_env">test</field>
+                        <field id="*/*/xendit_env">test</field>
                     </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
@@ -45,7 +45,7 @@
                         Public API key that provided by Xendit Dashboard
                     </comment>
                     <depends>
-                        <field id="xendit_env">live</field>
+                        <field id="*/*/xendit_env">live</field>
                     </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
@@ -56,7 +56,7 @@
                         Secret API key that provided by Xendit Dashboard
                     </comment>
                     <depends>
-                        <field id="xendit_env">live</field>
+                        <field id="*/*/xendit_env">live</field>
                     </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
