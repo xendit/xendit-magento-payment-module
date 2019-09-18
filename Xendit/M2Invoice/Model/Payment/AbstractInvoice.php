@@ -11,13 +11,13 @@ use Magento\Framework\DataObjectFactory;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Phrase;
 use Magento\Framework\Registry;
-use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\Method\Logger;
 use Magento\Payment\Model\Method\AbstractMethod;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\LogDNA;
 use Xendit\M2Invoice\Enum\LogDNALevel;
+use Xendit\M2Invoice\External\Serialize\Serializer\Json;
 
 
 class AbstractInvoice extends AbstractMethod
