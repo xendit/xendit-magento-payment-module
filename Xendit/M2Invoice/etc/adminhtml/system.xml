@@ -4,7 +4,46 @@
         <section id="payment">
             <group id="m2invoice" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Xendit</label>
-                <comment><![CDATA[<h2>Manage Payment Gateway Connection</h2>]]></comment>
+                <comment><![CDATA[
+                    <h2>Manage Payment Gateway Connection</h2>
+                    <script type="text/javascript">//<![CDATA[
+                        require(['jquery'], function(){
+                            var isTest = jQuery("input[id*='m2invoice_xendit_envtest']");
+                            var isLive = jQuery("input[id*='m2invoice_xendit_envlive']");
+
+                            function dynamicShow() {
+                                var isTestValue = jQuery("input[id*='m2invoice_xendit_envtest']:checked").length === 1;
+                                var isLiveValue = jQuery("input[id*='m2invoice_xendit_envlive']:checked").length === 1;
+
+                                var testPubKey = jQuery("tr[id*='m2invoice_test_public_key']");
+                                var testSecKey = jQuery("tr[id*='m2invoice_test_private_key']");
+                                var livePubKey = jQuery("tr[id*='m2invoice_public_key']");
+                                var liveSecKey = jQuery("tr[id*='m2invoice_private_key']");
+
+                                if (isTestValue) {
+                                    testPubKey.show();
+                                    testSecKey.show();
+                                    livePubKey.hide();
+                                    liveSecKey.hide();
+                                } else if (isLiveValue) {
+                                    testPubKey.hide();
+                                    testSecKey.hide();
+                                    livePubKey.show();
+                                    liveSecKey.show();
+                                }
+                            }
+
+                            isTest.change(function () {
+                                dynamicShow();
+                            });
+                            isLive.change(function () {
+                                dynamicShow();
+                            });
+
+                            dynamicShow();
+                        });
+                    </script>
+                ]]></comment>
                 <field id="active" translate="label comment" sortOrder="1" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -22,9 +61,6 @@
                     <comment>
                         Public API key that provided by Xendit Dashboard
                     </comment>
-                    <depends>
-                        <field id="*/*/xendit_env">test</field>
-                    </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
@@ -33,9 +69,6 @@
                     <comment>
                         Secret API key that provided by Xendit Dashboard
                     </comment>
-                    <depends>
-                        <field id="*/*/xendit_env">test</field>
-                    </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
@@ -44,9 +77,6 @@
                     <comment>
                         Public API key that provided by Xendit Dashboard
                     </comment>
-                    <depends>
-                        <field id="*/*/xendit_env">live</field>
-                    </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
@@ -55,9 +85,6 @@
                     <comment>
                         Secret API key that provided by Xendit Dashboard
                     </comment>
-                    <depends>
-                        <field id="*/*/xendit_env">live</field>
-                    </depends>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
