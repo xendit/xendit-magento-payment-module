@@ -16,8 +16,6 @@ use Magento\Payment\Model\Method\AbstractMethod;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\LogDNA;
 use Xendit\M2Invoice\Enum\LogDNALevel;
-use Xendit\M2Invoice\External\Serialize\Serializer\Json;
-
 
 class AbstractInvoice extends AbstractMethod
 {
@@ -42,8 +40,7 @@ class AbstractInvoice extends AbstractMethod
         ApiRequest $apiHelper,
         \Xendit\M2Invoice\Helper\Data $dataHelper,
         LogDNA $logDNA,
-        DataObjectFactory $dataObjectFactory,
-        Json $serializer = null
+        DataObjectFactory $dataObjectFactory
     ) {
         parent::__construct(
             $context,
@@ -62,7 +59,12 @@ class AbstractInvoice extends AbstractMethod
 
         $this->cache = $context->getCacheManager();
         $this->dataObjectFactory = $dataObjectFactory;
-        $this->serializer = $serializer ?: \Magento\Framework\App\ObjectManager::getInstance()->get(Json::class);
+
+        if (interface_exists("Magento\Framework\Serialize\Serializer\Json")) {
+            $this->serializer = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Serialize\Serializer\Json::class);
+        } else {
+            $this->serializer = \Magento\Framework\App\ObjectManager::getInstance()->get(\Xendit\M2Invoice\External\Serialize\Serializer\Json::class);
+        }
     }
 
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
