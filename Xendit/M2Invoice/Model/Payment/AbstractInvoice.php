@@ -13,6 +13,7 @@ use Magento\Framework\Registry;
 use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\Method\Logger;
 use Magento\Payment\Model\Method\AbstractMethod;
+use Magento\Store\Model\StoreManagerInterface;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\LogDNA;
 use Xendit\M2Invoice\Enum\LogDNALevel;
@@ -28,6 +29,7 @@ class AbstractInvoice extends AbstractMethod
     protected $logDNA;
     protected $cache;
     protected $dataObjectFactory;
+    protected $storeManager;
 
     public function __construct(
         Context $context,
@@ -40,7 +42,8 @@ class AbstractInvoice extends AbstractMethod
         ApiRequest $apiHelper,
         \Xendit\M2Invoice\Helper\Data $dataHelper,
         LogDNA $logDNA,
-        DataObjectFactory $dataObjectFactory
+        DataObjectFactory $dataObjectFactory,
+        StoreManagerInterface $storeManager
     ) {
         parent::__construct(
             $context,
@@ -59,6 +62,7 @@ class AbstractInvoice extends AbstractMethod
 
         $this->cache = $context->getCacheManager();
         $this->dataObjectFactory = $dataObjectFactory;
+        $this->storeManager = $storeManager;
 
         if (interface_exists("Magento\Framework\Serialize\Serializer\Json")) {
             $this->serializer = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Serialize\Serializer\Json::class);
