@@ -83,6 +83,10 @@ class AbstractInvoice extends AbstractMethod
             return false;
         }
 
+        if ($this->methodCode === 'CCHOSTED') {
+            return true;
+        }
+
         try {
             $availableMethod = $this->getAvailableMethods();
 
