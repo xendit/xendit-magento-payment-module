@@ -8,12 +8,11 @@
                     <h2>Manage Payment Gateway Connection</h2>
                     <script type="text/javascript">//<![CDATA[
                         require(['jquery'], function(){
-                            var isTest = jQuery("input[id*='m2invoice_xendit_envtest']");
-                            var isLive = jQuery("input[id*='m2invoice_xendit_envlive']");
+                            var envValue = jQuery("select[id*='m2invoice_xendit_env']");
 
                             function dynamicShow() {
-                                var isTestValue = jQuery("input[id*='m2invoice_xendit_envtest']:checked").length === 1;
-                                var isLiveValue = jQuery("input[id*='m2invoice_xendit_envlive']:checked").length === 1;
+                                var isTestValue = envValue.val() === 'test';
+                                var isLiveValue = envValue.val() === 'live';
 
                                 var testPubKey = jQuery("tr[id*='m2invoice_test_public_key']");
                                 var testSecKey = jQuery("tr[id*='m2invoice_test_private_key']");
@@ -32,11 +31,7 @@
                                     liveSecKey.show();
                                 }
                             }
-
-                            isTest.change(function () {
-                                dynamicShow();
-                            });
-                            isLive.change(function () {
+                            envValue.change(function () {
                                 dynamicShow();
                             });
 
@@ -48,7 +43,7 @@
                     <label>Enable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="xendit_env" translate="label" type="radios" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="xendit_env" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Payment Mode</label>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\EnvRadioBtn</source_model>
                     <comment>
@@ -87,6 +82,14 @@
                     </comment>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="card_payment_type" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Card Payment Type</label>
+                    <comment>
+                        Xendit provide card form to increase your order payment
+                    </comment>
+                    <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CardPaymentType</source_model>
+                    <attribute type="shared">1</attribute>
                 </field>
             </group>
         </section>

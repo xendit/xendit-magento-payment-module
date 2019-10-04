@@ -49,4 +49,9 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     {
         return $this->getConfigData('xendit_url');
     }
+
+    public function getCardPaymentType()
+    {
+        return $this->getConfigData('card_payment_type');
+    }
 }
