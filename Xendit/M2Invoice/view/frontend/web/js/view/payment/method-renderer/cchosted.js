@@ -66,13 +66,29 @@ define(
             },
 
             afterPlaceOrder: function () {
+                var xenditScript = document.createElement('script');
+                xenditScript.src = 'http://localhost:8080/js/hp.js';
+                document.body.appendChild(xenditScript);
+
                 $.ajax({
                     type: 'get',
                     url: url.build('xendit/checkout/redirect'),
                     success: function (data) {
-                        console.log(data);
+                        var hpId = data.id;
+                        var hpData = {
+                            token: data.hp_token,
+                            onSuccess: function () {
+                                window.location.replace(url.build('xendit/checkout/processhosted'));
+                            },
+                            onError: function () {
+                                window.location.replace(url.build('xendit/checkout/failure?order_id=' + data.order_id));
+                            },
+                            onClose: function () {
+                                window.location.replace(url.build('xendit/checkout/failure?order_id=' + data.order_id));
+                            }
+                        };
 
-                        window.location.replace(url.build('xendit/checkout/failure?order_id=' + data.order_id));
+                        HostedPayment.render(hpId, hpData);
                     }
                 })
             },
