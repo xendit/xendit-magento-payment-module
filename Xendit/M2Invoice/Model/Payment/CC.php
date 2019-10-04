@@ -25,6 +25,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     protected $_code = self::CODE;
     protected $_minAmount = 5000;
     protected $_maxAmount = 200000000;
+    protected $methodCode = 'CCFORM';
 
     protected $_isGateway = true;
     protected $_canAuthorize = true;
@@ -94,6 +95,14 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $amount = $quote->getBaseGrandTotal();
 
         if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
+            return false;
+        }
+
+        $cardPaymentType = $this->dataHelper->getCardPaymentType();
+
+        if ($cardPaymentType === 'form') {
+            return true;
+        } else {
             return false;
         }
 
