@@ -25,7 +25,7 @@ class CCHosted extends AbstractInvoice
      * @var string
      */
     protected $_code = 'cchosted';
-    protected $_minAmount = 10000;
+    protected $_minAmount = 1000;
     protected $_maxAmount = 10000000;
     protected $methodCode = 'CCHOSTED';
 
@@ -54,7 +54,7 @@ class CCHosted extends AbstractInvoice
                 throw new \Magento\Framework\Exception\LocalizedException(
                     new Phrase($message)
                 );
-            } else if (isset($hostedPayment['id'])) {
+            } elseif (isset($hostedPayment['id'])) {
                 $hostedPaymentId = $hostedPayment['id'];
                 $hostedPaymentToken = $hostedPayment['hp_token'];
 

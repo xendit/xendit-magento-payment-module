@@ -67,7 +67,7 @@ define(
 
             afterPlaceOrder: function () {
                 var xenditScript = document.createElement('script');
-                xenditScript.src = 'http://localhost:8080/js/hp.js';
+                xenditScript.src = 'https://tpi-ui.xendit.co/js/xendit-hp.min.js';
                 document.body.appendChild(xenditScript);
 
                 $.ajax({
@@ -95,17 +95,11 @@ define(
 
             validate: function() {
                 var billingAddress = quote.billingAddress();
-                var totals = quote.totals();
 
                 self.messageContainer.clear();
 
                 if (!billingAddress) {
                     self.messageContainer.addErrorMessage({'message': 'Please enter your billing address'});
-                    return false;
-                }
-
-                if (totals.grand_total < 10000) {
-                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 11.000.'});
                     return false;
                 }
 
