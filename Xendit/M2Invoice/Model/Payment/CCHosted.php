@@ -25,8 +25,9 @@ class CCHosted extends AbstractInvoice
      * @var string
      */
     protected $_code = 'cchosted';
-    protected $_minAmount = 1000;
+    protected $_minAmount = 10000;
     protected $_maxAmount = 10000000;
+    protected $_canRefund = true;
     protected $methodCode = 'CCHOSTED';
 
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -78,6 +79,48 @@ class CCHosted extends AbstractInvoice
         return $this;
     }
 
+    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        $chargeId = $payment->getParentTransactionId();
+
+        if ($chargeId) {
+            $order = $payment->getOrder();
+            $orderId = $order->getRealOrderId();
+            $canRefundMore = $payment->getCreditmemo()->getInvoice()->canRefund();
+            $isFullRefund = !$canRefundMore &&
+                0 == (double)$order->getBaseTotalOnlineRefunded() + (double)$order->getBaseTotalOfflineRefunded();
+
+            
+            $refundData = [
+                'amount' => $amount,
+                'external_id' => $this->dataHelper->getExternalId($orderId, true)
+            ];
+            $refund = $this->requestRefund($chargeId, $refundData);
+
+            $this->handleRefundResult($payment, $refund, $canRefundMore);
+
+            return $this;
+        } else {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __("Refund not available because there is no capture")
+            );
+        }
+    }
+
+    private function requestRefund($chargeId, $requestData)
+    {
+        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";
+        $refundMethod = \Zend\Http\Request::METHOD_POST;
+
+        try {
+            $refund = $this->apiHelper->request($refundUrl, $refundMethod, $requestData);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $refund;
+    }
+
     private function requestHostedPayment($requestData)
     {
         $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
@@ -99,5 +142,28 @@ class CCHosted extends AbstractInvoice
     private function processFailedPayment($payment, $message)
     {
         $payment->setAdditionalInformation('xendit_failure_reason', $message);
+    }
+
+    private function handleRefundResult($payment, $refund, $canRefundMore)
+    {
+        if (isset($refund['error_code'])) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __($refund['message'])
+            );
+        }
+
+        if ($refund['status'] == 'FAILED') {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('Refund failed, please check Xendit dashboard')
+            );
+        }
+
+        $payment->setTransactionId(
+            $refund['id']
+        )->setIsTransactionClosed(
+            1
+        )->setShouldCloseParentTransaction(
+            !$canRefundMore
+        );
     }
 }
