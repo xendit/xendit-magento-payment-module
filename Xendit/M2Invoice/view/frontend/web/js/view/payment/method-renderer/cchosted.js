@@ -88,9 +88,33 @@ define(
                             }
                         };
 
-                        HostedPayment.render(hpId, hpData);
+                        renderHostedPayment(hpId, hpData);
                     }
-                })
+                });
+
+                function renderHostedPayment(hpId, hpData) {
+                    var retry = 0;
+                    var hpExecuted = false;
+
+                    var hpTimer = setInterval(function () {
+                        try {
+                            HostedPayment.render(hpId, hpData);
+                            hpExecuted = true;
+                        } catch (e) {
+                            retry++;
+
+                            if (retry === 5) {
+                                messageList.addErrorMessage({
+                                    message: 'Please wait while Xendit is getting ready..'
+                                });
+                            }
+                        } finally {
+                            if (hpExecuted) {
+                                clearInterval(hpTimer);
+                            }
+                        }
+                    }, 1000);
+                }
             },
 
             validate: function() {
