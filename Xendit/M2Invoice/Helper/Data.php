@@ -85,6 +85,11 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getEnvironment();
     }
 
+    public function getCardPaymentType()
+    {
+        return $this->m2Invoice->getCardPaymentType();
+    }
+
     public function jsonData()
     {
         $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);

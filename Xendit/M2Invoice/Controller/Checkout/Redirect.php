@@ -2,6 +2,7 @@
 
 namespace Xendit\M2Invoice\Controller\Checkout;
 
+use Magento\Framework\Controller\ResultFactory;
 use Magento\Sales\Model\Order;
 use Xendit\M2Invoice\Enum\LogDNALevel;
 
@@ -60,6 +61,20 @@ class Redirect extends AbstractAction
                     $failureReasonInsight
                 ));
                 return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            }
+
+            if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
+                $hostedPaymentId = $payment->getAdditionalInformation('xendit_hosted_payment_id');
+                $hostedPaymentToken = $payment->getAdditionalInformation('xendit_hosted_payment_token');
+                $data = [
+                    'id' => $hostedPaymentId,
+                    'hp_token' => $hostedPaymentToken,
+                    'order_id' => $order->getRealOrderId()
+                ];
+
+                $result = $this->resultFactory->create(ResultFactory::TYPE_JSON);
+                $result->setData($data);
+                return $result;
             }
 
             $message = 'No action on xendit/checkout/redirect';

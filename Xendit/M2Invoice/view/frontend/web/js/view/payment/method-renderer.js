@@ -41,6 +41,10 @@ define(
             {
                 type: 'cc',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc'
+            },
+            {
+                type: 'cchosted',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cchosted'
             }
         );
         return Component.extend({});
