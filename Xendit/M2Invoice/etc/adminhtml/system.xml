@@ -9,6 +9,7 @@
                     <script type="text/javascript">//<![CDATA[
                         require(['jquery'], function(){
                             var envValue = jQuery("select[id*='m2invoice_xendit_env']");
+                            var paymentSelectionValue = jQuery("select[id*='m2invoice_allowed_method']");
 
                             function dynamicShow() {
                                 var isTestValue = envValue.val() === 'test';
@@ -35,7 +36,23 @@
                                 dynamicShow();
                             });
 
+                            function shouldEnableSpecificMethod() {
+                                var isSpecific = paymentSelectionValue.val() === 'specific';
+
+                                var specificSelection = jQuery("select[id*='m2invoice_chosen_methods']");
+
+                                if (isSpecific) {
+                                    specificSelection.prop('disabled', false);
+                                } else {
+                                    specificSelection.prop('disabled', true);
+                                }
+                            }
+                            paymentSelectionValue.change(function () {
+                                shouldEnableSpecificMethod();
+                            });
+
                             dynamicShow();
+                            shouldEnableSpecificMethod();
                         });
                     </script>
                 ]]></comment>
@@ -82,6 +99,18 @@
                     </comment>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="allowed_method" translate="label" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Used Payment Method</label>
+                    <comment>
+                        Choose whether to use all available payment method in Xendit or not
+                    </comment>
+                    <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\AllowedMethod</source_model>
+                </field>
+                <field id="chosen_methods" translate="label" type="multiselect" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Specific Payment Method</label>
+                    <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\ChosenMethod</source_model>
+                    <can_be_empty>1</can_be_empty>
                 </field>
                 <field id="card_payment_type" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Card Payment Type</label>

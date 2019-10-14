@@ -54,4 +54,14 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     {
         return $this->getConfigData('card_payment_type');
     }
+
+    public function getAllowedMethod()
+    {
+        return $this->getConfigData('allowed_method');
+    }
+
+    public function getChosenMethods()
+    {
+        return $this->getConfigData('chosen_methods');
+    }
 }

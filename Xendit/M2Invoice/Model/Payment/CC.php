@@ -98,6 +98,21 @@ class CC extends \Magento\Payment\Model\Method\Cc
             return false;
         }
 
+        $allowedMethod = $this->dataHelper->getAllowedMethod();
+
+        if ($allowedMethod === 'specific') {
+            $chosenMethods = $this->dataHelper->getChosenMethods();
+            $currentCode = $this->_code;
+
+            if ($currentCode === 'cchosted') {
+                $currentCode = 'cc';
+            }
+
+            if (!in_array($currentCode, explode(',', $chosenMethods))) {
+                return false;
+            }
+        }
+
         $cardPaymentType = $this->dataHelper->getCardPaymentType();
 
         if ($cardPaymentType === 'form') {
