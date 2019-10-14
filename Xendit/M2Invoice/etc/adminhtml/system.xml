@@ -10,6 +10,8 @@
                         require(['jquery'], function(){
                             var envValue = jQuery("select[id*='m2invoice_xendit_env']");
                             var paymentSelectionValue = jQuery("select[id*='m2invoice_allowed_method']");
+                            var specificSelection = jQuery("select[id*='m2invoice_chosen_methods']");
+                            var isWarningDisplayed = false;
 
                             function dynamicShow() {
                                 var isTestValue = envValue.val() === 'test';
@@ -39,8 +41,6 @@
                             function shouldEnableSpecificMethod() {
                                 var isSpecific = paymentSelectionValue.val() === 'specific';
 
-                                var specificSelection = jQuery("select[id*='m2invoice_chosen_methods']");
-
                                 if (isSpecific) {
                                     specificSelection.prop('disabled', false);
                                 } else {
@@ -51,8 +51,32 @@
                                 shouldEnableSpecificMethod();
                             });
 
+                            function shouldDisplayAdditionalKYCWarningMethod() {
+                                var currentValue = specificSelection.val();
+
+                                if (currentValue.includes('ovo') || currentValue.includes('alfamart') || currentValue.includes('bcava')) {
+                                    isWarningDisplayed = true;
+                                    displayAdditionalKYCWarning();
+                                } else {
+                                    isWarningDisplayed = false;
+                                }
+                            }
+                            function displayAdditionalKYCWarning() {
+                                var defaultText = specificSelection.siblings('.note').children()[0].innerHTML;
+
+                                var newText = defaultText + ' - <span style="color:red;">You are choosing a payment method that requires you to re-register to your AM</span>';
+
+                                specificSelection.siblings('.note').children()[0].innerHTML = newText;
+                            }
+                            specificSelection.change(function () {
+                                if (!isWarningDisplayed) {
+                                    shouldDisplayAdditionalKYCWarningMethod();
+                                }
+                            });
+
                             dynamicShow();
                             shouldEnableSpecificMethod();
+                            specificSelection.prop('size', 6);
                         });
                     </script>
                 ]]></comment>
@@ -107,8 +131,11 @@
                     </comment>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\AllowedMethod</source_model>
                 </field>
-                <field id="chosen_methods" translate="label" type="multiselect" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="chosen_methods" translate="label" type="multiselect" size="6" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Specific Payment Method</label>
+                    <comment>
+                        Select which specific payment method will be available on the checkout page
+                    </comment>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\ChosenMethod</source_model>
                     <can_be_empty>1</can_be_empty>
                 </field>
