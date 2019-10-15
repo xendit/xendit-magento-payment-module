@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.5.0 (2019-10-15)
+
+Features:
+
+- Enable merchant to select specific payment method they want to use
+
 ## 1.4.0 (2019-10-11)
 
 Features:

@@ -8,7 +8,15 @@
                     <h2>Manage Payment Gateway Connection</h2>
                     <script type="text/javascript">//<![CDATA[
                         require(['jquery'], function(){
+                            var allPaymentMethodDescription = 'Use all payment method that is provided by Xendit';
+                            var specificPaymentMethodDescription = 'Use specific payment method that is provided by Xendit';
+                            var specificSelectionMethodDescription = 'Choose specific payment method that you want to choose. Use <strong>CTRL (CMD) + Click</strong> to choose more than one payment method';
+
                             var envValue = jQuery("select[id*='m2invoice_xendit_env']");
+                            var paymentSelectionValue = jQuery("select[id*='m2invoice_allowed_method']");
+                            var paymentSelectionDescription = jQuery("select[id*='m2invoice_allowed_method']").siblings('.note').children()[0];
+                            var specificSelection = jQuery("select[id*='m2invoice_chosen_methods']");
+                            var specificSelectionDescription = jQuery("select[id*='m2invoice_chosen_methods']").siblings('.note').children()[0];
 
                             function dynamicShow() {
                                 var isTestValue = envValue.val() === 'test';
@@ -35,7 +43,65 @@
                                 dynamicShow();
                             });
 
+                            function shouldEnableSpecificMethod() {
+                                var isSpecific = paymentSelectionValue.val() === 'specific';
+
+                                if (isSpecific) {
+                                    paymentSelectionDescription.innerHTML = specificPaymentMethodDescription;
+                                    specificSelectionDescription.innerHTML = specificSelectionMethodDescription;
+                                    specificSelection.prop('disabled', false);
+                                } else {
+                                    paymentSelectionDescription.innerHTML = allPaymentMethodDescription;
+                                    specificSelectionDescription.innerHTML = allPaymentMethodDescription;
+                                    shouldEnableCardForm(true);
+                                    specificSelection.prop('disabled', true);
+                                }
+                            }
+                            paymentSelectionValue.change(function () {
+                                shouldEnableSpecificMethod();
+                            });
+
+                            function shouldDisplayAdditionalKYCWarningMethod() {
+                                var currentValue = specificSelection.val();
+
+                                if (currentValue.includes('ovo') || currentValue.includes('alfamart') || currentValue.includes('bcava')) {
+                                    displayAdditionalKYCWarning(true);
+                                } else {
+                                    displayAdditionalKYCWarning(false);
+                                }
+                            }
+                            function displayAdditionalKYCWarning(shouldShow) {
+                                var defaultText = specificSelectionMethodDescription;
+
+                                var newText = defaultText + ' - <span style="color:red;">You are choosing a payment method that requires you to re-register to your AM</span>';
+
+                                if (shouldShow) {
+                                    specificSelection.siblings('.note').children()[0].innerHTML = newText;
+                                } else {
+                                    specificSelection.siblings('.note').children()[0].innerHTML = defaultText;
+                                }
+                            }
+                            function shouldEnableCardForm(forceEnable) {
+                                var currentValue = specificSelection.val();
+                                var cardForm = jQuery("select[id*='m2invoice_card_payment_type']");
+
+                                if (
+                                    (currentValue !== null && currentValue.includes('cc')) ||
+                                    forceEnable
+                                ) {
+                                    cardForm.prop('disabled', false);
+                                } else {
+                                    cardForm.prop('disabled', true);
+                                }
+                            }
+                            specificSelection.change(function () {
+                                shouldDisplayAdditionalKYCWarningMethod();
+                                shouldEnableCardForm();
+                            });
+
                             dynamicShow();
+                            shouldEnableSpecificMethod();
+                            specificSelection.prop('size', 6);
                         });
                     </script>
                 ]]></comment>
@@ -82,6 +148,21 @@
                     </comment>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="allowed_method" translate="label" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Used Payment Method</label>
+                    <comment>
+                        Use all payment method that is provided by Xendit
+                    </comment>
+                    <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\AllowedMethod</source_model>
+                </field>
+                <field id="chosen_methods" translate="label" type="multiselect" size="6" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Specific Payment Method</label>
+                    <comment>
+                        Use all payment method that is provided by Xendit
+                    </comment>
+                    <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\ChosenMethod</source_model>
+                    <can_be_empty>1</can_be_empty>
                 </field>
                 <field id="card_payment_type" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Card Payment Type</label>

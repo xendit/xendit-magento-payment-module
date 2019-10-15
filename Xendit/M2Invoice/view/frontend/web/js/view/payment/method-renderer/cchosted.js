@@ -110,6 +110,7 @@ define(
                             }
                         } finally {
                             if (hpExecuted) {
+                                $('.loading-mask').hide();
                                 clearInterval(hpTimer);
                             }
                         }

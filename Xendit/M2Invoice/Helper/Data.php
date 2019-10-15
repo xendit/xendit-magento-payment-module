@@ -90,6 +90,16 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getCardPaymentType();
     }
 
+    public function getAllowedMethod()
+    {
+        return $this->m2Invoice->getAllowedMethod();
+    }
+
+    public function getChosenMethods()
+    {
+        return $this->m2Invoice->getChosenMethods();
+    }
+
     public function jsonData()
     {
         $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);
