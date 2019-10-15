@@ -53,6 +53,7 @@
                                 } else {
                                     paymentSelectionDescription.innerHTML = allPaymentMethodDescription;
                                     specificSelectionDescription.innerHTML = allPaymentMethodDescription;
+                                    shouldEnableCardForm(true);
                                     specificSelection.prop('disabled', true);
                                 }
                             }
@@ -80,11 +81,14 @@
                                     specificSelection.siblings('.note').children()[0].innerHTML = defaultText;
                                 }
                             }
-                            function shouldEnableCardForm() {
+                            function shouldEnableCardForm(forceEnable) {
                                 var currentValue = specificSelection.val();
                                 var cardForm = jQuery("select[id*='m2invoice_card_payment_type']");
 
-                                if (currentValue.includes('cc')) {
+                                if (
+                                    (currentValue !== null && currentValue.includes('cc')) ||
+                                    forceEnable
+                                ) {
                                     cardForm.prop('disabled', false);
                                 } else {
                                     cardForm.prop('disabled', true);
@@ -97,7 +101,6 @@
 
                             dynamicShow();
                             shouldEnableSpecificMethod();
-                            shouldEnableCardForm();
                             specificSelection.prop('size', 6);
                         });
                     </script>
