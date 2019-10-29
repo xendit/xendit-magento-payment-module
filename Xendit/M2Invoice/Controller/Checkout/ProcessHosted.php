@@ -27,18 +27,21 @@ class ProcessHosted extends AbstractAction
                 }
 
                 $order->setBaseDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
-                $order->setBaseGrandTotal($order->getBaseGrandTotal() + $order->getBaseDiscountAmount());
-
                 $order->setDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
+                $order->save();
+
+                $order->setBaseGrandTotal($order->getBaseGrandTotal() + $order->getBaseDiscountAmount());
                 $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
+                $order->save();
 
-                $payment->setAmountAuthorized($order->getBaseGrandTotal());
-                $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
+                // $payment->setAmountAuthorized($order->getBaseGrandTotal());
+                // $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
 
-                $order->setBaseTotalDue($order->getBaseGrandTotal());
-                $order->setTotalDue($order->getBaseGrandTotal());
-                $order->setBaseTotalPaid($order->getBaseGrandTotal());
-                $order->setTotalPaid($order->getBaseGrandTotal());
+                // $order->setBaseTotalDue($order->getBaseGrandTotal());
+                // $order->setTotalDue($order->getBaseGrandTotal());
+                // $order->setBaseTotalPaid($hostedPayment['paid_amount']);
+                // $order->setTotalPaid($hostedPayment['paid_amount']);
+                // $order->save();
 
                 return $this->processSuccessfulTransaction(
                     $order,
