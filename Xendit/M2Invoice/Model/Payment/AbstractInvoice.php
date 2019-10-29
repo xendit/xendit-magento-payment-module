@@ -13,6 +13,7 @@ use Magento\Framework\Registry;
 use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\Method\Logger;
 use Magento\Payment\Model\Method\AbstractMethod;
+use Magento\SalesRule\Model\RuleRepository;
 use Magento\Store\Model\StoreManagerInterface;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\LogDNA;
@@ -30,6 +31,7 @@ class AbstractInvoice extends AbstractMethod
     protected $cache;
     protected $dataObjectFactory;
     protected $storeManager;
+    protected $ruleRepo;
 
     public function __construct(
         Context $context,
@@ -43,7 +45,8 @@ class AbstractInvoice extends AbstractMethod
         \Xendit\M2Invoice\Helper\Data $dataHelper,
         LogDNA $logDNA,
         DataObjectFactory $dataObjectFactory,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        RuleRepository $ruleRepo
     ) {
         parent::__construct(
             $context,
@@ -63,6 +66,7 @@ class AbstractInvoice extends AbstractMethod
         $this->cache = $context->getCacheManager();
         $this->dataObjectFactory = $dataObjectFactory;
         $this->storeManager = $storeManager;
+        $this->ruleRepo = $ruleRepo;
 
         if (interface_exists("Magento\Framework\Serialize\Serializer\Json")) {
             $this->serializer = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Serialize\Serializer\Json::class);
@@ -77,7 +81,7 @@ class AbstractInvoice extends AbstractMethod
             return false;
         }
 
-        $amount = $quote->getBaseGrandTotal();
+        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
         if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
             return false;

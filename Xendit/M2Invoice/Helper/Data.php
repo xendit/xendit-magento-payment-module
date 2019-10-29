@@ -100,6 +100,11 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getChosenMethods();
     }
 
+    public function getEnabledPromo()
+    {
+        return $this->m2Invoice->getEnabledPromo();
+    }
+
     public function jsonData()
     {
         $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);

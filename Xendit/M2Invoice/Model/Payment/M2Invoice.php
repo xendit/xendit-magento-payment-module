@@ -64,4 +64,44 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     {
         return $this->getConfigData('chosen_methods');
     }
+
+    public function getEnabledPromo()
+    {
+        $promo = [];
+        $bankCodes = [
+            'bca',
+            'bni',
+            'bri',
+            'cimb',
+            'citibank',
+            'danamon',
+            'dbs',
+            'hsbc',
+            'mandiri',
+            'maybank',
+            'mega',
+            'mnc',
+            'permata',
+            'sc',
+            'uob',
+        ];
+
+        foreach ($bankCodes as $bankCode) {
+            if ($this->getConfigData('card_promo_' . $bankCode . '_active')) {
+                $binListCandidate = explode(',', $this->getConfigData('card_promo_' . $bankCode . '_bin_list'));
+                $binList = $result = array_filter(
+                    $binListCandidate,
+                    function ($value) {
+                        return strlen($value) === 6;
+                    }
+                );
+                $promo[] = [
+                    'rule_id' => $this->getConfigData('card_promo_' . $bankCode . '_rule'),
+                    'bin_list' => $binList
+                ];
+            }
+        }
+
+        return $promo;
+    }
 }

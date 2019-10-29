@@ -38,18 +38,26 @@ class CCHosted extends AbstractInvoice
         $payment->setIsTransactionPending(true);
 
         try {
+            $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
             $args = [
                 'order_number' => $orderId,
-                'amount' => $amount,
+                'amount' => $rawAmount,
                 'payment_type' => self::CC_HOSTED_PAYMENT_TYPE,
                 'store_name' => $this->storeManager->getStore()->getName(),
-                'platform_name' => self::PLATFORM_NAME
+                'platform_name' => self::PLATFORM_NAME,
             ];
+
+            $promo = $this->calculatePromo($order, $rawAmount);
+
+            if (!empty($promo)) {
+                $args['promotions'] = json_encode($promo);
+            }
 
             $hostedPayment = $this->requestHostedPayment($args);
 
             if (isset($hostedPayment['error_code'])) {
-                $message = $hostedPayment['message'];
+                print_r($args);
+                $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
                 $this->processFailedPayment($payment, $message);
 
                 throw new \Magento\Framework\Exception\LocalizedException(
@@ -123,7 +131,8 @@ class CCHosted extends AbstractInvoice
 
     private function requestHostedPayment($requestData)
     {
-        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
+        // $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
+        $hostedPaymentUrl = 'http://a8e39850.ngrok.io/payment/xendit/hosted-payments';
         $hostedPaymentMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
@@ -165,5 +174,61 @@ class CCHosted extends AbstractInvoice
         )->setShouldCloseParentTransaction(
             !$canRefundMore
         );
+    }
+
+    private function calculatePromo($order, $rawAmount)
+    {
+        $promo = [];
+        $ruleIds = $order->getAppliedRuleIds();
+        $enabledPromotions = $this->dataHelper->getEnabledPromo();
+
+        if (empty($ruleIds) || empty($enabledPromotions)) {
+            return $promo;
+        }
+
+        $ruleIds = explode(',', $ruleIds);
+
+        foreach ($ruleIds as $ruleId) {
+            foreach ($enabledPromotions as $promotion) {
+                if ($promotion['rule_id'] === $ruleId) {
+                    $rule = $this->ruleRepo->getById($ruleId);
+                    $promo[] = $this->constructPromo($rule, $promotion, $rawAmount);;
+                }
+            }
+        }
+
+        return $promo;
+    }
+
+    private function constructPromo($rule, $promotion, $rawAmount)
+    {
+        $constructedPromo = [
+            'bin_list' => $promotion['bin_list'],
+            'title' => $rule->getName()
+        ];
+        $rate = $rule->getDiscountAmount();
+
+        switch ($rule->getSimpleAction()) {
+            case 'to_percent':
+                $rate = 1 - ($rule->getDiscountAmount() / 100);
+                $constructedPromo['type'] = 'PERCENTAGE';
+                break;
+            case 'by_percent':
+                $rate = ($rule->getDiscountAmount() / 100);
+                $constructedPromo['type'] = 'PERCENTAGE';
+                break;
+            case 'to_fixed':
+                $rate = (int)$rawAmount - $rule->getDiscountAmount();
+                $constructedPromo['type'] = 'FIXED';
+                break;
+            case 'by_fixed':
+                $rate = (int)$rule->getDiscountAmount();
+                $constructedPromo['type'] = 'FIXED';
+                break;
+        }
+
+        $constructedPromo['rate'] = $rate;
+
+        return $constructedPromo;
     }
 }
