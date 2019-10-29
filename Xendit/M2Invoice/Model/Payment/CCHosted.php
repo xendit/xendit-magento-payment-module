@@ -41,7 +41,7 @@ class CCHosted extends AbstractInvoice
             $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
             $args = [
                 'order_number' => $orderId,
-                'amount' => $rawAmount,
+                'amount' => $amount,
                 'payment_type' => self::CC_HOSTED_PAYMENT_TYPE,
                 'store_name' => $this->storeManager->getStore()->getName(),
                 'platform_name' => self::PLATFORM_NAME,
@@ -51,12 +51,29 @@ class CCHosted extends AbstractInvoice
 
             if (!empty($promo)) {
                 $args['promotions'] = json_encode($promo);
+                $args['amount'] = $rawAmount;
+
+                $invalidDiscountAmount = $order->getBaseDiscountAmount();
+                $order->setBaseDiscountAmount(0);
+                $order->setBaseGrandTotal($order->getBaseGrandTotal() - $invalidDiscountAmount);
+
+                $invalidDiscountAmount = $order->getDiscountAmount();
+                $order->setDiscountAmount(0);
+                $order->setGrandTotal($order->getGrandTotal() - $invalidDiscountAmount);
+
+                $order->setBaseTotalDue($order->getBaseGrandTotal());
+                $order->setTotalDue($order->getGrandTotal());
+
+                $payment->setBaseAmountOrdered($order->getBaseGrandTotal());
+                $payment->setAmountOrdered($order->getGrandTotal());
+
+                $payment->setAmountAuthorized($order->getGrandTotal());
+                $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
             }
 
             $hostedPayment = $this->requestHostedPayment($args);
 
             if (isset($hostedPayment['error_code'])) {
-                print_r($args);
                 $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
                 $this->processFailedPayment($payment, $message);
 
@@ -131,8 +148,7 @@ class CCHosted extends AbstractInvoice
 
     private function requestHostedPayment($requestData)
     {
-        // $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
-        $hostedPaymentUrl = 'http://a8e39850.ngrok.io/payment/xendit/hosted-payments';
+        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
         $hostedPaymentMethod = \Zend\Http\Request::METHOD_POST;
 
         try {

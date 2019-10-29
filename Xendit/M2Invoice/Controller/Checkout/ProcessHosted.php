@@ -26,6 +26,20 @@ class ProcessHosted extends AbstractAction
                     return $this->handlePaymentFailure($order, $hostedPayment['error_code'], 'Error reconciliating');
                 }
 
+                $order->setBaseDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
+                $order->setBaseGrandTotal($order->getBaseGrandTotal() + $order->getBaseDiscountAmount());
+
+                $order->setDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
+                $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
+
+                $payment->setAmountAuthorized($order->getBaseGrandTotal());
+                $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
+
+                $order->setBaseTotalDue($order->getBaseGrandTotal());
+                $order->setTotalDue($order->getBaseGrandTotal());
+                $order->setBaseTotalPaid($order->getBaseGrandTotal());
+                $order->setTotalPaid($order->getBaseGrandTotal());
+
                 return $this->processSuccessfulTransaction(
                     $order,
                     $payment,
