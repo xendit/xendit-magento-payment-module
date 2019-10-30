@@ -208,7 +208,7 @@ class CCHosted extends AbstractInvoice
             foreach ($enabledPromotions as $promotion) {
                 if ($promotion['rule_id'] === $ruleId) {
                     $rule = $this->ruleRepo->getById($ruleId);
-                    $promo[] = $this->constructPromo($rule, $promotion, $rawAmount);;
+                    $promo[] = $this->constructPromo($rule, $promotion, $rawAmount);
                 }
             }
         }
@@ -220,7 +220,8 @@ class CCHosted extends AbstractInvoice
     {
         $constructedPromo = [
             'bin_list' => $promotion['bin_list'],
-            'title' => $rule->getName()
+            'title' => $rule->getName(),
+            'rule_id' => $rule->getRuleId()
         ];
         $rate = $rule->getDiscountAmount();
 
