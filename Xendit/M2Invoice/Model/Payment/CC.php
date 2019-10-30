@@ -158,7 +158,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
             $refundData = [
                 'amount' => $amount,
                 'external_id' => $this->dataHelper->getExternalId($orderId, true)
-            ];    
+            ];
             $refund = $this->requestRefund($chargeId, $refundData);
 
             $this->handleRefundResult($payment, $refund, $canRefundMore);
@@ -212,6 +212,13 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
                 $payment->setAmountAuthorized($order->getGrandTotal());
                 $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
+            } else {
+                $requestData['promotion'] = array(
+                    'original_amount' => $rawAmount,
+                    'title' => $rule->getName(),
+                    'promo_amount' => $amount,
+                    'promo_reference' => $order->getAppliedRuleIds()
+                );
             }
 
             $charge = $this->requestCharge($requestData);

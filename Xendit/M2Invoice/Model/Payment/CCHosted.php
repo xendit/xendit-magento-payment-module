@@ -221,7 +221,7 @@ class CCHosted extends AbstractInvoice
         $constructedPromo = [
             'bin_list' => $promotion['bin_list'],
             'title' => $rule->getName(),
-            'rule_id' => $rule->getRuleId()
+            'promo_reference' => $rule->getRuleId()
         ];
         $rate = $rule->getDiscountAmount();
 
