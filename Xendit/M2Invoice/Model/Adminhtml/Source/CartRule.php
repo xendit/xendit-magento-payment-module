@@ -35,7 +35,7 @@ class CartRule implements \Magento\Framework\Option\ArrayInterface
         $searchCriteria = $this->_searchCriteriaBuilder->addFilter('is_active', true)->create();
         $rules = $this->_ruleCollection->getList($searchCriteria);
         $options = array([
-            'value' => 'notset',
+            'value' => '',
             'label' => __('Choose Cart Rule')
         ]);
 

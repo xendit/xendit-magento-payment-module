@@ -180,8 +180,11 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $payment->setIsTransactionPending(true);
 
         $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
+        $bin = isset($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;
 
         try {
+            $hasPromo = $this->calculatePromo($bin, $order);
+            $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
             $requestData = array(
                 'token_id' => $additionalData['token_id'],
                 'card_cvn' => $cvn,
@@ -189,6 +192,27 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 'external_id' => $this->dataHelper->getExternalId($orderId),
                 'return_url' => $this->dataHelper->getThreeDSResultUrl($orderId)
             );
+
+            if (!$hasPromo) {
+                $requestData['amount'] = $rawAmount;
+
+                $invalidDiscountAmount = $order->getBaseDiscountAmount();
+                $order->setBaseDiscountAmount(0);
+                $order->setBaseGrandTotal($order->getBaseGrandTotal() - $invalidDiscountAmount);
+
+                $invalidDiscountAmount = $order->getDiscountAmount();
+                $order->setDiscountAmount(0);
+                $order->setGrandTotal($order->getGrandTotal() - $invalidDiscountAmount);
+
+                $order->setBaseTotalDue($order->getBaseGrandTotal());
+                $order->setTotalDue($order->getGrandTotal());
+
+                $payment->setBaseAmountOrdered($order->getBaseGrandTotal());
+                $payment->setAmountOrdered($order->getGrandTotal());
+
+                $payment->setAmountAuthorized($order->getGrandTotal());
+                $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
+            }
 
             $charge = $this->requestCharge($requestData);
 
@@ -376,5 +400,27 @@ class CC extends \Magento\Payment\Model\Method\Cc
         } catch (\Exception $e) {
             $this->_logger->log(100, $message . var_export($param, true));
         }
+    }
+
+    private function calculatePromo($bin, $order)
+    {
+        $ruleIds = $order->getAppliedRuleIds();
+        $enabledPromotions = $this->dataHelper->getEnabledPromo();
+
+        if (empty($ruleIds) || empty($enabledPromotions)) {
+            return false;
+        }
+
+        $ruleIds = explode(',', $ruleIds);
+
+        foreach ($ruleIds as $ruleId) {
+            foreach ($enabledPromotions as $promotion) {
+                if ($promotion['rule_id'] === $ruleId && in_array($bin, $promotion['bin_list'])) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

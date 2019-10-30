@@ -190,6 +190,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_bca_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_bca_bin_list" translate="label" type="textarea" sortOrder="103" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -200,6 +201,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_bca_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -221,6 +223,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_bni_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_bni_bin_list" translate="label" type="textarea" sortOrder="113" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -231,6 +234,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_bni_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -252,6 +256,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_bri_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_bri_bin_list" translate="label" type="textarea" sortOrder="123" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -262,6 +267,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_bri_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -283,6 +289,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_cimb_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_cimb_bin_list" translate="label" type="textarea" sortOrder="133" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -293,6 +300,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_cimb_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -314,6 +322,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_citibank_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_citibank_bin_list" translate="label" type="textarea" sortOrder="143" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -324,6 +333,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_citibank_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -345,6 +355,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_danamon_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_danamon_bin_list" translate="label" type="textarea" sortOrder="153" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -355,6 +366,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_danamon_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -376,6 +388,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_dbs_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_dbs_bin_list" translate="label" type="textarea" sortOrder="163" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -386,6 +399,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_dbs_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -407,6 +421,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_hsbc_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_hsbc_bin_list" translate="label" type="textarea" sortOrder="173" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -417,6 +432,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_hsbc_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -438,6 +454,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_mandiri_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_mandiri_bin_list" translate="label" type="textarea" sortOrder="183" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -448,6 +465,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_mandiri_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -469,6 +487,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_maybank_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_maybank_bin_list" translate="label" type="textarea" sortOrder="193" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -479,6 +498,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_maybank_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -500,6 +520,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_mega_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_mega_bin_list" translate="label" type="textarea" sortOrder="203" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -510,6 +531,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_mega_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -531,6 +553,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_mnc_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_mnc_bin_list" translate="label" type="textarea" sortOrder="213" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -541,6 +564,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_mnc_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -562,6 +586,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_permata_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_permata_bin_list" translate="label" type="textarea" sortOrder="223" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -572,6 +597,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_permata_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -593,6 +619,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_sc_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_sc_bin_list" translate="label" type="textarea" sortOrder="233" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -603,6 +630,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_sc_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
 
@@ -624,6 +652,7 @@
                         </depends>
                         <attribute type="shared">1</attribute>
                         <config_path>payment/m2invoice/card_promo_uob_rule</config_path>
+                        <validate>required-entry</validate>
                     </field>
                     <field id="card_promo_uob_bin_list" translate="label" type="textarea" sortOrder="243" showInDefault="1" showInWebsite="1" showInStore="1">
                         <depends>
@@ -634,6 +663,7 @@
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_uob_bin_list</config_path>
+                        <validate>required-entry</validate>
                     </field>
                 </group>
             </group>
