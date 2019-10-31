@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 1.6.0 (2019-11-01)
+
+Features:
+
+- Add bank promo feature for credit card
+- Promo will be counted on Xendit side based on Magento sales rule
+
 ## 1.5.0 (2019-10-15)
 
 Features:

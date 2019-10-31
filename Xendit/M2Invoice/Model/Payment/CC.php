@@ -8,6 +8,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseFactory;
 use Magento\Framework\Model\Context;
 use Magento\Sales\Model\Order;
+use Magento\SalesRule\Model\RuleRepository;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
@@ -40,6 +41,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     protected $url;
     protected $responseFactory;
     protected $logdnaHelper;
+    protected $ruleRepo;
 
     public function __construct(
         Crypto $cryptoHelper,
@@ -58,6 +60,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         UrlInterface $url,
         ResponseFactory $responseFactory,
         LogDNA $logdnaHelper,
+        RuleRepository $ruleRepo,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -84,6 +87,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $this->url = $url;
         $this->responseFactory = $responseFactory;
         $this->logdnaHelper = $logdnaHelper;
+        $this->ruleRepo = $ruleRepo;
     }
 
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
@@ -158,7 +162,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
             $refundData = [
                 'amount' => $amount,
                 'external_id' => $this->dataHelper->getExternalId($orderId, true)
-            ];    
+            ];
             $refund = $this->requestRefund($chargeId, $refundData);
 
             $this->handleRefundResult($payment, $refund, $canRefundMore);
@@ -180,8 +184,11 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $payment->setIsTransactionPending(true);
 
         $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
+        $bin = isset($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;
 
         try {
+            $promoResult = $this->calculatePromo($bin, $order);
+            $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
             $requestData = array(
                 'token_id' => $additionalData['token_id'],
                 'card_cvn' => $cvn,
@@ -189,6 +196,35 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 'external_id' => $this->dataHelper->getExternalId($orderId),
                 'return_url' => $this->dataHelper->getThreeDSResultUrl($orderId)
             );
+
+            if (!$promoResult['has_promo']) {
+                $requestData['amount'] = $rawAmount;
+
+                $invalidDiscountAmount = $order->getBaseDiscountAmount();
+                $order->setBaseDiscountAmount(0);
+                $order->setBaseGrandTotal($order->getBaseGrandTotal() - $invalidDiscountAmount);
+
+                $invalidDiscountAmount = $order->getDiscountAmount();
+                $order->setDiscountAmount(0);
+                $order->setGrandTotal($order->getGrandTotal() - $invalidDiscountAmount);
+
+                $order->setBaseTotalDue($order->getBaseGrandTotal());
+                $order->setTotalDue($order->getGrandTotal());
+
+                $payment->setBaseAmountOrdered($order->getBaseGrandTotal());
+                $payment->setAmountOrdered($order->getGrandTotal());
+
+                $payment->setAmountAuthorized($order->getGrandTotal());
+                $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
+            } else {
+                $requestData['promotion'] = json_encode(array(
+                    'original_amount' => $rawAmount,
+                    'title' => $promoResult['rule']->getName(),
+                    'promo_amount' => $amount,
+                    'promo_reference' => $order->getAppliedRuleIds(),
+                    'type' => $this->dataHelper->mapSalesRuleType($promoResult['rule']->getSimpleAction())
+                ));
+            }
 
             $charge = $this->requestCharge($requestData);
 
@@ -275,7 +311,9 @@ class CC extends \Magento\Payment\Model\Method\Cc
     private function handle3DSFlow($requestData, $payment, $order)
     {
         unset($requestData['card_cvn']);
-        $hosted3DS = $this->request3DS($requestData);
+        $hosted3DSRequestData = array_replace([], $requestData);
+        unset($hosted3DSRequestData['promotion']);
+        $hosted3DS = $this->request3DS($hosted3DSRequestData);
 
         if ('IN_REVIEW' === $hosted3DS['status']) {
             $hostedUrl = $hosted3DS['redirect']['url'];
@@ -376,5 +414,33 @@ class CC extends \Magento\Payment\Model\Method\Cc
         } catch (\Exception $e) {
             $this->_logger->log(100, $message . var_export($param, true));
         }
+    }
+
+    private function calculatePromo($bin, $order)
+    {
+        $ruleIds = $order->getAppliedRuleIds();
+        $enabledPromotions = $this->dataHelper->getEnabledPromo();
+
+        if (empty($ruleIds) || empty($enabledPromotions)) {
+            return false;
+        }
+
+        $ruleIds = explode(',', $ruleIds);
+
+        foreach ($ruleIds as $ruleId) {
+            foreach ($enabledPromotions as $promotion) {
+                if ($promotion['rule_id'] === $ruleId && in_array($bin, $promotion['bin_list'])) {
+                    $rule = $this->ruleRepo->getById($ruleId);
+                    return [
+                        'has_promo' => true,
+                        'rule' => $rule,
+                    ];
+                }
+            }
+        }
+
+        return [
+            'has_promo' => false
+        ];
     }
 }

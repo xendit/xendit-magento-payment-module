@@ -172,6 +172,500 @@
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CardPaymentType</source_model>
                     <attribute type="shared">1</attribute>
                 </field>
+                <group id="card_promo_bca" translate="label" showInDefault="1" showInWebsite="1" sortOrder="100">
+                    <label>Credit Card Promotion - BCA</label>
+                    <field id="card_promo_bca_active" translate="label comment" sortOrder="101" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_bca_active</config_path>
+                    </field>
+                    <field id="card_promo_bca_rule" translate="label" type="select" sortOrder="102" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_bca_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_bca_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_bca_bin_list" translate="label" type="textarea" sortOrder="103" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_bca_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_bca_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_bni" translate="label" showInDefault="1" showInWebsite="1" sortOrder="110">
+                    <label>Credit Card Promotion - BNI</label>
+                    <field id="card_promo_bni_active" translate="label comment" sortOrder="111" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_bni_active</config_path>
+                    </field>
+                    <field id="card_promo_bni_rule" translate="label" type="select" sortOrder="112" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_bni_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_bni_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_bni_bin_list" translate="label" type="textarea" sortOrder="113" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_bni_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_bni_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_bri" translate="label" showInDefault="1" showInWebsite="1" sortOrder="120">
+                    <label>Credit Card Promotion - BRI</label>
+                    <field id="card_promo_bri_active" translate="label comment" sortOrder="121" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_bri_active</config_path>
+                    </field>
+                    <field id="card_promo_bri_rule" translate="label" type="select" sortOrder="122" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_bri_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_bri_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_bri_bin_list" translate="label" type="textarea" sortOrder="123" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_bri_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_bri_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_cimb" translate="label" showInDefault="1" showInWebsite="1" sortOrder="130">
+                    <label>Credit Card Promotion - CIMB</label>
+                    <field id="card_promo_cimb_active" translate="label comment" sortOrder="131" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_cimb_active</config_path>
+                    </field>
+                    <field id="card_promo_cimb_rule" translate="label" type="select" sortOrder="132" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_cimb_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_cimb_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_cimb_bin_list" translate="label" type="textarea" sortOrder="133" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_cimb_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_cimb_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_citibank" translate="label" showInDefault="1" showInWebsite="1" sortOrder="140">
+                    <label>Credit Card Promotion - Citibank</label>
+                    <field id="card_promo_citibank_active" translate="label comment" sortOrder="141" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_citibank_active</config_path>
+                    </field>
+                    <field id="card_promo_citibank_rule" translate="label" type="select" sortOrder="142" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_citibank_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_citibank_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_citibank_bin_list" translate="label" type="textarea" sortOrder="143" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_citibank_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_citibank_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_danamon" translate="label" showInDefault="1" showInWebsite="1" sortOrder="150">
+                    <label>Credit Card Promotion - Danamon</label>
+                    <field id="card_promo_danamon_active" translate="label comment" sortOrder="151" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_danamon_active</config_path>
+                    </field>
+                    <field id="card_promo_danamon_rule" translate="label" type="select" sortOrder="152" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_danamon_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_danamon_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_danamon_bin_list" translate="label" type="textarea" sortOrder="153" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_danamon_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_danamon_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_dbs" translate="label" showInDefault="1" showInWebsite="1" sortOrder="160">
+                    <label>Credit Card Promotion - DBS</label>
+                    <field id="card_promo_dbs_active" translate="label comment" sortOrder="161" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_dbs_active</config_path>
+                    </field>
+                    <field id="card_promo_dbs_rule" translate="label" type="select" sortOrder="162" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_dbs_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_dbs_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_dbs_bin_list" translate="label" type="textarea" sortOrder="163" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_dbs_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_dbs_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_hsbc" translate="label" showInDefault="1" showInWebsite="1" sortOrder="170">
+                    <label>Credit Card Promotion - HSBC</label>
+                    <field id="card_promo_hsbc_active" translate="label comment" sortOrder="171" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_hsbc_active</config_path>
+                    </field>
+                    <field id="card_promo_hsbc_rule" translate="label" type="select" sortOrder="172" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_hsbc_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_hsbc_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_hsbc_bin_list" translate="label" type="textarea" sortOrder="173" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_hsbc_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_hsbc_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_mandiri" translate="label" showInDefault="1" showInWebsite="1" sortOrder="180">
+                    <label>Credit Card Promotion - Mandiri</label>
+                    <field id="card_promo_mandiri_active" translate="label comment" sortOrder="181" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_mandiri_active</config_path>
+                    </field>
+                    <field id="card_promo_mandiri_rule" translate="label" type="select" sortOrder="182" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_mandiri_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_mandiri_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_mandiri_bin_list" translate="label" type="textarea" sortOrder="183" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_mandiri_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_mandiri_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_maybank" translate="label" showInDefault="1" showInWebsite="1" sortOrder="190">
+                    <label>Credit Card Promotion - Maybank</label>
+                    <field id="card_promo_maybank_active" translate="label comment" sortOrder="191" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_maybank_active</config_path>
+                    </field>
+                    <field id="card_promo_maybank_rule" translate="label" type="select" sortOrder="192" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_maybank_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_maybank_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_maybank_bin_list" translate="label" type="textarea" sortOrder="193" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_maybank_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_maybank_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_mega" translate="label" showInDefault="1" showInWebsite="1" sortOrder="200">
+                    <label>Credit Card Promotion - Mega</label>
+                    <field id="card_promo_mega_active" translate="label comment" sortOrder="201" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_mega_active</config_path>
+                    </field>
+                    <field id="card_promo_mega_rule" translate="label" type="select" sortOrder="202" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_mega_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_mega_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_mega_bin_list" translate="label" type="textarea" sortOrder="203" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_mega_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_mega_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_mnc" translate="label" showInDefault="1" showInWebsite="1" sortOrder="210">
+                    <label>Credit Card Promotion - MNC</label>
+                    <field id="card_promo_mnc_active" translate="label comment" sortOrder="211" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_mnc_active</config_path>
+                    </field>
+                    <field id="card_promo_mnc_rule" translate="label" type="select" sortOrder="212" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_mnc_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_mnc_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_mnc_bin_list" translate="label" type="textarea" sortOrder="213" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_mnc_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_mnc_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_permata" translate="label" showInDefault="1" showInWebsite="1" sortOrder="220">
+                    <label>Credit Card Promotion - Permata</label>
+                    <field id="card_promo_permata_active" translate="label comment" sortOrder="221" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_permata_active</config_path>
+                    </field>
+                    <field id="card_promo_permata_rule" translate="label" type="select" sortOrder="222" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_permata_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_permata_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_permata_bin_list" translate="label" type="textarea" sortOrder="223" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_permata_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_permata_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_sc" translate="label" showInDefault="1" showInWebsite="1" sortOrder="230">
+                    <label>Credit Card Promotion - Standard Chartered</label>
+                    <field id="card_promo_sc_active" translate="label comment" sortOrder="231" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_sc_active</config_path>
+                    </field>
+                    <field id="card_promo_sc_rule" translate="label" type="select" sortOrder="232" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_sc_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_sc_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_sc_bin_list" translate="label" type="textarea" sortOrder="233" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_sc_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_sc_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+
+                <group id="card_promo_uob" translate="label" showInDefault="1" showInWebsite="1" sortOrder="240">
+                    <label>Credit Card Promotion - UOB</label>
+                    <field id="card_promo_uob_active" translate="label comment" sortOrder="241" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/m2invoice/card_promo_uob_active</config_path>
+                    </field>
+                    <field id="card_promo_uob_rule" translate="label" type="select" sortOrder="242" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cart Rule Name</label>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CartRule</source_model>
+                        <comment>
+                            Cart rule that you want to apply in this promo
+                        </comment>
+                        <depends>
+                            <field id="card_promo_uob_active">1</field>
+                        </depends>
+                        <attribute type="shared">1</attribute>
+                        <config_path>payment/m2invoice/card_promo_uob_rule</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="card_promo_uob_bin_list" translate="label" type="textarea" sortOrder="243" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <depends>
+                            <field id="card_promo_uob_active">1</field>
+                        </depends>
+                        <comment>
+                            List of BIN that is affected by this promo
+                        </comment>
+                        <label>BIN for Promotion</label>
+                        <config_path>payment/m2invoice/card_promo_uob_bin_list</config_path>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
             </group>
         </section>
     </system>

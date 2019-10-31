@@ -38,18 +38,43 @@ class CCHosted extends AbstractInvoice
         $payment->setIsTransactionPending(true);
 
         try {
+            $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
             $args = [
                 'order_number' => $orderId,
                 'amount' => $amount,
                 'payment_type' => self::CC_HOSTED_PAYMENT_TYPE,
                 'store_name' => $this->storeManager->getStore()->getName(),
-                'platform_name' => self::PLATFORM_NAME
+                'platform_name' => self::PLATFORM_NAME,
             ];
+
+            $promo = $this->calculatePromo($order, $rawAmount);
+
+            if (!empty($promo)) {
+                $args['promotions'] = json_encode($promo);
+                $args['amount'] = $rawAmount;
+
+                $invalidDiscountAmount = $order->getBaseDiscountAmount();
+                $order->setBaseDiscountAmount(0);
+                $order->setBaseGrandTotal($order->getBaseGrandTotal() - $invalidDiscountAmount);
+
+                $invalidDiscountAmount = $order->getDiscountAmount();
+                $order->setDiscountAmount(0);
+                $order->setGrandTotal($order->getGrandTotal() - $invalidDiscountAmount);
+
+                $order->setBaseTotalDue($order->getBaseGrandTotal());
+                $order->setTotalDue($order->getGrandTotal());
+
+                $payment->setBaseAmountOrdered($order->getBaseGrandTotal());
+                $payment->setAmountOrdered($order->getGrandTotal());
+
+                $payment->setAmountAuthorized($order->getGrandTotal());
+                $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
+            }
 
             $hostedPayment = $this->requestHostedPayment($args);
 
             if (isset($hostedPayment['error_code'])) {
-                $message = $hostedPayment['message'];
+                $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
                 $this->processFailedPayment($payment, $message);
 
                 throw new \Magento\Framework\Exception\LocalizedException(
@@ -165,5 +190,59 @@ class CCHosted extends AbstractInvoice
         )->setShouldCloseParentTransaction(
             !$canRefundMore
         );
+    }
+
+    private function calculatePromo($order, $rawAmount)
+    {
+        $promo = [];
+        $ruleIds = $order->getAppliedRuleIds();
+        $enabledPromotions = $this->dataHelper->getEnabledPromo();
+
+        if (empty($ruleIds) || empty($enabledPromotions)) {
+            return $promo;
+        }
+
+        $ruleIds = explode(',', $ruleIds);
+
+        foreach ($ruleIds as $ruleId) {
+            foreach ($enabledPromotions as $promotion) {
+                if ($promotion['rule_id'] === $ruleId) {
+                    $rule = $this->ruleRepo->getById($ruleId);
+                    $promo[] = $this->constructPromo($rule, $promotion, $rawAmount);
+                }
+            }
+        }
+
+        return $promo;
+    }
+
+    private function constructPromo($rule, $promotion, $rawAmount)
+    {
+        $constructedPromo = [
+            'bin_list' => $promotion['bin_list'],
+            'title' => $rule->getName(),
+            'promo_reference' => $rule->getRuleId(),
+            'type' => $this->dataHelper->mapSalesRuleType($rule->getSimpleAction()),
+        ];
+        $rate = $rule->getDiscountAmount();
+
+        switch ($rule->getSimpleAction()) {
+            case 'to_percent':
+                $rate = 1 - ($rule->getDiscountAmount() / 100);
+                break;
+            case 'by_percent':
+                $rate = ($rule->getDiscountAmount() / 100);
+                break;
+            case 'to_fixed':
+                $rate = (int)$rawAmount - $rule->getDiscountAmount();
+                break;
+            case 'by_fixed':
+                $rate = (int)$rule->getDiscountAmount();
+                break;
+        }
+
+        $constructedPromo['rate'] = $rate;
+
+        return $constructedPromo;
     }
 }

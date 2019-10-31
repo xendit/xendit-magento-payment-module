@@ -100,6 +100,11 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getChosenMethods();
     }
 
+    public function getEnabledPromo()
+    {
+        return $this->m2Invoice->getEnabledPromo();
+    }
+
     public function jsonData()
     {
         $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);
@@ -137,6 +142,26 @@ class Data extends AbstractHelper
             case 'EXPIRED_CARD': return "$failureReason - Your bank declined the payment due to the card being expired. Please try
                 another card that has not expired.";
             default: return $failureReason;
+        }
+    }
+
+    /**
+     * Map Magento sales rule action to Xendit's standard type
+     *
+     * @param $type
+     * @return string
+     */
+    public function mapSalesRuleType($type)
+    {
+        switch ($type) {
+            case 'to_percent':
+            case 'by_percent':
+                return 'PERCENTAGE';
+            case 'to_fixed':
+            case 'by_fixed':
+                return 'FIXED';
+            default:
+                return $type;
         }
     }
 }
