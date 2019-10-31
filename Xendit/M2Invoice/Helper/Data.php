@@ -144,4 +144,24 @@ class Data extends AbstractHelper
             default: return $failureReason;
         }
     }
+
+    /**
+     * Map Magento sales rule action to Xendit's standard type
+     *
+     * @param $type
+     * @return string
+     */
+    public function mapSalesRuleType($type)
+    {
+        switch ($type) {
+            case 'to_percent':
+            case 'by_percent':
+                return 'PERCENTAGE';
+            case 'to_fixed':
+            case 'by_fixed':
+                return 'FIXED';
+            default:
+                return $type;
+        }
+    }
 }

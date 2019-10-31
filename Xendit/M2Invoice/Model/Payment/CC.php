@@ -8,6 +8,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseFactory;
 use Magento\Framework\Model\Context;
 use Magento\Sales\Model\Order;
+use Magento\SalesRule\Model\RuleRepository;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
@@ -40,6 +41,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     protected $url;
     protected $responseFactory;
     protected $logdnaHelper;
+    protected $ruleRepo;
 
     public function __construct(
         Crypto $cryptoHelper,
@@ -58,6 +60,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         UrlInterface $url,
         ResponseFactory $responseFactory,
         LogDNA $logdnaHelper,
+        RuleRepository $ruleRepo,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -84,6 +87,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $this->url = $url;
         $this->responseFactory = $responseFactory;
         $this->logdnaHelper = $logdnaHelper;
+        $this->ruleRepo = $ruleRepo;
     }
 
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
@@ -183,7 +187,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $bin = isset($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;
 
         try {
-            $hasPromo = $this->calculatePromo($bin, $order);
+            $promoResult = $this->calculatePromo($bin, $order);
             $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
             $requestData = array(
                 'token_id' => $additionalData['token_id'],
@@ -193,7 +197,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 'return_url' => $this->dataHelper->getThreeDSResultUrl($orderId)
             );
 
-            if (!$hasPromo) {
+            if (!$promoResult['has_promo']) {
                 $requestData['amount'] = $rawAmount;
 
                 $invalidDiscountAmount = $order->getBaseDiscountAmount();
@@ -213,12 +217,13 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 $payment->setAmountAuthorized($order->getGrandTotal());
                 $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
             } else {
-                $requestData['promotion'] = array(
+                $requestData['promotion'] = json_encode(array(
                     'original_amount' => $rawAmount,
-                    'title' => $rule->getName(),
+                    'title' => $promoResult['rule']->getName(),
                     'promo_amount' => $amount,
-                    'promo_reference' => $order->getAppliedRuleIds()
-                );
+                    'promo_reference' => $order->getAppliedRuleIds(),
+                    'type' => $this->dataHelper->mapSalesRuleType($promoResult['rule']->getSimpleAction())
+                ));
             }
 
             $charge = $this->requestCharge($requestData);
@@ -306,7 +311,9 @@ class CC extends \Magento\Payment\Model\Method\Cc
     private function handle3DSFlow($requestData, $payment, $order)
     {
         unset($requestData['card_cvn']);
-        $hosted3DS = $this->request3DS($requestData);
+        $hosted3DSRequestData = array_replace([], $requestData);
+        unset($hosted3DSRequestData['promotion']);
+        $hosted3DS = $this->request3DS($hosted3DSRequestData);
 
         if ('IN_REVIEW' === $hosted3DS['status']) {
             $hostedUrl = $hosted3DS['redirect']['url'];
@@ -423,11 +430,17 @@ class CC extends \Magento\Payment\Model\Method\Cc
         foreach ($ruleIds as $ruleId) {
             foreach ($enabledPromotions as $promotion) {
                 if ($promotion['rule_id'] === $ruleId && in_array($bin, $promotion['bin_list'])) {
-                    return true;
+                    $rule = $this->ruleRepo->getById($ruleId);
+                    return [
+                        'has_promo' => true,
+                        'rule' => $rule,
+                    ];
                 }
             }
         }
 
-        return false;
+        return [
+            'has_promo' => false
+        ];
     }
 }

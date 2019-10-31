@@ -221,26 +221,23 @@ class CCHosted extends AbstractInvoice
         $constructedPromo = [
             'bin_list' => $promotion['bin_list'],
             'title' => $rule->getName(),
-            'promo_reference' => $rule->getRuleId()
+            'promo_reference' => $rule->getRuleId(),
+            'type' => $this->dataHelper->mapSalesRuleType($rule->getSimpleAction()),
         ];
         $rate = $rule->getDiscountAmount();
 
         switch ($rule->getSimpleAction()) {
             case 'to_percent':
                 $rate = 1 - ($rule->getDiscountAmount() / 100);
-                $constructedPromo['type'] = 'PERCENTAGE';
                 break;
             case 'by_percent':
                 $rate = ($rule->getDiscountAmount() / 100);
-                $constructedPromo['type'] = 'PERCENTAGE';
                 break;
             case 'to_fixed':
                 $rate = (int)$rawAmount - $rule->getDiscountAmount();
-                $constructedPromo['type'] = 'FIXED';
                 break;
             case 'by_fixed':
                 $rate = (int)$rule->getDiscountAmount();
-                $constructedPromo['type'] = 'FIXED';
                 break;
         }
 
