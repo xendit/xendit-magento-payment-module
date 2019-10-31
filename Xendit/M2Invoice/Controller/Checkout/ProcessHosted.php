@@ -34,17 +34,7 @@ class ProcessHosted extends AbstractAction
                     $order->setBaseGrandTotal($order->getBaseGrandTotal() + $order->getBaseDiscountAmount());
                     $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
                     $order->save();
-
                 }
-
-                // $payment->setAmountAuthorized($order->getBaseGrandTotal());
-                // $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
-
-                // $order->setBaseTotalDue($order->getBaseGrandTotal());
-                // $order->setTotalDue($order->getBaseGrandTotal());
-                // $order->setBaseTotalPaid($hostedPayment['paid_amount']);
-                // $order->setTotalPaid($hostedPayment['paid_amount']);
-                // $order->save();
 
                 return $this->processSuccessfulTransaction(
                     $order,
