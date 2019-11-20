@@ -46,7 +46,7 @@ class OVO extends AbstractInvoice
 
             $ewalletPayment = $this->requestEwalletPayment($args);
 
-            if ( isset($ewalletPayment['error_code']) ) {
+            if (isset($ewalletPayment['error_code'])) {
                 $message = $this->mapOvoErrorCode($ewalletPayment['error_code']);
                 $this->processFailedPayment($payment, $message);
 
@@ -81,9 +81,35 @@ class OVO extends AbstractInvoice
                 $ewalletUrl,
                 $ewalletMethod,
                 $requestData,
-                null,
+                false,
                 null,
                 $options
+            );
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $ewalletPayment;
+    }
+
+    private function getEwalletPaymentStatus($ewalletType, $externalId)
+    {
+        $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=" . $ewalletType . "&external_id=" . $externalId;
+        $ewalletMethod = \Zend\Http\Request::METHOD_GET;
+
+        return array(
+            'amount' => '10000',
+            'business_id' => '59dae8f0cdf6483152ab53e5',
+            'ewallet_type' => $ewalletType,
+            'external_id' => $externalId,
+            'status' => 'FAILED',
+            'transaction_date' => null
+        );
+
+        try {
+            $ewalletPayment = $this->apiHelper->request(
+                $ewalletUrl,
+                $ewalletMethod
             );
         } catch (\Exception $e) {
             throw $e;
@@ -132,7 +158,7 @@ class OVO extends AbstractInvoice
 
     private function mapOvoErrorCode($errorCode)
     {
-        switch ( $errorCode ) {
+        switch ($errorCode) {
             case 'USER_DID_NOT_AUTHORIZE_THE_PAYMENT':
                 return 'Please complete the payment request within 60 seconds.';
             case 'USER_DECLINED_THE_TRANSACTION':
@@ -154,6 +180,5 @@ class OVO extends AbstractInvoice
             default:
                 return "Failed to pay with eWallet. Error code: $errorCode";
         }
-
     }
 }
