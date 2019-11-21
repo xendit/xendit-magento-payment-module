@@ -103,6 +103,13 @@ class OVO extends AbstractInvoice
                 $options
             );
         } catch (\Exception $e) {
+            $ewalletPayment = $this->getEwalletPaymentStatus($requestData['ewallet_type'], $requestData['external_id']);
+
+            if ($ewalletPayment['status'] === 'COMPLETED') {
+                $ewalletPayment['ewallet_transaction_id'] = $ewalletPayment['external_id'];
+                return $ewalletPayment;
+            }
+
             throw $e;
         }
 
@@ -120,15 +127,6 @@ class OVO extends AbstractInvoice
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=" . $ewalletType . "&external_id=" . $externalId;
         $ewalletMethod = \Zend\Http\Request::METHOD_GET;
-
-        return array(
-            'amount' => '10000',
-            'business_id' => '59dae8f0cdf6483152ab53e5',
-            'ewallet_type' => $ewalletType,
-            'external_id' => $externalId,
-            'status' => 'FAILED',
-            'transaction_date' => null
-        );
 
         try {
             $ewalletPayment = $this->apiHelper->request(
