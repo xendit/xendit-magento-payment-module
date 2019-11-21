@@ -28,6 +28,10 @@ class OVO extends AbstractInvoice
     protected $_maxAmount = 10000000;
     protected $methodCode = 'OVO';
 
+
+    /**
+     * {@inheritDoc}
+     */
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $order = $payment->getOrder();
@@ -75,6 +79,12 @@ class OVO extends AbstractInvoice
         return $this;
     }
 
+    /**
+     * API call to create ewallet payment.
+     * 
+     * @param $requestData
+     * @return array
+     */
     private function requestEwalletPayment($requestData)
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets";
@@ -99,6 +109,13 @@ class OVO extends AbstractInvoice
         return $ewalletPayment;
     }
 
+    /**
+     * API call to get ewallet payment status.
+     * 
+     * @param $ewalletType
+     * @param $externalId
+     * @return array
+     */
     private function getEwalletPaymentStatus($ewalletType, $externalId)
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=" . $ewalletType . "&external_id=" . $externalId;
@@ -125,6 +142,11 @@ class OVO extends AbstractInvoice
         return $ewalletPayment;
     }
 
+    /**
+     * Retrieved additional data.
+     *
+     * @return string
+     */
     private function getAdditionalData()
     {
         static $data = [];
@@ -135,6 +157,11 @@ class OVO extends AbstractInvoice
         return $this->elementFromArray($data, 'additional_data');
     }
 
+    /**
+     * Retrieved payment method.
+     *
+     * @return string
+     */
     private function getPaymentMethod()
     {
         /**
@@ -148,6 +175,13 @@ class OVO extends AbstractInvoice
         return $this->elementFromArray($data, 'paymentMethod');
     }
 
+    /**
+     * Retrieved specified element from given array.
+     *
+     * @param $data array
+     * @param $element string
+     * @return string
+     */
     private function elementFromArray($data, $element)
     {
         $r = [];
@@ -158,11 +192,40 @@ class OVO extends AbstractInvoice
         return $r;
     }
 
+    /**
+     * Handle failed ewallet payment.
+     *
+     * @param $payment
+     * @param $message
+     * @return void
+     */
+    private function handleFailedEwalletRequest($payment, $message)
+    {
+        $this->processFailedPayment($payment, $message);
+
+        throw new \Magento\Framework\Exception\LocalizedException(
+            new Phrase($message)
+        );
+    }
+
+    /**
+     * Add failed payment information to payment object. Will be processed on redirect phase.
+     *
+     * @param $payment
+     * @param $message
+     * @return void
+     */
     private function processFailedPayment($payment, $message)
     {
         $payment->setAdditionalInformation('xendit_failure_reason', $message);
     }
 
+    /**
+     * Map OVO error code to human readable messages
+     *
+     * @param $errorCode
+     * @return string
+     */
     private function mapOvoErrorCode($errorCode)
     {
         switch ($errorCode) {
@@ -187,14 +250,5 @@ class OVO extends AbstractInvoice
             default:
                 return "Failed to pay with eWallet. Error code: $errorCode";
         }
-    }
-
-    private function handleFailedEwalletRequest($payment, $message)
-    {
-        $this->processFailedPayment($payment, $message);
-
-        throw new \Magento\Framework\Exception\LocalizedException(
-            new Phrase($message)
-        );
     }
 }
