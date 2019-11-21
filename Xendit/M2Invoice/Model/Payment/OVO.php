@@ -48,16 +48,23 @@ class OVO extends AbstractInvoice
 
             if (isset($ewalletPayment['error_code'])) {
                 $message = $this->mapOvoErrorCode($ewalletPayment['error_code']);
-                $this->processFailedPayment($payment, $message);
+                
+                $this->handleFailedEwalletRequest($payment, $message);
+            }
 
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    new Phrase($message)
-                );
+            if (!isset($ewalletPayment['ewallet_transaction_id'])) {
+                $retrievedEwalletPayment = $this->getEwalletPaymentStatus($args['ewallet_type'], $args['external_id']);
+
+                if ($retrievedEwalletPayment['status'] === 'COMPLETED') {
+                    $transactionId = $retrievedEwalletPayment['external_id'];
+                } else {
+                    $this->handleFailedEwalletRequest($payment, 'Payment failed. Please try again');
+                }
             } else {
                 $transactionId = $ewalletPayment['ewallet_transaction_id'];
-
-                $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
             }
+
+            $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
         } catch (\Exception $e) {
             $errorMsg = $e->getMessage();
             throw new \Magento\Framework\Exception\LocalizedException(
@@ -180,5 +187,14 @@ class OVO extends AbstractInvoice
             default:
                 return "Failed to pay with eWallet. Error code: $errorCode";
         }
+    }
+
+    private function handleFailedEwalletRequest($payment, $message)
+    {
+        $this->processFailedPayment($payment, $message);
+
+        throw new \Magento\Framework\Exception\LocalizedException(
+            new Phrase($message)
+        );
     }
 }
