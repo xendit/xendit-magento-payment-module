@@ -108,6 +108,10 @@ class AbstractInvoice extends AbstractMethod
             return true;
         }
 
+        // if ($this->methodCode === 'OVO') {
+        //     return true;
+        // }
+
         try {
             $availableMethod = $this->getAvailableMethods();
 

@@ -54,6 +54,8 @@ class OVO extends AbstractInvoice
                 $message = $this->mapOvoErrorCode($ewalletPayment['error_code']);
                 
                 $this->handleFailedEwalletRequest($payment, $message);
+
+                return $this;
             }
 
             if (!isset($ewalletPayment['ewallet_transaction_id'])) {
@@ -63,6 +65,8 @@ class OVO extends AbstractInvoice
                     $transactionId = $retrievedEwalletPayment['external_id'];
                 } else {
                     $this->handleFailedEwalletRequest($payment, 'Payment failed. Please try again');
+
+                    return $this;
                 }
             } else {
                 $transactionId = $ewalletPayment['ewallet_transaction_id'];
@@ -127,6 +131,15 @@ class OVO extends AbstractInvoice
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=" . $ewalletType . "&external_id=" . $externalId;
         $ewalletMethod = \Zend\Http\Request::METHOD_GET;
+
+        // return array(
+        //     'amount' => '10000',
+        //     'business_id' => '59dae8f0cdf6483152ab53e5',
+        //     'ewallet_type' => $ewalletType,
+        //     'external_id' => $externalId,
+        //     'status' => 'COMPLETED',
+        //     'transaction_date' => null
+        // );
 
         try {
             $ewalletPayment = $this->apiHelper->request(
