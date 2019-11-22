@@ -85,7 +85,7 @@ class OVO extends AbstractInvoice
 
     /**
      * API call to create ewallet payment.
-     * 
+     *
      * @param $requestData
      * @return array
      */
@@ -122,7 +122,7 @@ class OVO extends AbstractInvoice
 
     /**
      * API call to get ewallet payment status.
-     * 
+     *
      * @param $ewalletType
      * @param $externalId
      * @return array
@@ -131,15 +131,6 @@ class OVO extends AbstractInvoice
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=" . $ewalletType . "&external_id=" . $externalId;
         $ewalletMethod = \Zend\Http\Request::METHOD_GET;
-
-        // return array(
-        //     'amount' => '10000',
-        //     'business_id' => '59dae8f0cdf6483152ab53e5',
-        //     'ewallet_type' => $ewalletType,
-        //     'external_id' => $externalId,
-        //     'status' => 'COMPLETED',
-        //     'transaction_date' => null
-        // );
 
         try {
             $ewalletPayment = $this->apiHelper->request(
@@ -195,12 +186,12 @@ class OVO extends AbstractInvoice
      */
     private function elementFromArray($data, $element)
     {
-        $r = [];
+        $result = [];
         if (key_exists($element, $data)) {
-            $r = (array) $data[$element];
+            $result = (array) $data[$element];
         }
 
-        return $r;
+        return $result;
     }
 
     /**
