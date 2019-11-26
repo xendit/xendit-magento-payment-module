@@ -187,6 +187,6 @@ class AbstractInvoice extends AbstractMethod
     {
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
 
-        return $baseUrl . 'xendit/checkout/notification?payment_type=ewallet';
+        return $baseUrl . 'xendit/checkout/notification';
     }
 }
