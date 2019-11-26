@@ -41,14 +41,8 @@ class Redirect extends AbstractAction
             }
 
             if ($payment->getAdditionalInformation('xendit_ewallet_id') !== null) {
-                $paymentId = $payment->getAdditionalInformation('xendit_ewallet_id');
-
-                return $this->processSuccessfulTransaction(
-                    $order,
-                    $payment,
-                    'Xendit eWallet payment completed. Transaction ID: ',
-                    $paymentId
-                );
+                $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
+                return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
             }
 
             if ($payment->getAdditionalInformation('xendit_failure_reason') !== null) {
@@ -97,24 +91,5 @@ class Redirect extends AbstractAction
             ));
             return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
         }
-    }
-
-    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId)
-    {
-        $orderState = Order::STATE_PROCESSING;
-        $order->setState($orderState)
-            ->setStatus($orderState)
-            ->addStatusHistoryComment("$paymentMessage $transactionId");
-
-        $order->save();
-
-        $payment->setTransactionId($transactionId);
-        $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
-
-        $this->invoiceOrder($order, $transactionId);
-
-        $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-        $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
-        return;
     }
 }
