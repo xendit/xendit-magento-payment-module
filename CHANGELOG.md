@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 1.6.1 (2019-11-26)
+
+Bugfix:
+
+- Move payment complete process for OVO to notification endpoint
+- Modify notification endpoint to cater both invoice and ewallet callback
+
 ## 1.6.0 (2019-11-01)
 
 Features:
