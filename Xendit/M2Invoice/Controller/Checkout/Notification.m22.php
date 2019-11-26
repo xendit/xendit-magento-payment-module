@@ -10,6 +10,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Enum\LogDNALevel;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Checkout;
@@ -54,8 +55,24 @@ class Notification extends Action
             $post = $this->getRequest()->getContent();
             $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
             $decodedPost = json_decode($post, true);
+            $isEwallet = false;
 
-            if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
+            if (!empty($decodedPost['ewallet_type'])) {
+                $isEwallet = true;
+
+                if (!$decodedPost['external_id']) {
+                    $result = $this->jsonResultFactory->create();
+                    /** You may introduce your own constants for this custom REST API */
+                    $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                    $result->setData([
+                        'status' => __('ERROR'),
+                        'message' => 'Callback external_id is invalid'
+                    ]);
+
+                    return $result;
+                }
+            }
+            else if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
                 $result = $this->jsonResultFactory->create();
                 /** You may introduce your own constants for this custom REST API */
                 $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
@@ -66,9 +83,16 @@ class Notification extends Action
 
                 return $result;
             }
-
-            $orderId = $decodedPost['description'];
-            $transactionId = $decodedPost['id'];
+            
+            if ($isEwallet) {
+                $temp = explode("_", $decodedPost['external_id']);
+                $orderId = end($temp);
+                $transactionId = $decodedPost['ewallet_transaction_id'];
+            }
+            else {
+                $orderId = $decodedPost['description'];
+                $transactionId = $decodedPost['id'];
+            }
 
             $order = $this->getOrderById($orderId);
             if (!$order) {
@@ -95,24 +119,43 @@ class Notification extends Action
                 return $result;
             }
 
-            $invoice = $this->getXenditInvoice($transactionId);
+            if ($isEwallet) {
+                if ($order->getState() === Order::STATE_PENDING_PAYMENT || $order->getState() === Order::STATE_PAYMENT_REVIEW) {
+                    //get ewallet payment status
+                    $paymentStatus = $this->getEwalletStatus($decodedPost['ewallet_type'], $decodedPost['external_id']);
+                }
+                else {
+                    //do nothing
+                    $result = $this->jsonResultFactory->create();
+                    $result->setData([
+                        'status' => __('SUCCESS'),
+                        'message' => 'eWallet transaction has been completed successfully'
+                    ]);
 
-            $paymentStatus = $invoice['status'];
-            $invoiceOrderId = $invoice['description'];
+                    return $result;
+                }
+            }
+            else {
+                $invoice = $this->getXenditInvoice($transactionId);
 
-            if ($invoiceOrderId !== $orderId) {
-                $result = $this->jsonResultFactory->create();
-                /** You may introduce your own constants for this custom REST API */
-                $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
-                $result->setData([
-                    'status' => __('ERROR'),
-                    'message' => 'Invoice is not for this order'
-                ]);
+                $paymentStatus = $invoice['status'];
+                $invoiceOrderId = $invoice['description'];
 
-                return $result;
+                if ($invoiceOrderId !== $orderId) {
+                    $result = $this->jsonResultFactory->create();
+                    /** You may introduce your own constants for this custom REST API */
+                    $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                    $result->setData([
+                        'status' => __('ERROR'),
+                        'message' => 'Invoice is not for this order'
+                    ]);
+
+                    return $result;
+                }
             }
 
-            if ($paymentStatus === 'PAID' || $paymentStatus === 'SETTLED') {
+            $statusList = array('PAID', 'SETTLED', 'COMPLETED');
+            if (in_array($paymentStatus, $statusList)) {
                 $orderState = Order::STATE_PROCESSING;
 
                 $order->setState($orderState)
@@ -123,6 +166,10 @@ class Notification extends Action
                 $payment->setTransactionId($transactionId);
                 $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
+                if ($isEwallet) {
+                    $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
+                }
+
                 $order->save();
 
                 $this->invoiceOrder($order, $transactionId);
@@ -130,7 +177,7 @@ class Notification extends Action
                 $result = $this->jsonResultFactory->create();
                 $result->setData([
                     'status' => __('SUCCESS'),
-                    'message' => 'Invoice paid'
+                    'message' => ($isEwallet ? 'eWallet paid' : 'Invoice paid')
                 ]);
 
                 return $result;
@@ -143,7 +190,7 @@ class Notification extends Action
                 $result = $this->jsonResultFactory->create();
                 $result->setData([
                     'status' => __('FAILED'),
-                    'message' => 'Invoice not paid'
+                    'message' => ($isEwallet ? 'eWallet not paid' : 'Invoice not paid')
                 ]);
 
                 return $result;
@@ -151,6 +198,16 @@ class Notification extends Action
         } catch (\Exception $e) {
             $message = "Error invoice callback" . $e->getMessage();
             $this->logDNA->log(LogDNALevel::ERROR, $message, $decodedPost);
+
+            $result = $this->jsonResultFactory->create();
+            /** You may introduce your own constants for this custom REST API */
+            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+            $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => $message
+                ]);
+
+            return $result;
         }
     }
 
@@ -163,11 +220,36 @@ class Notification extends Action
             $invoice = $this->apiHelper->request($invoiceUrl, $invoiceMethod);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             throw new \Magento\Framework\Exception\LocalizedException(
-                $e->getMessage()
+                new Phrase($e->getMessage())
             );
         }
 
         return $invoice;
+    }
+
+    private function getEwalletStatus($ewalletType, $externalId)
+    {
+        $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=".$ewalletType."&external_id=".$externalId;
+        $ewalletMethod = \Zend\Http\Request::METHOD_GET;
+
+        try {
+            $response = $this->apiHelper->request($ewalletUrl, $ewalletMethod);
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                new Phrase($e->getMessage())
+            );
+        }
+
+        if ($ewalletType == 'DANA') {
+            $response['status'] = $response['payment_status'];
+        }
+
+        $statusList = array("COMPLETED", "PAID", "SUCCESS_COMPLETED"); //OVO, DANA, LINKAJA
+        if (in_array($response['status'], $statusList)) {
+            return "COMPLETED";
+        }
+        
+        return $response['status'];
     }
 
     private function invoiceOrder($order, $transactionId)
