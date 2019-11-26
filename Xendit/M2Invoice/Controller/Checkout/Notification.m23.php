@@ -11,6 +11,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Enum\LogDNALevel;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Checkout;
@@ -81,8 +82,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
                     return $result;
                 }
-            }
-            else if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
+            } elseif (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
                 $result = $this->jsonResultFactory->create();
                 /** You may introduce your own constants for this custom REST API */
                 $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
@@ -95,10 +95,10 @@ class Notification extends Action implements CsrfAwareActionInterface
             }
 
             if ($isEwallet) {
-                $orderId = end(explode("_", $decodedPost['external_id']));
+                $temp = explode("_", $decodedPost['external_id']);
+                $orderId = end($temp);
                 $transactionId = $decodedPost['ewallet_transaction_id'];
-            }
-            else {
+            } else {
                 $orderId = $decodedPost['description'];
                 $transactionId = $decodedPost['id'];
             }
@@ -129,11 +129,10 @@ class Notification extends Action implements CsrfAwareActionInterface
             }
 
             if ($isEwallet) {
-                if ($order->getState() === Order::STATE_PENDING || $order->getState() === Order::STATE_PENDING_PAYMENT || $order->getState() === Order::STATE_PAYMENT_REVIEW) {
+                if ($order->getState() === Order::STATE_PENDING_PAYMENT || $order->getState() === Order::STATE_PAYMENT_REVIEW) {
                     //get ewallet payment status
                     $paymentStatus = $this->getEwalletStatus($decodedPost['ewallet_type'], $decodedPost['external_id']);
-                }
-                else {
+                } else {
                     //do nothing
                     $result = $this->jsonResultFactory->create();
                     $result->setData([
@@ -143,8 +142,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
                     return $result;
                 }
-            }
-            else {
+            } else {
                 $invoice = $this->getXenditInvoice($transactionId);
 
                 $paymentStatus = $invoice['status'];
@@ -205,8 +203,18 @@ class Notification extends Action implements CsrfAwareActionInterface
                 return $result;
             }
         } catch (\Exception $e) {
-            $message = "Error invoice callback" . $e->getMessage();
+            $message = "Error invoice callback: " . $e->getMessage();
             $this->logDNA->log(LogDNALevel::ERROR, $message, $decodedPost);
+
+            $result = $this->jsonResultFactory->create();
+            /** You may introduce your own constants for this custom REST API */
+            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_FORBIDDEN);
+            $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => $message
+                ]);
+
+            return $result;
         }
     }
 
@@ -235,7 +243,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             $response = $this->apiHelper->request($ewalletUrl, $ewalletMethod);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             throw new LocalizedException(
-                $e->getMessage()
+                new Phrase($e->getMessage())
             );
         }
 
@@ -265,13 +273,13 @@ class Notification extends Action implements CsrfAwareActionInterface
         
         if (!$invoice->getTotalQty()) {
             throw new LocalizedException(
-                    __('You can\'t create an invoice without products.')
-                );
+                __('You can\'t create an invoice without products.')
+            );
         }
         
         /*
          * Look Magento/Sales/Model/Order/Invoice.register() for CAPTURE_OFFLINE explanation.
-         * Basically, if !config/can_capture and config/is_gateway and CAPTURE_OFFLINE and 
+         * Basically, if !config/can_capture and config/is_gateway and CAPTURE_OFFLINE and
          * Payment.IsTransactionPending => pay (Invoice.STATE = STATE_PAID...)
          */
         $invoice->setTransactionId($transactionId);
