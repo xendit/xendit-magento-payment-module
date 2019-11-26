@@ -10,6 +10,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Enum\LogDNALevel;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Checkout;
@@ -197,6 +198,16 @@ class Notification extends Action
         } catch (\Exception $e) {
             $message = "Error invoice callback" . $e->getMessage();
             $this->logDNA->log(LogDNALevel::ERROR, $message, $decodedPost);
+
+            $result = $this->jsonResultFactory->create();
+            /** You may introduce your own constants for this custom REST API */
+            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+            $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => $message
+                ]);
+
+            return $result;
         }
     }
 
@@ -209,7 +220,7 @@ class Notification extends Action
             $invoice = $this->apiHelper->request($invoiceUrl, $invoiceMethod);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             throw new \Magento\Framework\Exception\LocalizedException(
-                $e->getMessage()
+                new Phrase($e->getMessage())
             );
         }
 
@@ -225,7 +236,7 @@ class Notification extends Action
             $response = $this->apiHelper->request($ewalletUrl, $ewalletMethod);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             throw new \Magento\Framework\Exception\LocalizedException(
-                $e->getMessage()
+                new Phrase($e->getMessage())
             );
         }
 

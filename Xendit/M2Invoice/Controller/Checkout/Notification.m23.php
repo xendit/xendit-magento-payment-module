@@ -208,7 +208,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             $result = $this->jsonResultFactory->create();
             /** You may introduce your own constants for this custom REST API */
-            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_FORBIDDEN);
+            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
             $result->setData([
                     'status' => __('ERROR'),
                     'message' => $message
@@ -227,7 +227,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             $invoice = $this->apiHelper->request($invoiceUrl, $invoiceMethod);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             throw new LocalizedException(
-                $e->getMessage()
+                new Phrase($e->getMessage())
             );
         }
 
