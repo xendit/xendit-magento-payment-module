@@ -10,6 +10,7 @@ use Magento\Framework\DataObjectFactory;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Phrase;
 use Magento\Framework\Registry;
+use Magento\Framework\UrlInterface;
 use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\Method\Logger;
 use Magento\Payment\Model\Method\AbstractMethod;
@@ -114,6 +115,10 @@ class AbstractInvoice extends AbstractMethod
             if (empty($availableMethod)) {
                 return true;
             }
+            //uncomment this block for local testing
+            /*if($this->methodCode == 'OVO'){
+                return true;
+            }*/
 
             if ( !in_array( strtoupper($this->methodCode), $availableMethod ) ) {
                 return false;
@@ -171,5 +176,17 @@ class AbstractInvoice extends AbstractMethod
         $serializedData = $this->serializer->unserialize($data);
 
         return $serializedData;
+    }
+
+    protected function getStoreManager()
+    {
+        return $this->storeManager;
+    }
+
+    protected function getXenditCallbackUrl()
+    {
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
+
+        return $baseUrl . 'xendit/checkout/notification?payment_type=ewallet';
     }
 }

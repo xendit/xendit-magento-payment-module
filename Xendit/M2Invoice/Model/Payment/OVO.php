@@ -41,7 +41,8 @@ class OVO extends AbstractInvoice
                 'external_id' => self::DEFAULT_EXTERNAL_ID_PREFIX . $orderId,
                 'amount' => $amount,
                 'phone' => $additionalData['phone_number'],
-                'ewallet_type' => self::DEFAULT_EWALLET_TYPE
+                'ewallet_type' => self::DEFAULT_EWALLET_TYPE,
+                'platform_callback_url' => $this->getXenditCallbackUrl()
             ];
 
             $ewalletPayment = $this->requestEwalletPayment($args);
@@ -154,6 +155,5 @@ class OVO extends AbstractInvoice
             default:
                 return "Failed to pay with eWallet. Error code: $errorCode";
         }
-
     }
 }
