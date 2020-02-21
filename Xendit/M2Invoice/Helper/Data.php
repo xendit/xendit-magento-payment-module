@@ -61,10 +61,10 @@ class Data extends AbstractHelper
 
     public function getExternalId($orderId, $duplicate = false)
     {
-        $defaultExtId = "magento_xendit_$orderId";
+        $defaultExtId = "magento-xendit-$orderId";
 
         if ($duplicate) {
-            return $defaultExtId . "_" . uniqid();
+            return uniqid() . "-" . $defaultExtId;
         }
 
         return $defaultExtId;
