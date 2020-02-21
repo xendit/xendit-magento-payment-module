@@ -85,7 +85,7 @@ class Notification extends Action
             }
             
             if ($isEwallet) {
-                $temp = explode("_", $decodedPost['external_id']);
+                $temp = explode("-", $decodedPost['external_id']);
                 $orderId = end($temp);
                 $transactionId = $decodedPost['ewallet_transaction_id'];
             }
