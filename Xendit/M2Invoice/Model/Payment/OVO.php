@@ -37,7 +37,7 @@ class OVO extends AbstractInvoice
 
         try {
             $args = [
-                'external_id' => $this->getDataHelper()->getExternalId($orderId),
+                'external_id' => $this->dataHelper->getExternalId($orderId),
                 'amount' => $amount,
                 'phone' => $additionalData['phone_number'],
                 'ewallet_type' => self::DEFAULT_EWALLET_TYPE,

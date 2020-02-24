@@ -16,7 +16,6 @@ use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class CCHosted extends AbstractInvoice
 {
-    const DEFAULT_EXTERNAL_ID_PREFIX = 'magento_xendit_';
     const PLATFORM_NAME = 'MAGENTO2';
     const CC_HOSTED_PAYMENT_TYPE = 'CREDIT_CARD';
     /**
