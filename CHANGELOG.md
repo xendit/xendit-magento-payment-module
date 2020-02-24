@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.6.2 (2020-02-24)
+
+Bugfix:
+
+- Modify external_id format
+
 ## 1.6.1 (2019-11-26)
 
 Bugfix:
