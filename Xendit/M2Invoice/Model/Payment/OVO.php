@@ -16,7 +16,6 @@ use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class OVO extends AbstractInvoice
 {
-    const DEFAULT_EXTERNAL_ID_PREFIX = 'magento_xendit_';
     const DEFAULT_EWALLET_TYPE = 'OVO';
     /**
      * Payment code
