@@ -16,7 +16,6 @@ use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class OVO extends AbstractInvoice
 {
-    const DEFAULT_EXTERNAL_ID_PREFIX = 'magento_xendit_';
     const DEFAULT_EWALLET_TYPE = 'OVO';
     /**
      * Payment code
@@ -38,7 +37,7 @@ class OVO extends AbstractInvoice
 
         try {
             $args = [
-                'external_id' => self::DEFAULT_EXTERNAL_ID_PREFIX . $orderId,
+                'external_id' => $this->getDataHelper()->getExternalId($orderId),
                 'amount' => $amount,
                 'phone' => $additionalData['phone_number'],
                 'ewallet_type' => self::DEFAULT_EWALLET_TYPE,
