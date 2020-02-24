@@ -62,11 +62,10 @@ class Data extends AbstractHelper
     public function getExternalId($orderId, $duplicate = false)
     {
         $storeName = preg_replace("/[^a-z0-9]/gmi", "", $this->getStoreManager()->getStore()->getName());
-
         $defaultExtId = "magento-xendit-$storeName-$orderId";
 
         if ($duplicate) {
-            return $defaultExtId . "-" . uniqid();
+            return uniqid() . "-" . $defaultExtId;
         }
 
         return $defaultExtId;
