@@ -29,10 +29,15 @@ class ApiRequest
         $this->logger = $logger;
     }
 
-    public function request($url, $method, $requestData = null, $isPublicRequest = false, $preferredMethod = null, $customOptions = [])
+    public function request($url, $method, $requestData = null, $isPublicRequest = false, $preferredMethod = null, $customOptions = [], $customHeaders = [])
     {
         $client = $this->httpClientFactory->create();
         $headers = $this->getHeaders($isPublicRequest, $preferredMethod);
+        
+        if(count($customHeaders) > 0){
+            $headers = array_push($headers, $customHeaders);
+        }
+        
         $options = [
             'timeout' => 30
         ];
