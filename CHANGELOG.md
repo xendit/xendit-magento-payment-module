@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.6.3 (2020-03-03)
+
+- Add new version header on OVO request
+
 ## 1.6.2 (2020-02-24)
 
 Bugfix:
