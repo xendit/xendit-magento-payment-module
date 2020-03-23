@@ -82,9 +82,8 @@ class OVO extends AbstractInvoice
                 $ewalletMethod,
                 $requestData,
                 null,
-                null,
-                $options,
-                [ 'x-api-version' => '2019-02-04' ]
+                '2019-02-04',
+                $options
             );
         } catch (\Exception $e) {
             throw $e;
