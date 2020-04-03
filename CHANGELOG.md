@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.7.0 (2020-04-03)
+
+Improvement:
+
+- Change OVO flow to reduce timeout case
+
 ## 1.6.2 (2020-02-24)
 
 Bugfix:
