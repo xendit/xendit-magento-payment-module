@@ -8,6 +8,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Phrase;
 use Magento\Framework\Registry;
+use Magento\Sales\Model\Order;
 use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\Method\Logger;
 use Xendit\M2Invoice\Helper\ApiRequest;
@@ -41,7 +42,8 @@ class OVO extends AbstractInvoice
                 'amount' => $amount,
                 'phone' => $additionalData['phone_number'],
                 'ewallet_type' => self::DEFAULT_EWALLET_TYPE,
-                'platform_callback_url' => $this->getXenditCallbackUrl()
+                'platform_callback_url' => $this->getXenditCallbackUrl(),
+                'callback_url' => 'https://engkbela39kel.x.pipedream.net/' // needs to be sent by TPI instead
             ];
 
             $ewalletPayment = $this->requestEwalletPayment($args);
@@ -53,11 +55,9 @@ class OVO extends AbstractInvoice
                 throw new \Magento\Framework\Exception\LocalizedException(
                     new Phrase($message)
                 );
-            } else {
-                $transactionId = $ewalletPayment['ewallet_transaction_id'];
-
-                $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
             }
+
+            $payment->setAdditionalInformation('xendit_ovo_external_id', $ewalletPayment['external_id']);
         } catch (\Exception $e) {
             $errorMsg = $e->getMessage();
             throw new \Magento\Framework\Exception\LocalizedException(
@@ -83,7 +83,10 @@ class OVO extends AbstractInvoice
                 $requestData,
                 null,
                 null,
-                $options
+                $options,
+                [
+                    'x-api-version' => '2020-02-01'
+                ]
             );
         } catch (\Exception $e) {
             throw $e;

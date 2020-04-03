@@ -64,6 +64,17 @@ define(
             },
 
             afterPlaceOrder: function () {
+                if ($("[class='xendit-overlay-box']").length === 0) {
+                    var overlayDiv = $( "<div class='xendit-overlay-box'>" +
+                        "<div id='xendit-overlay-content'>\n" +
+                        "  <span class='xendit-overlay-text' style='margin-top: 80px;'>Periksa kembali telepon selular Anda, buka aplikasi Ovo anda dan</span>\n" +
+                        "  <span class='xendit-overlay-text'>konfirmasikan transaksi anda dengan memasukkan PIN</span>" +
+                        "</div>" +
+                        "</div>" );
+                    $( 'body' ).append(overlayDiv);
+                }
+
+                $( "[class='xendit-overlay-box']" ).css("display", "flex");
                 window.location.replace(url.build('xendit/checkout/redirect'));
             },
 
@@ -88,7 +99,6 @@ define(
 
             placeOrder: function (data, event) {
                 this.isPlaceOrderActionAllowed(false);
-                this.block();
                 var self = this;
 
                 try {
@@ -116,7 +126,6 @@ define(
                         .done(function () {
                             self.afterPlaceOrder();
                         });
-                    self.unblock();
                     return false;
                 } catch (e) {
                     alert(e);

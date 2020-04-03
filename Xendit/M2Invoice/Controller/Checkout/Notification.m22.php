@@ -60,13 +60,13 @@ class Notification extends Action
             if (!empty($decodedPost['ewallet_type'])) {
                 $isEwallet = true;
 
-                if (!$decodedPost['external_id']) {
+                if (!$decodedPost['id']) {
                     $result = $this->jsonResultFactory->create();
                     /** You may introduce your own constants for this custom REST API */
                     $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
                     $result->setData([
                         'status' => __('ERROR'),
-                        'message' => 'Callback external_id is invalid'
+                        'message' => 'Callback id is invalid'
                     ]);
 
                     return $result;
@@ -87,7 +87,10 @@ class Notification extends Action
             if ($isEwallet) {
                 $temp = explode("-", $decodedPost['external_id']);
                 $orderId = end($temp);
-                $transactionId = $decodedPost['ewallet_transaction_id'];
+                $transactionId = $decodedPost['id'];
+                if (isset($decodedPost['failure_code'])) {
+                    $failureCode = $decodedPost['failure_code'];
+                }
             }
             else {
                 $orderId = $decodedPost['description'];
@@ -168,6 +171,10 @@ class Notification extends Action
 
                 if ($isEwallet) {
                     $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
+
+                    if (isset($failureCode)) {
+                        $payment->setAdditionalInformation('xendit_ewallet_failure_code', $failureCode);
+                    }
                 }
 
                 $order->save();
