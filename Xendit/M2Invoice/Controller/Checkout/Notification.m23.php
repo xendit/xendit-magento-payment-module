@@ -71,13 +71,13 @@ class Notification extends Action implements CsrfAwareActionInterface
             if (!empty($decodedPost['ewallet_type'])) {
                 $isEwallet = true;
 
-                if (!$decodedPost['id']) {
+                if (!$decodedPost['external_id']) {
                     $result = $this->jsonResultFactory->create();
                     /** You may introduce your own constants for this custom REST API */
                     $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
                     $result->setData([
                         'status' => __('ERROR'),
-                        'message' => 'Callback id is invalid'
+                        'message' => 'Callback external_id is invalid'
                     ]);
 
                     return $result;
