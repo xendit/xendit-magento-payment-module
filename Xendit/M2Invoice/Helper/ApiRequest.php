@@ -3,6 +3,7 @@
 namespace Xendit\M2Invoice\Helper;
 
 use Magento\Framework\Phrase;
+use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\HTTP\ZendClientFactory;
 use Psr\Log\LoggerInterface;
 use Xendit\M2Invoice\Model\Payment\M2Invoice;
@@ -21,12 +22,14 @@ class ApiRequest
         ZendClientFactory $httpClientFactory,
         Crypto $cryptoHelper,
         M2Invoice $m2Invoice,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ProductMetadataInterface $productMetadata
     ) {
         $this->httpClientFactory = $httpClientFactory;
         $this->cryptoHelper = $cryptoHelper;
         $this->m2Invoice = $m2Invoice;
         $this->logger = $logger;
+        $this->productMetadata = $productMetadata;
     }
 
     public function request(
@@ -81,7 +84,8 @@ class ApiRequest
             'Authorization' => $auth,
             'Content-Type' => 'application/json',
             'x-plugin-name' => 'MAGENTO2',
-            'user-agent' => 'Magento 2 Module'
+            'user-agent' => 'Magento 2 Module',
+            'x-plugin-version' => $this->productMetadata->getVersion()
         ];
 
         if ($preferredMethod !== null) {
