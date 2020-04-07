@@ -97,7 +97,13 @@ class Notification extends Action implements CsrfAwareActionInterface
             if ($isEwallet) {
                 $temp = explode("-", $decodedPost['external_id']);
                 $orderId = end($temp);
-                $transactionId = $decodedPost['ewallet_transaction_id'];
+                $transactionId = $decodedPost['id'];
+
+                // default code if API doesn't send failure_code
+                $failureCode = 'UNKNOWN_ERROR';
+                if (isset($decodedPost['failure_code'])) {
+                    $failureCode = $decodedPost['failure_code'];
+                }
             } else {
                 $orderId = $decodedPost['description'];
                 $transactionId = $decodedPost['id'];
@@ -175,6 +181,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
                 if ($isEwallet) {
                     $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
+                    $payment->save();
                 }
 
                 $order->save();
@@ -193,6 +200,16 @@ class Notification extends Action implements CsrfAwareActionInterface
                     "Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId."
                 );
                 $this->getCheckoutHelper()->restoreQuote(); //restore cart
+
+                if ($isEwallet) {
+                    $orderState = Order::STATE_CANCELED;
+                    $order->setState($orderState)
+                        ->setStatus($orderState);
+                    $order->save();
+                    $payment = $order->getPayment();
+                    $payment->setAdditionalInformation('xendit_ewallet_failure_code', $failureCode);
+                    $payment->save();
+                }
 
                 $result = $this->jsonResultFactory->create();
                 $result->setData([

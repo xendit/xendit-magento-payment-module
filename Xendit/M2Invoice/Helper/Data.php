@@ -143,6 +143,24 @@ class Data extends AbstractHelper
                 another card that is enabled for eCommerce, or ask your bank to enable eCommerce payments for your card.";
             case 'EXPIRED_CARD': return "$failureReason - Your bank declined the payment due to the card being expired. Please try
                 another card that has not expired.";
+            case 'USER_DID_NOT_AUTHORIZE_THE_PAYMENT':
+                return 'Please complete the payment request within 60 seconds.';
+            case 'USER_DECLINED_THE_TRANSACTION':
+                return 'You rejected the payment request, please try again when needed.';
+            case 'PHONE_NUMBER_NOT_REGISTERED':
+                return 'Your number is not registered in OVO, please register first or contact OVO Customer Service.';
+            case 'EXTERNAL_ERROR':
+                return 'There is a technical issue happens on OVO, please contact the merchant to solve this issue.';
+            case 'SENDING_TRANSACTION_ERROR':
+                return 'Your transaction is not sent to OVO, please try again.';
+            case 'EWALLET_APP_UNREACHABLE':
+                return 'Do you have OVO app on your phone? Please check your OVO app on your phone and try again.';
+            case 'REQUEST_FORBIDDEN_ERROR':
+                return 'Your merchant disable OVO payment from his side, please contact your merchant to re-enable it
+                    before trying it again.';
+            case 'DEVELOPMENT_MODE_PAYMENT_ACKNOWLEDGED':
+                return 'Development mode detected. Please refer to our documentations for successful payment
+                    simulation';
             default: return $failureReason;
         }
     }

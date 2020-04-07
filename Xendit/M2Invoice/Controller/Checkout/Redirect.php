@@ -12,7 +12,14 @@ class Redirect extends AbstractAction
     {
         try {
             $order = $this->getOrder();
+            $orderId = $order->getRealOrderId();
             $payment = $order->getPayment();
+            $this->getMessageManager()->getMessages(true);
+
+            $orderState = Order::STATE_PENDING_PAYMENT;
+            $order->setState($orderState)
+                ->setStatus($orderState);
+            $order->save();
 
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
@@ -40,9 +47,42 @@ class Redirect extends AbstractAction
                 return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
             }
 
-            if ($payment->getAdditionalInformation('xendit_ewallet_id') !== null) {
-                $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-                return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+            if ($payment->getAdditionalInformation('xendit_ovo_external_id') !== null) {
+                $isSuccessful = false;
+                $loopCondition = true;
+                $startTime = time();
+                while ($loopCondition && (time() - $startTime < 70)) {
+                    $order = $this->getOrderById($orderId);
+
+                    if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
+                        $loopCondition = false;
+                        $isSuccessful = $order->getState() === Order::STATE_PROCESSING;
+                    }
+                    sleep(1);
+                }
+
+                if ($order->getState() === Order::STATE_PENDING_PAYMENT) {
+                    $ewalletStatus = $this->getEwalletStatus('OVO', $payment->getAdditionalInformation('xendit_ovo_external_id'));
+
+                    if ($ewalletStatus === 'COMPLETED') {
+                        $isSuccessful = true;
+                    }
+                }
+
+                if ($isSuccessful) {
+                    $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
+                    return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+                } else {
+                    $payment = $order->getPayment();
+                    $failureCode = $payment->getAdditionalInformation('xendit_ewallet_failure_code');
+
+                    if ($failureCode === null) {
+                        $failureCode = 'Payment is ' . $ewalletStatus;
+                    }
+
+                    $this->getCheckoutHelper()->restoreQuote();
+                    return $this->redirectToCart($failureCode);
+                }
             }
 
             if ($payment->getAdditionalInformation('xendit_failure_reason') !== null) {
@@ -50,11 +90,7 @@ class Redirect extends AbstractAction
 
                 $this->cancelOrder($order, $failureReason);
 
-                $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-                $this->getMessageManager()->addErrorMessage(__(
-                    $failureReasonInsight
-                ));
-                return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+                return $this->redirectToCart($failureReason);
             }
 
             if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
@@ -76,20 +112,50 @@ class Redirect extends AbstractAction
 
             $this->cancelOrder($order, 'No payment recorded');
 
-            $this->getMessageManager()->addErrorMessage(__(
-                "There was an error in the Xendit payment. Failure reason: No payment recorded"
-            ));
-            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
 
             $this->cancelOrder($order, $e->getMessage());
 
-            $this->getMessageManager()->addErrorMessage(__(
-                "There was an error in the Xendit payment. Failure reason: Unexpected Error"
-            ));
-            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
         }
+    }
+
+    private function getEwalletStatus($ewalletType, $externalId)
+    {
+        $ewalletUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=".$ewalletType."&external_id=".$externalId;
+        $ewalletMethod = \Zend\Http\Request::METHOD_GET;
+
+        try {
+            $response = $this->getApiHelper()->request($ewalletUrl, $ewalletMethod);
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            throw new LocalizedException(
+                new Phrase($e->getMessage())
+            );
+        }
+
+        if ($ewalletType == 'DANA') {
+            $response['status'] = $response['payment_status'];
+        }
+
+        $statusList = array("COMPLETED", "PAID", "SUCCESS_COMPLETED"); //OVO, DANA, LINKAJA
+        if (in_array($response['status'], $statusList)) {
+            return "COMPLETED";
+        }
+        
+        return $response['status'];
+    }
+
+    private function redirectToCart($failureReason)
+    {
+        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
+        $this->getMessageManager()->addErrorMessage(__(
+            $failureReasonInsight
+        ));
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        return $resultRedirect;
     }
 }

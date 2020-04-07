@@ -8,6 +8,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Phrase;
 use Magento\Framework\Registry;
+use Magento\Sales\Model\Order;
 use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\Method\Logger;
 use Xendit\M2Invoice\Helper\ApiRequest;
@@ -47,17 +48,24 @@ class OVO extends AbstractInvoice
             $ewalletPayment = $this->requestEwalletPayment($args);
 
             if ( isset($ewalletPayment['error_code']) ) {
-                $message = $this->mapOvoErrorCode($ewalletPayment['error_code']);
-                $this->processFailedPayment($payment, $message);
+                if ($ewalletPayment['error_code'] == 'DUPLICATE_PAYMENT_REQUEST_ERROR') {
+                    $args = array_replace($args, array(
+                        'external_id' => $this->dataHelper->getExternalId($orderId, true)
+                    ));
+                    $ewalletPayment = $this->requestEwalletPayment($args);
+                }
 
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    new Phrase($message)
-                );
-            } else {
-                $transactionId = $ewalletPayment['ewallet_transaction_id'];
-
-                $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
+                if (isset($ewalletPayment['error_code'])) {
+                    $message = $this->mapOvoErrorCode($ewalletPayment['error_code']);
+                    $this->processFailedPayment($payment, $message);
+    
+                    throw new \Magento\Framework\Exception\LocalizedException(
+                        new Phrase($message)
+                    );
+                }
             }
+
+            $payment->setAdditionalInformation('xendit_ovo_external_id', $ewalletPayment['external_id']);
         } catch (\Exception $e) {
             $errorMsg = $e->getMessage();
             throw new \Magento\Framework\Exception\LocalizedException(
@@ -68,7 +76,7 @@ class OVO extends AbstractInvoice
         return $this;
     }
 
-    private function requestEwalletPayment($requestData)
+    private function requestEwalletPayment($requestData, $isRetried = true)
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets";
         $ewalletMethod = \Zend\Http\Request::METHOD_POST;
@@ -83,7 +91,10 @@ class OVO extends AbstractInvoice
                 $requestData,
                 null,
                 null,
-                $options
+                $options,
+                [
+                    'x-api-version' => '2020-02-01'
+                ]
             );
         } catch (\Exception $e) {
             throw $e;
