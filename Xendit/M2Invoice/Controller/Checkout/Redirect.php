@@ -15,6 +15,11 @@ class Redirect extends AbstractAction
             $orderId = $order->getRealOrderId();
             $payment = $order->getPayment();
 
+            $orderState = Order::STATE_PENDING_PAYMENT;
+            $order->setState($orderState)
+                ->setStatus($orderState);
+            $order->save();
+
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
 
@@ -45,17 +50,17 @@ class Redirect extends AbstractAction
                 $isSuccessful = false;
                 $loopCondition = true;
                 $startTime = time();
-                while ($loopCondition && (time() - $startTime < 60)) {
+                while ($loopCondition && (time() - $startTime < 70)) {
                     $order = $this->getOrderById($orderId);
 
-                    if ($order->getState() !== Order::STATE_PAYMENT_REVIEW) {
+                    if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
                         $loopCondition = false;
                         $isSuccessful = $order->getState() === Order::STATE_PROCESSING;
                     }
                     sleep(1);
                 }
 
-                if ($order->getState() === Order::STATE_PAYMENT_REVIEW) {
+                if ($order->getState() === Order::STATE_PENDING_PAYMENT) {
                     $ewalletStatus = $this->getEwalletStatus('OVO', $payment->getAdditionalInformation('xendit_ovo_external_id'));
 
                     if ($ewalletStatus === 'COMPLETED') {

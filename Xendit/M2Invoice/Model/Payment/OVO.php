@@ -42,8 +42,7 @@ class OVO extends AbstractInvoice
                 'amount' => $amount,
                 'phone' => $additionalData['phone_number'],
                 'ewallet_type' => self::DEFAULT_EWALLET_TYPE,
-                'platform_callback_url' => $this->getXenditCallbackUrl(),
-                'callback_url' => 'https://engkbela39kel.x.pipedream.net/' // needs to be sent by TPI instead
+                'platform_callback_url' => $this->getXenditCallbackUrl()
             ];
 
             $ewalletPayment = $this->requestEwalletPayment($args);
