@@ -48,12 +48,21 @@ class OVO extends AbstractInvoice
             $ewalletPayment = $this->requestEwalletPayment($args);
 
             if ( isset($ewalletPayment['error_code']) ) {
-                $message = $this->mapOvoErrorCode($ewalletPayment['error_code']);
-                $this->processFailedPayment($payment, $message);
+                if ($ewalletPayment['error_code'] == 'DUPLICATE_PAYMENT_REQUEST_ERROR') {
+                    $args = array_replace($args, array(
+                        'external_id' => $this->dataHelper->getExternalId($orderId, true)
+                    ));
+                    $ewalletPayment = $this->requestEwalletPayment($args);
+                }
 
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    new Phrase($message)
-                );
+                if (isset($ewalletPayment['error_code'])) {
+                    $message = $this->mapOvoErrorCode($ewalletPayment['error_code']);
+                    $this->processFailedPayment($payment, $message);
+    
+                    throw new \Magento\Framework\Exception\LocalizedException(
+                        new Phrase($message)
+                    );
+                }
             }
 
             $payment->setAdditionalInformation('xendit_ovo_external_id', $ewalletPayment['external_id']);
@@ -67,7 +76,7 @@ class OVO extends AbstractInvoice
         return $this;
     }
 
-    private function requestEwalletPayment($requestData)
+    private function requestEwalletPayment($requestData, $isRetried = true)
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets";
         $ewalletMethod = \Zend\Http\Request::METHOD_POST;

@@ -85,7 +85,7 @@ class ApiRequest
             'Content-Type' => 'application/json',
             'x-plugin-name' => 'MAGENTO2',
             'user-agent' => 'Magento 2 Module',
-            'x-plugin-version' => $this->productMetadata->getVersion()
+            'x-plugin-version' => '1.7.0'
         ];
 
         if ($preferredMethod !== null) {

@@ -14,6 +14,7 @@ class Redirect extends AbstractAction
             $order = $this->getOrder();
             $orderId = $order->getRealOrderId();
             $payment = $order->getPayment();
+            $this->getMessageManager()->getMessages(true);
 
             $orderState = Order::STATE_PENDING_PAYMENT;
             $order->setState($orderState)
@@ -72,13 +73,15 @@ class Redirect extends AbstractAction
                     $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
                     return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
                 } else {
+                    $payment = $order->getPayment();
                     $failureCode = $payment->getAdditionalInformation('xendit_ewallet_failure_code');
 
                     if ($failureCode === null) {
-                        $failureCode = 'Order status is ' . $ewalletStatus;
+                        $failureCode = 'Payment is ' . $ewalletStatus;
                     }
 
-                    $payment->setAdditionalInformation('xendit_failure_reason', $failureCode);
+                    $this->getCheckoutHelper()->restoreQuote();
+                    return $this->redirectToCart($failureCode);
                 }
             }
 
@@ -87,11 +90,7 @@ class Redirect extends AbstractAction
 
                 $this->cancelOrder($order, $failureReason);
 
-                $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-                $this->getMessageManager()->addErrorMessage(__(
-                    $failureReasonInsight
-                ));
-                return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+                return $this->redirectToCart($failureReason);
             }
 
             if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
@@ -113,20 +112,14 @@ class Redirect extends AbstractAction
 
             $this->cancelOrder($order, 'No payment recorded');
 
-            $this->getMessageManager()->addErrorMessage(__(
-                "There was an error in the Xendit payment. Failure reason: No payment recorded"
-            ));
-            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
 
             $this->cancelOrder($order, $e->getMessage());
 
-            $this->getMessageManager()->addErrorMessage(__(
-                "There was an error in the Xendit payment. Failure reason: Unexpected Error"
-            ));
-            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
         }
     }
 
@@ -153,5 +146,16 @@ class Redirect extends AbstractAction
         }
         
         return $response['status'];
+    }
+
+    private function redirectToCart($failureReason)
+    {
+        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
+        $this->getMessageManager()->addErrorMessage(__(
+            $failureReasonInsight
+        ));
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        return $resultRedirect;
     }
 }

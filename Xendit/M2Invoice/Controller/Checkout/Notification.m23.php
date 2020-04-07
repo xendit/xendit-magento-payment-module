@@ -181,6 +181,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
                 if ($isEwallet) {
                     $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
+                    $payment->save();
                 }
 
                 $order->save();
@@ -207,6 +208,7 @@ class Notification extends Action implements CsrfAwareActionInterface
                     $order->save();
                     $payment = $order->getPayment();
                     $payment->setAdditionalInformation('xendit_ewallet_failure_code', $failureCode);
+                    $payment->save();
                 }
 
                 $result = $this->jsonResultFactory->create();
