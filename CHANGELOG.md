@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.7.1 (2020-04-30)
+
+Bugfix:
+
+- CC order incorrect flow fix
+
 ## 1.7.0 (2020-04-03)
 
 Improvement:

@@ -18,7 +18,7 @@ class ThreeDSResult extends AbstractAction
             return;
         }
 
-        if ($order->getState() !== Order::STATE_PAYMENT_REVIEW) {
+        if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
             return;
         }
 
