@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="checkout_billing">
+            <arguments>
+                <argument name="form_templates" xsi:type="array">
+                    <item name="cc" xsi:type="string">Xendit_M2Invoice::multishipping/cc.phtml</item>
+                    <item name="cchosted" xsi:type="string">Xendit_M2Invoice::multishipping/cchosted.phtml</item>
+                    <item name="alfamart" xsi:type="string">Xendit_M2Invoice::multishipping/alfamart.phtml</item>
+                    <item name="bcava" xsi:type="string">Xendit_M2Invoice::multishipping/bcava.phtml</item>
+                    <item name="bniva" xsi:type="string">Xendit_M2Invoice::multishipping/bniva.phtml</item>
+                    <item name="briva" xsi:type="string">Xendit_M2Invoice::multishipping/briva.phtml</item>
+                    <item name="mandiriva" xsi:type="string">Xendit_M2Invoice::multishipping/mandiriva.phtml</item>
+                    <item name="permatava" xsi:type="string">Xendit_M2Invoice::multishipping/permatava.phtml</item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
