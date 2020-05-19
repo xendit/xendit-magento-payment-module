@@ -197,9 +197,8 @@
                             <field id="card_promo_bca_active">1</field>
                         </depends>
                         <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_bca_bin_list</config_path>
@@ -232,9 +231,8 @@
                             <field id="card_promo_bni_active">1</field>
                         </depends>
                         <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_bni_bin_list</config_path>
@@ -266,10 +264,9 @@
                         <depends>
                             <field id="card_promo_bri_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_bri_bin_list</config_path>
@@ -301,10 +298,9 @@
                         <depends>
                             <field id="card_promo_cimb_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_cimb_bin_list</config_path>
@@ -336,10 +332,9 @@
                         <depends>
                             <field id="card_promo_citibank_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_citibank_bin_list</config_path>
@@ -371,10 +366,9 @@
                         <depends>
                             <field id="card_promo_danamon_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_danamon_bin_list</config_path>
@@ -406,10 +400,9 @@
                         <depends>
                             <field id="card_promo_dbs_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_dbs_bin_list</config_path>
@@ -441,10 +434,9 @@
                         <depends>
                             <field id="card_promo_hsbc_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_hsbc_bin_list</config_path>
@@ -476,10 +468,9 @@
                         <depends>
                             <field id="card_promo_mandiri_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_mandiri_bin_list</config_path>
@@ -511,10 +502,9 @@
                         <depends>
                             <field id="card_promo_maybank_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_maybank_bin_list</config_path>
@@ -546,10 +536,9 @@
                         <depends>
                             <field id="card_promo_mega_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_mega_bin_list</config_path>
@@ -581,10 +570,9 @@
                         <depends>
                             <field id="card_promo_mnc_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_mnc_bin_list</config_path>
@@ -616,10 +604,9 @@
                         <depends>
                             <field id="card_promo_permata_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_permata_bin_list</config_path>
@@ -651,10 +638,9 @@
                         <depends>
                             <field id="card_promo_sc_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_sc_bin_list</config_path>
@@ -686,10 +672,9 @@
                         <depends>
                             <field id="card_promo_uob_active">1</field>
                         </depends>
-                        <comment>
-                            List of BIN that is affected by this promo.<br>
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. 
-                            We are not responsible for any human error from merchant side regarding card promo.*</i>
+                         <comment>
+                            <![CDATA[List of BIN that is affected by this promo. <br />      
+                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
                         </comment>
                         <label>BIN for Promotion</label>
                         <config_path>payment/m2invoice/card_promo_uob_bin_list</config_path>
