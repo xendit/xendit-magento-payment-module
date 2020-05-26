@@ -5,7 +5,10 @@ define(
         'Magento_Payment/js/model/credit-card-validation/credit-card-data',
         'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
         'Magento_Checkout/js/action/place-order',
-        'mage/url'
+        'mage/url',
+        'Magento_Checkout/js/action/set-payment-information-extended',
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'Magento_Checkout/js/model/full-screen-loader',
     ],
     function (
         $,
@@ -13,7 +16,11 @@ define(
         creditCardData,
         cardNumberValidator,
         placeOrderAction,
-        url
+        url,
+        setPaymentInformationExtended,
+        additionalValidators,
+        fullScreenLoader,
+        additionalData
     ) {
         'use strict';
 
@@ -178,12 +185,13 @@ define(
                 return val;
             },
 
-            placeOrder: function (data, event) {
-                this.isPlaceOrderActionAllowed(false);
-                var self = this;
-                var publicKey = window.checkoutConfig.payment.m2invoice.public_api_key;
-
+            /**
+             * @override
+             */
+            placeOrder: function () {
                 try {
+                    var self = this;
+                    var publicKey = window.checkoutConfig.payment.m2invoice.public_api_key;
                     Xendit.setPublishableKey(publicKey);
 
                     var tokenData = {
@@ -193,17 +201,9 @@ define(
                         is_multiple_use: true
                     };
 
-                    if (!tokenData.card_number || !tokenData.card_exp_month || !tokenData.card_exp_year) {
-                        alert('Please fill out the information needed before proceeding');
-                        this.isPlaceOrderActionAllowed(true);
-                        return;
-                    }
-
                     Xendit.card.createToken(tokenData, function (err, token) {
                         if (err) {
-                            // ?
-                            self.isPlaceOrderActionAllowed(true);
-                            return;
+                            return self.fail();
                         }
 
                         var paymentData = self.getData();
@@ -217,26 +217,48 @@ define(
                             cc_cid: $('#cc_cc_cid').val()
                         };
 
-                        var placeOrder = placeOrderAction(paymentData, false);
-
-                        $.when(placeOrder)
-                            .fail(function () {
-                                self.isPlaceOrderActionAllowed(true);
-                            })
-                            .done(function () {
-                                self.afterPlaceOrder();
-                            });
-
-                        return false;
+                        return self.setPaymentInformation(paymentData);
                     });
                 } catch (e) {
-                    this.isPlaceOrderActionAllowed(true);
+                    return self.fail();
                 }
             },
 
-            afterPlaceOrder: function () {
-                window.location.replace(url.build('xendit/checkout/redirect'));
+            /**
+             * @override
+             */
+            setPaymentInformation: function (paymentData) {
+                if (additionalValidators.validate()) {
+                    fullScreenLoader.startLoader();
+                    $.when(
+                        setPaymentInformationExtended(
+                            this.messageContainer,
+                            paymentData,
+                            true
+                        )
+                    ).done(this.done.bind(this))
+                        .fail(this.fail.bind(this));
+                }
             },
+
+            /**
+             * {Function}
+             */
+            fail: function () {
+                fullScreenLoader.stopLoader();
+
+                return this;
+            },
+
+            /**
+             * {Function}
+             */
+            done: function () {
+                fullScreenLoader.stopLoader();
+                $('#multishipping-billing-form').submit();
+
+                return this;
+            }
         });
     }
 );
