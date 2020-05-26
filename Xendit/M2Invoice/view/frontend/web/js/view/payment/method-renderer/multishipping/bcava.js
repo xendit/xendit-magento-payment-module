@@ -15,7 +15,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/multishipping/description',
+                template: 'Xendit_M2Invoice/payment/multishipping/invoiceva',
                 redirectAfterPlaceOrder: false,
             },
 

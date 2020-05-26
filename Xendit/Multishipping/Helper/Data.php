@@ -7,7 +7,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         
         //methode name => frontend routing
         $listPayment = [
-            "mandiriva" => "mandiriva"
+            "bcava" => "bcava",
+            "bniva" => "bniva",
+            "briva" => "briva",
+            "mandiriva" => "mandiriva",
+            "permatava" => "permatava",
+            "alfamart" => "alfamart"
         ];
 
         $response = FALSE;

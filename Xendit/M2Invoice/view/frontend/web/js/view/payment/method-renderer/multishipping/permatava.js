@@ -15,7 +15,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/multishipping/description',
+                template: 'Xendit_M2Invoice/payment/multishipping/invoiceva',
                 redirectAfterPlaceOrder: false,
             },
 
@@ -54,7 +54,8 @@ define(
             },
 
             afterPlaceOrder: function () {
-                window.location.replace(url.build('xendit/checkout/invoice?preferred_method=Permata'));
+                alert('ok');
+                // window.location.replace(url.build('xendit/checkout/invoice?preferred_method=Permata'));
             },
 
             validate: function() {
