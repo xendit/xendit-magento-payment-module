@@ -7,17 +7,15 @@
       <span data-bind="text: getTestDescription().prefix, style: { 'font-weight': 'bold' }"></span>
       <span data-bind="text: getTestDescription().content"></span>
     </div>
-    <div class="actions-toolbar">
+
+    <input type="submit" id="invoice_submit"  style="display:none" />
+
+    <div class="actions-toolbar no-display">
       <div class="primary">
-        <button class="action primary checkout"
+        <button data-role="review-save"
                 type="submit"
-                data-bind="
-                click: placeOrder,
-                attr: {title: $t('Place Order')},
-                css: {disabled: !isPlaceOrderActionAllowed()},
-                enable: (getCode() == isChecked())
-                "
-                disabled>
+                data-bind="{click: placeOrder}"
+                class="action primary checkout">
           <span data-bind="i18n: 'Place Order'"></span>
         </button>
       </div>
