@@ -94,17 +94,18 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->_getCheckout()->createOrders();
             $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
 
-            $this->messageManager->addError(
-                __('Please agree to all Terms and Conditions before placing the order.')
-            );
-            $this->logger->info('Broo ini params loh.. ' . print_r($this->_getCheckout()->getOrderIds(), true));
-            $this->_redirect('*/*/billing');
-            return;
-
             //SPRINT PAYMENT METHOD
             $sprintPaymentMethod = $this->_objectManager->get('Xendit\Multishipping\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );  
             if ( !!$sprintPaymentMethod ) {
                 $ids = $this->_getCheckout()->getOrderIds();
+
+                if (empty($ids)) {
+                    $this->messageManager->addError(
+                        __('Failed to create order.')
+                    );
+                    $this->_redirect('*/*/billing');
+                    return;
+                }
                 // $ids = $this->_session->getOrderIds();
                 $params     = implode("|", $ids);
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
