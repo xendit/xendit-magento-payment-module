@@ -95,8 +95,8 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
 
             //SPRINT PAYMENT METHOD
-            $sprintPaymentMethod = $this->_objectManager->get('Xendit\Multishipping\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );  
-            if ( !!$sprintPaymentMethod ) {
+            $xenditPaymentMethod = $this->_objectManager->get('Xendit\Multishipping\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );  
+            if ( !!$xenditPaymentMethod ) {
                 $ids = $this->_getCheckout()->getOrderIds();
 
                 if (empty($ids)) {
@@ -106,14 +106,14 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                     $this->_redirect('*/*/billing');
                     return;
                 }
-                // $ids = $this->_session->getOrderIds();
+
                 $params     = implode("|", $ids);
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
-                // $redirect   = $baseUrl.$sprintPaymentMethod.'/payment/redirectmultishipping/orderIds/'.$params;
+                
                 $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&method=' . $paymentInstance->getMethod();
                 $this->_redirect($redirect);
             }
-            
+
             //OTHERS
             else
             {
