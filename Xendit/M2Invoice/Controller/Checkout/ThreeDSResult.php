@@ -106,14 +106,14 @@ class ThreeDSResult extends AbstractAction
                     ->addStatusHistoryComment("Xendit payment completed. Transaction ID: $transactionId");
                 
                 $payment = $order->getPayment();
+                $payment->setTransactionId($transactionId);
+                $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
                 $order->save();
 
                 $this->invoiceOrder($order, $transactionId);
             }
 
-            $payment->setTransactionId($transactionId);
-            $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
             $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
             $this->_redirect('*/*/success');
