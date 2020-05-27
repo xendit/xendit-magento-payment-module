@@ -39,13 +39,14 @@ class CCMultishipping extends AbstractAction
 
             if ($method === 'cchosted') {
                 $requestData        = [
-                    'order_number'  => $rawOrderIds,
-                    'amount'        => $transactionAmount,
-                    'payment_type'  => 'CREDIT_CARD',
-                    'store_name'    => $this->getStoreManager()->getStore()->getName(),
-                    'platform_name' => 'MAGENTO2'
+                    'order_number'           => $rawOrderIds,
+                    'amount'                 => $transactionAmount,
+                    'payment_type'           => 'CREDIT_CARD',
+                    'store_name'             => $this->getStoreManager()->getStore()->getName(),
+                    'platform_name'          => 'MAGENTO2',
+                    'success_redirect_url'   => $this->_url->getUrl('*/*/success'),
+                    'failure_redirect_url'   => $this->_url->getUrl('checkout/cart')
                 ];
-                // print_r($orderPromos); echo "<br>";
                 // how to append promo?
 
                 $hostedPayment = $this->requestHostedPayment($requestData);
@@ -75,9 +76,7 @@ class CCMultishipping extends AbstractAction
                     }
 
                     // redirect to hosted payment page
-                    $successUrl = $this->_url->getUrl('*/*/success');
-                    $failureUrl = $this->_url->getUrl('*/*/billing');
-                    header("Location: https://tpi-ui.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken&success_url=$successUrl&failure_url=$failureUrl");
+                    header("Location: https://tpi-ui.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken");
                 } else {
                     $message = 'Error connecting to Xendit. Check your API key';
                     
@@ -122,24 +121,6 @@ class CCMultishipping extends AbstractAction
             );
         } catch (\Exception $e) {
             throw $e;
-        }
-
-        return $hostedPayment;
-    }
-
-    private function getCompletedHostedPayment($requestData)
-    {
-        $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=COMPLETED';
-        $method = \Zend\Http\Request::METHOD_GET;
-
-        try {
-            $hostedPayment = $this->getApiHelper()->request(
-                $url, $method
-            );
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
-                new Phrase($e->getMessage())
-            );
         }
 
         return $hostedPayment;
