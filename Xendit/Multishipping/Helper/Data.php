@@ -7,7 +7,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         
         //methode name => frontend routing
         $listPayment = [
-            "cc" => "cc"
+            "cc" => "cc",
+            "cchosted" => "cchosted"
         ];
 
         $response = FALSE;

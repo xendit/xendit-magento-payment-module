@@ -110,7 +110,7 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                 $params     = implode("|", $ids);
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
                 // $redirect   = $baseUrl.$sprintPaymentMethod.'/payment/redirectmultishipping/orderIds/'.$params;
-                $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params;
+                $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&method=' . $paymentInstance->getMethod();
                 $this->_redirect($redirect);
             }
             

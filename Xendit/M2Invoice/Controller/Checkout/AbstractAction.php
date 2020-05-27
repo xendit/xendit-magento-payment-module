@@ -10,6 +10,7 @@ use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
+use Magento\SalesRule\Model\RuleRepository;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 use Xendit\M2Invoice\Helper\Data;
@@ -50,6 +51,8 @@ abstract class AbstractAction extends Action
 
     private $quoteRepository;
 
+    private $ruleRepo;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
@@ -62,7 +65,9 @@ abstract class AbstractAction extends Action
         ApiRequest $apiHelper,
         LogDNA $logDNA,
         StoreManagerInterface $storeManager,
-        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
+        RuleRepository $ruleRepository
+
     ) {
         parent::__construct($context);
 
@@ -80,6 +85,7 @@ abstract class AbstractAction extends Action
         $this->logDNA = $logDNA;
         $this->storeManager = $storeManager;
         $this->quoteRepository = $quoteRepository;
+        $this->ruleRepository = $ruleRepository;
     }
 
     protected function getContext()
@@ -162,6 +168,11 @@ abstract class AbstractAction extends Action
     protected function getQuoteRepository()
     {
         return $this->quoteRepository;
+    }
+
+    protected function getRuleRepository()
+    {
+        return $this->ruleRepository;
     }
 
     protected function invoiceOrder($order, $transactionId)
