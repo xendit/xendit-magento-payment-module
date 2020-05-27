@@ -179,9 +179,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     // {
     //     $order = $payment->getOrder();
     //     $orderId = $order->getRealOrderId();
-    //     $this->_logger->info('Apakahh : ' . $additionalData['token_id']);
-        //     $additionalData = $this->getAdditionalData();
-    //     $this->_logger->info('Apakahh : ' . $additionalData['token_id']);
+    //     $additionalData = $this->getAdditionalData();
 
     //     $payment->setIsTransactionPending(true);
 
