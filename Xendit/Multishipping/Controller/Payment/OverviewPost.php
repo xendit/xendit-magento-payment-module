@@ -92,14 +92,24 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             }
 
             $this->_getCheckout()->createOrders();
+            $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
+
+            $this->messageManager->addError(
+                __('Please agree to all Terms and Conditions before placing the order.')
+            );
+            $this->logger->info('Broo ini params loh.. ' . print_r($this->_getCheckout()->getOrderIds(), true));
+            $this->_redirect('*/*/billing');
+            return;
 
             //SPRINT PAYMENT METHOD
             $sprintPaymentMethod = $this->_objectManager->get('Xendit\Multishipping\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );  
             if ( !!$sprintPaymentMethod ) {
                 $ids = $this->_getCheckout()->getOrderIds();
+                // $ids = $this->_session->getOrderIds();
                 $params     = implode("|", $ids);
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
-                $redirect   = $baseUrl.$sprintPaymentMethod.'/payment/redirectmultishipping/orderIds/'.$params;
+                // $redirect   = $baseUrl.$sprintPaymentMethod.'/payment/redirectmultishipping/orderIds/'.$params;
+                $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params;
                 $this->_redirect($redirect);
             }
             
@@ -107,7 +117,6 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             else
             {
                 $this->_getState()->setActiveStep(State::STEP_SUCCESS);
-                $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
                 $this->_getCheckout()->getCheckoutSession()->clearQuote();
                 $this->_getCheckout()->getCheckoutSession()->setDisplaySuccess(true);
                 $this->_redirect('*/*/success');
