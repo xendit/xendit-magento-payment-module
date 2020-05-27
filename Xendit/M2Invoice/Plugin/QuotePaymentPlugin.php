@@ -13,7 +13,8 @@ class QuotePaymentPlugin
      */
     protected $additionalInformationList = [
         'token_id',
-        'masked_card_number'
+        'masked_card_number',
+        'cc_cid'
     ];
 
     public function __construct(
@@ -34,19 +35,23 @@ class QuotePaymentPlugin
             $additionalData = $data['additional_data'];
             // $additionalDataToBeSaved = [];
 
-            if (isset($additionalData['token_id'])) {
-                $this->logger->info('Akan ke save' . print_r($additionalData, true));
-                $subject->setAdditionalInformation(
-                    'token_id',
-                    $additionalData['token_id']
-                );
-            }
-
-            // foreach ($this->additionalInformationList as $additionalInformationKey) {
-            //     if (isset($additionalData[$additionalInformationKey])) {
-            //         $additionalDataToBeSaved[$additionalInformationKey] = $additionalData[$additionalInformationKey];
-            //     }
+            // if (isset($additionalData['token_id'])) {
+            //     $this->logger->info('Akan ke save' . print_r($additionalData, true));
+            //     $subject->setAdditionalInformation(
+            //         'token_id',
+            //         $additionalData['token_id']
+            //     );
             // }
+
+            foreach ($this->additionalInformationList as $additionalInformationKey) {
+                if (isset($additionalData[$additionalInformationKey])) {
+                    $this->logger->info('Akan ke save' . print_r($additionalData, true));
+                    $subject->setAdditionalInformation(
+                        $additionalInformationKey,
+                        $additionalData[$additionalInformationKey]
+                    );
+                }
+            }
             // $this->logger->info('Akan ke save' . print_r($additionalDataToBeSaved, true));
 
             // if (!empty($additionalDataToBeSaved)) {
