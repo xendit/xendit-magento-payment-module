@@ -84,6 +84,7 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
 
             $payment = $this->getRequest()->getPost('payment');
             $paymentInstance = $this->_getCheckout()->getQuote()->getPayment();
+            $billingEmail = $this->_getCheckout()->getQuote()->getBillingAddress()->getData('email');
             if (isset($payment['cc_number'])) {
                 $paymentInstance->setCcNumber($payment['cc_number']);
             }
@@ -95,10 +96,11 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
 
             //SPRINT PAYMENT METHOD
-            $sprintPaymentMethod = $this->_objectManager->get('Xendit\Multishipping\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );  
-            if ( !!$sprintPaymentMethod ) {
-                $ids = $this->_getCheckout()->getOrderIds();
+            $xenditPaymentMethod = $this->_objectManager->get('Xendit\Multishipping\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );
+            if ( !!$xenditPaymentMethod ) {
                 
+                $ids = $this->_getCheckout()->getOrderIds();
+
                 if (empty($ids)) {
                     $this->messageManager->addError(
                         __('Failed to create order.')
@@ -109,11 +111,16 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                 // $ids = $this->_session->getOrderIds();
                 $params     = implode("|", $ids);
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
-                // $redirect   = $baseUrl.$sprintPaymentMethod.'/payment/redirectmultishipping/orderIds/'.$params;
-                $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params;
+
+                if ($xenditPaymentMethod === 'cc') {
+                    $redirect = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params;
+                } else {
+                    $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping?order_ids=' . $params.'&preferred_method='.$xenditPaymentMethod.'&billing_email='.$billingEmail;
+                }
+    
                 $this->_redirect($redirect);
             }
-            
+
             //OTHERS
             else
             {

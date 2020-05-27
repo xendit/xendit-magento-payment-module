@@ -7,8 +7,18 @@
             <span data-bind="text: getTestDescription().prefix, style: { 'font-weight': 'bold' }"></span>
             <span data-bind="text: getTestDescription().content"></span>
         </div>
-        <form class="form" id="pay" action="#" name="pay" method="post" >
-            <!-- ko template: 'Xendit_M2Invoice/payment/cc-form' --><!-- /ko -->
-        </form>
+        <!-- ko template: 'Xendit_M2Invoice/payment/cc-form' --><!-- /ko -->
+        <input type="submit" id="cc_submit"  style="display:none" />
+
+        <div class="actions-toolbar no-display">
+            <div class="primary">
+                <button data-role="review-save"
+                        type="submit"
+                        data-bind="{click: placeOrder}"
+                        class="action primary checkout">
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
