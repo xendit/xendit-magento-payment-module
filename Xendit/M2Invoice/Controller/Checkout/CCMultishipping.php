@@ -18,6 +18,7 @@ class CCMultishipping extends AbstractAction
             $transactionAmount  = 0;
             $incrementIds       = [];
             $orderPayments      = [];
+            $orderPromos        = [];
 
             foreach ($orderIds as $key => $value) {
                 $order              = $this->getOrderFactory()->create();
@@ -30,11 +31,11 @@ class CCMultishipping extends AbstractAction
     
                 $transactionAmount  += (int)$order->getTotalDue();
                 $incrementIds[]     = $order->getIncrementId();
+
+                $orderPromos[]      = $this->calculatePromo($order);
     
                 $id = $value;
             }
-
-            //echo 'Total ' . $transactionAmount.'<br>'; print_r($orderPayments); echo "<br>";
 
             if ($method === 'cchosted') {
                 $requestData        = [
@@ -44,41 +45,41 @@ class CCMultishipping extends AbstractAction
                     'store_name'    => $this->getStoreManager()->getStore()->getName(),
                     'platform_name' => 'MAGENTO2'
                 ];
+                // print_r($orderPromos); echo "<br>";
+                // how to append promo?
 
                 $hostedPayment = $this->requestHostedPayment($requestData);
 
                 if (isset($hostedPayment['error_code'])) {
                     $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
-                    //echo $message;exit;
 
                     foreach ($orderPayments as $key => $value) {
                         $quote = $this->getQuoteRepository()->get($value);
                         $payment = $quote->getPayment();
                         $this->processFailedPayment($payment, $message);
                     }
+
                     throw new \Magento\Framework\Exception\LocalizedException(
-                        new Phrase($message)
+                        __($message)
                     );
                 } elseif (isset($hostedPayment['id'])) {
                     $hostedPaymentId = $hostedPayment['id'];
                     $hostedPaymentToken = $hostedPayment['hp_token'];
-                    //print_r($hostedPayment);
+
                     foreach ($orderPayments as $key => $value) {
                         $quote = $this->getQuoteRepository()->get($value);
                         $payment = $quote->getPayment();
 
                         $payment->setAdditionalInformation('xendit_hosted_payment_id', $hostedPaymentId);
                         $payment->setAdditionalInformation('xendit_hosted_payment_token', $hostedPaymentToken);
-                        //var_dump($payment->getAdditionalInformation()); echo "~<br>";
                     }
-                    header("Location: https://tpi-ui.xendit.co/hosted-payments/" . $hostedPaymentId);
-                    exit();
 
-                    //$resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-                    //$resultRedirect->setUrl('https://tpi-ui.xendit.co/hosted-payments/' . $hostedPaymentId, [ '_secure'=> false ]);
+                    // redirect to hosted payment page
+                    $successUrl = $this->_url->getUrl('*/*/success');
+                    $failureUrl = $this->_url->getUrl('*/*/billing');
+                    header("Location: https://tpi-ui.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken&success_url=$successUrl&failure_url=$failureUrl");
                 } else {
                     $message = 'Error connecting to Xendit. Check your API key';
-                    //echo $message;exit;
                     
                     foreach ($orderPayments as $key => $value) {
                         $quote = $this->getQuoteRepository()->get($value);
@@ -86,7 +87,7 @@ class CCMultishipping extends AbstractAction
                         $this->processFailedPayment($payment, $message);
                     }
                     throw new \Magento\Framework\Exception\LocalizedException(
-                        new Phrase($message)
+                        __($message)
                     );
                 }
             }
@@ -126,12 +127,30 @@ class CCMultishipping extends AbstractAction
         return $hostedPayment;
     }
 
+    private function getCompletedHostedPayment($requestData)
+    {
+        $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=COMPLETED';
+        $method = \Zend\Http\Request::METHOD_GET;
+
+        try {
+            $hostedPayment = $this->getApiHelper()->request(
+                $url, $method
+            );
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                new Phrase($e->getMessage())
+            );
+        }
+
+        return $hostedPayment;
+    }
+
     private function processFailedPayment($payment, $message)
     {
         $payment->setAdditionalInformation('xendit_failure_reason', $message);
     }
 
-    private function calculatePromo($order, $rawAmount)
+    private function calculatePromo($order)
     {
         $promo = [];
         $ruleIds = $order->getAppliedRuleIds();
@@ -142,6 +161,7 @@ class CCMultishipping extends AbstractAction
         }
 
         $ruleIds = explode(',', $ruleIds);
+        $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
 
         foreach ($ruleIds as $ruleId) {
             foreach ($enabledPromotions as $promotion) {
@@ -150,6 +170,14 @@ class CCMultishipping extends AbstractAction
                     $promo[] = $this->constructPromo($rule, $promotion, $rawAmount);
                 }
             }
+        }
+
+        if (!empty($promo)) {
+            $args = [];
+            $args['promotions'] = json_encode($promo);
+            $args['amount'] = $rawAmount;
+
+            return $args;
         }
 
         return $promo;
