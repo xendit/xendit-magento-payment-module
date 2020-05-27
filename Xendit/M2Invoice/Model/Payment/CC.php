@@ -175,100 +175,105 @@ class CC extends \Magento\Payment\Model\Method\Cc
         }
     }
 
-    // public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
-    // {
-    //     $order = $payment->getOrder();
-    //     $orderId = $order->getRealOrderId();
-    //     $additionalData = $this->getAdditionalData();
+    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        $additionalData = $this->getAdditionalData();
 
-    //     $payment->setIsTransactionPending(true);
+        if (!isset($additionalData['token_id'])) {
+            return $this;
+        }
 
-    //     $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
-    //     $bin = isset($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;
+        $order = $payment->getOrder();
+        $orderId = $order->getRealOrderId();
+        
+        $payment->setIsTransactionPending(true);
 
-    //     try {
-    //         $promoResult = $this->calculatePromo($bin, $order);
-    //         $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
-    //         $requestData = array(
-    //             'token_id' => $additionalData['token_id'],
-    //             'card_cvn' => $cvn,
-    //             'amount' => $amount,
-    //             'external_id' => $this->dataHelper->getExternalId($orderId),
-    //             'return_url' => $this->dataHelper->getThreeDSResultUrl($orderId)
-    //         );
+        $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
+        $bin = isset($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;
 
-    //         if (!$promoResult['has_promo']) {
-    //             $requestData['amount'] = $rawAmount;
+        try {
+            $promoResult = $this->calculatePromo($bin, $order);
+            $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
+            $requestData = array(
+                'token_id' => $additionalData['token_id'],
+                'card_cvn' => $cvn,
+                'amount' => $amount,
+                'external_id' => $this->dataHelper->getExternalId($orderId),
+                'return_url' => $this->dataHelper->getThreeDSResultUrl($orderId)
+            );
 
-    //             $invalidDiscountAmount = $order->getBaseDiscountAmount();
-    //             $order->setBaseDiscountAmount(0);
-    //             $order->setBaseGrandTotal($order->getBaseGrandTotal() - $invalidDiscountAmount);
+            if (!$promoResult['has_promo']) {
+                $requestData['amount'] = $rawAmount;
 
-    //             $invalidDiscountAmount = $order->getDiscountAmount();
-    //             $order->setDiscountAmount(0);
-    //             $order->setGrandTotal($order->getGrandTotal() - $invalidDiscountAmount);
+                $invalidDiscountAmount = $order->getBaseDiscountAmount();
+                $order->setBaseDiscountAmount(0);
+                $order->setBaseGrandTotal($order->getBaseGrandTotal() - $invalidDiscountAmount);
 
-    //             $order->setBaseTotalDue($order->getBaseGrandTotal());
-    //             $order->setTotalDue($order->getGrandTotal());
+                $invalidDiscountAmount = $order->getDiscountAmount();
+                $order->setDiscountAmount(0);
+                $order->setGrandTotal($order->getGrandTotal() - $invalidDiscountAmount);
 
-    //             $payment->setBaseAmountOrdered($order->getBaseGrandTotal());
-    //             $payment->setAmountOrdered($order->getGrandTotal());
+                $order->setBaseTotalDue($order->getBaseGrandTotal());
+                $order->setTotalDue($order->getGrandTotal());
 
-    //             $payment->setAmountAuthorized($order->getGrandTotal());
-    //             $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
-    //         } else {
-    //             $requestData['promotion'] = json_encode(array(
-    //                 'original_amount' => $rawAmount,
-    //                 'title' => $promoResult['rule']->getName(),
-    //                 'promo_amount' => $amount,
-    //                 'promo_reference' => $order->getAppliedRuleIds(),
-    //                 'type' => $this->dataHelper->mapSalesRuleType($promoResult['rule']->getSimpleAction())
-    //             ));
-    //         }
+                $payment->setBaseAmountOrdered($order->getBaseGrandTotal());
+                $payment->setAmountOrdered($order->getGrandTotal());
 
-    //         $charge = $this->requestCharge($requestData);
+                $payment->setAmountAuthorized($order->getGrandTotal());
+                $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
+            } else {
+                $requestData['promotion'] = json_encode(array(
+                    'original_amount' => $rawAmount,
+                    'title' => $promoResult['rule']->getName(),
+                    'promo_amount' => $amount,
+                    'promo_reference' => $order->getAppliedRuleIds(),
+                    'type' => $this->dataHelper->mapSalesRuleType($promoResult['rule']->getSimpleAction())
+                ));
+            }
 
-    //         $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-    //         if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
-    //             $newRequestData = array_replace($requestData, array(
-    //                 'external_id' => $this->dataHelper->getExternalId($orderId, true)
-    //             ));
-    //             $charge = $this->requestCharge($newRequestData);
-    //         }
+            $charge = $this->requestCharge($requestData);
 
-    //         $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-    //         if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
-    //             $this->handle3DSFlow($requestData, $payment, $order);
+            $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
+            if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
+                $newRequestData = array_replace($requestData, array(
+                    'external_id' => $this->dataHelper->getExternalId($orderId, true)
+                ));
+                $charge = $this->requestCharge($newRequestData);
+            }
 
-    //             return $this;
-    //         }
+            $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
+            if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
+                $this->handle3DSFlow($requestData, $payment, $order);
 
-    //         if ($chargeError !== null) {
-    //             $this->processFailedPayment($order, $payment, $charge);
-    //         }
+                return $this;
+            }
 
-    //         if ($charge['status'] === 'CAPTURED') {
-    //             $transactionId = $charge['id'];
+            if ($chargeError !== null) {
+                $this->processFailedPayment($order, $payment, $charge);
+            }
 
-    //             $payment->setAdditionalInformation('xendit_charge_id', $transactionId);
-    //         } else {
-    //             $this->processFailedPayment($order, $payment, $charge);
-    //         }
-    //     } catch (\Zend_Http_Client_Exception $e) {
-    //         $errorMsg = $e->getMessage();
-    //     } catch (\Exception $e) {
-    //         $errorMsg = $e->getMessage();
-    //     } finally {
-    //         if (!empty($errorMsg)) {
-    //             $this->logdnaHelper->log(LogDNALevel::ERROR, 'HTTP Error: ' . $errorMsg);
-    //             throw new \Magento\Framework\Exception\LocalizedException(
-    //                 new Phrase($errorMsg)
-    //             );
-    //         }
-    //     }
+            if ($charge['status'] === 'CAPTURED') {
+                $transactionId = $charge['id'];
 
-    //     return $this;
-    // }
+                $payment->setAdditionalInformation('xendit_charge_id', $transactionId);
+            } else {
+                $this->processFailedPayment($order, $payment, $charge);
+            }
+        } catch (\Zend_Http_Client_Exception $e) {
+            $errorMsg = $e->getMessage();
+        } catch (\Exception $e) {
+            $errorMsg = $e->getMessage();
+        } finally {
+            if (!empty($errorMsg)) {
+                $this->logdnaHelper->log(LogDNALevel::ERROR, 'HTTP Error: ' . $errorMsg);
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    new Phrase($errorMsg)
+                );
+            }
+        }
+
+        return $this;
+    }
 
     protected function getObjectManager()
     {
