@@ -31,34 +31,16 @@ class QuotePaymentPlugin
     public function beforeImportData(\Magento\Quote\Model\Quote\Payment $subject, array $data)
     {
         if (array_key_exists('additional_data', $data)) {
-            // $this->logger->info('Masuk beforeImportData additional_data' . print_r($data, true));
             $additionalData = $data['additional_data'];
-            // $additionalDataToBeSaved = [];
-
-            // if (isset($additionalData['token_id'])) {
-            //     $this->logger->info('Akan ke save' . print_r($additionalData, true));
-            //     $subject->setAdditionalInformation(
-            //         'token_id',
-            //         $additionalData['token_id']
-            //     );
-            // }
 
             foreach ($this->additionalInformationList as $additionalInformationKey) {
                 if (isset($additionalData[$additionalInformationKey])) {
-                    $this->logger->info('Akan ke save' . print_r($additionalData, true));
                     $subject->setAdditionalInformation(
                         $additionalInformationKey,
                         $additionalData[$additionalInformationKey]
                     );
                 }
             }
-            // $this->logger->info('Akan ke save' . print_r($additionalDataToBeSaved, true));
-
-            // if (!empty($additionalDataToBeSaved)) {
-            //     $subject->setAdditionalData(
-            //         json_encode($additionalDataToBeSaved)
-            //     );
-            // }
         }
 
         return [$data];
