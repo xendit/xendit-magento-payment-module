@@ -3,6 +3,7 @@
 namespace Xendit\M2Invoice\Helper;
 
 use Magento\Checkout\Model\Session;
+use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 
@@ -18,12 +19,19 @@ class Checkout
 
     private $orderFactory;
 
+    /**
+     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
+     */
+    private $quoteRepository;
+
     public function __construct(
         Session $session,
-        OrderFactory $order
+        OrderFactory $order,
+        CartRepositoryInterface $quoteRepository
     ) {
         $this->session = $session;
         $this->orderFactory = $order;
+        $this->quoteRepository = $quoteRepository;
     }
     /**
      * Cancel last placed order with specified comment message
@@ -47,8 +55,12 @@ class Checkout
      *
      * @return bool
      */
-    public function restoreQuote()
+    public function restoreQuote($quote = null)
     {
+        if ($quote) {
+            $quote->setIsActive(true)->save();
+        }
+
         return $this->session->restoreQuote();
     }
     /**
@@ -67,5 +79,23 @@ class Checkout
             return true;
         }
         return false;
+    }
+
+    public function processOrdersFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
+    {
+        foreach ($orderIds as $key => $value) {
+            $order = $this->orderFactory->create()->loadByIncrementId($value);
+
+            $orderState = Order::STATE_CANCELED;
+            $order->setState($orderState)
+                ->setStatus($orderState)
+                ->addStatusHistoryComment("Order #" . $order->getId() . " was rejected by Xendit because " .
+                    $failureReason);
+            $order->save();
+
+            $quoteId = $order->getQuoteId();
+            $quote = $this->quoteRepository->get($quoteId);
+            $this->restoreQuote($quote);
+        }
     }
 }

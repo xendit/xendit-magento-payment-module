@@ -33,9 +33,7 @@ class ThreeDSResult extends AbstractAction
             $hosted3DS = $this->getThreeDSResult($hosted3DSId);
 
             if ('VERIFIED' !== $hosted3DS['status']) {
-                throw new \Magento\Framework\Exception\LocalizedException(
-                    __('Authentication process failed. Please try again.')
-                );
+                return $this->processFailedPayment($orders, 'Authentication process failed. Please try again.');
             }
 
             $charge = $this->createCharge($hosted3DS, $orderId);
@@ -114,36 +112,16 @@ class ThreeDSResult extends AbstractAction
                 $this->invoiceOrder($order, $transactionId);
             }
 
-
             $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
             $this->_redirect('*/*/success');
         } else {
-            $this->processFailedPayment($orders, $charge);
+            $this->processFailedPayment($orders, $charge['failure_reason']);
         }
     }
 
-    private function processFailedPayment($orders, $charge = [])
+    private function processFailedPayment($orders, $failureReason = 'Unexpected Error')
     {
-        $this->getCheckoutHelper()->restoreQuote(); //restore cart
-
-        if ($charge === []) {
-            $failureReason = 'Unexpected Error';
-        } else {
-            $failureReason = isset($charge['failure_reason']) ? $charge['failure_reason'] : 'Unexpected Error';
-        }
-
-        foreach ($orders as $key => $order) {
-            $this->getCheckoutHelper()->cancelOrderById($order->getId(),
-                "Order #".($order->getId())." was rejected by Xendit");
-
-            $orderState = Order::STATE_CANCELED;
-            $order->setState($orderState)
-                ->setStatus($orderState)
-                ->addStatusHistoryComment("Order #" . $order->getId() . " was rejected by Xendit because " .
-                    $failureReason);
-            $order->save();
-        }
-
+        $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);
 
         $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
         $this->getMessageManager()->addErrorMessage(__(
