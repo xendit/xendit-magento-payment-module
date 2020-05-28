@@ -1,6 +1,6 @@
 <?php
 
-namespace Xendit\Multishipping\Controller\Payment;
+namespace Xendit\M2Invoice\Controller\Payment;
 
 use Magento\Multishipping\Model\Checkout\Type\Multishipping\State;
 use Magento\Customer\Api\AccountManagementInterface;
@@ -84,6 +84,7 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
 
             $payment = $this->getRequest()->getPost('payment');
             $paymentInstance = $this->_getCheckout()->getQuote()->getPayment();
+            $billingEmail = $this->_getCheckout()->getQuote()->getBillingAddress()->getData('email');
             if (isset($payment['cc_number'])) {
                 $paymentInstance->setCcNumber($payment['cc_number']);
             }
@@ -95,8 +96,9 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
 
             //SPRINT PAYMENT METHOD
-            $xenditPaymentMethod = $this->_objectManager->get('Xendit\Multishipping\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );  
+            $xenditPaymentMethod = $this->_objectManager->get('Xendit\M2Invoice\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );
             if ( !!$xenditPaymentMethod ) {
+                
                 $ids = $this->_getCheckout()->getOrderIds();
 
                 if (empty($ids)) {
@@ -111,7 +113,9 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
                 
                 if ($xenditPaymentMethod === 'cc' || $xenditPaymentMethod === 'cchosted') {
-                    $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&method=' . $xenditPaymentMethod;
+                    $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
+                } else {
+                    $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping?order_ids=' . $params.'&preferred_method='.$xenditPaymentMethod.'&billing_email='.$billingEmail;
                 }
                 $this->_redirect($redirect);
             }

@@ -12,7 +12,7 @@ class CCMultishipping extends AbstractAction
     {
         try {
             $rawOrderIds        = $this->getRequest()->getParam('order_ids');
-            $method             = $this->getRequest()->getParam('method');
+            $method             = $this->getRequest()->getParam('preferred_method');
             $orderIds           = explode("-", $rawOrderIds);
 
             $transactionAmount  = 0;
