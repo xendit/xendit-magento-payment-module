@@ -37,8 +37,10 @@ class CCMultishipping extends AbstractAction
                 $quote              = $this->getQuoteRepository()->get($quoteId);
 
                 $additionalInfo     = $quote->getPayment()->getAdditionalInformation();
-                $tokenId            = $additionalInfo['token_id'];
-                $cvn                = $additionalInfo['cc_cid'];
+                if (isset($additionalInfo['token_id']) && isset($additionalInfo['cc_cid'])) {
+                    $tokenId            = $additionalInfo['token_id'];
+                    $cvn                = $additionalInfo['cc_cid'];
+                }
     
                 $transactionAmount  += (int)$order->getTotalDue();
                 $incrementIds[]     = $order->getIncrementId();
@@ -89,7 +91,7 @@ class CCMultishipping extends AbstractAction
                     'payment_type'           => 'CREDIT_CARD',
                     'store_name'             => $this->getStoreManager()->getStore()->getName(),
                     'platform_name'          => 'MAGENTO2',
-                    'success_redirect_url'   => $this->_url->getUrl('*/*/success'),
+                    'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl(),
                     'failure_redirect_url'   => $this->_url->getUrl('checkout/cart')
                 ];
                 // how to append promo?
