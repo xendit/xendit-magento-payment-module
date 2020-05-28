@@ -93,7 +93,7 @@ class CCMultishipping extends AbstractAction
                     'platform_name'          => 'MAGENTO2',
                     'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl() . '?type=multishipping',
                     'failure_redirect_url'   => $this->_url->getUrl('checkout/cart'),
-                    'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/processhosted?process=callback&order_ids=' . $rawOrderIds)
+                    'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/processhosted') . '?process=callback&order_ids=' . $rawOrderIds
                 ];
                 // how to append promo?
 

@@ -32,7 +32,7 @@ class ProcessHosted extends AbstractAction
                 $orders[] = $this->getOrder();
                 $shouldRedirect = 1;
             }
-            
+
             $isError = 0;
 
             foreach ($orders AS $order) {
@@ -75,9 +75,6 @@ class ProcessHosted extends AbstractAction
                 if ($isError) {
                     // only redirect to cart page once all orders have been processed as failed.
                     return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
-                }
-                else { // no error means redirect to multishipping success page from `processSuccessfulTransaction`
-                    return $this->_redirect('*/*/success', [ '_secure'=> false ]);
                 }
             }
             else {
