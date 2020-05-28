@@ -25,31 +25,29 @@ class ProcessHosted extends AbstractAction
                 $hostedPayment = $this->getCompletedHostedPayment($requestData);
 
                 if (isset($hostedPayment['error_code'])) {
-                    $this->handlePaymentFailure($order, $hostedPayment['error_code'], 'Error reconciliating', $shouldRedirect);
+                    return $this->handlePaymentFailure($order, $hostedPayment['error_code'], 'Error reconciliating', $shouldRedirect);
                 }
-                else {
-                    if ($hostedPayment['paid_amount'] != $hostedPayment['amount']) {
-                        $order->setBaseDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
-                        $order->setDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
-                        $order->save();
-        
-                        $order->setBaseGrandTotal($order->getBaseGrandTotal() + $order->getBaseDiscountAmount());
-                        $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
-                        $order->save();
-                    }
+                if ($hostedPayment['paid_amount'] != $hostedPayment['amount']) {
+                    $order->setBaseDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
+                    $order->setDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
+                    $order->save();
     
-                    $this->processSuccessfulTransaction(
-                        $order,
-                        $payment,
-                        'Xendit Credit Card payment completed. Transaction ID: ',
-                        $hostedPayment['charge_id'],
-                        $shouldRedirect
-                    );
+                    $order->setBaseGrandTotal($order->getBaseGrandTotal() + $order->getBaseDiscountAmount());
+                    $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
+                    $order->save();
                 }
+
+                $this->processSuccessfulTransaction(
+                    $order,
+                    $payment,
+                    'Xendit Credit Card payment completed. Transaction ID: ',
+                    $hostedPayment['charge_id'],
+                    $shouldRedirect
+                );
             }
             
             $message = 'No action on xendit/checkout/redirect';
-            return $this->handlePaymentFailure($orders, $message, 'No payment recorded');
+            return $this->handlePaymentFailure($order, $message, 'No payment recorded');
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             return $this->handlePaymentFailure($order, $message, 'Unexpected error');
