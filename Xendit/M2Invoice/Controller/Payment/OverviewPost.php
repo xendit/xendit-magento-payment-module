@@ -1,6 +1,6 @@
 <?php
 
-namespace Xendit\Multishipping\Controller\Payment;
+namespace Xendit\M2Invoice\Controller\Payment;
 
 use Magento\Multishipping\Model\Checkout\Type\Multishipping\State;
 use Magento\Customer\Api\AccountManagementInterface;
@@ -96,7 +96,7 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
 
             //SPRINT PAYMENT METHOD
-            $xenditPaymentMethod = $this->_objectManager->get('Xendit\Multishipping\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );
+            $xenditPaymentMethod = $this->_objectManager->get('Xendit\M2Invoice\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );
             if ( !!$xenditPaymentMethod ) {
                 
                 $ids = $this->_getCheckout()->getOrderIds();
