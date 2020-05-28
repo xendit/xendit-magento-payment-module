@@ -17,8 +17,7 @@ class CCMultishipping extends AbstractAction
 
             $transactionAmount  = 0;
             $incrementIds       = [];
-            $orderPayments      = [];
-            $orderPromos        = [];
+            //$orderPromos        = [];
             $tokenId            = '';
             $orders             = [];
 
@@ -45,8 +44,7 @@ class CCMultishipping extends AbstractAction
                 $transactionAmount  += (int)$order->getTotalDue();
                 $incrementIds[]     = $order->getIncrementId();
 
-                $orderPayments[]    = $quoteId;
-                $orderPromos[]      = $this->calculatePromo($order);
+                //$orderPromos[]      = $this->calculatePromo($order); //unused
             }
 
             if ($method === 'cc') {
@@ -92,10 +90,10 @@ class CCMultishipping extends AbstractAction
                     'store_name'             => $this->getStoreManager()->getStore()->getName(),
                     'platform_name'          => 'MAGENTO2',
                     'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl() . '?type=multishipping',
-                    'failure_redirect_url'   => $this->_url->getUrl('checkout/cart'),
-                    'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/processhosted') . '?process=callback&order_ids=' . $rawOrderIds
+                    'failure_redirect_url'   => $this->getDataHelper()->getFailureUrl($rawOrderIds),
+                    'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
                 ];
-                // how to append promo?
+                // how to include promo?
 
                 $hostedPayment = $this->requestHostedPayment($requestData);
 
@@ -107,13 +105,8 @@ class CCMultishipping extends AbstractAction
                     $hostedPaymentId = $hostedPayment['id'];
                     $hostedPaymentToken = $hostedPayment['hp_token'];
 
-                    foreach ($orderPayments as $key => $value) {
-                        $quote = $this->getQuoteRepository()->get($value);
-                        $payment = $quote->getPayment();
-
-                        $payment->setAdditionalInformation('xendit_hosted_payment_id', $hostedPaymentId);
-                        $payment->setAdditionalInformation('xendit_hosted_payment_token', $hostedPaymentToken);
-                    }
+                    $payment->setAdditionalInformation('xendit_hosted_payment_id', $hostedPaymentId);
+                    $payment->setAdditionalInformation('xendit_hosted_payment_token', $hostedPaymentToken);
 
                     // redirect to hosted payment page
                     $redirect = "https://tpi-ui.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken";
@@ -162,7 +155,7 @@ class CCMultishipping extends AbstractAction
         return $hostedPayment;
     }
 
-    private function calculatePromo($order)
+    /*private function calculatePromo($order)
     {
         $promo = [];
         $ruleIds = $order->getAppliedRuleIds();
@@ -223,7 +216,7 @@ class CCMultishipping extends AbstractAction
         $constructedPromo['rate'] = $rate;
 
         return $constructedPromo;
-    }
+    }*/
     
     private function handle3DSFlow($requestData, $payment, $orderIds, $orders)
     {

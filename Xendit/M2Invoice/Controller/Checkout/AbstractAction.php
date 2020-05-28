@@ -4,6 +4,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\UrlInterface;
 use Magento\Checkout\Model\Session;
@@ -53,6 +54,8 @@ abstract class AbstractAction extends Action
 
     private $ruleRepo;
 
+    private $jsonResultFactory;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
@@ -66,7 +69,8 @@ abstract class AbstractAction extends Action
         LogDNA $logDNA,
         StoreManagerInterface $storeManager,
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
-        RuleRepository $ruleRepository
+        RuleRepository $ruleRepository,
+        JsonFactory $jsonResultFactory
 
     ) {
         parent::__construct($context);
@@ -86,6 +90,7 @@ abstract class AbstractAction extends Action
         $this->storeManager = $storeManager;
         $this->quoteRepository = $quoteRepository;
         $this->ruleRepository = $ruleRepository;
+        $this->jsonResultFactory = $jsonResultFactory;
     }
 
     protected function getContext()
@@ -173,6 +178,11 @@ abstract class AbstractAction extends Action
     protected function getRuleRepository()
     {
         return $this->ruleRepository;
+    }
+
+    protected function getJsonResultFactory()
+    {
+        return $this->jsonResultFactory;
     }
 
     protected function invoiceOrder($order, $transactionId)

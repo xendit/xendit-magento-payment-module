@@ -11,46 +11,23 @@ class ProcessHosted extends AbstractAction
     public function execute()
     {
         try {
-            $orders = [];
-            $process = $this->getRequest()->getParam('process');
+            $shouldRedirect = 1;
 
-            if ($process === 'callback') { // multishipping
-                $post = $this->getRequest()->getContent();
-                $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
-                $decodedPost = json_decode($post, true);
+            $order = $this->getOrder();
+            $payment = $order->getPayment();
 
-                $orderIds = explode('-', $this->getRequest()->getParam('order_ids'));
-                foreach ($orderIds as $key => $value) {
-                    $o = $this->getOrderFactory()->create();
-                    $o ->load($value);
-                    $orders[] = $o;
+            if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
+                $requestData = [
+                    'id' => $payment->getAdditionalInformation('xendit_hosted_payment_id'),
+                    'hp_token' => $payment->getAdditionalInformation('xendit_hosted_payment_token')
+                ];
+
+                $hostedPayment = $this->getCompletedHostedPayment($requestData);
+
+                if (isset($hostedPayment['error_code'])) {
+                    $this->handlePaymentFailure($order, $hostedPayment['error_code'], 'Error reconciliating', $shouldRedirect);
                 }
-                
-                $shouldRedirect = 0;
-            }
-            else {
-                $orders[] = $this->getOrder();
-                $shouldRedirect = 1;
-            }
-
-            $isError = 0;
-
-            foreach ($orders AS $order) {
-                $payment = $order->getPayment();
-
-                if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
-                    $requestData = [
-                        'id' => $payment->getAdditionalInformation('xendit_hosted_payment_id'),
-                        'hp_token' => $payment->getAdditionalInformation('xendit_hosted_payment_token')
-                    ];
-    
-                    $hostedPayment = $this->getCompletedHostedPayment($requestData);
-    
-                    if (isset($hostedPayment['error_code'])) {
-                        $isError = 1;
-                        $this->handlePaymentFailure($order, $hostedPayment['error_code'], 'Error reconciliating', $shouldRedirect);
-                    }
-    
+                else {
                     if ($hostedPayment['paid_amount'] != $hostedPayment['amount']) {
                         $order->setBaseDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
                         $order->setDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
@@ -70,24 +47,16 @@ class ProcessHosted extends AbstractAction
                     );
                 }
             }
-
-            if ($process === 'callback') {
-                if ($isError) {
-                    // only redirect to cart page once all orders have been processed as failed.
-                    return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
-                }
-            }
-            else {
-                $message = 'No action on xendit/checkout/redirect';
-                return $this->handlePaymentFailure($orders, $message, 'No payment recorded');
-            }
+            
+            $message = 'No action on xendit/checkout/redirect';
+            return $this->handlePaymentFailure($orders, $message, 'No payment recorded');
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             return $this->handlePaymentFailure($order, $message, 'Unexpected error');
         }
     }
 
-    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = 1)
+    public function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = 1)
     {
         $orderState = Order::STATE_PROCESSING;
         $order->setState($orderState)
@@ -108,7 +77,7 @@ class ProcessHosted extends AbstractAction
         }
     }
 
-    private function getCompletedHostedPayment($requestData)
+    public function getCompletedHostedPayment($requestData)
     {
         $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=COMPLETED';
         $method = \Zend\Http\Request::METHOD_GET;
@@ -126,7 +95,7 @@ class ProcessHosted extends AbstractAction
         return $hostedPayment;
     }
 
-    private function handlePaymentFailure($order, $message, $reason, $shouldRedirect = 1)
+    public function handlePaymentFailure($order, $message, $reason, $shouldRedirect = 1)
     {
         $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
 
