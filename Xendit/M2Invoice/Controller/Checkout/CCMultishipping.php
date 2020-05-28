@@ -12,11 +12,12 @@ class CCMultishipping extends AbstractAction
     {
         try {
             $rawOrderIds        = $this->getRequest()->getParam('order_ids');
-            $orderIds           = explode("|", $rawOrderIds);
+            $orderIds           = explode("-", $rawOrderIds);
 
             $transactionAmount  = 0;
             $incrementIds       = [];
             $tokenId            = '';
+            $orders             = [];
 
             foreach ($orderIds as $key => $value) {
                 $order              = $this->getOrderFactory()->create();
@@ -26,6 +27,7 @@ class CCMultishipping extends AbstractAction
                     ->setStatus(Order::STATE_PENDING_PAYMENT)
                     ->addStatusHistoryComment("Pending Xendit payment.");
                 $order->save();
+                $orders[]           = $order;
 
                 $payment            = $order->getPayment();
                 $quoteId            = $order->getQuoteId();
@@ -39,7 +41,7 @@ class CCMultishipping extends AbstractAction
                 $incrementIds[]     = $order->getIncrementId();
             }
 
-            $externalIdSuffix = implode("|", $incrementIds);
+            $externalIdSuffix = implode("-", $incrementIds);
             $requestData = array(
                 'token_id' => $tokenId,
                 'card_cvn' => $cvn,
@@ -60,17 +62,17 @@ class CCMultishipping extends AbstractAction
 
             $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
             if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
-                return $this->handle3DSFlow($requestData, $payment, $incrementIds);
+                return $this->handle3DSFlow($requestData, $payment, $incrementIds, $orders);
             }
 
             if ($chargeError !== null) {
-                return $this->processFailedPayment($incrementIds, $payment, $chargeError);
+                return $this->processFailedPayment($incrementIds, $chargeError);
             }
 
             if ($charge['status'] === 'CAPTURED') {
-                return $this->processSuccessfulPayment($incrementIds, $payment, $charge);
+                return $this->processSuccessfulPayment($orders, $payment, $charge);
             } else {
-                return $this->processFailedPayment($incrementIds, $payment, $charge['failure_reason']);
+                return $this->processFailedPayment($incrementIds, $charge['failure_reason']);
             }
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
@@ -89,7 +91,7 @@ class CCMultishipping extends AbstractAction
         return $resultRedirect;
     }
 
-    private function handle3DSFlow($requestData, $payment, $orderIds)
+    private function handle3DSFlow($requestData, $payment, $orderIds, $orders)
     {
         unset($requestData['card_cvn']);
         $hosted3DSRequestData = array_replace([], $requestData);
@@ -98,7 +100,7 @@ class CCMultishipping extends AbstractAction
         $hosted3DSError = isset($hosted3DS['error_code']) ? $hosted3DS['error_code'] : null;
 
         if ($hosted3DSError !== null) {
-            return $this->processFailedPayment($orderIds, $payment, $hosted3DSError);
+            return $this->processFailedPayment($orderIds, $hosted3DSError);
         }
 
         if ('IN_REVIEW' === $hosted3DS['status']) {
@@ -127,17 +129,19 @@ class CCMultishipping extends AbstractAction
             $charge = $this->requestCharge($newRequestData);
 
             if ($charge['status'] === 'CAPTURED') {
-                return $this->processSuccessfulPayment($orderIds, $payment, $charge);
+                return $this->processSuccessfulPayment($orders, $payment, $charge);
             } else {
-                return $this->processFailedPayment($orderIds, $payment, $charge['failure_reason']);
+                return $this->processFailedPayment($orderIds, $charge['failure_reason']);
             }
         }
 
-        return $this->processFailedPayment($orderIds, $payment);
+        return $this->processFailedPayment($orderIds);
     }
 
-    private function processFailedPayment($orderIds, $payment, $failureReason = 'Unexpected Error with empty charge')
+    private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
     {
+        $this->getCheckoutHelper()->restoreQuote();
+
         foreach ($orderIds as $key => $value) {
             $order = $this->getOrderById($value);
 
@@ -156,19 +160,23 @@ class CCMultishipping extends AbstractAction
         $this->_redirect('checkout/cart', array('_secure'=> false));
     }
 
-    private function processSuccessfulPayment($orderIds, $payment, $charge)
+    private function processSuccessfulPayment($orders, $payment, $charge)
     {
         $transactionId = $charge['id'];
         $payment->setTransactionId($transactionId);
         $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
-        foreach ($orderIds as $key => $value) {
-            $order = $this->getOrderById($value);
+        foreach ($orders as $key => $order) {
             $orderState = Order::STATE_PROCESSING;
 
             $order->setState($orderState)
                 ->setStatus($orderState)
                 ->addStatusHistoryComment("Xendit payment completed. Transaction ID: $transactionId");
+            
+            $payment = $order->getPayment();
+            $payment->setTransactionId($transactionId);
+            $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+
             $order->save();
 
             $this->invoiceOrder($order, $transactionId);
