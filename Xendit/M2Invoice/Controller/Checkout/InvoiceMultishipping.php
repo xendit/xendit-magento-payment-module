@@ -18,7 +18,8 @@ class InvoiceMultishipping extends AbstractAction
 
             $transactionAmount  = 0;
             $incrementIds       = [];
-
+            
+            $orders = [];
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
                 $order->load($value);
@@ -26,9 +27,10 @@ class InvoiceMultishipping extends AbstractAction
                 $order->setState(Order::STATE_PENDING_PAYMENT)
                     ->setStatus(Order::STATE_PENDING_PAYMENT)
                     ->addStatusHistoryComment("Pending Xendit payment.");
+                    
+                array_push($orders, $order);
+                
                 $order->save();
-
-                $payment            = $order->getPayment();
     
                 $transactionAmount  += (int)$order->getTotalDue();
                 $incrementIds[]     = $order->getIncrementId();
@@ -51,7 +53,7 @@ class InvoiceMultishipping extends AbstractAction
 
             $invoice = $this->createInvoice($requestData);
 
-            $this->addInvoiceData($payment, $invoice);
+            $this->addInvoiceData($orders, $invoice);
 
             $redirectUrl = $this->getXenditRedirectUrl($invoice, $preferredMethod);
             
@@ -89,11 +91,16 @@ class InvoiceMultishipping extends AbstractAction
         return $url;
     }
 
-    private function addInvoiceData($payment, $invoice)
+    private function addInvoiceData($orders, $invoice)
     {
-        $payment->setAdditionalInformation('payment_gateway', 'xendit');
-        $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
-        $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
+        foreach ($orders as $key => $order) {
+            $payment = $order->getPayment();
+            $payment->setAdditionalInformation('payment_gateway', 'xendit');
+            $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
+            $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
+            
+            $order->save();
+        }
     }
     
     private function redirectToCart($failureReason)
