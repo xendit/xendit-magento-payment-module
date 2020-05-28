@@ -91,8 +91,9 @@ class CCMultishipping extends AbstractAction
                     'payment_type'           => 'CREDIT_CARD',
                     'store_name'             => $this->getStoreManager()->getStore()->getName(),
                     'platform_name'          => 'MAGENTO2',
-                    'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl(),
-                    'failure_redirect_url'   => $this->_url->getUrl('checkout/cart')
+                    'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl() . '?type=multishipping',
+                    'failure_redirect_url'   => $this->_url->getUrl('checkout/cart'),
+                    'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/processhosted?process=callback&order_ids=' . $rawOrderIds)
                 ];
                 // how to append promo?
 
