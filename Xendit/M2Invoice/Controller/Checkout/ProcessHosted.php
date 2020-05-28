@@ -54,7 +54,7 @@ class ProcessHosted extends AbstractAction
         }
     }
 
-    public function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = 1)
+    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = 1)
     {
         $orderState = Order::STATE_PROCESSING;
         $order->setState($orderState)

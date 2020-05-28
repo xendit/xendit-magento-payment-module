@@ -19,6 +19,7 @@ class CCCallback extends ProcessHosted
             
             $shouldRedirect = 0;
             $isError = 0;
+            $flag = 1;
 
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
@@ -35,7 +36,10 @@ class CCCallback extends ProcessHosted
                         'hp_token' => $payment->getAdditionalInformation('xendit_hosted_payment_token')
                     ];
     
-                    $hostedPayment = $this->getCompletedHostedPayment($requestData);
+                    if ($flag) { // complete hosted payment only once as status will be changed to USED
+                        $hostedPayment = $this->getCompletedHostedPayment($requestData);
+                        $flag = false;
+                    }
     
                     if (isset($hostedPayment['error_code'])) {
                         $isError = 1;

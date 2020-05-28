@@ -22,17 +22,16 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
             
             $shouldRedirect = 0;
             $isError = 0;
+            $flag = 1;
 
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
                 $order  ->load($value);
 
-                //$order = $this->getOrderById($value);
                 $payment            = $order->getPayment();
                 $quoteId            = $order->getQuoteId();
                 $quote              = $this->getQuoteRepository()->get($quoteId);
                 $additionalInfo     = $quote->getPayment()->getAdditionalInformation();
-                //echo $quoteId.'->'; print_r($additionalInfo); echo "<br>";
 
                 if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
                     $requestData = [
@@ -40,9 +39,11 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
                         'hp_token' => $payment->getAdditionalInformation('xendit_hosted_payment_token')
                     ];
     
-                    $hostedPayment = $this->getCompletedHostedPayment($requestData);
-                    //print_r($hostedPayment); echo "<br>"; print_r($requestData); echo "<br>";
-    
+                    if ($flag) { // complete hosted payment only once as status will be changed to USED
+                        $hostedPayment = $this->getCompletedHostedPayment($requestData);
+                        $flag = false;
+                    }
+                    
                     if (isset($hostedPayment['error_code'])) {
                         $isError = 1;
                         $this->handlePaymentFailure($order, $hostedPayment['error_code'], $hostedPayment['error_code'] . ' - Error reconciliating', $shouldRedirect);
@@ -95,6 +96,23 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
 
             return $result;
         }
+    }
+
+    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = 1)
+    {
+        $orderState = Order::STATE_PROCESSING;
+        $order->setState($orderState)
+            ->setStatus($orderState)
+            ->addStatusHistoryComment("$paymentMessage $transactionId");
+
+        $order->save();
+
+        $payment->setTransactionId($transactionId);
+        $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+
+        //$this->invoiceOrder($order, $transactionId); // ERROR HERE!
+
+        $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException

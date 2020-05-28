@@ -105,8 +105,7 @@ class CCMultishipping extends AbstractAction
                     $hostedPaymentId = $hostedPayment['id'];
                     $hostedPaymentToken = $hostedPayment['hp_token'];
 
-                    $payment->setAdditionalInformation('xendit_hosted_payment_id', $hostedPaymentId);
-                    $payment->setAdditionalInformation('xendit_hosted_payment_token', $hostedPaymentToken);
+                    $this->addCCHostedData($orders, $hostedPayment);
 
                     // redirect to hosted payment page
                     $redirect = "https://tpi-ui.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken";
@@ -153,6 +152,18 @@ class CCMultishipping extends AbstractAction
         }
 
         return $hostedPayment;
+    }
+
+    private function addCCHostedData($orders, $data)
+    {
+        foreach ($orders as $key => $order) {
+            $payment = $order->getPayment();
+            $payment->setAdditionalInformation('payment_gateway', 'xendit');
+            $payment->setAdditionalInformation('xendit_hosted_payment_id', $data['id']);
+            $payment->setAdditionalInformation('xendit_hosted_payment_token', $data['hp_token']);
+            
+            $order->save();
+        }
     }
 
     /*private function calculatePromo($order)
