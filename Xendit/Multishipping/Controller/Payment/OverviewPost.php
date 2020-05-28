@@ -109,7 +109,7 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                     return;
                 }
                 // $ids = $this->_session->getOrderIds();
-                $params     = implode("|", $ids);
+                $params     = implode("-", $ids);
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
 
                 if ($xenditPaymentMethod === 'cc') {

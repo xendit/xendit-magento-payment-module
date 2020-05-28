@@ -82,7 +82,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
                     return $result;
                 }
-            } elseif (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
+            } else if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
                 $result = $this->jsonResultFactory->create();
                 /** You may introduce your own constants for this custom REST API */
                 $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
@@ -98,7 +98,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             $transactionId = $decodedPost['id'];
             $orderIds = explode("-", $orderId);
             
-            $is_multishipping = (count($orderIds) > 1) ? true : false;
+            $isMultishipping = (count($orderIds) > 1) ? true : false;
             if ($isEwallet) {
                 // default code if API doesn't send failure_code
                 $failureCode = 'UNKNOWN_ERROR';
@@ -121,7 +121,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             $invoice = $this->getXenditInvoice($transactionId);
 
-            if( $is_multishipping ) {
+            if( $isMultishipping ) {
                 foreach ($orderIds as $key => $value) {
                     $result = $this->checkOrder($value, $isEwallet, $decodedPost, $invoice, $orderId);
                 }

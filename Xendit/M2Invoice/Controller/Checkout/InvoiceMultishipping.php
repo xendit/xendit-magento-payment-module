@@ -14,7 +14,7 @@ class InvoiceMultishipping extends AbstractAction
         try {
             $billingEmail        = $this->getRequest()->getParam('billing_email');
             $rawOrderIds        = $this->getRequest()->getParam('order_ids');
-            $orderIds           = explode("|", $rawOrderIds);
+            $orderIds           = explode("-", $rawOrderIds);
 
             $transactionAmount  = 0;
             $incrementIds       = [];
