@@ -48,6 +48,8 @@ abstract class AbstractAction extends Action
 
     private $storeManager;
 
+    private $quoteRepository;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
@@ -59,7 +61,8 @@ abstract class AbstractAction extends Action
         OrderRepositoryInterface $orderRepo,
         ApiRequest $apiHelper,
         LogDNA $logDNA,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
     ) {
         parent::__construct($context);
 
@@ -76,6 +79,7 @@ abstract class AbstractAction extends Action
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
         $this->logDNA = $logDNA;
         $this->storeManager = $storeManager;
+        $this->quoteRepository = $quoteRepository;
     }
 
     protected function getContext()
@@ -153,6 +157,11 @@ abstract class AbstractAction extends Action
     protected function getApiHelper()
     {
         return $this->apiHelper;
+    }
+
+    protected function getQuoteRepository()
+    {
+        return $this->quoteRepository;
     }
 
     protected function invoiceOrder($order, $transactionId)

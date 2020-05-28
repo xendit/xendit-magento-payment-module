@@ -12,14 +12,21 @@ class ThreeDSResult extends AbstractAction
         $orderId = $this->getRequest()->get('order_id');
         $hosted3DSId = $this->getRequest()->get('hosted_3ds_id');
 
-        $order = $this->getOrderById($orderId);
+        $orderIds = explode('-', $orderId);
+        $orders = [];
 
-        if (!is_object($order)) {
-            return;
-        }
+        foreach ($orderIds as $key => $value) {
+            $order = $this->getOrderById($value);
 
-        if ($order->getState() !== Order::STATE_PAYMENT_REVIEW) {
-            return;
+            if (!is_object($order)) {
+                return;
+            }
+
+            if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
+                return;
+            }
+
+            $orders[] = $order;
         }
 
         try {
@@ -38,11 +45,11 @@ class ThreeDSResult extends AbstractAction
                 $charge = $this->createCharge($hosted3DS, $orderId, true);
             }
 
-            return $this->processXenditPayment($charge, $order);
+            return $this->processXenditPayment($charge, $orders);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $message = 'Exception caught on xendit/checkout/threedsresult: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
-            return $this->processFailedPayment($order);
+            return $this->processFailedPayment($orders);
         }
     }
 
@@ -87,35 +94,36 @@ class ThreeDSResult extends AbstractAction
         return $charge;
     }
 
-    private function processXenditPayment($charge, $order)
+    private function processXenditPayment($charge, $orders)
     {
         if ($charge['status'] === 'CAPTURED') {
-            $orderState = Order::STATE_PROCESSING;
             $transactionId = $charge['id'];
+            foreach ($orders as $key => $order) {
+                $orderState = Order::STATE_PROCESSING;
 
-            $order->setState($orderState)
-                ->setStatus($orderState)
-                ->addStatusHistoryComment("Xendit payment completed. Transaction ID: $transactionId");
-            
+                $order->setState($orderState)
+                    ->setStatus($orderState)
+                    ->addStatusHistoryComment("Xendit payment completed. Transaction ID: $transactionId");
+                
                 $payment = $order->getPayment();
                 $payment->setTransactionId($transactionId);
                 $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
-            $order->save();
+                $order->save();
 
-            $this->invoiceOrder($order, $transactionId);
+                $this->invoiceOrder($order, $transactionId);
+            }
+
 
             $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-            $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+            $this->_redirect('*/*/success');
         } else {
-            $this->processFailedPayment($order, $charge);
+            $this->processFailedPayment($orders, $charge);
         }
     }
 
-    private function processFailedPayment($order, $charge = [])
+    private function processFailedPayment($orders, $charge = [])
     {
-        $this->getCheckoutHelper()->cancelOrderById($order->getId(),
-            "Order #".($order->getId())." was rejected by Xendit");
         $this->getCheckoutHelper()->restoreQuote(); //restore cart
 
         if ($charge === []) {
@@ -124,12 +132,18 @@ class ThreeDSResult extends AbstractAction
             $failureReason = isset($charge['failure_reason']) ? $charge['failure_reason'] : 'Unexpected Error';
         }
 
-        $orderState = Order::STATE_CANCELED;
-        $order->setState($orderState)
-            ->setStatus($orderState)
-            ->addStatusHistoryComment("Order #" . $order->getId() . " was rejected by Xendit because " .
-                $failureReason);
-        $order->save();
+        foreach ($orders as $key => $order) {
+            $this->getCheckoutHelper()->cancelOrderById($order->getId(),
+                "Order #".($order->getId())." was rejected by Xendit");
+
+            $orderState = Order::STATE_CANCELED;
+            $order->setState($orderState)
+                ->setStatus($orderState)
+                ->addStatusHistoryComment("Order #" . $order->getId() . " was rejected by Xendit because " .
+                    $failureReason);
+            $order->save();
+        }
+
 
         $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
         $this->getMessageManager()->addErrorMessage(__(

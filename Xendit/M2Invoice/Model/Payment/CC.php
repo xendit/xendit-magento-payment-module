@@ -177,10 +177,15 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        $order = $payment->getOrder();
-        $orderId = $order->getRealOrderId();
         $additionalData = $this->getAdditionalData();
 
+        if (!isset($additionalData['token_id'])) {
+            return $this;
+        }
+
+        $order = $payment->getOrder();
+        $orderId = $order->getRealOrderId();
+        
         $payment->setIsTransactionPending(true);
 
         $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
