@@ -1,26 +1,19 @@
 define(
     [
         'jquery',
-        'Magento_Checkout/js/view/payment/default',
+        'Xendit_M2Invoice/js/view/payment/method-renderer/cc',
         'Magento_Payment/js/model/credit-card-validation/credit-card-data',
-        'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
-        'Magento_Checkout/js/action/place-order',
-        'mage/url',
         'Magento_Checkout/js/action/set-payment-information-extended',
         'Magento_Checkout/js/model/payment/additional-validators',
-        'Magento_Checkout/js/model/full-screen-loader',
+        'Magento_Checkout/js/model/full-screen-loader'
     ],
     function (
         $,
         Component,
         creditCardData,
-        cardNumberValidator,
-        placeOrderAction,
-        url,
         setPaymentInformationExtended,
         additionalValidators,
-        fullScreenLoader,
-        additionalData
+        fullScreenLoader
     ) {
         'use strict';
 
@@ -36,155 +29,6 @@ define(
                 creditCardVerificationNumber: '',
                 selectedCardType: null
             },
-
-            initObservable: function() {
-                this._super()
-                    .observe([
-                        'creditCardType',
-                        'creditCardExpYear',
-                        'creditCardExpMonth',
-                        'creditCardNumber',
-                        'creditCardVerificationNumber',
-                        'creditCardSsStartMonth',
-                        'creditCardSsStartYear',
-                        'selectedCardType'
-                    ]);
-                return this;
-            },
-
-            initialize: function() {
-                var self = this;
-                this._super();
-
-                this.creditCardNumber.subscribe(function (value) {
-                    var result;
-                    self.selectedCardType(null);
-
-                    if (value === '' || value === null) {
-                        return false;
-                    }
-
-                    result = cardNumberValidator(value);
-
-                    if (!result.isPotentiallyValid && !result.isValid) {
-                        return false;
-                    }
-
-                    if (result.card !== null) {
-                        self.selectedCardType(result.card.type);
-                        creditCardData.creditCard = result.card;
-                    }
-
-                    if (result.isValid) {
-                        creditCardData.creditCardNumber = value;
-                        self.creditCardType(result.card.type);
-                    }
-                });
-
-                this.creditCardExpYear.subscribe(function(value) {
-                    creditCardData.expirationYear = value;
-                });
- 
-                this.creditCardExpMonth.subscribe(function(value) {
-                    creditCardData.expirationMonth = value;
-                });
- 
-                this.creditCardVerificationNumber.subscribe(function(value) {
-                    creditCardData.cvvCode = value;
-                });
-
-                var xenditJsUrl = 'https://js.xendit.co/v1/xendit.min.js';
-                var scriptTag = document.createElement('script');
-                scriptTag.src = xenditJsUrl;
-                document.body.appendChild(scriptTag);
-            },
-
-            context: function() {
-                return this;
-            },
-
-            getCode: function() {
-                return 'cc';
-            },
-
-            getTest: function() {
-                return '1';
-            },
-
-            isActive: function() {
-                return true;
-            },
-
-            getCcAvailableTypesValues: function() {
-                return _.map(this.getCcAvailableTypes(), function(value, key) {
-                    return {
-                        'value': key,
-                        'type': value
-                    }
-                });
-            },
-
-            getCcMonthsValues: function() {
-                return _.map(this.getCcMonths(), function(value, key) {
-                    return {
-                        'value': key,
-                        'month': value
-                    }
-                });
-            },
-
-            getCcYearsValues: function() {
-                return _.map(this.getCcYears(), function(value, key) {
-                    return {
-                        'value': key,
-                        'year': value
-                    }
-                });
-            },
-
-            getCcAvailableTypes: function() {
-                return window.checkoutConfig.payment.m2invoice.availableTypes['cc'];
-            },
-
-            getCcMonths: function() {
-                return window.checkoutConfig.payment.m2invoice.months['cc'];
-            },
- 
-            getCcYears: function() {
-                return window.checkoutConfig.payment.m2invoice.years['cc'];
-            },
- 
-            hasVerification: function() {
-                return window.checkoutConfig.payment.m2invoice.hasVerification;
-            },
-
-            getDescription: function() {
-                return 'Bayar pesanan dengan kartu kredit atau debit anda melalui Xendit';
-            },
-
-            getTestDescription: function () {
-                var environment = window.checkoutConfig.payment.m2invoice.xendit_env;
-
-                if (environment !== 'test') {
-                    return {};
-                }
-
-                return {
-                    prefix: window.checkoutConfig.payment.m2invoice.test_prefix,
-                    content: window.checkoutConfig.payment.m2invoice.test_content
-                };
-            },
-
-            mapMonthValue: function (val) {
-                if (!val) return;
-
-                if (val.length !== 2) {
-                    return '0' + val;
-                }
-
-                return val;
-            },
-
             /**
              * @override
              */
