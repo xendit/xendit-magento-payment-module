@@ -30,12 +30,15 @@ class OVO extends AbstractInvoice
 
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        $order = $payment->getOrder();
-        $orderId = $order->getRealOrderId();
+        $payment->setIsTransactionPending(true);
         $additionalData = $this->getAdditionalData();
 
-        $payment->setIsTransactionPending(true);
+        if (!isset($additionalData['phone_number'])) {
+            return $this;
+        }
 
+        $order = $payment->getOrder();
+        $orderId = $order->getRealOrderId();
         try {
             $args = [
                 'external_id' => $this->dataHelper->getExternalId($orderId),

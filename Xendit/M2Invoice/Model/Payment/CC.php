@@ -177,6 +177,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        $payment->setIsTransactionPending(true);
         $additionalData = $this->getAdditionalData();
 
         if (!isset($additionalData['token_id'])) {
@@ -185,8 +186,6 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
         $order = $payment->getOrder();
         $orderId = $order->getRealOrderId();
-        
-        $payment->setIsTransactionPending(true);
 
         $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
         $bin = isset($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;
