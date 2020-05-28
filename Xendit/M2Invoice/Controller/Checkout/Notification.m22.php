@@ -156,7 +156,6 @@ class Notification extends Action
                 //get ewallet payment status
                 $paymentStatus = $this->getEwalletStatus($decodedPost['ewallet_type'], $decodedPost['external_id']);
             } else {
-                //do nothing
                 $result = $this->jsonResultFactory->create();
                 $result->setData([
                     'status' => __('SUCCESS'),
