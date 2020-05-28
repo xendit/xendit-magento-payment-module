@@ -12,7 +12,7 @@ class ThreeDSResult extends AbstractAction
         $orderId = $this->getRequest()->get('order_id');
         $hosted3DSId = $this->getRequest()->get('hosted_3ds_id');
 
-        $orderIds = explode('|', $orderId);
+        $orderIds = explode('-', $orderId);
         $orders = [];
 
         foreach ($orderIds as $key => $value) {

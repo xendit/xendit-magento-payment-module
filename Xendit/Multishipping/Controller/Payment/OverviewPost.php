@@ -107,10 +107,12 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                     return;
                 }
 
-                $params     = implode("|", $ids);
+                $params     = implode("-", $ids);
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
                 
-                $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&method=' . $paymentInstance->getMethod();
+                if ($xenditPaymentMethod === 'cc' || $xenditPaymentMethod === 'cchosted') {
+                    $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&method=' . $xenditPaymentMethod;
+                }
                 $this->_redirect($redirect);
             }
 
