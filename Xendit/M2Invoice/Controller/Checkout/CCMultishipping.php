@@ -140,18 +140,7 @@ class CCMultishipping extends AbstractAction
 
     private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
     {
-        $this->getCheckoutHelper()->restoreQuote();
-
-        foreach ($orderIds as $key => $value) {
-            $order = $this->getOrderById($value);
-
-            $orderState = Order::STATE_CANCELED;
-            $order->setState($orderState)
-                ->setStatus($orderState)
-                ->addStatusHistoryComment("Order #" . $order->getId() . " was rejected by Xendit because " .
-                    $failureReason);
-            $order->save();
-        }
+        $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);
 
         $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
         $this->getMessageManager()->addErrorMessage(__(
