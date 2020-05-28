@@ -37,7 +37,7 @@ class ProcessHosted extends AbstractAction
                     $order->save();
                 }
 
-                $this->processSuccessfulTransaction(
+                return $this->processSuccessfulTransaction(
                     $order,
                     $payment,
                     'Xendit Credit Card payment completed. Transaction ID: ',
