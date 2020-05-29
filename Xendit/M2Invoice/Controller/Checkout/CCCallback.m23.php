@@ -6,6 +6,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
 use Xendit\M2Invoice\Enum\LogDNALevel;
 
@@ -63,8 +64,7 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
                             $order,
                             $payment,
                             'Xendit Credit Card payment completed. Transaction ID: ',
-                            $hostedPayment['charge_id'],
-                            $shouldRedirect
+                            $hostedPayment['charge_id']
                         );
                     }
                 }
@@ -98,7 +98,25 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
         }
     }
 
-    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = 1)
+    private function getCompletedHostedPayment($requestData)
+    {
+        $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=COMPLETED';
+        $method = \Zend\Http\Request::METHOD_GET;
+
+        try {
+            $hostedPayment = $this->getApiHelper()->request(
+                $url, $method
+            );
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            throw new LocalizedException(
+                __($e->getMessage())
+            );
+        }
+
+        return $hostedPayment;
+    }
+
+    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId)
     {
         $orderState = Order::STATE_PROCESSING;
         $order->setState($orderState)
@@ -110,9 +128,32 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
         $payment->setTransactionId($transactionId);
         $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
-        //$this->invoiceOrder($order, $transactionId); // ERROR HERE!
+        $this->invoiceOrder($order, $transactionId);
 
         $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
+    }
+
+    protected function invoiceOrder($order, $transactionId)
+    {
+        if ($order->canInvoice()) {
+            $invoice = $this->getObjectManager()
+                ->create('Magento\Sales\Model\Service\InvoiceService')
+                ->prepareInvoice($order);
+            
+            if (!$invoice->getTotalQty()) {
+                throw new LocalizedException(
+                    __('You can\'t create an invoice without products.')
+                );
+            }
+            
+            $invoice->setTransactionId($transactionId);
+            $invoice->setRequestedCaptureCase(Order\Invoice::CAPTURE_OFFLINE);
+            $invoice->register();
+            $transaction = $this->getObjectManager()->create('Magento\Framework\DB\Transaction')
+                ->addObject($invoice)
+                ->addObject($invoice->getOrder());
+            $transaction->save();
+        }
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException

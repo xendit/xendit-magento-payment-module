@@ -12,7 +12,7 @@ class Failure extends AbstractAction {
 
             if ($order && $order->getId()) {
                 $this->getLogger()->debug('Requested order cancellation by customer. OrderId: ' . $order->getIncrementId());
-                $this->getCheckoutHelper()->cancelCurrentOrder("Xendit: ".($order->getId())." was cancelled by the customer.");
+                $this->getCheckoutHelper()->cancelCurrentOrder("Xendit: Order #".($order->getId())." was cancelled by the customer.");
                 
                 $quoteId    = $order->getQuoteId();
                 $quote      = $this->getQuoteRepository()->get($quoteId);

@@ -60,8 +60,7 @@ class CCCallback extends ProcessHosted
                             $order,
                             $payment,
                             'Xendit Credit Card payment completed. Transaction ID: ',
-                            $hostedPayment['charge_id'],
-                            $shouldRedirect
+                            $hostedPayment['charge_id']
                         );
                     }
                 }
@@ -92,6 +91,64 @@ class CCCallback extends ProcessHosted
             ]);
 
             return $result;
+        }
+    }
+
+    private function getCompletedHostedPayment($requestData)
+    {
+        $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=COMPLETED';
+        $method = \Zend\Http\Request::METHOD_GET;
+
+        try {
+            $hostedPayment = $this->getApiHelper()->request(
+                $url, $method
+            );
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __($e->getMessage())
+            );
+        }
+
+        return $hostedPayment;
+    }
+
+    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId)
+    {
+        $orderState = Order::STATE_PROCESSING;
+        $order->setState($orderState)
+            ->setStatus($orderState)
+            ->addStatusHistoryComment("$paymentMessage $transactionId");
+
+        $order->save();
+
+        $payment->setTransactionId($transactionId);
+        $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+
+        $this->invoiceOrder($order, $transactionId);
+
+        $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
+    }
+
+    protected function invoiceOrder($order, $transactionId)
+    {
+        if ($order->canInvoice()) {
+            $invoice = $this->getObjectManager()
+                ->create('Magento\Sales\Model\Service\InvoiceService')
+                ->prepareInvoice($order);
+            
+            if (!$invoice->getTotalQty()) {
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    __('You can\'t create an invoice without products.')
+                );
+            }
+            
+            $invoice->setTransactionId($transactionId);
+            $invoice->setRequestedCaptureCase(Order\Invoice::CAPTURE_OFFLINE);
+            $invoice->register();
+            $transaction = $this->getObjectManager()->create('Magento\Framework\DB\Transaction')
+                ->addObject($invoice)
+                ->addObject($invoice->getOrder());
+            $transaction->save();
         }
     }
 }
