@@ -143,6 +143,7 @@ class Data extends AbstractHelper
                 another card that is enabled for eCommerce, or ask your bank to enable eCommerce payments for your card.";
             case 'EXPIRED_CARD': return "Your bank declined the payment due to the card being expired. Please try
                 another card that has not expired.";
+            case 'PROCESSOR_ERROR': return 'We encountered issue in processing your card. Please try again with another card';
             case 'USER_DID_NOT_AUTHORIZE_THE_PAYMENT':
                 return 'Please complete the payment request within 60 seconds.';
             case 'USER_DECLINED_THE_TRANSACTION':
