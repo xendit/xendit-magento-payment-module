@@ -11,7 +11,7 @@ class ProcessHosted extends AbstractAction
     public function execute()
     {
         try {
-            $shouldRedirect = 1;
+            $shouldRedirect = true;
 
             $order = $this->getOrder();
             $payment = $order->getPayment();
@@ -54,7 +54,7 @@ class ProcessHosted extends AbstractAction
         }
     }
 
-    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = 1)
+    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = true)
     {
         $orderState = Order::STATE_PROCESSING;
         $order->setState($orderState)
@@ -93,7 +93,7 @@ class ProcessHosted extends AbstractAction
         return $hostedPayment;
     }
 
-    public function handlePaymentFailure($order, $message, $reason, $shouldRedirect = 1)
+    public function handlePaymentFailure($order, $message, $reason, $shouldRedirect = true)
     {
         $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
 

@@ -17,7 +17,7 @@ class CCCallback extends ProcessHosted
 
             $orderIds = explode('-', $this->getRequest()->getParam('order_ids'));
             
-            $shouldRedirect = 0;
+            $shouldRedirect = false;
             $isError = 0;
             $flag = 1;
 

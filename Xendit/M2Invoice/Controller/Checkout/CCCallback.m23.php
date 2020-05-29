@@ -21,7 +21,7 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
 
             $orderIds = explode('-', $this->getRequest()->getParam('order_ids'));
             
-            $shouldRedirect = 0;
+            $shouldRedirect = false;
             $isError = 0;
             $flag = 1;
 

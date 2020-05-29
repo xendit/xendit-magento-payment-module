@@ -11,7 +11,6 @@ use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
-use Magento\SalesRule\Model\RuleRepository;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 use Xendit\M2Invoice\Helper\Data;
@@ -69,7 +68,6 @@ abstract class AbstractAction extends Action
         LogDNA $logDNA,
         StoreManagerInterface $storeManager,
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
-        RuleRepository $ruleRepository,
         JsonFactory $jsonResultFactory
 
     ) {
@@ -89,7 +87,6 @@ abstract class AbstractAction extends Action
         $this->logDNA = $logDNA;
         $this->storeManager = $storeManager;
         $this->quoteRepository = $quoteRepository;
-        $this->ruleRepository = $ruleRepository;
         $this->jsonResultFactory = $jsonResultFactory;
     }
 
@@ -173,11 +170,6 @@ abstract class AbstractAction extends Action
     protected function getQuoteRepository()
     {
         return $this->quoteRepository;
-    }
-
-    protected function getRuleRepository()
-    {
-        return $this->ruleRepository;
     }
 
     protected function getJsonResultFactory()
