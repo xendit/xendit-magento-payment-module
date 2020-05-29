@@ -207,17 +207,21 @@ class Notification extends Action
                 'status' => __('SUCCESS'),
                 'message' => ($isEwallet ? 'eWallet paid' : 'Invoice paid')
             ]);
-        } else {
-            $this->getCheckoutHelper()->cancelCurrentOrder(
-                "Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId."
-            );
-            $this->getCheckoutHelper()->restoreQuote(); //restore cart
+        } else { //FAILED or EXPIRED
+            $orderState = Order::STATE_CANCELED;
+
+            if ($order->getStatus() != $orderState) {
+                $this->getCheckoutHelper()->cancelCurrentOrder(
+                    "Order #".($order->getId())." was rejected by Xendit. Transaction #$transactionId."
+                );
+                $this->getCheckoutHelper()->restoreQuote(); //restore cart
+            }
 
             if ($isEwallet) {
-                $orderState = Order::STATE_CANCELED;
-                $order->setState($orderState)
-                    ->setStatus($orderState);
-                $order->save();
+                $order  ->setState($orderState)
+                        ->setStatus($orderState);
+                $order  ->save();
+
                 $payment = $order->getPayment();
                 $payment->setAdditionalInformation('xendit_ewallet_failure_code', $failureCode);
                 $payment->save();

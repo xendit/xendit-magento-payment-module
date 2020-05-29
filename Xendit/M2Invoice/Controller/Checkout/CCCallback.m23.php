@@ -44,7 +44,6 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
                     
                     if (isset($hostedPayment['error_code'])) {
                         $isError = true;
-                        $this->handlePaymentFailure($order, $hostedPayment['error_code'], $hostedPayment['error_code'] . ' - Error reconciliating', $shouldRedirect);
                     }
                     else {
                         if ($hostedPayment['paid_amount'] != $hostedPayment['amount']) {

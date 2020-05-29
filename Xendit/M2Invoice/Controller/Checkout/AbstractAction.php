@@ -219,15 +219,16 @@ abstract class AbstractAction extends Action
 
     protected function cancelOrder($order, $failureReason) {
         $orderState = Order::STATE_CANCELED;
-        $order->setState($orderState)
-            ->setStatus($orderState)
-            ->addStatusHistoryComment("Order #" . $order->getIncrementId() . " was cancelled by Xendit because " .
-                $failureReason);
-        $order->save();
 
-        $this->getCheckoutHelper()->cancelOrderById($order->getId(),
-            "Order #".($order->getId())." was rejected by Xendit");
-        $this->getCheckoutHelper()->restoreQuote(); //restore cart
+        if ($order->getStatus() != $orderState) {
+            $order  ->setState($orderState)
+                    ->setStatus($orderState)
+                    ->addStatusHistoryComment("Order #" . $order->getIncrementId() . " was cancelled by Xendit because " . $failureReason);
+            $order  ->save();
+    
+            $this->getCheckoutHelper()->cancelOrderById($order->getId(), "Order #".($order->getId())." was rejected by Xendit");
+            $this->getCheckoutHelper()->restoreQuote(); //restore cart
+        }
 
         return;
     }
