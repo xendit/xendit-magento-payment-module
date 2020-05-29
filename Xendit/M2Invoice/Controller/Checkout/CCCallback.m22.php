@@ -25,10 +25,7 @@ class CCCallback extends ProcessHosted
                 $order = $this->getOrderFactory()->create();
                 $order  ->load($value);
 
-                $payment            = $order->getPayment();
-                $quoteId            = $order->getQuoteId();
-                $quote              = $this->getQuoteRepository()->get($quoteId);
-                $additionalInfo     = $quote->getPayment()->getAdditionalInformation();
+                $payment = $order->getPayment();
 
                 if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
                     $requestData = [

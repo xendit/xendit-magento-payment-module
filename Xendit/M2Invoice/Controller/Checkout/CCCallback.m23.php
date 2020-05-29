@@ -29,10 +29,7 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
                 $order = $this->getOrderFactory()->create();
                 $order  ->load($value);
 
-                $payment            = $order->getPayment();
-                $quoteId            = $order->getQuoteId();
-                $quote              = $this->getQuoteRepository()->get($quoteId);
-                $additionalInfo     = $quote->getPayment()->getAdditionalInformation();
+                $payment = $order->getPayment();
 
                 if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
                     $requestData = [
@@ -100,7 +97,7 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
 
     private function getCompletedHostedPayment($requestData)
     {
-        $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=COMPLETED';
+        $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=USED';
         $method = \Zend\Http\Request::METHOD_GET;
 
         try {

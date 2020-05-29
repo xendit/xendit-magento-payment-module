@@ -17,7 +17,6 @@ class CCMultishipping extends AbstractAction
 
             $transactionAmount  = 0;
             $incrementIds       = [];
-            //$orderPromos        = [];
             $tokenId            = '';
             $orders             = [];
 
@@ -43,8 +42,6 @@ class CCMultishipping extends AbstractAction
     
                 $transactionAmount  += (int)$order->getTotalDue();
                 $incrementIds[]     = $order->getIncrementId();
-
-                //$orderPromos[]      = $this->calculatePromo($order); //unused
             }
 
             if ($method === 'cc') {
@@ -93,7 +90,6 @@ class CCMultishipping extends AbstractAction
                     'failure_redirect_url'   => $this->getDataHelper()->getFailureUrl($rawOrderIds),
                     'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
                 ];
-                // how to include promo?
 
                 $hostedPayment = $this->requestHostedPayment($requestData);
 
@@ -165,69 +161,6 @@ class CCMultishipping extends AbstractAction
             $order->save();
         }
     }
-
-    /*private function calculatePromo($order)
-    {
-        $promo = [];
-        $ruleIds = $order->getAppliedRuleIds();
-        $enabledPromotions = $this->getDataHelper()->getEnabledPromo();
-
-        if (empty($ruleIds) || empty($enabledPromotions)) {
-            return $promo;
-        }
-
-        $ruleIds = explode(',', $ruleIds);
-        $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
-
-        foreach ($ruleIds as $ruleId) {
-            foreach ($enabledPromotions as $promotion) {
-                if ($promotion['rule_id'] === $ruleId) {
-                    $rule = $this->getRuleRepository()->getById($ruleId);
-                    $promo[] = $this->constructPromo($rule, $promotion, $rawAmount);
-                }
-            }
-        }
-
-        if (!empty($promo)) {
-            $args = [];
-            $args['promotions'] = json_encode($promo);
-            $args['amount'] = $rawAmount;
-
-            return $args;
-        }
-
-        return $promo;
-    }
-
-    private function constructPromo($rule, $promotion, $rawAmount)
-    {
-        $constructedPromo = [
-            'bin_list' => $promotion['bin_list'],
-            'title' => $rule->getName(),
-            'promo_reference' => $rule->getRuleId(),
-            'type' => $this->getDataHelper()->mapSalesRuleType($rule->getSimpleAction()),
-        ];
-        $rate = $rule->getDiscountAmount();
-
-        switch ($rule->getSimpleAction()) {
-            case 'to_percent':
-                $rate = 1 - ($rule->getDiscountAmount() / 100);
-                break;
-            case 'by_percent':
-                $rate = ($rule->getDiscountAmount() / 100);
-                break;
-            case 'to_fixed':
-                $rate = (int)$rawAmount - $rule->getDiscountAmount();
-                break;
-            case 'by_fixed':
-                $rate = (int)$rule->getDiscountAmount();
-                break;
-        }
-
-        $constructedPromo['rate'] = $rate;
-
-        return $constructedPromo;
-    }*/
     
     private function handle3DSFlow($requestData, $payment, $orderIds, $orders)
     {
