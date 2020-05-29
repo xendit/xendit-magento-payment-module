@@ -22,8 +22,8 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
             $orderIds = explode('-', $this->getRequest()->getParam('order_ids'));
             
             $shouldRedirect = false;
-            $isError = 0;
-            $flag = 1;
+            $isError = false;
+            $flag = true;
 
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
@@ -43,7 +43,7 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
                     }
                     
                     if (isset($hostedPayment['error_code'])) {
-                        $isError = 1;
+                        $isError = true;
                         $this->handlePaymentFailure($order, $hostedPayment['error_code'], $hostedPayment['error_code'] . ' - Error reconciliating', $shouldRedirect);
                     }
                     else {

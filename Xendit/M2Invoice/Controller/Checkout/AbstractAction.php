@@ -51,8 +51,6 @@ abstract class AbstractAction extends Action
 
     private $quoteRepository;
 
-    private $ruleRepo;
-
     private $jsonResultFactory;
 
     public function __construct(
