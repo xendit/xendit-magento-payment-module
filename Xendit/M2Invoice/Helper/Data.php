@@ -44,9 +44,14 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getConfigData('xendit_url');
     }
 
-    public function getSuccessUrl()
+    public function getSuccessUrl($isMultishipping = false)
     {
-        return $this->getStoreManager()->getStore()->getBaseUrl() . 'xendit/checkout/success';
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . 'xendit/checkout/success';
+        if ($isMultishipping) {
+            $baseUrl .= '?type=multishipping';
+        }
+
+        return $baseUrl;
     }
 
     public function getFailureUrl($orderId)

@@ -112,8 +112,9 @@ class ThreeDSResult extends AbstractAction
                 $this->invoiceOrder($order, $transactionId);
             }
 
-            $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-            $this->_redirect('*/*/success');
+            $isMultishipping = (count($orderIds) > 1);
+
+            $this->_redirect($this->getDataHelper()->getSuccessUrl(true));
         } else {
             $this->processFailedPayment($orderIds, $charge['failure_reason']);
         }

@@ -88,7 +88,7 @@ class CCMultishipping extends AbstractAction
             $failureReasonInsight
         ));
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'));
         return $resultRedirect;
     }
 
@@ -172,8 +172,7 @@ class CCMultishipping extends AbstractAction
             $this->invoiceOrder($order, $transactionId);
         }
 
-        $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-        $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+        $this->_redirect($this->getDataHelper()->getSuccessUrl(true));
     }
 
     private function request3DS($requestData)
