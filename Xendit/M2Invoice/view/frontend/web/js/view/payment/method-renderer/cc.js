@@ -193,7 +193,7 @@ define(
 
                     Xendit.card.createToken(tokenData, function (err, token) {
                         if (err) {
-                            this.showError(err);
+                            self.showError(err);
                             self.isPlaceOrderActionAllowed(true);
                             return;
                         }
