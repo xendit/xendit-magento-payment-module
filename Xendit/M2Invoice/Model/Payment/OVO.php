@@ -33,11 +33,14 @@ class OVO extends AbstractInvoice
         $payment->setIsTransactionPending(true);
         $additionalData = $this->getAdditionalData();
 
-        if (!isset($additionalData['phone_number'])) {
+        $order = $payment->getOrder();
+        $quoteId = $order->getQuoteId();
+        $quote = $this->quoteRepository->get($quoteId);
+
+        if ($quote->getIsMultiShipping()) {
             return $this;
         }
 
-        $order = $payment->getOrder();
         $orderId = $order->getRealOrderId();
         try {
             $args = [

@@ -33,6 +33,7 @@ class AbstractInvoice extends AbstractMethod
     protected $dataObjectFactory;
     protected $storeManager;
     protected $ruleRepo;
+    protected $quoteRepository;
 
     public function __construct(
         Context $context,
@@ -47,7 +48,8 @@ class AbstractInvoice extends AbstractMethod
         LogDNA $logDNA,
         DataObjectFactory $dataObjectFactory,
         StoreManagerInterface $storeManager,
-        RuleRepository $ruleRepo
+        RuleRepository $ruleRepo,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
     ) {
         parent::__construct(
             $context,
@@ -68,6 +70,7 @@ class AbstractInvoice extends AbstractMethod
         $this->dataObjectFactory = $dataObjectFactory;
         $this->storeManager = $storeManager;
         $this->ruleRepo = $ruleRepo;
+        $this->quoteRepository = $quoteRepository;
 
         if (interface_exists("Magento\Framework\Serialize\Serializer\Json")) {
             $this->serializer = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Serialize\Serializer\Json::class);

@@ -42,6 +42,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     protected $responseFactory;
     protected $logdnaHelper;
     protected $ruleRepo;
+    protected $quoteRepository;
 
     public function __construct(
         Crypto $cryptoHelper,
@@ -61,6 +62,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         ResponseFactory $responseFactory,
         LogDNA $logdnaHelper,
         RuleRepository $ruleRepo,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -88,6 +90,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $this->responseFactory = $responseFactory;
         $this->logdnaHelper = $logdnaHelper;
         $this->ruleRepo = $ruleRepo;
+        $this->quoteRepository = $quoteRepository;
     }
 
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
@@ -180,11 +183,14 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $payment->setIsTransactionPending(true);
         $additionalData = $this->getAdditionalData();
 
-        if (!isset($additionalData['token_id'])) {
+        $order = $payment->getOrder();
+        $quoteId = $order->getQuoteId();
+        $quote = $this->quoteRepository->get($quoteId);
+
+        if ($quote->getIsMultiShipping()) {
             return $this;
         }
 
-        $order = $payment->getOrder();
         $orderId = $order->getRealOrderId();
 
         $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
