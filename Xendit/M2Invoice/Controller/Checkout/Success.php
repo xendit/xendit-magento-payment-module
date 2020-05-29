@@ -6,7 +6,13 @@ class Success extends AbstractAction
 {
     public function execute()
     {
-        $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-        $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+        $type = $this->getRequest()->getParam('type');
+        $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed!"));
+
+        if ($type === 'multishipping') {
+            $this->_redirect('multishipping/checkout/success');
+        } else {
+            $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+        }
     }
 }

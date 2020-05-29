@@ -39,7 +39,7 @@ class InvoiceMultishipping extends AbstractAction
             $externalIdSuffix = implode("-", $incrementIds);
             $preferredMethod = $this->getRequest()->getParam('preferred_method');
             $requestData = [
-                'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(),
+                'success_redirect_url' => $this->getDataHelper()->getSuccessUrl() . '?type=multishipping',
                 'failure_redirect_url' => $this->_url->getUrl('checkout/cart'),
                 'amount' => $transactionAmount,
                 'external_id' => $this->getDataHelper()->getExternalId($externalIdSuffix),
