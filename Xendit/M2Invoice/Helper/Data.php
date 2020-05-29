@@ -44,9 +44,14 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getConfigData('xendit_url');
     }
 
-    public function getSuccessUrl()
+    public function getSuccessUrl($isMultishipping = false)
     {
-        return $this->getStoreManager()->getStore()->getBaseUrl() . 'xendit/checkout/success';
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . 'xendit/checkout/success';
+        if ($isMultishipping) {
+            $baseUrl .= '?type=multishipping';
+        }
+
+        return $baseUrl;
     }
 
     public function getFailureUrl($orderId)
@@ -133,16 +138,17 @@ class Data extends AbstractHelper
     {
         switch ($failureReason) {
             case 'CARD_DECLINED':
-            case 'STOLEN_CARD': return 'CARD_DECLINED - The bank that issued this card declined the payment but didn\'t tell us why.
+            case 'STOLEN_CARD': return 'The bank that issued this card declined the payment but didn\'t tell us why.
                 Try another card, or try calling your bank to ask why the card was declined.';
-            case 'INSUFFICIENT_BALANCE': return "$failureReason - Your bank declined this payment due to insufficient balance. Ensure
+            case 'INSUFFICIENT_BALANCE': return "Your bank declined this payment due to insufficient balance. Ensure
                 that sufficient balance is available, or try another card";
-            case 'INVALID_CVN': return "$failureReason - Your bank declined the payment due to incorrect card details entered. Try to
+            case 'INVALID_CVN': return "Your bank declined the payment due to incorrect card details entered. Try to
                 enter your card details again, including expiration date and CVV";
-            case 'INACTIVE_CARD': return "$failureReason - This card number does not seem to be enabled for eCommerce payments. Try
+            case 'INACTIVE_CARD': return "This card number does not seem to be enabled for eCommerce payments. Try
                 another card that is enabled for eCommerce, or ask your bank to enable eCommerce payments for your card.";
-            case 'EXPIRED_CARD': return "$failureReason - Your bank declined the payment due to the card being expired. Please try
+            case 'EXPIRED_CARD': return "Your bank declined the payment due to the card being expired. Please try
                 another card that has not expired.";
+            case 'PROCESSOR_ERROR': return 'We encountered issue in processing your card. Please try again with another card';
             case 'USER_DID_NOT_AUTHORIZE_THE_PAYMENT':
                 return 'Please complete the payment request within 60 seconds.';
             case 'USER_DECLINED_THE_TRANSACTION':

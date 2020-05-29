@@ -33,6 +33,10 @@ define(
              * @override
              */
             placeOrder: function () {
+                if (!this.validate()) {
+                    return this;
+                }
+
                 try {
                     var self = this;
                     var publicKey = window.checkoutConfig.payment.m2invoice.public_api_key;
@@ -47,7 +51,7 @@ define(
 
                     Xendit.card.createToken(tokenData, function (err, token) {
                         if (err) {
-                            return self.fail();
+                            return self.fail(err);
                         }
 
                         var paymentData = self.getData();
@@ -64,7 +68,7 @@ define(
                         return self.setPaymentInformation(paymentData);
                     });
                 } catch (e) {
-                    return self.fail();
+                    return self.fail(e);
                 }
             },
 
@@ -88,8 +92,14 @@ define(
             /**
              * {Function}
              */
-            fail: function () {
+            fail: function (e) {
+                if (e.responseJSON) {
+                    e = e.responseJSON;
+                }
+
                 fullScreenLoader.stopLoader();
+
+                this.showError(e.message);
 
                 return this;
             },

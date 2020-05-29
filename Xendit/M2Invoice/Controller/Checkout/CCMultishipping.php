@@ -86,7 +86,7 @@ class CCMultishipping extends AbstractAction
                     'payment_type'           => 'CREDIT_CARD',
                     'store_name'             => $this->getStoreManager()->getStore()->getName(),
                     'platform_name'          => 'MAGENTO2',
-                    'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl() . '?type=multishipping',
+                    'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl(true),
                     'failure_redirect_url'   => $this->getDataHelper()->getFailureUrl($rawOrderIds),
                     'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
                 ];
@@ -117,6 +117,7 @@ class CCMultishipping extends AbstractAction
             }
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
+            $this->getLogger()->info($message);
             return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
         }
     }
@@ -128,7 +129,7 @@ class CCMultishipping extends AbstractAction
             $failureReasonInsight
         ));
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'));
         return $resultRedirect;
     }
 
@@ -242,8 +243,7 @@ class CCMultishipping extends AbstractAction
             $this->invoiceOrder($order, $transactionId);
         }
 
-        $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-        $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+        $this->_redirect($this->getDataHelper()->getSuccessUrl(true));
     }
 
     private function request3DS($requestData)
