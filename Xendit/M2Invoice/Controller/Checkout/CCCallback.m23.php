@@ -97,7 +97,7 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
 
     private function getCompletedHostedPayment($requestData)
     {
-        $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=USED';
+        $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=COMPLETED';
         $method = \Zend\Http\Request::METHOD_GET;
 
         try {
