@@ -33,7 +33,7 @@ class ThreeDSResult extends AbstractAction
             $hosted3DS = $this->getThreeDSResult($hosted3DSId);
 
             if ('VERIFIED' !== $hosted3DS['status']) {
-                return $this->processFailedPayment($orders, 'Authentication process failed. Please try again.');
+                return $this->processFailedPayment($orderIds, 'Authentication process failed. Please try again.');
             }
 
             $charge = $this->createCharge($hosted3DS, $orderId);
@@ -43,11 +43,11 @@ class ThreeDSResult extends AbstractAction
                 $charge = $this->createCharge($hosted3DS, $orderId, true);
             }
 
-            return $this->processXenditPayment($charge, $orders);
+            return $this->processXenditPayment($charge, $orders, $orderIds);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $message = 'Exception caught on xendit/checkout/threedsresult: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
-            return $this->processFailedPayment($orders);
+            return $this->processFailedPayment($orderIds);
         }
     }
 
@@ -92,7 +92,7 @@ class ThreeDSResult extends AbstractAction
         return $charge;
     }
 
-    private function processXenditPayment($charge, $orders)
+    private function processXenditPayment($charge, $orders, $orderIds)
     {
         if ($charge['status'] === 'CAPTURED') {
             $transactionId = $charge['id'];
@@ -115,11 +115,11 @@ class ThreeDSResult extends AbstractAction
             $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
             $this->_redirect('*/*/success');
         } else {
-            $this->processFailedPayment($orders, $charge['failure_reason']);
+            $this->processFailedPayment($orderIds, $charge['failure_reason']);
         }
     }
 
-    private function processFailedPayment($orders, $failureReason = 'Unexpected Error')
+    private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error')
     {
         $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);
 

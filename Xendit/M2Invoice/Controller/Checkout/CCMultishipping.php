@@ -76,6 +76,7 @@ class CCMultishipping extends AbstractAction
             }
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
+            $this->getLogger()->info($message);
             return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
         }
     }
