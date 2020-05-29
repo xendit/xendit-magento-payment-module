@@ -5,7 +5,8 @@ define(
         'Magento_Payment/js/model/credit-card-validation/credit-card-data',
         'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
         'Magento_Checkout/js/action/place-order',
-        'mage/url'
+        'mage/url',
+        'Magento_Ui/js/model/messageList'
     ],
     function (
         $,
@@ -13,7 +14,8 @@ define(
         creditCardData,
         cardNumberValidator,
         placeOrderAction,
-        url
+        url,
+        globalMessageList
     ) {
         'use strict';
 
@@ -59,19 +61,10 @@ define(
 
                     result = cardNumberValidator(value);
 
-                    if (!result.isPotentiallyValid && !result.isValid) {
-                        return false;
-                    }
-
-                    if (result.card !== null) {
-                        self.selectedCardType(result.card.type);
-                        creditCardData.creditCard = result.card;
-                    }
-
-                    if (result.isValid) {
-                        creditCardData.creditCardNumber = value;
-                        self.creditCardType(result.card.type);
-                    }
+                    self.selectedCardType(result.card.type);
+                    creditCardData.creditCard = result.card;
+                    creditCardData.creditCardNumber = value;
+                    self.creditCardType(result.card.type);
                 });
 
                 this.creditCardExpYear.subscribe(function(value) {
@@ -186,6 +179,11 @@ define(
                 try {
                     Xendit.setPublishableKey(publicKey);
 
+                    if (!this.validate()) {
+                        this.isPlaceOrderActionAllowed(true);
+                        return this;
+                    }
+
                     var tokenData = {
                         card_number: creditCardData.creditCardNumber,
                         card_exp_month: this.mapMonthValue(creditCardData.expirationMonth),
@@ -193,15 +191,9 @@ define(
                         is_multiple_use: true
                     };
 
-                    if (!tokenData.card_number || !tokenData.card_exp_month || !tokenData.card_exp_year) {
-                        alert('Please fill out the information needed before proceeding');
-                        this.isPlaceOrderActionAllowed(true);
-                        return;
-                    }
-
                     Xendit.card.createToken(tokenData, function (err, token) {
                         if (err) {
-                            // ?
+                            this.showError(err);
                             self.isPlaceOrderActionAllowed(true);
                             return;
                         }
@@ -220,7 +212,8 @@ define(
                         var placeOrder = placeOrderAction(paymentData, false);
 
                         $.when(placeOrder)
-                            .fail(function () {
+                            .fail(function (e) {
+                                this.showError(e.responseJSON);
                                 self.isPlaceOrderActionAllowed(true);
                             })
                             .done(function () {
@@ -237,6 +230,64 @@ define(
             afterPlaceOrder: function () {
                 window.location.replace(url.build('xendit/checkout/redirect'));
             },
+
+            /**
+             * Validate CC field
+             *
+             * @private
+             */
+            validate: function () {
+                var tokenData = {
+                    card_number: creditCardData.creditCardNumber,
+                    card_exp_month: this.mapMonthValue(creditCardData.expirationMonth),
+                    card_exp_year: creditCardData.expirationYear,
+                    cvn: creditCardData.cvvCode,
+                    is_multiple_use: true
+                };
+
+                if (!tokenData.card_number || !tokenData.cvn || !tokenData.card_exp_month || !tokenData.card_exp_year) {
+                    var fields = [];
+
+					if (!tokenData.card_number) {
+						fields.push('card number');
+                    }
+
+					if (!tokenData.cvn) {
+						fields.push('security number');
+                    }
+
+					if (!tokenData.card_exp_month || !tokenData.card_exp_year) {
+						fields.push('card expiry');
+					}
+                    
+                    this.showError('Missing Card Information. Please enter your ' + fields.join(', ') + ', then try again.')
+					return false;
+                }
+                
+                if (!Xendit.card.validateCardNumber(tokenData.card_number)) {
+					this.showError('Invalid Card Number. The card number that you entered is not Visa/Master Card/JCB, please provide a card number that is supported and try again.')
+					return false;
+                }
+
+                if (!Xendit.card.validateCvn(tokenData.cvn)) {
+					this.showError('Invalid CVN/CVV Format. The CVC that you entered is less than 3 digits. Please enter the correct value and try again.')
+					return false;
+                }
+
+                return true;
+            },
+
+            /**
+             * Show error message
+             *
+             * @param {String} errorMessage
+             * @private
+             */
+            showError: function (errorMessage) {
+                globalMessageList.addErrorMessage({
+                    message: errorMessage
+                });
+            }
         });
     }
 );
