@@ -221,7 +221,7 @@ abstract class AbstractAction extends Action
         $orderState = Order::STATE_CANCELED;
         $order->setState($orderState)
             ->setStatus($orderState)
-            ->addStatusHistoryComment("Order #" . $order->getId() . " was cancelled by Xendit because " .
+            ->addStatusHistoryComment("Order #" . $order->getIncrementId() . " was cancelled by Xendit because " .
                 $failureReason);
         $order->save();
 
