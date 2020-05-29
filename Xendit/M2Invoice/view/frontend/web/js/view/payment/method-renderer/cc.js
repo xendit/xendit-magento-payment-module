@@ -213,7 +213,11 @@ define(
 
                         $.when(placeOrder)
                             .fail(function (e) {
-                                self.showError(e.responseJSON);
+                                if (e.responseJSON) {
+                                    e = e.responseJSON;
+                                }
+
+                                self.showError(e.message);
                                 self.isPlaceOrderActionAllowed(true);
                             })
                             .done(function () {
