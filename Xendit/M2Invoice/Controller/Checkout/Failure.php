@@ -7,10 +7,24 @@ class Failure extends AbstractAction {
     {
         $orderIds = explode('-', $this->getRequest()->get('order_id'));
 
-        foreach ($orderIds as $orderId) {
-            $order = $this->getOrderFactory()->create();
-            $order ->load($orderId);
-
+        if (count($orderIds) > 1) { //multishipping
+            foreach ($orderIds as $orderId) {
+                $order = $this->getOrderFactory()->create();
+                $order ->load($orderId);
+    
+                if ($order) {
+                    $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
+                    $this->cancelOrder($order, "customer cancelled the payment.");
+    
+                    $quoteId    = $order->getQuoteId();
+                    $quote      = $this->getQuoteRepository()->get($quoteId);
+    
+                    $this->getCheckoutHelper()->restoreQuote($quote); //restore cart
+                }
+            }
+        } else { //onepage
+            $order = $this->getOrderById($orderIds[0]);
+    
             if ($order) {
                 $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
                 $this->cancelOrder($order, "customer cancelled the payment.");
