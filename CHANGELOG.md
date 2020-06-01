@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.0.0 (2020-06-01)
+
+Features:
+
+- Support multishipping checkout
+
 ## 1.7.0 (2020-04-03)
 
 Improvement:
