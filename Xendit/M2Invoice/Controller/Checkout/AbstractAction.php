@@ -4,6 +4,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\UrlInterface;
 use Magento\Checkout\Model\Session;
@@ -48,6 +49,10 @@ abstract class AbstractAction extends Action
 
     private $storeManager;
 
+    private $quoteRepository;
+
+    private $jsonResultFactory;
+
     public function __construct(
         Session $checkoutSession,
         Context $context,
@@ -59,7 +64,10 @@ abstract class AbstractAction extends Action
         OrderRepositoryInterface $orderRepo,
         ApiRequest $apiHelper,
         LogDNA $logDNA,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
+        JsonFactory $jsonResultFactory
+
     ) {
         parent::__construct($context);
 
@@ -76,6 +84,8 @@ abstract class AbstractAction extends Action
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
         $this->logDNA = $logDNA;
         $this->storeManager = $storeManager;
+        $this->quoteRepository = $quoteRepository;
+        $this->jsonResultFactory = $jsonResultFactory;
     }
 
     protected function getContext()
@@ -155,6 +165,16 @@ abstract class AbstractAction extends Action
         return $this->apiHelper;
     }
 
+    protected function getQuoteRepository()
+    {
+        return $this->quoteRepository;
+    }
+
+    protected function getJsonResultFactory()
+    {
+        return $this->jsonResultFactory;
+    }
+
     protected function invoiceOrder($order, $transactionId)
     {
         if (!$order->canInvoice()) {
@@ -199,15 +219,16 @@ abstract class AbstractAction extends Action
 
     protected function cancelOrder($order, $failureReason) {
         $orderState = Order::STATE_CANCELED;
-        $order->setState($orderState)
-            ->setStatus($orderState)
-            ->addStatusHistoryComment("Order #" . $order->getId() . " was cancelled by Xendit because " .
-                $failureReason);
-        $order->save();
 
-        $this->getCheckoutHelper()->cancelOrderById($order->getId(),
-            "Order #".($order->getId())." was rejected by Xendit");
-        $this->getCheckoutHelper()->restoreQuote(); //restore cart
+        if ($order->getStatus() != $orderState) {
+            $order  ->setState($orderState)
+                    ->setStatus($orderState)
+                    ->addStatusHistoryComment("Order #" . $order->getIncrementId() . " was cancelled by Xendit because " . $failureReason);
+            $order  ->save();
+    
+            $this->getCheckoutHelper()->cancelOrderById($order->getId(), "Order #".($order->getId())." was rejected by Xendit");
+            $this->getCheckoutHelper()->restoreQuote(); //restore cart
+        }
 
         return;
     }

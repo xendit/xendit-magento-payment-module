@@ -11,6 +11,8 @@ class ProcessHosted extends AbstractAction
     public function execute()
     {
         try {
+            $shouldRedirect = true;
+
             $order = $this->getOrder();
             $payment = $order->getPayment();
 
@@ -23,9 +25,8 @@ class ProcessHosted extends AbstractAction
                 $hostedPayment = $this->getCompletedHostedPayment($requestData);
 
                 if (isset($hostedPayment['error_code'])) {
-                    return $this->handlePaymentFailure($order, $hostedPayment['error_code'], 'Error reconciliating');
+                    return $this->handlePaymentFailure($order, $hostedPayment['error_code'], 'Error reconciliating', $shouldRedirect);
                 }
-
                 if ($hostedPayment['paid_amount'] != $hostedPayment['amount']) {
                     $order->setBaseDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
                     $order->setDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
@@ -40,10 +41,11 @@ class ProcessHosted extends AbstractAction
                     $order,
                     $payment,
                     'Xendit Credit Card payment completed. Transaction ID: ',
-                    $hostedPayment['charge_id']
+                    $hostedPayment['charge_id'],
+                    $shouldRedirect
                 );
             }
-
+            
             $message = 'No action on xendit/checkout/redirect';
             return $this->handlePaymentFailure($order, $message, 'No payment recorded');
         } catch (\Exception $e) {
@@ -52,7 +54,7 @@ class ProcessHosted extends AbstractAction
         }
     }
 
-    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId)
+    private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = true)
     {
         $orderState = Order::STATE_PROCESSING;
         $order->setState($orderState)
@@ -67,8 +69,10 @@ class ProcessHosted extends AbstractAction
         $this->invoiceOrder($order, $transactionId);
 
         $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-        $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
-        return;
+
+        if ($shouldRedirect) {
+            return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
+        }
     }
 
     private function getCompletedHostedPayment($requestData)
@@ -89,7 +93,7 @@ class ProcessHosted extends AbstractAction
         return $hostedPayment;
     }
 
-    private function handlePaymentFailure($order, $message, $reason)
+    public function handlePaymentFailure($order, $message, $reason, $shouldRedirect = true)
     {
         $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
 
@@ -98,6 +102,9 @@ class ProcessHosted extends AbstractAction
         $this->getMessageManager()->addErrorMessage(__(
             "There was an error in the Xendit payment. Failure reason: $reason"
         ));
-        return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+
+        if ($shouldRedirect) {
+            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+        }
     }
 }

@@ -42,6 +42,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
     protected $responseFactory;
     protected $logdnaHelper;
     protected $ruleRepo;
+    protected $quoteRepository;
 
     public function __construct(
         Crypto $cryptoHelper,
@@ -61,6 +62,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         ResponseFactory $responseFactory,
         LogDNA $logdnaHelper,
         RuleRepository $ruleRepo,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -88,6 +90,7 @@ class CC extends \Magento\Payment\Model\Method\Cc
         $this->responseFactory = $responseFactory;
         $this->logdnaHelper = $logdnaHelper;
         $this->ruleRepo = $ruleRepo;
+        $this->quoteRepository = $quoteRepository;
     }
 
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
@@ -177,11 +180,18 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        $order = $payment->getOrder();
-        $orderId = $order->getRealOrderId();
+        $payment->setIsTransactionPending(true);
         $additionalData = $this->getAdditionalData();
 
-        $payment->setIsTransactionPending(true);
+        $order = $payment->getOrder();
+        $quoteId = $order->getQuoteId();
+        $quote = $this->quoteRepository->get($quoteId);
+
+        if ($quote->getIsMultiShipping()) {
+            return $this;
+        }
+
+        $orderId = $order->getRealOrderId();
 
         $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
         $bin = isset($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;

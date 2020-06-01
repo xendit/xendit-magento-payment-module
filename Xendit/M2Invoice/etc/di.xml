@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+  <preference for="Magento\Multishipping\Controller\Checkout\OverviewPost" type="Xendit\M2Invoice\Controller\Payment\OverviewPost" />
+
   <!-- Facade configuration -->
   <virtualType name="M2InvoiceFacade" type="Magento\Payment\Model\Method\Adapter">
     <arguments>
@@ -99,5 +101,9 @@
     <arguments>
       <argument name="config" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
     </arguments>
+  </type>
+
+  <type name="Magento\Quote\Model\Quote\Payment">
+    <plugin name="xenditM2invoiceQuotePayment" type="Xendit\M2Invoice\Plugin\QuotePaymentPlugin"/>
   </type>
 </config>

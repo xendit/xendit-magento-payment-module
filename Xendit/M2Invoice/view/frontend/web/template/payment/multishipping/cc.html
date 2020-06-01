@@ -1,0 +1,24 @@
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-content">
+        <div class="payment-method-note" data-bind="text: getDescription()"></div>
+        <div data-bind="
+                style: {color: 'red'}
+                ">
+            <span data-bind="text: getTestDescription().prefix, style: { 'font-weight': 'bold' }"></span>
+            <span data-bind="text: getTestDescription().content"></span>
+        </div>
+        <!-- ko template: 'Xendit_M2Invoice/payment/cc-form' --><!-- /ko -->
+        <input type="submit" id="cc_submit"  style="display:none" />
+
+        <div class="actions-toolbar no-display">
+            <div class="primary">
+                <button data-role="review-save"
+                        type="submit"
+                        data-bind="{click: placeOrder}"
+                        class="action primary checkout">
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
