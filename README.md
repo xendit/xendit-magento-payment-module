@@ -31,7 +31,6 @@ After the code is inside the `MAGENTO_DIR`, proceed to run these commands:
    4. Run `php bin/magento module:status` again to ensure `Xendit_M2Invoice` is enabled already.
    5. You should flush Magento cache by using `php bin/magento cache:flush`
    6. Compile Magento with newly added module by using `php bin/magento setup:di:compile`
-   7. (Optional) Run step 1-6 again for `Xendit_Multishipping` to enable Xendit payment in multishipping checkout.
 2. You can see Xendit's setting page by navigating to **Stores -> Configuration -> Sales -> Payment Method**
 3. Once you enable Xendit on the setting page, you should see Xendit's payment methods (credit card and bank transfer) on payment section during checkout flow.
 
@@ -62,6 +61,9 @@ Currently this plugins support collecting payment through Xendit from these paym
 
 ## Refund Support
 Since v1.3.0, online refund (full and partial) is supported for payment through credit and debit card channel.
+
+## Multishipping Support
+Since v2.0.0, multishipping checkout is supported for all payment methods.
 
 ## Unit Testing
 To run unit test, run this command from you `MAGENTO_DIR`:
