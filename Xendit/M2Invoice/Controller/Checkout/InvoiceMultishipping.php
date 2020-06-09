@@ -37,13 +37,14 @@ class InvoiceMultishipping extends AbstractAction
             }
 
             $externalIdSuffix = implode("-", $incrementIds);
+            $descriptionIdSuffix = implode("*", $incrementIds);
             $preferredMethod = $this->getRequest()->getParam('preferred_method');
             $requestData = [
                 'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
                 'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($rawOrderIds),
                 'amount' => $transactionAmount,
                 'external_id' => $this->getDataHelper()->getExternalId($externalIdSuffix),
-                'description' => $externalIdSuffix,
+                'description' => $descriptionIdSuffix,
                 'payer_email' => $billingEmail,
                 'preferred_method' => $preferredMethod,
                 'should_send_email' => "true",

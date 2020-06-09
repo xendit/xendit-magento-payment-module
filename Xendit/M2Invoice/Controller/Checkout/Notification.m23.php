@@ -96,7 +96,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             
             $orderId = $decodedPost['description'];
             $transactionId = $decodedPost['id'];
-            $orderIds = explode("-", $orderId);
+            $orderIds = explode('*', $orderId);
             
             $isMultishipping = (count($orderIds) > 1) ? true : false;
             if ($isEwallet) {
