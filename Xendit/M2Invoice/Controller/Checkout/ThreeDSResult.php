@@ -11,8 +11,9 @@ class ThreeDSResult extends AbstractAction
     {
         $orderId = $this->getRequest()->get('order_id');
         $hosted3DSId = $this->getRequest()->get('hosted_3ds_id');
+        $isMultishipping = ($this->getRequest()->get('type') == 'multishipping' ? true : false);
 
-        $orderIds = explode('-', $orderId);
+        $orderIds = explode('||', $orderId);
         $orders = [];
 
         foreach ($orderIds as $key => $value) {
@@ -43,7 +44,7 @@ class ThreeDSResult extends AbstractAction
                 $charge = $this->createCharge($hosted3DS, $orderId, true);
             }
 
-            return $this->processXenditPayment($charge, $orders, $orderIds);
+            return $this->processXenditPayment($charge, $orders, $orderIds, $isMultishipping);
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $message = 'Exception caught on xendit/checkout/threedsresult: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
@@ -92,7 +93,7 @@ class ThreeDSResult extends AbstractAction
         return $charge;
     }
 
-    private function processXenditPayment($charge, $orders, $orderIds)
+    private function processXenditPayment($charge, $orders, $orderIds, $isMultishipping = false)
     {
         if ($charge['status'] === 'CAPTURED') {
             $transactionId = $charge['id'];
@@ -112,14 +113,15 @@ class ThreeDSResult extends AbstractAction
                 $this->invoiceOrder($order, $transactionId);
             }
 
-            $isMultishipping = (count($orderIds) > 1);
-
-            $this->_redirect($this->getDataHelper()->getSuccessUrl(true));
+            $this->_redirect($this->getDataHelper()->getSuccessUrl($isMultishipping));
         } else {
             $this->processFailedPayment($orderIds, $charge['failure_reason']);
         }
     }
 
+    /**
+     * $orderIds = increment IDs
+     */
     private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error')
     {
         $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);

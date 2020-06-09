@@ -6,8 +6,9 @@ class Failure extends AbstractAction {
     public function execute()
     {
         $orderIds = explode('-', $this->getRequest()->get('order_id'));
+        $type = $this->getRequest()->get('type');
 
-        if (count($orderIds) > 1) { //multishipping
+        if ($type == 'multishipping') {
             foreach ($orderIds as $orderId) {
                 $order = $this->getOrderFactory()->create();
                 $order ->load($orderId);
