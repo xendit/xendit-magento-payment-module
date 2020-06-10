@@ -93,19 +93,26 @@ class Notification extends Action implements CsrfAwareActionInterface
 
                 return $result;
             }
-            
-            $orderId = $decodedPost['description'];
-            $transactionId = $decodedPost['id'];
-            $orderIds = explode("-", $orderId);
-            
-            $isMultishipping = (count($orderIds) > 1) ? true : false;
+
             if ($isEwallet) {
                 // default code if API doesn't send failure_code
                 $failureCode = 'UNKNOWN_ERROR';
                 if (isset($decodedPost['failure_code'])) {
                     $failureCode = $decodedPost['failure_code'];
                 }
+
+                $extIdPrefix = $this->dataHelper->getExternalIdPrefix();
+                $orderId = ltrim($decodedPost['external_id'], $extIdPrefix);
+
+                // standalone OVO can only be single checkout
+                $orderIds = [$orderId];
+            } else {
+                $orderId = $decodedPost['description'];
+                $orderIds = explode("-", $orderId);
             }
+
+            $transactionId = $decodedPost['id'];
+            $isMultishipping = (count($orderIds) > 1) ? true : false;
 
             if (!empty($callbackToken)) {
                 $result = $this->jsonResultFactory->create();
