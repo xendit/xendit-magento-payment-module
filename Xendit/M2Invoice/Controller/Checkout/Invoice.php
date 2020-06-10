@@ -55,7 +55,7 @@ class Invoice extends AbstractAction
             return;
         }
 
-        $orderId = $order->getRealOrderId();
+        $orderId = $order->getEntityId();
         $preferredMethod = $this->getRequest()->getParam('preferred_method');
 
         $requestData = [
