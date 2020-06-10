@@ -81,17 +81,23 @@ class Checkout
         return false;
     }
 
+    /**
+     * Cancel multiple orders
+     * 
+     * @param array $orderIds Prefixless order IDs
+     * @param string $failureReason
+     */
     public function processOrdersFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
     {
         foreach ($orderIds as $key => $value) {
-            $order = $this->orderFactory->create()->loadByIncrementId($value);
+            $order = $this->orderFactory->create();
+            $order  ->load($value);
 
             $orderState = Order::STATE_CANCELED;
-            $order->setState($orderState)
-                ->setStatus($orderState)
-                ->addStatusHistoryComment("Order #" . $order->getId() . " was rejected by Xendit because " .
-                    $failureReason);
-            $order->save();
+            $order  ->setState($orderState)
+                    ->setStatus($orderState)
+                    ->addStatusHistoryComment("Order #" . $value . " was rejected by Xendit because " . $failureReason);
+            $order  ->save();
 
             $quoteId = $order->getQuoteId();
             $quote = $this->quoteRepository->get($quoteId);
