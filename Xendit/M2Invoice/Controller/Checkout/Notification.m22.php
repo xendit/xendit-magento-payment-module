@@ -160,6 +160,8 @@ class Notification extends Action
         }
 
         if ($isEwallet) {
+            $order = $this->getOrderById($orderId);
+
             if ($order->getState() === Order::STATE_PENDING_PAYMENT || $order->getState() === Order::STATE_PAYMENT_REVIEW) {
                 //get ewallet payment status
                 $paymentStatus = $this->getEwalletStatus($decodedPost['ewallet_type'], $decodedPost['external_id']);
