@@ -85,7 +85,7 @@ class Notification extends Action
             
             $orderId = $decodedPost['description'];
             $transactionId = $decodedPost['id'];
-            $orderIds = explode("-", $orderId);
+            $orderIds = explode('-', $orderId);
             
             $isMultishipping = (count($orderIds) > 1) ? true : false;
             if ($isEwallet) {
@@ -136,7 +136,8 @@ class Notification extends Action
     }
     
     private function checkOrder($orderId, $isEwallet, $decodedPost, $invoice, $callbackDescription) {
-        $order = $this->getOrderById($orderId);
+        $order = $this->orderFactory->create();
+        $order->load($orderId);
         $transactionId = $decodedPost['id'];
 
         if (!$order) {
