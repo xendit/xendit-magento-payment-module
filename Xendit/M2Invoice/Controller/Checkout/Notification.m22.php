@@ -143,7 +143,8 @@ class Notification extends Action
     }
     
     private function checkOrder($orderId, $isEwallet, $decodedPost, $invoice, $callbackDescription) {
-        $order = $this->getOrderById($orderId);
+        $order = $this->orderFactory->create();
+        $order->load($orderId);
         $transactionId = $decodedPost['id'];
 
         if (!$order) {

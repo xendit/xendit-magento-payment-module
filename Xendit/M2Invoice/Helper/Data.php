@@ -54,14 +54,22 @@ class Data extends AbstractHelper
         return $baseUrl;
     }
 
-    public function getFailureUrl($orderId)
+    public function getFailureUrl($orderId, $isMultishipping = false)
     {
-        return $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/failure?order_id=$orderId";
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/failure?order_id=$orderId";
+        if ($isMultishipping) {
+            $baseUrl .= '&type=multishipping';
+        }
+        return $baseUrl;
     }
 
-    public function getThreeDSResultUrl($orderId)
+    public function getThreeDSResultUrl($orderId, $isMultishipping = false)
     {
-        return $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/threedsresult?order_id=$orderId";
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/threedsresult?order_id=$orderId";
+        if ($isMultishipping) {
+            $baseUrl .= "&type=multishipping";
+        }
+        return $baseUrl;
     }
 
     public function getExternalId($orderId, $duplicate = false)
