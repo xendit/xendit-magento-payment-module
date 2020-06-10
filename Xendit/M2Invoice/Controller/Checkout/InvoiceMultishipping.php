@@ -17,7 +17,6 @@ class InvoiceMultishipping extends AbstractAction
             $orderIds           = explode("-", $rawOrderIds);
 
             $transactionAmount  = 0;
-            $incrementIds       = [];
             
             $orders = [];
             foreach ($orderIds as $key => $value) {
@@ -33,16 +32,14 @@ class InvoiceMultishipping extends AbstractAction
                 $order->save();
     
                 $transactionAmount  += (int)$order->getTotalDue();
-                $incrementIds[]     = $order->getIncrementId();
             }
 
-            $externalIdSuffix = implode('-', $incrementIds);
             $preferredMethod = $this->getRequest()->getParam('preferred_method');
             $requestData = [
                 'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
                 'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($rawOrderIds),
                 'amount' => $transactionAmount,
-                'external_id' => $this->getDataHelper()->getExternalId($externalIdSuffix),
+                'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds),
                 'description' => $rawOrderIds,
                 'payer_email' => $billingEmail,
                 'preferred_method' => $preferredMethod,
