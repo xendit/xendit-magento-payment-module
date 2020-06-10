@@ -16,7 +16,6 @@ class CCMultishipping extends AbstractAction
             $orderIds           = explode("-", $rawOrderIds);
 
             $transactionAmount  = 0;
-            $incrementIds       = [];
             $tokenId            = '';
             $orders             = [];
 
@@ -41,17 +40,15 @@ class CCMultishipping extends AbstractAction
                 }
     
                 $transactionAmount  += (int)$order->getTotalDue();
-                $incrementIds[]     = $order->getIncrementId();
             }
 
             if ($method === 'cc') {
-                $externalIdSuffix = implode("||", $incrementIds);
                 $requestData = array(
                     'token_id' => $tokenId,
                     'card_cvn' => $cvn,
                     'amount' => $transactionAmount,
-                    'external_id' => $this->getDataHelper()->getExternalId($externalIdSuffix),
-                    'return_url' => $this->getDataHelper()->getThreeDSResultUrl($externalIdSuffix, true)
+                    'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds),
+                    'return_url' => $this->getDataHelper()->getThreeDSResultUrl($rawOrderIds, true)
                 );
 
                 $charge = $this->requestCharge($requestData);
@@ -59,24 +56,24 @@ class CCMultishipping extends AbstractAction
                 $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
                 if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
                     $newRequestData = array_replace($requestData, array(
-                        'external_id' => $this->getDataHelper()->getExternalId($externalIdSuffix, true)
+                        'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds, true)
                     ));
                     $charge = $this->requestCharge($newRequestData);
                 }
 
                 $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
                 if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
-                    return $this->handle3DSFlow($requestData, $payment, $incrementIds, $orders);
+                    return $this->handle3DSFlow($requestData, $payment, $orderIds, $orders);
                 }
 
                 if ($chargeError !== null) {
-                    return $this->processFailedPayment($incrementIds, $chargeError);
+                    return $this->processFailedPayment($orderIds, $chargeError);
                 }
     
                 if ($charge['status'] === 'CAPTURED') {
                     return $this->processSuccessfulPayment($orders, $payment, $charge);
                 } else {
-                    return $this->processFailedPayment($incrementIds, $charge['failure_reason']);
+                    return $this->processFailedPayment($orderIds, $charge['failure_reason']);
                 }
             }
             else if ($method === 'cchosted') {
@@ -96,7 +93,7 @@ class CCMultishipping extends AbstractAction
                 if (isset($hostedPayment['error_code'])) {
                     $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
 
-                    return $this->processFailedPayment($incrementIds, $message);
+                    return $this->processFailedPayment($orderIds, $message);
                 } else if (isset($hostedPayment['id'])) {
                     $hostedPaymentId = $hostedPayment['id'];
                     $hostedPaymentToken = $hostedPayment['hp_token'];
@@ -112,7 +109,7 @@ class CCMultishipping extends AbstractAction
                 } else {
                     $message = 'Error connecting to Xendit. Please check your API key.';
                     
-                    return $this->processFailedPayment($incrementIds, $message);
+                    return $this->processFailedPayment($orderIds, $message);
                 }
             }
         } catch (\Exception $e) {
@@ -164,7 +161,7 @@ class CCMultishipping extends AbstractAction
     }
     
     /**
-     * $orderIds = increment IDs
+     * $orderIds = prefixless order IDs
      */
     private function handle3DSFlow($requestData, $payment, $orderIds, $orders)
     {
@@ -186,9 +183,9 @@ class CCMultishipping extends AbstractAction
             $payment->setAdditionalInformation('xendit_hosted_3ds_id', $hostedId);
 
             foreach ($orderIds as $key => $value) {
-                $order = $this->getOrderFactory()->create()->loadByIncrementId($value);
-
-                $order->addStatusHistoryComment("Xendit payment waiting for authentication. 3DS id: $hostedId");
+                $order = $this->getOrderFactory()->create();
+                $order->load($value);
+                $order->addStatusHistoryComment("Xendit payment waiting for authentication. 3DS ID: $hostedId");
                 $order->save();
             }
 
@@ -214,7 +211,7 @@ class CCMultishipping extends AbstractAction
     }
 
     /**
-     * $orderIds = increment IDs
+     * $orderIds = prefixless order IDs
      */
     private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
     {

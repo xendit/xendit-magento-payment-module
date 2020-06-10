@@ -13,11 +13,30 @@ class ThreeDSResult extends AbstractAction
         $hosted3DSId = $this->getRequest()->get('hosted_3ds_id');
         $isMultishipping = ($this->getRequest()->get('type') == 'multishipping' ? true : false);
 
-        $orderIds = explode('||', $orderId);
         $orders = [];
+        $orderIds = [];
 
-        foreach ($orderIds as $key => $value) {
-            $order = $this->getOrderById($value);
+        if ($isMultishipping) {
+            $orderIds = explode('-', $orderId);
+
+            foreach ($orderIds as $key => $value) {
+                $order = $this->getOrderFactory()->create();
+                $order->load($value);
+    
+                if (!is_object($order)) {
+                    return;
+                }
+    
+                if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
+                    return;
+                }
+    
+                $orders[] = $order;
+            }
+        } else {
+            $order = $this->getOrderFactory()->create()->loadByIncrementId($orderId);
+            $orderId = $order->getId(); //replace increment $orderId with prefixless order ID
+            $orderIds[] = $orderId;
 
             if (!is_object($order)) {
                 return;
@@ -48,14 +67,14 @@ class ThreeDSResult extends AbstractAction
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $message = 'Exception caught on xendit/checkout/threedsresult: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
+            
             return $this->processFailedPayment($orderIds);
         }
     }
 
     private function getThreeDSResult($hosted3DSId)
     {
-        $hosted3DSUrl = $this->getDataHelper()->getCheckoutUrl() 
-            . "/payment/xendit/credit-card/hosted-3ds/$hosted3DSId";
+        $hosted3DSUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds/$hosted3DSId";
         $hosted3DSMethod = \Zend\Http\Request::METHOD_GET;
         
         try {
@@ -120,7 +139,7 @@ class ThreeDSResult extends AbstractAction
     }
 
     /**
-     * $orderIds = increment IDs
+     * $orderIds = prefixless order IDs
      */
     private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error')
     {
