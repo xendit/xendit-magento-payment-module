@@ -120,7 +120,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             }
 
             $invoice = $this->getXenditInvoice($transactionId);
-print_r($invoice);
+
             if( $isMultishipping ) {
                 foreach ($orderIds as $key => $value) {
                     $result = $this->checkOrder($value, $isEwallet, $decodedPost, $invoice, $orderId);
