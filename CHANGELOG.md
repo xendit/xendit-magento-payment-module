@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.0.1 (2020-06-11)
+
+Bugfix:
+
+- Support order ID with prefix (single and multishipping)
+- Fix OVO callback for single checkout
+
 ## 2.0.0 (2020-06-01)
 
 Features:
