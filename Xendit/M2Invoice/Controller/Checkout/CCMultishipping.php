@@ -84,7 +84,7 @@ class CCMultishipping extends AbstractAction
                     'store_name'             => $this->getStoreManager()->getStore()->getName(),
                     'platform_name'          => 'MAGENTO2',
                     'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl(true),
-                    'failure_redirect_url'   => $this->getDataHelper()->getFailureUrl($rawOrderIds),
+                    'failure_redirect_url'   => $this->getDataHelper()->getFailureUrl($rawOrderIds, true),
                     'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
                 ];
 

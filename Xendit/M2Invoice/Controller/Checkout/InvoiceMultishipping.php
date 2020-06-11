@@ -37,7 +37,7 @@ class InvoiceMultishipping extends AbstractAction
             $preferredMethod = $this->getRequest()->getParam('preferred_method');
             $requestData = [
                 'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
-                'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($rawOrderIds),
+                'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($rawOrderIds, true),
                 'amount' => $transactionAmount,
                 'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds),
                 'description' => $rawOrderIds,
