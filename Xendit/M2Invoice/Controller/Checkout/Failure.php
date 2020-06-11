@@ -24,7 +24,7 @@ class Failure extends AbstractAction {
                 }
             }
         } else { //onepage
-            $order = $this->getOrderById($orderIds[0]);
+            $order = $this->getOrderById($this->getRequest()->get('order_id'));
     
             if ($order) {
                 $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
