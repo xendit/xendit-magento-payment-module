@@ -54,27 +54,40 @@ class Data extends AbstractHelper
         return $baseUrl;
     }
 
-    public function getFailureUrl($orderId)
+    public function getFailureUrl($orderId, $isMultishipping = false)
     {
-        return $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/failure?order_id=$orderId";
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/failure?order_id=$orderId";
+        if ($isMultishipping) {
+            $baseUrl .= '&type=multishipping';
+        }
+        return $baseUrl;
     }
 
-    public function getThreeDSResultUrl($orderId)
+    public function getThreeDSResultUrl($orderId, $isMultishipping = false)
     {
-        return $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/threedsresult?order_id=$orderId";
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/threedsresult?order_id=$orderId";
+        if ($isMultishipping) {
+            $baseUrl .= "&type=multishipping";
+        }
+        return $baseUrl;
     }
 
     public function getExternalId($orderId, $duplicate = false)
     {
-        $storeName = substr(preg_replace("/[^a-z0-9]/mi", "", $this->getStoreManager()->getStore()->getName()), 0, 20);
-
-        $defaultExtId = "magento-xendit-$storeName-$orderId";
+        $defaultExtId = $this->getExternalIdPrefix() . "-$orderId";
 
         if ($duplicate) {
             return uniqid() . "-" . $defaultExtId;
         }
 
         return $defaultExtId;
+    }
+
+    public function getExternalIdPrefix()
+    {
+        $storeName = substr(preg_replace("/[^a-z0-9]/mi", "", $this->getStoreManager()->getStore()->getName()), 0, 20);
+
+        return "magento-xendit-$storeName";
     }
 
     public function getApiKey()

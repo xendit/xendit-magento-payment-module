@@ -93,19 +93,26 @@ class Notification extends Action implements CsrfAwareActionInterface
 
                 return $result;
             }
-            
-            $orderId = $decodedPost['description'];
-            $transactionId = $decodedPost['id'];
-            $orderIds = explode("-", $orderId);
-            
-            $isMultishipping = (count($orderIds) > 1) ? true : false;
+
             if ($isEwallet) {
                 // default code if API doesn't send failure_code
                 $failureCode = 'UNKNOWN_ERROR';
                 if (isset($decodedPost['failure_code'])) {
                     $failureCode = $decodedPost['failure_code'];
                 }
+
+                $extIdPrefix = $this->dataHelper->getExternalIdPrefix();
+                $orderId = ltrim($decodedPost['external_id'], $extIdPrefix);
+
+                // standalone OVO can only be single checkout
+                $orderIds = [$orderId];
+            } else {
+                $orderId = $decodedPost['description'];
+                $orderIds = explode("-", $orderId);
             }
+
+            $transactionId = $decodedPost['id'];
+            $isMultishipping = (count($orderIds) > 1) ? true : false;
 
             if (!empty($callbackToken)) {
                 $result = $this->jsonResultFactory->create();
@@ -147,7 +154,8 @@ class Notification extends Action implements CsrfAwareActionInterface
     }
     
     private function checkOrder($orderId, $isEwallet, $decodedPost, $invoice, $callbackDescription) {
-        $order = $this->getOrderById($orderId);
+        $order = $this->orderFactory->create();
+        $order->load($orderId);
         $transactionId = $decodedPost['id'];
 
         if (!$order) {
@@ -163,6 +171,8 @@ class Notification extends Action implements CsrfAwareActionInterface
         }
 
         if ($isEwallet) {
+            $order = $this->getOrderById($orderId);
+
             if ($order->getState() === Order::STATE_PENDING_PAYMENT || $order->getState() === Order::STATE_PAYMENT_REVIEW) {
                 //get ewallet payment status
                 $paymentStatus = $this->getEwalletStatus($decodedPost['ewallet_type'], $decodedPost['external_id']);

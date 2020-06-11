@@ -6,8 +6,9 @@ class Failure extends AbstractAction {
     public function execute()
     {
         $orderIds = explode('-', $this->getRequest()->get('order_id'));
+        $type = $this->getRequest()->get('type');
 
-        if (count($orderIds) > 1) { //multishipping
+        if ($type == 'multishipping') {
             foreach ($orderIds as $orderId) {
                 $order = $this->getOrderFactory()->create();
                 $order ->load($orderId);
@@ -23,7 +24,7 @@ class Failure extends AbstractAction {
                 }
             }
         } else { //onepage
-            $order = $this->getOrderById($orderIds[0]);
+            $order = $this->getOrderById($this->getRequest()->get('order_id'));
     
             if ($order) {
                 $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
