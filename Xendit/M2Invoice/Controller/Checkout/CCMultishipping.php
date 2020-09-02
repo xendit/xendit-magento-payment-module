@@ -76,8 +76,8 @@ class CCMultishipping extends AbstractAction
                     return $this->processFailedPayment($orderIds, $charge['failure_reason']);
                 }
             }
-            else if ($method === 'cchosted') {
-                $requestData        = [
+            else if ($method === 'cchosted' || $method === 'cc_installment') {
+                $requestData = array(
                     'order_number'           => $rawOrderIds,
                     'amount'                 => $transactionAmount,
                     'payment_type'           => 'CREDIT_CARD',
@@ -86,7 +86,28 @@ class CCMultishipping extends AbstractAction
                     'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl(true),
                     'failure_redirect_url'   => $this->getDataHelper()->getFailureUrl($rawOrderIds, true),
                     'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
-                ];
+                );
+
+                if ($method === 'cc_installment') {
+                    $billingAddress = $orders[0]->getBillingAddress();
+                    $billingDetails = array(
+                        'given_names'   => $billingAddress->getFirstname(),
+                        'surname'       => $billingAddress->getLastname(),
+                        'email'         => $billingAddress->getEmail(),
+                        'phone_number'  => $billingAddress->getTelephone(),
+                        'address' => array(
+                            'country'       => $billingAddress->getFirstname(),
+                            'street_line1'  => $billingAddress->getStreetLine1(),
+                            'street_line2'  => $billingAddress->getStreetLine2(),
+                            'city'          => $billingAddress->getCity(),
+                            'state'         => $billingAddress->getRegion(),
+                            'postal_code'   => $billingAddress->getPostcode()
+                        )
+                    );
+
+                    $requestData['is_installment'] = true;
+                    $requestData['billing_details'] = $billingDetails;
+                }
 
                 $hostedPayment = $this->requestHostedPayment($requestData);
 
