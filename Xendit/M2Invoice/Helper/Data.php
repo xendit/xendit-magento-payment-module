@@ -206,10 +206,11 @@ class Data extends AbstractHelper
     
     public function xenditPaymentMethod( $payment ){
         
-        //methode name => frontend routing
+        //method name => frontend routing
         $listPayment = [
             "cc" => "cc",
             "cchosted" => "cchosted",
+            "cc_installment" => "cc_installment",
             "bcava" => "bca",
             "bniva" => "bni",
             "briva" => "bri",
