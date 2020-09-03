@@ -173,27 +173,6 @@
                     <attribute type="shared">1</attribute>
                 </field>
 
-                <group id="card_installment" translate="label" showInDefault="1" showInWebsite="1" sortOrder="90">
-                    <label>Credit Card Installment</label>
-                    <field id="card_installment_active" translate="label comment" sortOrder="91" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Enable</label>
-                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/m2invoice/card_installment_active</config_path>
-                    </field>
-                    <field id="card_installment_bin_list" translate="label" type="textarea" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <depends>
-                            <field id="card_installment_active">1</field>
-                        </depends>
-                        <comment>
-                            <![CDATA[List of BIN that is accepted by credit card installment. <br />      
-                            <i>*Please ensure that all the BIN you entered are given by the bank in which you have certain promo partnership with them. We are not responsible for any human error from merchant side regarding card promo.*</i>]]>
-                        </comment>
-                        <label>BIN for Credit Card Installment</label>
-                        <config_path>payment/m2invoice/card_installment_bin_list</config_path>
-                        <validate>required-entry</validate>
-                    </field>
-                </group>
-
                 <group id="card_promo_bca" translate="label" showInDefault="1" showInWebsite="1" sortOrder="100">
                     <label>Credit Card Promotion - BCA</label>
                     <field id="card_promo_bca_active" translate="label comment" sortOrder="101" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
