@@ -91,22 +91,22 @@ class CCMultishipping extends AbstractAction
                 if ($method === 'cc_installment') {
                     $billingAddress = $orders[0]->getBillingAddress();
                     $billingDetails = array(
-                        'given_names'   => $billingAddress->getFirstname(),
-                        'surname'       => $billingAddress->getLastname(),
-                        'email'         => $billingAddress->getEmail(),
-                        'phone_number'  => $billingAddress->getTelephone(),
+                        'given_names'   => ($billingAddress->getFirstname() ?: 'N/A'),
+                        'surname'       => ($billingAddress->getLastname() ?: null),
+                        'email'         => ($billingAddress->getEmail() ?: null),
+                        'phone_number'  => ($billingAddress->getTelephone() ?: null),
                         'address' => array(
-                            'country'       => $billingAddress->getFirstname(),
-                            'street_line1'  => $billingAddress->getStreetLine1(),
-                            'street_line2'  => $billingAddress->getStreetLine2(),
-                            'city'          => $billingAddress->getCity(),
-                            'state'         => $billingAddress->getRegion(),
-                            'postal_code'   => $billingAddress->getPostcode()
+                            'country'       => ($billingAddress->getCountryId() ?: 'ID'),
+                            'street_line1'  => ($billingAddress->getStreetLine1() ?: null),
+                            'street_line2'  => ($billingAddress->getStreetLine2() ?: null),
+                            'city'          => ($billingAddress->getCity() ?: null),
+                            'state'         => ($billingAddress->getRegion() ?: null),
+                            'postal_code'   => ($billingAddress->getPostcode() ?: null)
                         )
                     );
 
-                    $requestData['is_installment'] = true;
-                    $requestData['billing_details'] = $billingDetails;
+                    $requestData['is_installment'] = "true";
+                    $requestData['billing_details'] = json_encode($billingDetails, JSON_FORCE_OBJECT);
                 }
 
                 $hostedPayment = $this->requestHostedPayment($requestData);

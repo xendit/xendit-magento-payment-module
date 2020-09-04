@@ -49,17 +49,17 @@ class CCInstallment extends CCHosted
 
             $billingAddress = $order->getBillingAddress();
             $billingDetails = array(
-                'given_names'   => $billingAddress->getFirstname(),
-                'surname'       => $billingAddress->getLastname(),
-                'email'         => $billingAddress->getEmail(),
-                'phone_number'  => $billingAddress->getTelephone(),
+                'given_names'   => ($billingAddress->getFirstname() ?: 'N/A'),
+                'surname'       => ($billingAddress->getLastname() ?: null),
+                'email'         => ($billingAddress->getEmail() ?: null),
+                'phone_number'  => ($billingAddress->getTelephone() ?: null),
                 'address' => array(
-                    'country'       => $billingAddress->getFirstname(),
-                    'street_line1'  => $billingAddress->getStreetLine1(),
-                    'street_line2'  => $billingAddress->getStreetLine2(),
-                    'city'          => $billingAddress->getCity(),
-                    'state'         => $billingAddress->getRegion(),
-                    'postal_code'   => $billingAddress->getPostcode()
+                    'country'       => ($billingAddress->getCountryId() ?: 'ID'),
+                    'street_line1'  => ($billingAddress->getStreetLine1() ?: null),
+                    'street_line2'  => ($billingAddress->getStreetLine2() ?: null),
+                    'city'          => ($billingAddress->getCity() ?: null),
+                    'state'         => ($billingAddress->getRegion() ?: null),
+                    'postal_code'   => ($billingAddress->getPostcode() ?: null)
                 )
             );
 
@@ -71,8 +71,8 @@ class CCInstallment extends CCHosted
                 'payment_type' => self::PAYMENT_TYPE,
                 'store_name' => $this->storeManager->getStore()->getName(),
                 'platform_name' => self::PLATFORM_NAME,
-                'is_installment' => true,
-                'billing_details' => $billingDetails
+                'is_installment' => "true",
+                'billing_details' => json_encode($billingDetails, JSON_FORCE_OBJECT)
             );
             
             $promo = $this->calculatePromo($order, $rawAmount);
