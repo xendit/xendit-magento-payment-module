@@ -122,7 +122,7 @@ class CCMultishipping extends AbstractAction
                     $this->addCCHostedData($orders, $hostedPayment);
 
                     // redirect to hosted payment page
-                    $redirect = "https://tpi-ui.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken";
+                    $redirect = "https://tpi-ui-dev.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken";
                     $resultRedirect = $this->getRedirectFactory()->create();
                     $resultRedirect->setUrl($redirect);
                     
