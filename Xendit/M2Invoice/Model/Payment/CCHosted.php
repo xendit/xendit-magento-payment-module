@@ -152,7 +152,7 @@ class CCHosted extends AbstractInvoice
         return $refund;
     }
 
-    private function requestHostedPayment($requestData)
+    public function requestHostedPayment($requestData)
     {
         $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
         $hostedPaymentMethod = \Zend\Http\Request::METHOD_POST;
@@ -170,7 +170,7 @@ class CCHosted extends AbstractInvoice
         return $hostedPayment;
     }
 
-    private function processFailedPayment($payment, $message)
+    public function processFailedPayment($payment, $message)
     {
         $payment->setAdditionalInformation('xendit_failure_reason', $message);
     }
@@ -198,7 +198,7 @@ class CCHosted extends AbstractInvoice
         );
     }
 
-    private function calculatePromo($order, $rawAmount)
+    public function calculatePromo($order, $rawAmount)
     {
         $promo = [];
         $ruleIds = $order->getAppliedRuleIds();

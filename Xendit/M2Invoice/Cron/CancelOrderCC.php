@@ -71,7 +71,7 @@ class CancelOrderCC
             if (strtotime($creationTime) < strtotime('-1 day')) {
                 $order->setState(Order::STATE_CANCELED)
                     ->setStatus(Order::STATE_CANCELED)
-                    ->addStatusHistoryComment("Xendit payment cancelled due to stuck on payment review for 30 days");
+                    ->addStatusHistoryComment("Xendit payment cancelled due to stuck on payment review for 24 hours");
 
                 $bulkCancelData[] = array(
                     'id' => $hosted3DSId,

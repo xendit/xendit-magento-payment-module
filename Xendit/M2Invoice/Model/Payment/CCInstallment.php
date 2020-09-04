@@ -16,6 +16,8 @@ use Xendit\M2Invoice\Enum\LogDNALevel;
 
 class CCInstallment extends CCHosted
 {
+    const PLATFORM_NAME = 'MAGENTO2';
+    const PAYMENT_TYPE = 'CREDIT_CARD';
     /**
      * Payment code
      *
@@ -42,19 +44,37 @@ class CCInstallment extends CCHosted
             return $this;
         }
 
-        $orderId = $order->getRealOrderId();
-
         try {
+            $orderId = $order->getRealOrderId();
+
+            $billingAddress = $order->getBillingAddress();
+            $billingDetails = array(
+                'given_names'   => ($billingAddress->getFirstname() ?: 'N/A'),
+                'surname'       => ($billingAddress->getLastname() ?: null),
+                'email'         => ($billingAddress->getEmail() ?: null),
+                'phone_number'  => ($billingAddress->getTelephone() ?: null),
+                'address' => array(
+                    'country'       => ($billingAddress->getCountryId() ?: 'ID'),
+                    'street_line1'  => ($billingAddress->getStreetLine1() ?: null),
+                    'street_line2'  => ($billingAddress->getStreetLine2() ?: null),
+                    'city'          => ($billingAddress->getCity() ?: null),
+                    'state'         => ($billingAddress->getRegion() ?: null),
+                    'postal_code'   => ($billingAddress->getPostcode() ?: null)
+                )
+            );
+
             $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
-            $args = [
+
+            $args = array(
                 'order_number' => $orderId,
                 'amount' => $amount,
                 'payment_type' => self::PAYMENT_TYPE,
                 'store_name' => $this->storeManager->getStore()->getName(),
                 'platform_name' => self::PLATFORM_NAME,
-                'is_installment' => true
-            ];
-
+                'is_installment' => "true",
+                'billing_details' => json_encode($billingDetails, JSON_FORCE_OBJECT)
+            );
+            
             $promo = $this->calculatePromo($order, $rawAmount);
 
             if (!empty($promo)) {
@@ -80,7 +100,7 @@ class CCInstallment extends CCHosted
             }
 
             $hostedPayment = $this->requestHostedPayment($args);
-
+            
             if (isset($hostedPayment['error_code'])) {
                 $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
                 $this->processFailedPayment($payment, $message);
