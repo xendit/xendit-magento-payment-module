@@ -18,11 +18,11 @@ define(
             },
 
             getMethod: function() {
-                return 'CC_INSTALLMENT'
+                return 'CC_INSTALLMENT';
             },
 
             getDescription: function() {
-                return 'Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit';
+                return window.checkoutConfig.payment.m2invoice.card_installment_description;
             }
         });
     }

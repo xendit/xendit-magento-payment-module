@@ -129,7 +129,7 @@ define(
             },
 
             getCcAvailableTypes: function() {
-                return window.checkoutConfig.payment.m2invoice.availableTypes['cc'];
+                return window.checkoutConfig.payment.m2invoice.available_types['cc'];
             },
 
             getCcMonths: function() {
@@ -141,7 +141,7 @@ define(
             },
  
             hasVerification: function() {
-                return window.checkoutConfig.payment.m2invoice.hasVerification;
+                return window.checkoutConfig.payment.m2invoice.has_verification;
             },
 
             getDescription: function() {

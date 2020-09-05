@@ -108,7 +108,7 @@ class AbstractInvoice extends AbstractMethod
 
         $cardPaymentType = $this->dataHelper->getCardPaymentType();
 
-        if ($this->methodCode === 'CCHOSTED' || $this->methodCode === 'CC_INSTALLMENT') {
+        if (($cardPaymentType === 'popup' && $this->methodCode === 'CCHOSTED') || $this->methodCode === 'CC_INSTALLMENT') {
             return true;
         }
 
