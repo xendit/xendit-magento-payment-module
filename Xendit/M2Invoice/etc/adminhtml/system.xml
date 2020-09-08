@@ -102,6 +102,8 @@
                             dynamicShow();
                             shouldEnableSpecificMethod();
                             specificSelection.prop('size', 6);
+                            jQuery("textarea[id*='m2invoice_card_installment_description']").attr("placeholder", "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
+                            jQuery("textarea[id*='m2invoice_card_installment_description']").val("Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
                         });
                     </script>
                 ]]></comment>
@@ -113,14 +115,14 @@
                     <label>Payment Mode</label>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\EnvRadioBtn</source_model>
                     <comment>
-                        Choose live to have live transaction
+                        Choose live to perform real transaction
                     </comment>
                     <attribute type="shared">1</attribute>
                 </field>
                 <field id="test_public_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Public Key</label>
                     <comment>
-                        Public API key that provided by Xendit Dashboard
+                        Public API key provided by Xendit Dashboard
                     </comment>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
@@ -128,7 +130,7 @@
                 <field id="test_private_key" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Private Key</label>
                     <comment>
-                        Secret API key that provided by Xendit Dashboard
+                        Secret API key provided by Xendit Dashboard
                     </comment>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
@@ -136,7 +138,7 @@
                 <field id="public_key" translate="label" type="obscure" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Public Key</label>
                     <comment>
-                        Public API key that provided by Xendit Dashboard
+                        Public API key provided by Xendit Dashboard
                     </comment>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
@@ -144,7 +146,7 @@
                 <field id="private_key" translate="label" type="obscure" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Private Key</label>
                     <comment>
-                        Secret API key that provided by Xendit Dashboard
+                        Secret API key provided by Xendit Dashboard
                     </comment>
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
@@ -156,7 +158,7 @@
                     </comment>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\AllowedMethod</source_model>
                 </field>
-                <field id="chosen_methods" translate="label" type="multiselect" size="6" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="chosen_methods" translate="label" type="multiselect" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Specific Payment Method</label>
                     <comment>
                         Use all payment method that is provided by Xendit
@@ -167,11 +169,16 @@
                 <field id="card_payment_type" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Card Payment Type</label>
                     <comment>
-                        Xendit provide card form to increase your order payment
+                        Choose popup if you don't want to hold sensitive card data on your site
                     </comment>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CardPaymentType</source_model>
                     <attribute type="shared">1</attribute>
                 </field>
+                <field id="card_installment_description" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Credit Card Installment Description</label>
+                    <comment>Customize your installment payment description on checkout page</comment>
+                </field>
+
                 <group id="card_promo_bca" translate="label" showInDefault="1" showInWebsite="1" sortOrder="100">
                     <label>Credit Card Promotion - BCA</label>
                     <field id="card_promo_bca_active" translate="label comment" sortOrder="101" type="select" showInDefault="1" showInWebsite="1" showInStore="0">

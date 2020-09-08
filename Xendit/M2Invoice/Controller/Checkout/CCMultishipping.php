@@ -76,8 +76,8 @@ class CCMultishipping extends AbstractAction
                     return $this->processFailedPayment($orderIds, $charge['failure_reason']);
                 }
             }
-            else if ($method === 'cchosted') {
-                $requestData        = [
+            else if ($method === 'cchosted' || $method === 'cc_installment') {
+                $requestData = array(
                     'order_number'           => $rawOrderIds,
                     'amount'                 => $transactionAmount,
                     'payment_type'           => 'CREDIT_CARD',
@@ -86,7 +86,32 @@ class CCMultishipping extends AbstractAction
                     'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl(true),
                     'failure_redirect_url'   => $this->getDataHelper()->getFailureUrl($rawOrderIds, true),
                     'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
-                ];
+                );
+
+                if ($method === 'cc_installment') {
+                    $billingAddress = $orders[0]->getBillingAddress();
+                    $shippingAddress = $orders[0]->getShippingAddress();
+
+                    $firstName = $billingAddress->getFirstname() ?: $shippingAddress->getFirstname();
+                    $country = $billingAddress->getCountryId() ?: $shippingAddress->getCountryId();
+                    $billingDetails = array(
+                        'given_names'   => ($firstName ?: 'N/A'),
+                        'surname'       => ($billingAddress->getLastname() ?: null),
+                        'email'         => ($billingAddress->getEmail() ?: null),
+                        'phone_number'  => ($billingAddress->getTelephone() ?: null),
+                        'address' => array(
+                            'country'       => ($country ?: 'ID'),
+                            'street_line_1'  => ($billingAddress->getStreetLine(1) ?: null),
+                            'street_line_2'  => ($billingAddress->getStreetLine(2) ?: null),
+                            'city'          => ($billingAddress->getCity() ?: null),
+                            'state'         => ($billingAddress->getRegion() ?: null),
+                            'postal_code'   => ($billingAddress->getPostcode() ?: null)
+                        )
+                    );
+
+                    $requestData['is_installment'] = "true";
+                    $requestData['billing_details'] = json_encode($billingDetails, JSON_FORCE_OBJECT);
+                }
 
                 $hostedPayment = $this->requestHostedPayment($requestData);
 

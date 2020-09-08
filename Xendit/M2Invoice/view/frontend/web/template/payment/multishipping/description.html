@@ -1,9 +1,7 @@
 <div class="payment-method" css="'_active': (getCode() === isChecked())">
   <div class="payment-method-content">
     <div class="payment-method-note" data-bind="text: getDescription()"></div>
-    <div data-bind="
-         style: {color: 'red'}
-         ">
+    <div data-bind="style: {color: 'red'}">
       <span data-bind="text: getTestDescription().prefix, style: { 'font-weight': 'bold' }"></span>
       <span data-bind="text: getTestDescription().content"></span>
     </div>

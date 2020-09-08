@@ -70,7 +70,7 @@
 
   <type name="Xendit\M2Invoice\Gateway\Request\InitializationRequest">
     <arguments>
-      <argument name="config" xsi:type="object">Oxipay\OxipayPaymentGateway\Gateway\Config\Config</argument>
+      <argument name="config" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
     </arguments>
   </type>
 

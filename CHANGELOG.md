@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.1.0 (2020-09-04)
+
+Features:
+
+- Add Credit Card Installment payment method
+
 ## 2.0.1 (2020-06-11)
 
 Bugfix:
