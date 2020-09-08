@@ -103,6 +103,7 @@
                             shouldEnableSpecificMethod();
                             specificSelection.prop('size', 6);
                             jQuery("textarea[id*='m2invoice_card_installment_description']").attr("placeholder", "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
+                            jQuery("textarea[id*='m2invoice_card_installment_description']").val("Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
                         });
                     </script>
                 ]]></comment>

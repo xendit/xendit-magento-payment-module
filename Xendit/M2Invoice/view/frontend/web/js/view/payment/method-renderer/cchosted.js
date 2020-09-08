@@ -67,7 +67,7 @@ define(
 
             afterPlaceOrder: function () {
                 var xenditScript = document.createElement('script');
-                xenditScript.src = 'https://tpi-ui-dev.xendit.co/js/xendit-hp.min.js';
+                xenditScript.src = 'https://tpi-ui.xendit.co/js/xendit-hp.min.js';
                 document.body.appendChild(xenditScript);
 
                 $.ajax({
