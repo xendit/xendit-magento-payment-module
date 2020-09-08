@@ -48,18 +48,22 @@ class CCInstallment extends CCHosted
             $orderId = $order->getRealOrderId();
 
             $billingAddress = $order->getBillingAddress();
+            $shippingAddress = $order->getShippingAddress();
+            
+            $firstName = $billingAddress->getFirstname() ?: $shippingAddress->getFirstname();
+            $country = $billingAddress->getCountryId() ?: $shippingAddress->getCountryId();
             $billingDetails = array(
-                'given_names'   => ($billingAddress->getFirstname() ?: 'N/A'),
-                'surname'       => ($billingAddress->getLastname() ?: null),
-                'email'         => ($billingAddress->getEmail() ?: null),
-                'phone_number'  => ($billingAddress->getTelephone() ?: null),
+                'given_names'   => ($firstName ?: 'N/A'),
+                'surname'       => ($billingAddress->getLastname() ?: $shippingAddress->getLastname()),
+                'email'         => ($billingAddress->getEmail() ?: $shippingAddress->getEmail()),
+                'phone_number'  => ($billingAddress->getTelephone() ?: $shippingAddress->getTelephone()),
                 'address' => array(
-                    'country'       => ($billingAddress->getCountryId() ?: 'ID'),
-                    'street_line1'  => ($billingAddress->getStreetLine1() ?: null),
-                    'street_line2'  => ($billingAddress->getStreetLine2() ?: null),
-                    'city'          => ($billingAddress->getCity() ?: null),
-                    'state'         => ($billingAddress->getRegion() ?: null),
-                    'postal_code'   => ($billingAddress->getPostcode() ?: null)
+                    'country'       => ($country ?: 'ID'),
+                    'street_line1'  => ($billingAddress->getStreetLine(1) ?: $shippingAddress->getStreetLine(1)),
+                    'street_line2'  => ($billingAddress->getStreetLine(2) ?: $shippingAddress->getStreetLine(2)),
+                    'city'          => ($billingAddress->getCity() ?: $shippingAddress->getCity()),
+                    'state'         => ($billingAddress->getRegion() ?: $shippingAddress->getRegion()),
+                    'postal_code'   => ($billingAddress->getPostcode() ?: $shippingAddress->getPostcode())
                 )
             );
 
