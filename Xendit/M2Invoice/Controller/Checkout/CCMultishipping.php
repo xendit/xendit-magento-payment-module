@@ -96,16 +96,16 @@ class CCMultishipping extends AbstractAction
                     $country = $billingAddress->getCountryId() ?: $shippingAddress->getCountryId();
                     $billingDetails = array(
                         'given_names'   => ($firstName ?: 'N/A'),
-                        'surname'       => ($billingAddress->getLastname() ?: $shippingAddress->getLastname()),
-                        'email'         => ($billingAddress->getEmail() ?: $shippingAddress->getEmail()),
-                        'phone_number'  => ($billingAddress->getTelephone() ?: $shippingAddress->getTelephone()),
+                        'surname'       => ($billingAddress->getLastname() ?: null),
+                        'email'         => ($billingAddress->getEmail() ?: null),
+                        'phone_number'  => ($billingAddress->getTelephone() ?: null),
                         'address' => array(
                             'country'       => ($country ?: 'ID'),
-                            'street_line1'  => ($billingAddress->getStreetLine(1) ?: $shippingAddress->getStreetLine(1)),
-                            'street_line2'  => ($billingAddress->getStreetLine(2) ?: $shippingAddress->getStreetLine(2)),
-                            'city'          => ($billingAddress->getCity() ?: $shippingAddress->getCity()),
-                            'state'         => ($billingAddress->getRegion() ?: $shippingAddress->getRegion()),
-                            'postal_code'   => ($billingAddress->getPostcode() ?: $shippingAddress->getPostcode())
+                            'street_line_1'  => ($billingAddress->getStreetLine(1) ?: null),
+                            'street_line_2'  => ($billingAddress->getStreetLine(2) ?: null),
+                            'city'          => ($billingAddress->getCity() ?: null),
+                            'state'         => ($billingAddress->getRegion() ?: null),
+                            'postal_code'   => ($billingAddress->getPostcode() ?: null)
                         )
                     );
 
