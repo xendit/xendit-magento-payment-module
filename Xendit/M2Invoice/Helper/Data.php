@@ -347,13 +347,12 @@ class Data extends AbstractHelper
 
         //update order status
         $orderState = \Magento\Sales\Model\Order::STATE_PROCESSING;
-        $message = "Xendit subscription payment completed. Transaction ID: " . $orderData['transaction_id'] . ".";
-        $message .= "Original Order: #" . $order->getRealOrderId() . ".";
+        $message = "Xendit subscription payment completed. Transaction ID: " . $orderData['transaction_id'] . ". ";
+        $message .= "Original Order: #" . $orderData['parent_order_id'] . ".";
         $order->setState($orderState)
               ->setStatus($orderState)
               ->addStatusHistoryComment($message);
 
-        $order->setEmailSent(0);
         $order->save();
 
         //save order payment details
@@ -377,6 +376,11 @@ class Data extends AbstractHelper
                 $transaction->save();
             }
         }
+
+        //notify customer
+        $this->objectManager->create('Magento\Sales\Model\OrderNotifier')->notify($order);
+        $order->setEmailSent(1);
+        $order->save();
 
         if($order->getEntityId()){
             $result['order_id'] = $order->getRealOrderId();

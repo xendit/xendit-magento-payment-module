@@ -15,10 +15,6 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
     public function execute()
     {
         try {
-            $post = $this->getRequest()->getContent();
-            $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
-            $decodedPost = json_decode($post, true);
-
             $orderIds = explode('-', $this->getRequest()->getParam('order_ids'));
             
             $shouldRedirect = false;

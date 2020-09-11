@@ -119,6 +119,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                     'items'             => $items,
                     'payment'           => $payment->getData(),
                     'transaction_id'    => $chargeId,
+                    'parent_order_id'   => $order->getRealOrderId(),
                     'is_multishipping'  => (count($orderIds) > 1 ? true : false)
                 );
 
