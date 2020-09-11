@@ -211,6 +211,7 @@ class Data extends AbstractHelper
             "cc" => "cc",
             "cchosted" => "cchosted",
             "cc_installment" => "cc_installment",
+            "cc_subscription" => "cc_subscription",
             "bcava" => "bca",
             "bniva" => "bni",
             "briva" => "bri",

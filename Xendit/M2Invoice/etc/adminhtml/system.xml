@@ -178,6 +178,20 @@
                     <label>Credit Card Installment Description</label>
                     <comment>Customize your installment payment description on checkout page</comment>
                 </field>
+                <field id="card_subscription_interval" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="0" sortOrder="81">
+                    <label>Card Subscription Interval</label>
+                    <comment>
+                        The frequency with which a subscription payment invoice should be billed.
+                    </comment>
+                    <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\SubscriptionInterval</source_model>
+                </field>
+
+                <field id="card_subscription_interval_count" translate="label" type="text" sortOrder="82" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Card Subscription Interval Count</label>
+                    <comment>
+                        The number of intervals (specified in the interval property) between subscription.
+                    </comment>
+                </field>
 
                 <group id="card_promo_bca" translate="label" showInDefault="1" showInWebsite="1" sortOrder="100">
                     <label>Credit Card Promotion - BCA</label>

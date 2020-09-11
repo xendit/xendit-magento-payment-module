@@ -27,6 +27,7 @@ class ChosenMethod implements \Magento\Framework\Option\ArrayInterface
             ['value' => 'permatava', 'label' => __('Bank Transfer Permata')],
             ['value' => 'cc', 'label' => __('Credit Card')],
             ['value' => 'cc_installment', 'label' => __('Credit Card Installment')],
+            ['value' => 'cc_subscription', 'label' => __('Credit Card Subscription')],
             ['value' => 'ovo', 'label' => __('OVO')],
         ];
 

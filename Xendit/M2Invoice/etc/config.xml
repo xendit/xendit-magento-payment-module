@@ -107,6 +107,15 @@
                 <cctypes>VI,MC,AE,JCB</cctypes>
                 <sort_order>9</sort_order>
             </cc_installment>
+            <cc_subscription>
+                <active>1</active>
+                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
+                <model>Xendit\M2Invoice\Model\Payment\CCSubscription</model>
+                <title>Credit Card Subscription</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
+                <cctypes>VI,MC,AE,JCB</cctypes>
+                <sort_order>10</sort_order>
+            </cc_subscription>
             <ovo>
                 <active>1</active>
                 <payment_action>authorize</payment_action>
@@ -115,7 +124,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>10</sort_order>
+                <sort_order>11</sort_order>
             </ovo>
         </payment>
     </default>
