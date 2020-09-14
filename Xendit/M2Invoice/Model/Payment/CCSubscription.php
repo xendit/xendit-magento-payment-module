@@ -13,6 +13,8 @@ use Magento\Payment\Model\Method\Logger;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\LogDNA;
 use Xendit\M2Invoice\Enum\LogDNALevel;
+use Magento\Framework\UrlInterface;
+use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
 class CCSubscription extends CCHosted
 {
@@ -44,7 +46,17 @@ class CCSubscription extends CCHosted
             return $this;
         }
 
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+
         try {
+            if( !$customerSession->isLoggedIn() ) {
+                $message = 'You must logged in to use this payment method';
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    new Phrase($message)
+                );
+            }
+
             $orderId = $order->getRealOrderId();
 
             $billingAddress = $order->getBillingAddress();
@@ -52,20 +64,6 @@ class CCSubscription extends CCHosted
 
             $firstName = $billingAddress->getFirstname() ?: $shippingAddress->getFirstname();
             $country = $billingAddress->getCountryId() ?: $shippingAddress->getCountryId();
-            $billingDetails = array(
-                'given_names'   => ($firstName ?: 'N/A'),
-                'surname'       => ($billingAddress->getLastname() ?: null),
-                'email'         => ($billingAddress->getEmail() ?: null),
-                'phone_number'  => ($billingAddress->getTelephone() ?: null),
-                'address' => array(
-                    'country'       => ($country ?: 'ID'),
-                    'street_line_1'  => ($billingAddress->getStreetLine(1) ?: null),
-                    'street_line_2'  => ($billingAddress->getStreetLine(2) ?: null),
-                    'city'          => ($billingAddress->getCity() ?: null),
-                    'state'         => ($billingAddress->getRegion() ?: null),
-                    'postal_code'   => ($billingAddress->getPostcode() ?: null)
-                )
-            );
 
             $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
 
@@ -76,14 +74,12 @@ class CCSubscription extends CCHosted
                 'store_name' => $this->storeManager->getStore()->getName(),
                 'platform_name' => self::PLATFORM_NAME,
                 'is_subscription' => "true",
-                'subscription_callback_url' => '',
-                'platform_callback_url' => '',
-                'payer_email' => '',
+                'subscription_callback_url' => $this->getXenditSubscriptionCallbackUrl(),
+                'payer_email' => $billingAddress->getEmail(),
                 'subscription_option' => json_encode(array(
-                    'interval' => '',
-                    'interval_count' => ''
-                ), JSON_FORCE_OBJECT),
-                'billing_details' => json_encode($billingDetails, JSON_FORCE_OBJECT)
+                    'interval' => $this->dataHelper->getSubscriptionInterval(),
+                    'interval_count' => $this->dataHelper->getSubscriptionIntervalCount(),
+                ), JSON_FORCE_OBJECT)
             );
 
             $promo = $this->calculatePromo($order, $rawAmount);
@@ -141,5 +137,11 @@ class CCSubscription extends CCHosted
         }
 
         return $this;
+    }
+
+    protected function getXenditSubscriptionCallbackUrl() {
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
+
+        return $baseUrl . 'xendit/checkout/subscriptioncallback';
     }
 }

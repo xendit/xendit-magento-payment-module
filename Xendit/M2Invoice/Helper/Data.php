@@ -100,6 +100,16 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getPublicApiKey();
     }
 
+    public function getSubscriptionInterval()
+    {
+        return $this->m2Invoice->getSubscriptionInterval() ?: 'MONTH';
+    }
+
+    public function getSubscriptionIntervalCount()
+    {
+        return $this->m2Invoice->getSubscriptionIntervalCount() ?: 1;
+    }
+
     public function getEnvironment()
     {
         return $this->m2Invoice->getEnvironment();

@@ -22,7 +22,7 @@ define(
             },
 
             getDescription: function() {
-                return window.checkoutConfig.payment.m2invoice.card_subscription_description;
+                return 'Bayar pesanan langganan dengan kartu kredit melalui Xendit';
             }
         });
     }

@@ -5,6 +5,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Sales\Model\Order;
 use Xendit\M2Invoice\Enum\LogDNALevel;
+use Magento\Framework\UrlInterface;
 
 class CCMultishipping extends AbstractAction
 {
@@ -76,7 +77,7 @@ class CCMultishipping extends AbstractAction
                     return $this->processFailedPayment($orderIds, $charge['failure_reason']);
                 }
             }
-            else if ($method === 'cchosted' || $method === 'cc_installment') {
+            else if ($method === 'cchosted' || $method === 'cc_installment' || $method === 'cc_subscription') {
                 $requestData = array(
                     'order_number'           => $rawOrderIds,
                     'amount'                 => $transactionAmount,
@@ -111,6 +112,15 @@ class CCMultishipping extends AbstractAction
 
                     $requestData['is_installment'] = "true";
                     $requestData['billing_details'] = json_encode($billingDetails, JSON_FORCE_OBJECT);
+                } else if ($method === 'cc_subscription') {
+                    $requestData['payment_type'] = 'CREDIT_CARD_SUBSCRIPTION';
+                    $requestData['is_subscription'] = "true";
+                    $requestData['subscription_callback_url'] = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
+                    $requestData['payer_email'] = $billingAddress->getEmail();
+                    $requestData['subscription_option'] = json_encode(array(
+                        'interval' => $this->getDataHelper()->getSubscriptionInterval(),
+                        'interval_count' => $this->getDataHelper()->getSubscriptionIntervalCount()
+                    ), JSON_FORCE_OBJECT);
                 }
 
                 $hostedPayment = $this->requestHostedPayment($requestData);

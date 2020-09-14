@@ -29,6 +29,14 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         }
     }
 
+    public function getSubscriptionInterval() {
+        return $this->getConfigData('card_subscription_interval');
+    }
+
+    public function getSubscriptionIntervalCount() {
+        return $this->getConfigData('card_subscription_interval_count');
+    }
+
     public function isLive()
     {
         $xenditEnv = $this->getConfigData('xendit_env');
