@@ -57,7 +57,7 @@ class CCSubscription extends CCHosted
                 );
             }
 
-            $orderId = $order->getRealOrderId();
+            $orderId = $order->getEntityId();
 
             $billingAddress = $order->getBillingAddress();
             $shippingAddress = $order->getShippingAddress();
