@@ -11,6 +11,9 @@ class CCMultishipping extends AbstractAction
 {
     public function execute()
     {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+
         try {
             $rawOrderIds        = $this->getRequest()->getParam('order_ids');
             $method             = $this->getRequest()->getParam('preferred_method');
@@ -19,6 +22,12 @@ class CCMultishipping extends AbstractAction
             $transactionAmount  = 0;
             $tokenId            = '';
             $orders             = [];
+
+            if ($method === 'cc_subscription' && !$customerSession->isLoggedIn()) {
+                $message = 'You must logged in to use this payment method';
+                $this->getLogger()->info($message);
+                return $this->redirectToCart($message);
+            }
 
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
@@ -89,10 +98,10 @@ class CCMultishipping extends AbstractAction
                     'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
                 );
 
-                if ($method === 'cc_installment') {
-                    $billingAddress = $orders[0]->getBillingAddress();
-                    $shippingAddress = $orders[0]->getShippingAddress();
+                $billingAddress = $orders[0]->getBillingAddress();
+                $shippingAddress = $orders[0]->getShippingAddress();
 
+                if ($method === 'cc_installment') {
                     $firstName = $billingAddress->getFirstname() ?: $shippingAddress->getFirstname();
                     $country = $billingAddress->getCountryId() ?: $shippingAddress->getCountryId();
                     $billingDetails = array(
