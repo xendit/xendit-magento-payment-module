@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.2.0 (2020-09-15)
+
+Features:
+
+- Add Credit Card Subscription payment method
+
 ## 2.1.0 (2020-09-04)
 
 Features:
