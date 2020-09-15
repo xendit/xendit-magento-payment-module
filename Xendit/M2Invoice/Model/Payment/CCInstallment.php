@@ -59,8 +59,8 @@ class CCInstallment extends CCHosted
                 'phone_number'  => ($billingAddress->getTelephone() ?: null),
                 'address' => array(
                     'country'       => ($country ?: 'ID'),
-                    'street_line_1'  => ($billingAddress->getStreetLine(1) ?: null),
-                    'street_line_2'  => ($billingAddress->getStreetLine(2) ?: null),
+                    'street_line_1' => ($billingAddress->getStreetLine(1) ?: null),
+                    'street_line_2' => ($billingAddress->getStreetLine(2) ?: null),
                     'city'          => ($billingAddress->getCity() ?: null),
                     'state'         => ($billingAddress->getRegion() ?: null),
                     'postal_code'   => ($billingAddress->getPostcode() ?: null)
