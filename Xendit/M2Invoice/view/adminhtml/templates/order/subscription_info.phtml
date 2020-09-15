@@ -1,0 +1,22 @@
+<?php
+/** @var Xendit\M2Invoice\Block\CustomView $block */
+
+$subscriptionData = $block->getSubscriptionConfig();
+if ($subscriptionData['card_subscription_interval']) {
+    $moreThan1 = ($subscriptionData['card_subscription_interval_count'] > 1 ? true : false);
+?>
+<div>
+    <div class="admin__page-section-item-title">
+        <span class="title">Subscription Information</span>
+    </div>
+    <p>Every <?php
+        if ($moreThan1) {
+            echo $subscriptionData['card_subscription_interval_count'] . ' ';
+        }
+        echo strtolower($subscriptionData['card_subscription_interval']);
+        if ($moreThan1) {
+            echo 's';
+        }
+    ?></p>
+</div>
+<?php } ?>
