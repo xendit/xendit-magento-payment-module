@@ -38,7 +38,7 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     public function getSubscriptionDescription() {
-        return $this->getConfigData('card_subscription_card_subscription_description');
+        return $this->getConfigData('card_subscription_description');
     }
 
     public function isLive()
