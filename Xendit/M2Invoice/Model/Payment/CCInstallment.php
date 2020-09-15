@@ -45,7 +45,7 @@ class CCInstallment extends CCHosted
         }
 
         try {
-            $orderId = $order->getEntityId();
+            $orderId = $order->getRealOrderId();
 
             $billingAddress = $order->getBillingAddress();
             $shippingAddress = $order->getShippingAddress();

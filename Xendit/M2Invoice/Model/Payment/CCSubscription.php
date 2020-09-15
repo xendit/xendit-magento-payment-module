@@ -57,7 +57,7 @@ class CCSubscription extends CCHosted
                 );
             }
 
-            $orderId = $order->getEntityId();
+            $orderId = $order->getRealOrderId();
 
             $billingAddress = $order->getBillingAddress();
             $shippingAddress = $order->getShippingAddress();
@@ -74,7 +74,7 @@ class CCSubscription extends CCHosted
                 'store_name' => $this->storeManager->getStore()->getName(),
                 'platform_name' => self::PLATFORM_NAME,
                 'is_subscription' => "true",
-                'subscription_callback_url' => $this->getXenditSubscriptionCallbackUrl(),
+                'subscription_callback_url' => $this->dataHelper->getXenditSubscriptionCallbackUrl(),
                 'payer_email' => $billingAddress->getEmail(),
                 'subscription_option' => json_encode(array(
                     'interval' => $this->dataHelper->getSubscriptionInterval(),
@@ -137,11 +137,5 @@ class CCSubscription extends CCHosted
         }
 
         return $this;
-    }
-
-    protected function getXenditSubscriptionCallbackUrl() {
-        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
-
-        return $baseUrl . 'xendit/checkout/subscriptioncallback';
     }
 }
