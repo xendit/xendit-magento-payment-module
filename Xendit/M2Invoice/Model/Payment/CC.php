@@ -181,7 +181,11 @@ class CC extends \Magento\Payment\Model\Method\Cc
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $payment->setIsTransactionPending(true);
-        $additionalData = $this->getAdditionalData();
+        $additionalData = $this->getAdditionalData(); 
+        
+        if (!$additionalData) { //coming from callback - no need to process & charge the order
+            return $this;
+        }
 
         $order = $payment->getOrder();
         $quoteId = $order->getQuoteId();
@@ -193,8 +197,8 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
         $orderId = $order->getRealOrderId();
 
-        $cvn = isset($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
-        $bin = isset($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;
+        $cvn = !empty($additionalData['cc_cid']) ? $additionalData['cc_cid'] : null;
+        $bin = !empty($additionalData['cc_number']) ? substr($additionalData['cc_number'], 0, 6) : null;
 
         try {
             $promoResult = $this->calculatePromo($bin, $order);
@@ -235,8 +239,9 @@ class CC extends \Magento\Payment\Model\Method\Cc
                     'type' => $this->dataHelper->mapSalesRuleType($promoResult['rule']->getSimpleAction())
                 ));
             }
-
+            
             $charge = $this->requestCharge($requestData);
+            
 
             $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
             if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
@@ -245,12 +250,15 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 ));
                 $charge = $this->requestCharge($newRequestData);
             }
-
-            $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-            if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
+            else if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
                 $this->handle3DSFlow($requestData, $payment, $order);
 
                 return $this;
+            }
+            else if ($chargeError) {
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    __($charge['message'])
+                );
             }
 
             if ($chargeError !== null) {
