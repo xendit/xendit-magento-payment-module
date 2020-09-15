@@ -66,8 +66,9 @@ define(
             },
 
             afterPlaceOrder: function () {
+                var uiUrl = window.checkoutConfig.payment.m2invoice.ui_url;
                 var xenditScript = document.createElement('script');
-                xenditScript.src = 'https://tpi-ui-dev.xendit.co/js/xendit-hp.min.js';
+                xenditScript.src = uiUrl + '/js/xendit-hp.min.js';
                 document.body.appendChild(xenditScript);
 
                 $.ajax({
