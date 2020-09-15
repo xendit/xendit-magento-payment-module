@@ -182,7 +182,7 @@ class Data extends AbstractHelper
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
 
         if ($isMultishipping) {
-            $baseUrl .= '&type=multishipping';
+            $baseUrl .= '?type=multishipping';
         }
 
         return $baseUrl;
