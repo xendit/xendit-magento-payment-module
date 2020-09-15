@@ -6,6 +6,7 @@
             <m2invoice>
                 <xendit_env>test</xendit_env>
                 <xendit_url>https://tpi-dev.xendit.co</xendit_url>
+                <ui_url>https://tpi-ui-dev.xendit.co</ui_url>
                 <active>1</active>
                 <model>Xendit\M2Invoice\Model\Payment\M2Invoice</model>
                 <title>M2Invoice</title>
