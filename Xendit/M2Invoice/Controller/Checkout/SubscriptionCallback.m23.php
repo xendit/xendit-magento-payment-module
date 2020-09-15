@@ -177,7 +177,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
 
         try {
             $response = $this->getApiHelper()->request(
-                $url, $method, null, false, null, array(), array('recurring_payment_id' => $recurringPaymentId)
+                $url, $method, null, false, null, array(), array('recurring-payment-id' => $recurringPaymentId)
             );
 
             return $response;
