@@ -34,7 +34,7 @@ class SubscriptionCallback extends AbstractAction
             }
 
             //verify charge
-            $charge = $this->getCreditCardCharge($chargeId); //child charge
+            $charge = $this->getCreditCardCharge($chargeId, $payload['recurring_payment_id']); //child charge
             if ($charge['status'] != 'CAPTURED' && $charge['status'] != 'SETTLED') {
                 $result->setData([
                     'status' => __('ERROR'),
@@ -44,7 +44,15 @@ class SubscriptionCallback extends AbstractAction
                 return $result;
             }
             
-            $childTokenId = $charge['token_id']; //currently endpoint doesn't return token_id
+            if (empty($charge['token_id'])) {
+                $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => 'Token ID not found'
+                ]);
+    
+                return $result;
+            }
+            $childTokenId = $charge['token_id'];
 
             $orderIds = explode('-', $payload['description']); //parent order id(s)
             $isTokenMatched = false;
@@ -158,14 +166,14 @@ class SubscriptionCallback extends AbstractAction
         }
     }
 
-    private function getCreditCardCharge($chargeId)
+    private function getCreditCardCharge($chargeId, $recurringPaymentId)
     {
         $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charges/" . $chargeId;
         $method = \Zend\Http\Request::METHOD_GET;
 
         try {
             $response = $this->getApiHelper()->request(
-                $url, $method
+                $url, $method, null, false, null, array(), array('recurring-payment-id' => $recurringPaymentId)
             );
 
             return $response;
