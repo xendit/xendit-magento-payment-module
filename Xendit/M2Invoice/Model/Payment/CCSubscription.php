@@ -13,7 +13,6 @@ use Magento\Payment\Model\Method\Logger;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\LogDNA;
 use Xendit\M2Invoice\Enum\LogDNALevel;
-use Magento\Framework\UrlInterface;
 use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
 class CCSubscription extends CCHosted
