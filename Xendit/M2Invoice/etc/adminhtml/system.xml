@@ -104,10 +104,8 @@
                             specificSelection.prop('size', 6);
 
                             jQuery("textarea[id*='m2invoice_card_installment_description']").attr("placeholder", "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
-                            jQuery("textarea[id*='m2invoice_card_installment_description']").val("Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
 
                             jQuery("textarea[id*='m2invoice_card_subscription_description']").attr("placeholder", "Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI");
-                            jQuery("textarea[id*='m2invoice_card_subscription_description']").val("Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI");
                         });
                     </script>
                 ]]></comment>
@@ -183,19 +181,19 @@
                     <comment>Customize your installment payment description on checkout page</comment>
                 </field>
 
-                <group id="card_subscription" translate="label" showInDefault="1" showInWebsite="1" sortOrder="91">
-                    <label>Card Subscription</label>
+                <group id="card_subscription" translate="label" type="text" showInDefault="1" showInWebsite="1" sortOrder="90" showInStore="1">
+                    <label>Credit Card Subscription Settings</label>
                     <field id="card_subscription_interval" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="0" sortOrder="92">
                         <label>Interval</label>
                         <comment>
-                            The frequency with which a subscription payment invoice should be billed.
+                            The frequency with which a subscription payment invoice should be billed
                         </comment>
                         <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\SubscriptionInterval</source_model>
                     </field>
                     <field id="card_subscription_interval_count" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Interval Count</label>
                         <comment>
-                            The number of intervals (specified in the interval property) between subscription.
+                            The number of intervals (specified in the interval property) between subscription
                         </comment>
                     </field>
                     <field id="card_subscription_description" translate="label" type="textarea" sortOrder="94" showInDefault="1" showInWebsite="1" showInStore="1">

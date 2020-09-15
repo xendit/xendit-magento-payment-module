@@ -43,7 +43,7 @@ class ConfigProvider implements ConfigProviderInterface
                     'years' => ['cc' => $this->ccConfig->getCcYears()],
                     'has_verification' => $this->ccConfig->hasVerification(),
                     'card_installment_description' => ($this->m2Invoice->getConfigData('card_installment_description') ?: $defaultCCInstallmentDesc),
-                    'card_subscription_description' => ($this->m2Invoice->getConfigData('card_subscription_description') ?: $defaultCCSubscriptionDesc)
+                    'card_subscription_description' => ($this->m2Invoice->getSubscriptionDescription() ?: $defaultCCSubscriptionDesc)
                 ]
             ]
         ];

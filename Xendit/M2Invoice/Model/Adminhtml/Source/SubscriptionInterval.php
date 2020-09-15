@@ -13,9 +13,9 @@ class SubscriptionInterval implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => 'MONTH', 'label' => __('MONTH')],
-            ['value' => 'WEEK', 'label' => __('WEEK')],
-            ['value' => 'DAY', 'label' => __('DAY')]
+            ['value' => 'MONTH', 'label' => __('Month')],
+            ['value' => 'WEEK', 'label' => __('Week')],
+            ['value' => 'DAY', 'label' => __('Day')]
         ];
     }
 }
