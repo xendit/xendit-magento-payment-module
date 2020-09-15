@@ -177,6 +177,16 @@ class Data extends AbstractHelper
         return (array) $inputs;
     }
 
+    public function getXenditSubscriptionCallbackUrl($isMultishipping = true) {
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
+
+        if ($isMultishipping) {
+            $baseUrl .= '&type=multishipping';
+        }
+
+        return $baseUrl;
+    }
+
     /**
      * Map card's failure reason to more detailed explanation based on current insight.
      *

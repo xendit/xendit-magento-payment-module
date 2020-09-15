@@ -124,7 +124,7 @@ class CCMultishipping extends AbstractAction
                 } else if ($method === 'cc_subscription') {
                     $requestData['payment_type'] = 'CREDIT_CARD_SUBSCRIPTION';
                     $requestData['is_subscription'] = "true";
-                    $requestData['subscription_callback_url'] = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
+                    $requestData['subscription_callback_url'] = $this->getDataHelper()->getXenditSubscriptionCallbackUrl(true);
                     $requestData['payer_email'] = $billingAddress->getEmail();
                     $requestData['subscription_option'] = json_encode(array(
                         'interval' => $this->getDataHelper()->getSubscriptionInterval(),
