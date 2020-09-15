@@ -54,12 +54,23 @@ class SubscriptionCallback extends AbstractAction
             }
             $childTokenId = $charge['token_id'];
 
-            $orderIds = explode('-', $payload['description']); //parent order id(s)
+            $isMultishipping = ($this->getRequest()->getParam('type') === 'multishipping');
             $isTokenMatched = false;
+
+            if ($isMultishipping) {
+                $orderIds = explode('-', $payload['description']);
+            } else {
+                $orderIds = array($payload['description']);
+            }
 
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
-                $order->load($value);
+                if ($isMultishipping) {
+                    $order->load($value);
+                } else {
+                    $order->loadByIncrementId($value);
+                }
+
                 $payment = $order->getPayment();
 
                 //match token id of parent & child's order just once
@@ -124,7 +135,7 @@ class SubscriptionCallback extends AbstractAction
                     'payment'           => $payment->getData(),
                     'transaction_id'    => $chargeId,
                     'parent_order_id'   => $order->getRealOrderId(),
-                    'is_multishipping'  => (count($orderIds) > 1 ? true : false)
+                    'is_multishipping'  => $isMultishipping
                 );
 
                 //create order
