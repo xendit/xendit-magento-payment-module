@@ -88,3 +88,5 @@ fabric.properties
 *.zip
 
 telepresence.log
+
+.DS_Store

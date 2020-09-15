@@ -112,7 +112,7 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                 $params     = implode("-", $ids);
                 $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
                 
-                if ($xenditPaymentMethod === 'cc' || $xenditPaymentMethod === 'cchosted' || $xenditPaymentMethod === 'cc_installment') {
+                if ($xenditPaymentMethod === 'cc' || $xenditPaymentMethod === 'cchosted' || $xenditPaymentMethod === 'cc_installment' || $xenditPaymentMethod === 'cc_subscription') {
                     $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
                 } else {
                     $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping?order_ids=' . $params.'&preferred_method='.$xenditPaymentMethod.'&billing_email='.$billingEmail;

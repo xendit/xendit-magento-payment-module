@@ -49,6 +49,10 @@ define(
             {
                 type: 'cc_installment',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc_installment'
+            },
+            {
+                type: 'cc_subscription',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc_subscription'
             }
         );
         return Component.extend({});

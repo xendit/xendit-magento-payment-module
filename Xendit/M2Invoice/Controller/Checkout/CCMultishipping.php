@@ -5,11 +5,15 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Sales\Model\Order;
 use Xendit\M2Invoice\Enum\LogDNALevel;
+use Magento\Framework\UrlInterface;
 
 class CCMultishipping extends AbstractAction
 {
     public function execute()
     {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+
         try {
             $rawOrderIds        = $this->getRequest()->getParam('order_ids');
             $method             = $this->getRequest()->getParam('preferred_method');
@@ -18,6 +22,12 @@ class CCMultishipping extends AbstractAction
             $transactionAmount  = 0;
             $tokenId            = '';
             $orders             = [];
+
+            if ($method === 'cc_subscription' && !$customerSession->isLoggedIn()) {
+                $message = 'You must logged in to use this payment method';
+                $this->getLogger()->info($message);
+                return $this->redirectToCart($message);
+            }
 
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
@@ -76,7 +86,7 @@ class CCMultishipping extends AbstractAction
                     return $this->processFailedPayment($orderIds, $charge['failure_reason']);
                 }
             }
-            else if ($method === 'cchosted' || $method === 'cc_installment') {
+            else if ($method === 'cchosted' || $method === 'cc_installment' || $method === 'cc_subscription') {
                 $requestData = array(
                     'order_number'           => $rawOrderIds,
                     'amount'                 => $transactionAmount,
@@ -88,10 +98,10 @@ class CCMultishipping extends AbstractAction
                     'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
                 );
 
-                if ($method === 'cc_installment') {
-                    $billingAddress = $orders[0]->getBillingAddress();
-                    $shippingAddress = $orders[0]->getShippingAddress();
+                $billingAddress = $orders[0]->getBillingAddress();
+                $shippingAddress = $orders[0]->getShippingAddress();
 
+                if ($method === 'cc_installment') {
                     $firstName = $billingAddress->getFirstname() ?: $shippingAddress->getFirstname();
                     $country = $billingAddress->getCountryId() ?: $shippingAddress->getCountryId();
                     $billingDetails = array(
@@ -111,6 +121,15 @@ class CCMultishipping extends AbstractAction
 
                     $requestData['is_installment'] = "true";
                     $requestData['billing_details'] = json_encode($billingDetails, JSON_FORCE_OBJECT);
+                } else if ($method === 'cc_subscription') {
+                    $requestData['payment_type'] = 'CREDIT_CARD_SUBSCRIPTION';
+                    $requestData['is_subscription'] = "true";
+                    $requestData['subscription_callback_url'] = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
+                    $requestData['payer_email'] = $billingAddress->getEmail();
+                    $requestData['subscription_option'] = json_encode(array(
+                        'interval' => $this->getDataHelper()->getSubscriptionInterval(),
+                        'interval_count' => $this->getDataHelper()->getSubscriptionIntervalCount()
+                    ), JSON_FORCE_OBJECT);
                 }
 
                 $hostedPayment = $this->requestHostedPayment($requestData);
@@ -126,7 +145,7 @@ class CCMultishipping extends AbstractAction
                     $this->addCCHostedData($orders, $hostedPayment);
 
                     // redirect to hosted payment page
-                    $redirect = "https://tpi-ui.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken";
+                    $redirect = "https://tpi-ui-dev.xendit.co/hosted-payments/$hostedPaymentId?hp_token=$hostedPaymentToken";
                     $resultRedirect = $this->getRedirectFactory()->create();
                     $resultRedirect->setUrl($redirect);
                     
