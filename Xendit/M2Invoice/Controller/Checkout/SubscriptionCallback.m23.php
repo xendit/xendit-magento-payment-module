@@ -57,7 +57,6 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 return $result;
             }
             $childTokenId = $charge['token_id'];
-            $parentTokenId = $payment->setAdditionalInformation('token_id', $childTokenId);
 
             $isMultishipping = ($this->getRequest()->getParam('type') === 'multishipping');
             $isTokenMatched = false;
@@ -77,6 +76,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 }
                 
                 $payment = $order->getPayment();
+                $parentTokenId = $payment->setAdditionalInformation('token_id', $childTokenId);
 
                 //match token id of parent & child's order just once
                 if (!$isTokenMatched) {
