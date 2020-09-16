@@ -41,7 +41,10 @@ class CCSubscription extends CCHosted
         $quoteId = $order->getQuoteId();
         $quote = $this->quoteRepository->get($quoteId);
 
-        if ($quote->getIsMultiShipping()) {
+        if (
+            $quote->getIsMultiShipping() ||
+            $quote->getPayment()->getAdditionalInformation('xendit_is_subscription')
+        ) {
             return $this;
         }
 
