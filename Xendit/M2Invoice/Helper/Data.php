@@ -364,6 +364,7 @@ class Data extends AbstractHelper
         foreach($orderData['payment']['additional_information'] AS $key=>$value) {
             $quote->getPayment()->setAdditionalInformation($key, $value);
         }
+        $quote->getPayment()->setAdditionalInformation('xendit_is_subscription', true);
 
         //collect totals & save quote
         $quote->collectTotals()->save();
