@@ -43,7 +43,7 @@ class CCSubscription extends CCHosted
 
         if (
             $quote->getIsMultiShipping() ||
-            $quote->getPayment()->getAdditionalInformation('xendit_is_subscription');
+            $quote->getPayment()->getAdditionalInformation('xendit_is_subscription')
         ) {
             return $this;
         }
