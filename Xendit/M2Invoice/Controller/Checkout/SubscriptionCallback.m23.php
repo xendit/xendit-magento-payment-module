@@ -107,7 +107,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                         'qty'           => $product->getQtyOrdered(),
                         'price'         => $product->getPrice()
                     ));
-                } print_r($items); echo "<br>";
+                }
 
                 $orderData = array(
                     'currency_id'       => $order->getBaseCurrencyCode(),
@@ -146,7 +146,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 );
 
                 //create order
-                //$this->getObjectManager()->get('Xendit\M2Invoice\Helper\Data')->createMageOrder($orderData);
+                $this->getObjectManager()->get('Xendit\M2Invoice\Helper\Data')->createMageOrder($orderData);
             }
 
             $result->setData([
