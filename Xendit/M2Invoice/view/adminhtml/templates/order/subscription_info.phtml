@@ -1,0 +1,33 @@
+<?php
+/** @var Xendit\M2Invoice\Block\CustomView $block */
+
+if ($block->getPaymentMethod() === 'cc_subscription') {
+    $subscriptionData = $block->getSubscriptionConfig();
+    $moreThan1 = ($subscriptionData['card_subscription_interval_count'] > 1 ? true : false);
+?>
+<div id="xendit-subscription-info" style="display: none;">
+    <br clear="all"><br><br>
+    <div class="admin__page-section-item-title">
+        <span class="title">Subscription Information</span>
+    </div>
+    <div class="admin__page-section-item-content">Every <?php
+        if ($moreThan1) {
+            echo $subscriptionData['card_subscription_interval_count'] . ' ';
+        }
+        echo strtolower($subscriptionData['card_subscription_interval']);
+        if ($moreThan1) {
+            echo 's';
+        }
+    ?></div>
+</div>
+<script>
+    require([
+        'jquery'
+    ], function ($) {
+        $(function () {
+            var html = $('#xendit-subscription-info').html();
+            $('.order-view-billing-shipping .admin__page-section-content').append('<div class="admin__page-section-item">' + html + '</div>');
+        })
+    })
+</script>
+<?php } ?>
