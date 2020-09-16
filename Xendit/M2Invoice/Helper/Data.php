@@ -319,10 +319,10 @@ class Data extends AbstractHelper
             $_product = $this->objectManager->create(\Magento\Catalog\Model\Product::class);
             $product = $_product->load($item['product_id']);
             //$product = $this->product->load($product->getIdBySku($item['sku'])])
-            $product->setPrice($_product->getPrice());
+            //$product->setPrice($item['price']);
 
             $normalizedProductRequest = array_merge(
-                ['qty' => intval($_product->getQtyOrdered())],
+                ['qty' => intval($item['qty'])],
                 array()
             );
             $quote->addProduct(
