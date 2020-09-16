@@ -79,14 +79,15 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
 
                 //match token id of parent & child's order just once
                 if (!$isTokenMatched) {
-                    $parentTokenId = $payment->getAdditionalInformation('token_id');
+                    $additionalInfo = $payment->getAdditionalInformation();
+                    $parentTokenId = $additionalInfo['token_id'];
                     if ($parentTokenId == $childTokenId) {
                         $isTokenMatched = true;
                     }
                     else {
                         $result->setData([
                             'status' => __('ERROR'),
-                            'message' => 'Token mismatched'
+                            'message' => 'Token mismatched. Parent token ID:' . $parentTokenId . '. Child token ID:' .$childTokenId
                         ]);
             
                         return $result;
