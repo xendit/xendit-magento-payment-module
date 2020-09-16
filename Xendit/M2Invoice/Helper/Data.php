@@ -318,8 +318,6 @@ class Data extends AbstractHelper
         foreach($orderData['items'] as $item){
             $_product = $this->objectManager->create(\Magento\Catalog\Model\Product::class);
             $product = $_product->load($item['product_id']);
-            //$product = $this->product->load($product->getIdBySku($item['sku'])])
-            //$product->setPrice($item['price']);
 
             $normalizedProductRequest = array_merge(
                 ['qty' => intval($item['qty'])],
@@ -357,7 +355,7 @@ class Data extends AbstractHelper
 
         $quote->setPaymentMethod($orderData['payment']['method']);
         $quote->setInventoryProcessed(true); //update inventory
-        $quote->save(); print_r($quote->getData());
+        $quote->save();
         
         //set required payment data
         $orderData['payment']['cc_number'] = str_replace('X', '0', $orderData['masked_card_number']);
