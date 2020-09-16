@@ -135,12 +135,13 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                         'fax'                   => $shipping->getFax(),
                         'save_in_address_book'  => 0
                     ),
-                    'shipping_method'   => $order->getShippingMethod(),
-                    'items'             => $items,
-                    'payment'           => $payment->getData(),
-                    'transaction_id'    => $chargeId,
-                    'parent_order_id'   => $order->getRealOrderId(),
-                    'is_multishipping'  => $isMultishipping
+                    'shipping_method'       => $order->getShippingMethod(),
+                    'items'                 => $items,
+                    'payment'               => $payment->getData(),
+                    'transaction_id'        => $chargeId,
+                    'parent_order_id'       => $order->getRealOrderId(),
+                    'is_multishipping'      => $isMultishipping,
+                    'masked_card_number'    => $charge['masked_card_number']
                 );
 
                 //create order
