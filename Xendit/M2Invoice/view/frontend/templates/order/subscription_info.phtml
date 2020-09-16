@@ -1,8 +1,8 @@
 <?php
 /** @var Xendit\M2Invoice\Block\CustomView $block */
 
-$subscriptionData = $block->getSubscriptionConfig();
-if ($subscriptionData['card_subscription_interval']) {
+if ($block->getPaymentMethod() === 'cc_subscription') {
+    $subscriptionData = $block->getSubscriptionConfig();
     $moreThan1 = ($subscriptionData['card_subscription_interval_count'] > 1 ? true : false);
 ?>
 <div id="xendit-subscription-info" style="display: none;">
