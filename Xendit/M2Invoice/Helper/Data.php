@@ -316,13 +316,13 @@ class Data extends AbstractHelper
  
         //add items in quote
         foreach($orderData['items'] as $item){
-            $product = $this->objectManager->create(\Magento\Catalog\Model\Product::class);
-            $product = $this->product->load($item['product_id']);
+            $_product = $this->objectManager->create(\Magento\Catalog\Model\Product::class);
+            $product = $_product->load($item['product_id']);
             //$product = $this->product->load($product->getIdBySku($item['sku'])])
-            $product->setPrice($product->getPrice());
+            $product->setPrice($_product->getPrice());
 
             $normalizedProductRequest = array_merge(
-                ['qty' => intval($product->getQtyOrdered())],
+                ['qty' => intval($_product->getQtyOrdered())],
                 array()
             );
             $quote->addProduct(
