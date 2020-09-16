@@ -77,23 +77,22 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 
                 $payment = $order->getPayment();
                 // only for UAT purposes bcs order creted on first UAT doesn't have this yet, we need to remove this
-                // $parentTokenId = $payment->setAdditionalInformation('token_id', $childTokenId);
+                $parentTokenId = $payment->setAdditionalInformation('token_id', $childTokenId);
 
                 //match token id of parent & child's order just once
                 if (!$isTokenMatched) {
-                    $isTokenMatched = true;
-                    // $parentTokenId = $payment->getAdditionalInformation('token_id');
-                    // if ($parentTokenId == $childTokenId) {
-                    //     $isTokenMatched = true;
-                    // }
-                    // else {
-                    //     $result->setData([
-                    //         'status' => __('ERROR'),
-                    //         'message' => 'Token mismatched. Parent token ID:' . $parentTokenId . '. Child token ID:' .$childTokenId
-                    //     ]);
+                    $parentTokenId = $payment->getAdditionalInformation('token_id');
+                    if ($parentTokenId == $childTokenId) {
+                        $isTokenMatched = true;
+                    }
+                    else {
+                        $result->setData([
+                            'status' => __('ERROR'),
+                            'message' => 'Token mismatched. Parent token ID:' . $parentTokenId . '. Child token ID:' .$childTokenId
+                        ]);
             
-                    //     return $result;
-                    // }
+                        return $result;
+                    }
                 }
 
                 $billing = $order->getBillingAddress();
