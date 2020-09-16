@@ -76,6 +76,8 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 }
                 
                 $payment = $order->getPayment();
+                // only for UAT purposes bcs order creted on first UAT doesn't have this yet, we need to remove this
+                $parentTokenId = $payment->setAdditionalInformation('token_id', $childTokenId);
 
                 //match token id of parent & child's order just once
                 if (!$isTokenMatched) {
@@ -86,7 +88,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                     else {
                         $result->setData([
                             'status' => __('ERROR'),
-                            'message' => 'Token mismatched'
+                            'message' => 'Token mismatched. Parent token ID:' . $parentTokenId . '. Child token ID:' .$childTokenId
                         ]);
             
                         return $result;
@@ -134,12 +136,13 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                         'fax'                   => $shipping->getFax(),
                         'save_in_address_book'  => 0
                     ),
-                    'shipping_method'   => $order->getShippingMethod(),
-                    'items'             => $items,
-                    'payment'           => $payment->getData(),
-                    'transaction_id'    => $chargeId,
-                    'parent_order_id'   => $order->getRealOrderId(),
-                    'is_multishipping'  => $isMultishipping
+                    'shipping_method'       => $order->getShippingMethod(),
+                    'items'                 => $items,
+                    'payment'               => $payment->getData(),
+                    'transaction_id'        => $chargeId,
+                    'parent_order_id'       => $order->getRealOrderId(),
+                    'is_multishipping'      => $isMultishipping,
+                    'masked_card_number'    => $charge['masked_card_number']
                 );
 
                 //create order

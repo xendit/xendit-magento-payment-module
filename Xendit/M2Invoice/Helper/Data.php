@@ -358,8 +358,7 @@ class Data extends AbstractHelper
         $quote->save();
         
         //set required payment data
-        $orderData['payment']['cc_number'] = str_replace('X', '0', $orderData['payment']['additional_information']['masked_card_number']);
-        $orderData['payment']['cc_cid'] = $orderData['payment']['additional_information']['cc_cid'];
+        $orderData['payment']['cc_number'] = str_replace('X', '0', $orderData['masked_card_number']);
         $quote->getPayment()->importData($orderData['payment']);
 
         foreach($orderData['payment']['additional_information'] AS $key=>$value) {

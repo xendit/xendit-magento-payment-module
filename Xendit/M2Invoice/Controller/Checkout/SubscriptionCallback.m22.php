@@ -82,7 +82,7 @@ class SubscriptionCallback extends AbstractAction
                     else {
                         $result->setData([
                             'status' => __('ERROR'),
-                            'message' => 'Token mismatched'
+                            'message' => 'Token mismatched. Parent token ID:' . $parentTokenId . '. Child token ID:' .$childTokenId
                         ]);
             
                         return $result;
@@ -130,12 +130,13 @@ class SubscriptionCallback extends AbstractAction
                         'fax'                   => $shipping->getFax(),
                         'save_in_address_book'  => 0
                     ),
-                    'shipping_method'   => $order->getShippingMethod(),
-                    'items'             => $items,
-                    'payment'           => $payment->getData(),
-                    'transaction_id'    => $chargeId,
-                    'parent_order_id'   => $order->getRealOrderId(),
-                    'is_multishipping'  => $isMultishipping
+                    'shipping_method'       => $order->getShippingMethod(),
+                    'items'                 => $items,
+                    'payment'               => $payment->getData(),
+                    'transaction_id'        => $chargeId,
+                    'parent_order_id'       => $order->getRealOrderId(),
+                    'is_multishipping'      => $isMultishipping,
+                    'masked_card_number'    => $charge['masked_card_number']
                 );
 
                 //create order
