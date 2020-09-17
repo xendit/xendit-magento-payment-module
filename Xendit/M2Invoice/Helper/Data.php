@@ -183,7 +183,7 @@ class Data extends AbstractHelper
         return (array) $inputs;
     }
 
-    public function getXenditSubscriptionCallbackUrl($isMultishipping = true) {
+    public function getXenditSubscriptionCallbackUrl($isMultishipping = false) {
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
 
         if ($isMultishipping) {
