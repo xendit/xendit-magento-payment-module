@@ -316,7 +316,8 @@ class Data extends AbstractHelper
  
         //add items in quote
         foreach($orderData['items'] as $item){
-            $product = $this->product->load($item['product_id']);
+            $_product = $this->objectManager->create(\Magento\Catalog\Model\Product::class);
+            $product = $_product->load($item['product_id']);
             $product->setPrice($item['price']);
 
             $normalizedProductRequest = array_merge(
@@ -396,6 +397,7 @@ class Data extends AbstractHelper
                 $invoice->setTransactionId($orderData['transaction_id']);
                 $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
                 $invoice->register();
+                $invoice->setState(\Magento\Sales\Model\Order\Invoice::STATE_PAID)->save();
 
                 $transaction = $this->objectManager->create('Magento\Framework\DB\Transaction')
                                                    ->addObject($invoice)
