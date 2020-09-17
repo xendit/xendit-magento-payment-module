@@ -97,7 +97,8 @@ class SubscriptionCallback extends AbstractAction
                 $allItems = $order->getAllVisibleItems();
                 foreach ($allItems as $product) {
                     array_push($items, array(
-                        'product_id'    => $product->getProductId(), 
+                        'product_id'    => $product->getProductId(),
+                        'price'         => $product->getPrice(),
                         'qty'           => $product->getQtyOrdered()
                     ));
                 }

@@ -104,6 +104,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 foreach ($allItems as $product) {
                     array_push($items, array(
                         'product_id'    => $product->getProductId(),
+                        'price'         => $product->getPrice(),
                         'qty'           => $product->getQtyOrdered()
                     ));
                 }

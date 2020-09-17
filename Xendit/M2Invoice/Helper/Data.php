@@ -318,6 +318,7 @@ class Data extends AbstractHelper
         foreach($orderData['items'] as $item){
             $_product = $this->objectManager->create(\Magento\Catalog\Model\Product::class);
             $product = $_product->load($item['product_id']);
+            $product->setPrice($item['price']);
 
             $normalizedProductRequest = array_merge(
                 ['qty' => intval($item['qty'])],
