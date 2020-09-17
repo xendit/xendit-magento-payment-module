@@ -20,7 +20,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
             $chargeId = $payload['credit_card_charge_id'];
 
             //verify callback
-            $callback = $this->getCallbackByInvoiceId($invoiceId);
+            /*$callback = $this->getCallbackByInvoiceId($invoiceId);
             if (isset($callback['error_code']) || !isset($callback['status'])) {
                 $result->setData([
                     'status' => __('ERROR'),
@@ -35,7 +35,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 ]);
     
                 return $result;
-            }
+            }*/
 
             //verify charge
             $charge = $this->getCreditCardCharge($chargeId, $payload['recurring_payment_id']); //child charge
