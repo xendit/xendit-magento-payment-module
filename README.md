@@ -50,7 +50,6 @@ To activate this feature, you need to follow this additional steps:
 - Done! The cron should already scheduling and running in the background.
 
 ## Supported Payment Method
-Currently this plugins support collecting payment through Xendit from these payment channels:
 - Credit and Debit Card 
 - Mandiri VA
 - BNI VA
@@ -64,6 +63,9 @@ Since v1.3.0, online refund (full and partial) is supported for payment through 
 
 ## Multishipping Support
 Since v2.0.0, multishipping checkout is supported for all payment methods.
+
+## Installment & Subscription
+Since v2.2.0, merchant can setup installment & subscription payment methods via credit card.
 
 ## Unit Testing
 To run unit test, run this command from you `MAGENTO_DIR`:

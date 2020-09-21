@@ -15,10 +15,6 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
     public function execute()
     {
         try {
-            $post = $this->getRequest()->getContent();
-            $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
-            $decodedPost = json_decode($post, true);
-
             $orderIds = explode('-', $this->getRequest()->getParam('order_ids'));
             
             $shouldRedirect = false;
@@ -55,6 +51,8 @@ class CCCallback extends ProcessHosted implements CsrfAwareActionInterface
                             $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
                             $order->save();
                         }
+                        $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
+                        $payment->setAdditionalInformation('xendit_installment', $hostedPayment['installment']);
         
                         $this->processSuccessfulTransaction(
                             $order,

@@ -102,8 +102,18 @@
                             dynamicShow();
                             shouldEnableSpecificMethod();
                             specificSelection.prop('size', 6);
+
                             jQuery("textarea[id*='m2invoice_card_installment_description']").attr("placeholder", "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
-                            jQuery("textarea[id*='m2invoice_card_installment_description']").val("Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
+
+                            if ( !jQuery("textarea[id*='m2invoice_card_installment_description']").val() ) {
+                                jQuery("textarea[id*='m2invoice_card_installment_description']").val("Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
+                            }
+
+                            jQuery("textarea[id*='m2invoice_card_subscription_card_subscription_description']").attr("placeholder", "Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI");
+
+                            if ( !jQuery("textarea[id*='m2invoice_card_subscription_card_subscription_description']").val() ) {
+                                jQuery("textarea[id*='m2invoice_card_subscription_card_subscription_description']").val("Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI");
+                            }
                         });
                     </script>
                 ]]></comment>
@@ -178,6 +188,30 @@
                     <label>Credit Card Installment Description</label>
                     <comment>Customize your installment payment description on checkout page</comment>
                 </field>
+
+                <group id="card_subscription" translate="label" showInDefault="1" showInWebsite="1" sortOrder="100">
+                    <label>Credit Card Subscription Configuration</label>
+                    <field id="card_subscription_interval" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="0" sortOrder="92">
+                        <label>Interval</label>
+                        <comment>
+                            The frequency with which a subscription payment invoice should be billed
+                        </comment>
+                        <config_path>payment/m2invoice/card_subscription_interval</config_path>
+                        <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\SubscriptionInterval</source_model>
+                    </field>
+                    <field id="card_subscription_interval_count" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Interval Count</label>
+                        <comment>
+                            The number of intervals (specified in the interval property) between subscription
+                        </comment>
+                        <config_path>payment/m2invoice/card_subscription_interval_count</config_path>
+                    </field>
+                    <field id="card_subscription_description" translate="label" type="textarea" sortOrder="94" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Description</label>
+                        <comment>Customize your Subscription payment description on checkout page</comment>
+                        <config_path>payment/m2invoice/card_subscription_description</config_path>
+                    </field>
+                </group>
 
                 <group id="card_promo_bca" translate="label" showInDefault="1" showInWebsite="1" sortOrder="100">
                     <label>Credit Card Promotion - BCA</label>

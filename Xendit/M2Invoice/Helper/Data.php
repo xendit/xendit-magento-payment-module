@@ -2,10 +2,17 @@
 
 namespace Xendit\M2Invoice\Helper;
 
+use Magento\Catalog\Model\Product;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Model\CustomerFactory;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\DataObject;
 use Magento\Framework\Filesystem\Driver\File;
+use Magento\Framework\UrlInterface;
+use Magento\Quote\Model\QuoteFactory;
+use Magento\Quote\Model\QuoteManagement;
 use Magento\Store\Model\StoreManagerInterface;
 use Xendit\M2Invoice\Model\Payment\M2Invoice;
 
@@ -19,17 +26,37 @@ class Data extends AbstractHelper
 
     private $fileSystem;
 
+    private $product;
+
+    private $customerRepository;
+
+    private $customerFactory;
+
+    private $quote;
+
+    private $quoteManagement;
+
     public function __construct(
         ObjectManagerInterface $objectManager,
         Context $context,
         StoreManagerInterface $storeManager,
         M2Invoice $m2Invoice,
-        File $fileSystem
+        File $fileSystem,
+        Product $product,
+        CustomerRepositoryInterface $customerRepository,
+        CustomerFactory $customerFactory,
+        QuoteFactory $quote,
+        QuoteManagement $quoteManagement
     ) {
         $this->objectManager = $objectManager;
         $this->storeManager = $storeManager;
         $this->m2Invoice = $m2Invoice;
         $this->fileSystem = $fileSystem;
+        $this->product = $product;
+        $this->customerRepository = $customerRepository;
+        $this->customerFactory = $customerFactory;
+        $this->quote = $quote;
+        $this->quoteManagement = $quoteManagement;
 
         parent::__construct($context);
     }
@@ -42,6 +69,11 @@ class Data extends AbstractHelper
     public function getCheckoutUrl()
     {
         return $this->m2Invoice->getConfigData('xendit_url');
+    }
+
+    public function getUiUrl()
+    {
+        return $this->m2Invoice->getUiUrl();
     }
 
     public function getSuccessUrl($isMultishipping = false)
@@ -100,6 +132,16 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getPublicApiKey();
     }
 
+    public function getSubscriptionInterval()
+    {
+        return $this->m2Invoice->getSubscriptionInterval() ?: 'MONTH';
+    }
+
+    public function getSubscriptionIntervalCount()
+    {
+        return $this->m2Invoice->getSubscriptionIntervalCount() ?: 1;
+    }
+
     public function getEnvironment()
     {
         return $this->m2Invoice->getEnvironment();
@@ -139,6 +181,16 @@ class Data extends AbstractHelper
         }
 
         return (array) $inputs;
+    }
+
+    public function getXenditSubscriptionCallbackUrl($isMultishipping = false) {
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
+
+        if ($isMultishipping) {
+            $baseUrl .= '?type=multishipping';
+        }
+
+        return $baseUrl;
     }
 
     /**
@@ -211,6 +263,7 @@ class Data extends AbstractHelper
             "cc" => "cc",
             "cchosted" => "cchosted",
             "cc_installment" => "cc_installment",
+            "cc_subscription" => "cc_subscription",
             "bcava" => "bca",
             "bniva" => "bni",
             "briva" => "bri",
@@ -226,5 +279,144 @@ class Data extends AbstractHelper
         }
 
         return $response; 
+    }
+
+    /**
+     * Create Order Programatically
+     * 
+     * @param array $orderData
+     * @return array
+     * 
+    */
+    public function createMageOrder($orderData) {
+        $store = $this->getStoreManager()->getStore();
+        $websiteId = $this->getStoreManager()->getStore()->getWebsiteId();
+
+        $customer = $this->customerFactory->create();
+        $customer->setWebsiteId($websiteId);
+        $customer->loadByEmail($orderData['email']); //load customer by email address
+        
+        if(!$customer->getEntityId()){
+            //if not available then create this customer 
+            $customer->setWebsiteId($websiteId)
+                     ->setStore($store)
+                     ->setFirstname($orderData['shipping_address']['firstname'])
+                     ->setLastname($orderData['shipping_address']['lastname'])
+                     ->setEmail($orderData['email']) 
+                     ->setPassword($orderData['email']);
+            $customer->save();
+        }
+
+        $quote = $this->quote->create(); //create object of quote
+        $quote->setStore($store);
+        
+        $customer= $this->customerRepository->getById($customer->getEntityId());
+        $quote->setCurrency();
+        $quote->assignCustomer($customer); //assign quote to customer
+ 
+        //add items in quote
+        foreach($orderData['items'] as $item){
+            $_product = $this->objectManager->create(\Magento\Catalog\Model\Product::class);
+            $product = $_product->load($item['product_id']);
+            $product->setPrice($item['price']);
+
+            $normalizedProductRequest = array_merge(
+                ['qty' => intval($item['qty'])],
+                array()
+            );
+            $quote->addProduct(
+                $product,
+                new DataObject($normalizedProductRequest)
+            );
+        }
+ 
+        //set address
+        $quote->getBillingAddress()->addData($orderData['billing_address']);
+        $quote->getShippingAddress()->addData($orderData['shipping_address']);
+ 
+        //collect rates, set shipping & payment method
+        $billingAddress = $quote->getBillingAddress();
+        $shippingAddress = $quote->getShippingAddress();
+
+        $shippingAddress->setShippingMethod($orderData['shipping_method'])
+                        ->setCollectShippingRates(true)
+                        ->collectShippingRates();
+       
+        $billingAddress->setShouldIgnoreValidation(true);
+        $shippingAddress->setShouldIgnoreValidation(true);
+
+        $quote->collectTotals();
+        $quote->setIsMultiShipping($orderData['is_multishipping']);
+
+        if (!$quote->getIsVirtual()) {
+            if (!$billingAddress->getEmail()) {
+                $billingAddress->setSameAsBilling(1);
+            }
+        }
+
+        $quote->setPaymentMethod($orderData['payment']['method']);
+        $quote->setInventoryProcessed(true); //update inventory
+        $quote->save();
+        
+        //set required payment data
+        $orderData['payment']['cc_number'] = str_replace('X', '0', $orderData['masked_card_number']);
+        $quote->getPayment()->importData($orderData['payment']);
+
+        foreach($orderData['payment']['additional_information'] AS $key=>$value) {
+            $quote->getPayment()->setAdditionalInformation($key, $value);
+        }
+        $quote->getPayment()->setAdditionalInformation('xendit_is_subscription', true);
+
+        //collect totals & save quote
+        $quote->collectTotals()->save();
+ 
+        //create order from quote
+        $order = $this->quoteManagement->submit($quote);
+
+        //update order status
+        $orderState = \Magento\Sales\Model\Order::STATE_PROCESSING;
+        $message = "Xendit subscription payment completed. Transaction ID: " . $orderData['transaction_id'] . ". ";
+        $message .= "Original Order: #" . $orderData['parent_order_id'] . ".";
+        $order->setState($orderState)
+              ->setStatus($orderState)
+              ->addStatusHistoryComment($message);
+
+        $order->save();
+
+        //save order payment details
+        $payment = $order->getPayment();
+        $payment->setTransactionId($orderData['transaction_id']);
+        $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+
+        //create invoice
+        if ($order->canInvoice()) {
+            $invoice = $this->objectManager->create('Magento\Sales\Model\Service\InvoiceService')
+                                           ->prepareInvoice($order);
+            
+            if ($invoice->getTotalQty()) {
+                $invoice->setTransactionId($orderData['transaction_id']);
+                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
+                $invoice->register();
+                $invoice->setState(\Magento\Sales\Model\Order\Invoice::STATE_PAID)->save();
+
+                $transaction = $this->objectManager->create('Magento\Framework\DB\Transaction')
+                                                   ->addObject($invoice)
+                                                   ->addObject($invoice->getOrder());
+                $transaction->save();
+            }
+        }
+
+        //notify customer
+        $this->objectManager->create('Magento\Sales\Model\OrderNotifier')->notify($order);
+        $order->setEmailSent(1);
+        $order->save();
+
+        if($order->getEntityId()){
+            $result['order_id'] = $order->getRealOrderId();
+        }else{
+            $result = array('error' => 1, 'msg' => 'Error creating order');
+        }
+
+        return $result;
     }
 }

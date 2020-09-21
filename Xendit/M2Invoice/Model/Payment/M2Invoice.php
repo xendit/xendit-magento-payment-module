@@ -29,6 +29,18 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         }
     }
 
+    public function getSubscriptionInterval() {
+        return $this->getConfigData('card_subscription_interval');
+    }
+
+    public function getSubscriptionIntervalCount() {
+        return $this->getConfigData('card_subscription_interval_count');
+    }
+
+    public function getSubscriptionDescription() {
+        return $this->getConfigData('card_subscription_description');
+    }
+
     public function isLive()
     {
         $xenditEnv = $this->getConfigData('xendit_env');
@@ -48,6 +60,11 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
     public function getUrl()
     {
         return $this->getConfigData('xendit_url');
+    }
+
+    public function getUiUrl()
+    {
+        return $this->getConfigData('ui_url');
     }
 
     public function getCardPaymentType()
