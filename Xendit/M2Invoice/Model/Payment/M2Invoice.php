@@ -82,6 +82,11 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         return $this->getConfigData('chosen_methods');
     }
 
+    public function getIsActive()
+    {
+        return $this->getConfigData('active');
+    }
+
     public function getEnabledPromo()
     {
         $promo = [];

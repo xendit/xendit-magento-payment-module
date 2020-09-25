@@ -99,6 +99,10 @@ class CC extends \Magento\Payment\Model\Method\Cc
             return false;
         }
 
+        if ($this->dataHelper->getIsActive() === '0') {
+            return false;
+        }
+
         $amount = $quote->getBaseGrandTotal();
 
         if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
