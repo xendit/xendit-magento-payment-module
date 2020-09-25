@@ -85,6 +85,10 @@ class AbstractInvoice extends AbstractMethod
             return false;
         }
 
+        if ($this->dataHelper->getIsActive() === '0') {
+            return false;
+        }
+
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
         if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
