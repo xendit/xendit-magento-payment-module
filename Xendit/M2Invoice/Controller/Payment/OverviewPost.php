@@ -119,8 +119,9 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                     $this->_redirect('*/*/billing');
                 }
 
-                $params  = implode("-", $ids);                
-                if ($xenditPaymentMethod === 'cc' || $xenditPaymentMethod === 'cchosted' || $xenditPaymentMethod === 'cc_installment' || $xenditPaymentMethod === 'cc_subscription') {
+                $params  = implode("-", $ids);
+                $xenditCCMethods = array('cc', 'cchosted', 'cc_installment', 'cc_subscription');
+                if (in_array($xenditPaymentMethod, $xenditCCMethods)) {
                     $redirect = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
                 } else {
                     $billingEmail = $this->_getCheckout()->getQuote()->getBillingAddress()->getData('email');
