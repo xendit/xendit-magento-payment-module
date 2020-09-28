@@ -101,7 +101,11 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
 
             $baseUrl = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
             
-            //check if sprint multishipping module is enabled
+            /**
+             * Check if sprint multishipping module is enabled
+             * Reason: both plugins are overriding this class
+             * To ensure both can coexists, we include sprint logic
+             */
             $sprintPaymentMethod = '';
             if ($this->moduleManager->isEnabled('Sprint_Sprintmultishipping')) {
                 $sprintPaymentMethod = $this->_objectManager->get('Sprint\Sprintmultishipping\Helper\Data')->sprintPaymentMethod($paymentInstance->getMethod());
