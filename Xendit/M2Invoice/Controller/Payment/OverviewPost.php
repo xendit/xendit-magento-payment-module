@@ -28,6 +28,8 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
      */
     protected $agreementsValidator;
 
+    protected $moduleManager;
+
     /**
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Customer\Model\Session $customerSession
@@ -44,11 +46,14 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
         AccountManagementInterface $accountManagement,
         \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
         \Psr\Log\LoggerInterface $logger,
-        \Magento\Checkout\Api\AgreementsValidatorInterface $agreementValidator
+        \Magento\Checkout\Api\AgreementsValidatorInterface $agreementValidator,
+        \Magento\Framework\Module\Manager $moduleManager
     ) {
         $this->formKeyValidator = $formKeyValidator;
         $this->logger = $logger;
         $this->agreementsValidator = $agreementValidator;
+        $this->moduleManager = $moduleManager;
+
         parent::__construct(
             $context,
             $customerSession,
@@ -84,7 +89,6 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
 
             $payment = $this->getRequest()->getPost('payment');
             $paymentInstance = $this->_getCheckout()->getQuote()->getPayment();
-            $billingEmail = $this->_getCheckout()->getQuote()->getBillingAddress()->getData('email');
             if (isset($payment['cc_number'])) {
                 $paymentInstance->setCcNumber($payment['cc_number']);
             }
@@ -95,10 +99,17 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->_getCheckout()->createOrders();
             $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
 
-            //SPRINT PAYMENT METHOD
-            $xenditPaymentMethod = $this->_objectManager->get('Xendit\M2Invoice\Helper\Data')->xenditPaymentMethod( $paymentInstance->getMethod() );
-            if ( !!$xenditPaymentMethod ) {
-                
+            $baseUrl = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
+            
+            //check if sprint multishipping module is enabled
+            $sprintPaymentMethod = '';
+            if ($this->moduleManager->isEnabled('Sprint_Sprintmultishipping')) {
+                $sprintPaymentMethod = $this->_objectManager->get('Sprint\Sprintmultishipping\Helper\Data')->sprintPaymentMethod($paymentInstance->getMethod());
+            }
+
+            //XENDIT PAYMENT METHOD
+            $xenditPaymentMethod = $this->_objectManager->get('Xendit\M2Invoice\Helper\Data')->xenditPaymentMethod($paymentInstance->getMethod());
+            if ($xenditPaymentMethod) {
                 $ids = $this->_getCheckout()->getOrderIds();
 
                 if (empty($ids)) {
@@ -106,17 +117,23 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                         __('Failed to create order.')
                     );
                     $this->_redirect('*/*/billing');
-                    return;
                 }
 
-                $params     = implode("-", $ids);
-                $baseUrl    = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
-                
+                $params  = implode("-", $ids);                
                 if ($xenditPaymentMethod === 'cc' || $xenditPaymentMethod === 'cchosted' || $xenditPaymentMethod === 'cc_installment' || $xenditPaymentMethod === 'cc_subscription') {
-                    $redirect   = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
+                    $redirect = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
                 } else {
+                    $billingEmail = $this->_getCheckout()->getQuote()->getBillingAddress()->getData('email');
                     $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping?order_ids=' . $params.'&preferred_method='.$xenditPaymentMethod.'&billing_email='.$billingEmail;
                 }
+                $this->_redirect($redirect);
+            }
+
+            //SPRINT PAYMENT METHOD
+            else if ($sprintPaymentMethod) {
+                $ids = $this->_getCheckout()->getOrderIds();
+                $params     = implode("|", $ids);
+                $redirect   = $baseUrl . $sprintPaymentMethod . '/payment/redirectmultishipping/orderIds/' . $params;
                 $this->_redirect($redirect);
             }
 
