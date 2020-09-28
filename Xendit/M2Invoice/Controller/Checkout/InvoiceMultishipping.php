@@ -12,7 +12,6 @@ class InvoiceMultishipping extends AbstractAction
     public function execute()
     {
         try {
-            $billingEmail       = $this->getRequest()->getParam('billing_email');
             $rawOrderIds        = $this->getRequest()->getParam('order_ids');
             $orderIds           = explode("-", $rawOrderIds);
 
@@ -32,6 +31,7 @@ class InvoiceMultishipping extends AbstractAction
                 $order->save();
     
                 $transactionAmount  += (int)$order->getTotalDue();
+                $billingEmail = $order->getCustomerEmail();
             }
 
             $preferredMethod = $this->getRequest()->getParam('preferred_method');
