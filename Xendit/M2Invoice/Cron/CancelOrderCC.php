@@ -49,44 +49,44 @@ class CancelOrderCC
 
     public function execute()
     {
-        $collection = $this->orderCollectionFactory
-            ->create()
-            ->addAttributeToSelect('increment_id')
-            ->addFieldToFilter('status', Order::STATE_PAYMENT_REVIEW);
+        // $collection = $this->orderCollectionFactory
+        //     ->create()
+        //     ->addAttributeToSelect('increment_id')
+        //     ->addFieldToFilter('status', Order::STATE_PAYMENT_REVIEW);
 
-        $bulkCancelData = array();
+        // $bulkCancelData = array();
 
-        foreach ($collection as $doc) {
-            $order = $this->orderFactory->create()->loadByIncrementId($doc['increment_id']);
-            $payment = $order->getPayment();
+        // foreach ($collection as $doc) {
+        //     $order = $this->orderFactory->create()->loadByIncrementId($doc['increment_id']);
+        //     $payment = $order->getPayment();
 
-            $paymentGateway = $payment->getAdditionalInformation('payment_gateway');
-            $hosted3DSId = $payment->getAdditionalInformation('xendit_hosted_3ds_id');
-            $creationTime = $order->getCreatedAt();
+        //     $paymentGateway = $payment->getAdditionalInformation('payment_gateway');
+        //     $hosted3DSId = $payment->getAdditionalInformation('xendit_hosted_3ds_id');
+        //     $creationTime = $order->getCreatedAt();
 
-            if ('xendit' !== $paymentGateway) {
-                continue;
-            }
+        //     if ('xendit' !== $paymentGateway) {
+        //         continue;
+        //     }
 
-            if (strtotime($creationTime) < strtotime('-1 day')) {
-                $order->setState(Order::STATE_CANCELED)
-                    ->setStatus(Order::STATE_CANCELED)
-                    ->addStatusHistoryComment("Xendit payment cancelled due to stuck on payment review for 24 hours");
+        //     if (strtotime($creationTime) < strtotime('-1 day')) {
+        //         $order->setState(Order::STATE_CANCELED)
+        //             ->setStatus(Order::STATE_CANCELED)
+        //             ->addStatusHistoryComment("Xendit payment cancelled due to stuck on payment review for 24 hours");
 
-                $bulkCancelData[] = array(
-                    'id' => $hosted3DSId,
-                    'expiry_date' => $this->dateTime->timestamp(),
-                    'order_number' => $order->getId(),
-                    'amount' => $order->getGrandTotal()
-                );
+        //         $bulkCancelData[] = array(
+        //             'id' => $hosted3DSId,
+        //             'expiry_date' => $this->dateTime->timestamp(),
+        //             'order_number' => $order->getId(),
+        //             'amount' => $order->getGrandTotal()
+        //         );
 
-                $order->save();
-            }
-        }
+        //         $order->save();
+        //     }
+        // }
 
-        if (!empty($bulkCancelData)) {
-            $this->trackCancellation($bulkCancelData);
-        }
+        // if (!empty($bulkCancelData)) {
+        //     $this->trackCancellation($bulkCancelData);
+        // }
 
         return $this;
 	}
