@@ -49,49 +49,50 @@ class CancelOrder
 
     public function execute()
     {
-        $collection = $this->orderCollectionFactory
-            ->create()
-            ->addAttributeToSelect('increment_id')
-            ->addFieldToFilter('status', Order::STATE_PENDING_PAYMENT);
-
-        $bulkCancelData = array();
-
-        foreach ($collection as $doc) {
-            $order = $this->orderFactory->create()->loadByIncrementId($doc['increment_id']);
-            $payment = $order->getPayment();
-
-            $invoiceId = $payment->getAdditionalInformation('xendit_invoice_id');
-            $invoiceExpDate = $payment->getAdditionalInformation('xendit_invoice_exp_date');
-            $paymentGateway = $payment->getAdditionalInformation('payment_gateway');
-
-            if ('xendit' !== $paymentGateway) {
-                continue;
-            }
-
-            $date = $this->dateTime->timestamp($invoiceExpDate);
-            $now = $this->dateTime->timestamp();
-
-            if ($date < $now) {
-                $order->setState(Order::STATE_CANCELED)
-                    ->setStatus(Order::STATE_CANCELED)
-                    ->addStatusHistoryComment("Xendit payment cancelled due to expired invoice");
-
-                $bulkCancelData[] = array(
-                    'id' => $invoiceId,
-                    'expiry_date' => $invoiceExpDate,
-                    'order_number' => $order->getId(),
-                    'amount' => $order->getGrandTotal()
-                );
-
-                $order->save();
-            }
-        }
-
-        if (!empty($bulkCancelData)) {
-            $this->trackCancellation($bulkCancelData);
-        }
-
         return $this;
+        // $collection = $this->orderCollectionFactory
+        //     ->create()
+        //     ->addAttributeToSelect('increment_id')
+        //     ->addFieldToFilter('status', Order::STATE_PENDING_PAYMENT);
+
+        // $bulkCancelData = array();
+
+        // foreach ($collection as $doc) {
+        //     $order = $this->orderFactory->create()->loadByIncrementId($doc['increment_id']);
+        //     $payment = $order->getPayment();
+
+        //     $invoiceId = $payment->getAdditionalInformation('xendit_invoice_id');
+        //     $invoiceExpDate = $payment->getAdditionalInformation('xendit_invoice_exp_date');
+        //     $paymentGateway = $payment->getAdditionalInformation('payment_gateway');
+
+        //     if ('xendit' !== $paymentGateway) {
+        //         continue;
+        //     }
+
+        //     $date = $this->dateTime->timestamp($invoiceExpDate);
+        //     $now = $this->dateTime->timestamp();
+
+        //     if ($date < $now) {
+        //         $order->setState(Order::STATE_CANCELED)
+        //             ->setStatus(Order::STATE_CANCELED)
+        //             ->addStatusHistoryComment("Xendit payment cancelled due to expired invoice");
+
+        //         $bulkCancelData[] = array(
+        //             'id' => $invoiceId,
+        //             'expiry_date' => $invoiceExpDate,
+        //             'order_number' => $order->getId(),
+        //             'amount' => $order->getGrandTotal()
+        //         );
+
+        //         $order->save();
+        //     }
+        // }
+
+        // if (!empty($bulkCancelData)) {
+        //     $this->trackCancellation($bulkCancelData);
+        // }
+
+        // return $this;
 	}
 
 	private function trackCancellation($data)
