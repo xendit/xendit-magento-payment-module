@@ -74,10 +74,8 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 } else {
                     $order->loadByIncrementId($value);
                 }
-                
+
                 $payment = $order->getPayment();
-                // only for UAT purposes bcs order creted on first UAT doesn't have this yet, we need to remove this
-                $parentTokenId = $payment->setAdditionalInformation('token_id', $childTokenId);
 
                 //match token id of parent & child's order just once
                 if (!$isTokenMatched) {
