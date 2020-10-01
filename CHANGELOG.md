@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.2.2 (2020-10-01)
+
+Bugfix:
+
+- Handle invoice paid with OVO
+- Remove auto cancellation feature for now
+
 ## 2.2.1 (2020-09-28)
 
 Improvements:
