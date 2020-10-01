@@ -49,7 +49,6 @@ class CancelOrderCC
 
     public function execute()
     {
-        return $this;
         // $collection = $this->orderCollectionFactory
         //     ->create()
         //     ->addAttributeToSelect('increment_id')
@@ -89,7 +88,7 @@ class CancelOrderCC
         //     $this->trackCancellation($bulkCancelData);
         // }
 
-        // return $this;
+        return $this;
 	}
 
 	private function trackCancellation($data)
