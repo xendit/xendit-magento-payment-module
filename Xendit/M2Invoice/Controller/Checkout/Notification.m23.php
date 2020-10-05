@@ -65,54 +65,7 @@ class Notification extends Action implements CsrfAwareActionInterface
         try {
             $post = $this->getRequest()->getContent();
             $callbackToken = $this->getRequest()->getHeader('X-CALLBACK-TOKEN');
-            $decodedPost = json_decode($post, true);
-            $isEwallet = false;
-
-            if (!empty($decodedPost['ewallet_type'])) {
-                $isEwallet = true;
-
-                if (!$decodedPost['external_id']) {
-                    $result = $this->jsonResultFactory->create();
-                    /** You may introduce your own constants for this custom REST API */
-                    $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
-                    $result->setData([
-                        'status' => __('ERROR'),
-                        'message' => 'Callback external_id is invalid'
-                    ]);
-
-                    return $result;
-                }
-            } else if (!isset($decodedPost['description']) || !isset($decodedPost['id'])) {
-                $result = $this->jsonResultFactory->create();
-                /** You may introduce your own constants for this custom REST API */
-                $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
-                $result->setData([
-                    'status' => __('ERROR'),
-                    'message' => 'Callback body is invalid'
-                ]);
-
-                return $result;
-            }
-
-            if ($isEwallet) {
-                // default code if API doesn't send failure_code
-                $failureCode = 'UNKNOWN_ERROR';
-                if (isset($decodedPost['failure_code'])) {
-                    $failureCode = $decodedPost['failure_code'];
-                }
-
-                $extIdPrefix = $this->dataHelper->getExternalIdPrefix();
-                $orderId = ltrim($decodedPost['external_id'], $extIdPrefix);
-
-                // standalone OVO can only be single checkout
-                $orderIds = [$orderId];
-            } else {
-                $orderId = $decodedPost['description'];
-                $orderIds = explode("-", $orderId);
-            }
-
-            $transactionId = $decodedPost['id'];
-            $isMultishipping = (count($orderIds) > 1) ? true : false;
+            $callbackPayload = json_decode($post, true);
 
             if (!empty($callbackToken)) {
                 $result = $this->jsonResultFactory->create();
@@ -126,20 +79,14 @@ class Notification extends Action implements CsrfAwareActionInterface
                 return $result;
             }
 
-            $invoice = $this->getXenditInvoice($transactionId);
-
-            if( $isMultishipping ) {
-                foreach ($orderIds as $key => $value) {
-                    $result = $this->checkOrder($value, $isEwallet, $decodedPost, $invoice, $orderId);
-                }
-                
-                return $result;
+            if (!empty($callbackPayload['invoice_url'])) {
+                return $this->handleInvoiceCallback($callbackPayload);
             } else {
-                return $this->checkOrder($orderId, $isEwallet, $decodedPost, $invoice, $orderId);
+                return $this->handleEwalletCallback($callbackPayload);
             }
         } catch (\Exception $e) {
             $message = "Error invoice callback: " . $e->getMessage();
-            $this->logDNA->log(LogDNALevel::ERROR, $message, $decodedPost);
+            $this->logDNA->log(LogDNALevel::ERROR, $message, $callbackPayload);
 
             $result = $this->jsonResultFactory->create();
             /** You may introduce your own constants for this custom REST API */
@@ -152,11 +99,79 @@ class Notification extends Action implements CsrfAwareActionInterface
             return $result;
         }
     }
-    
-    private function checkOrder($orderId, $isEwallet, $decodedPost, $invoice, $callbackDescription) {
-        $order = $this->orderFactory->create();
-        $order->load($orderId);
-        $transactionId = $decodedPost['id'];
+
+    public function handleInvoiceCallback($callbackPayload) {
+        if (!isset($callbackPayload['description']) || !isset($callbackPayload['id'])) {
+            $result = $this->jsonResultFactory->create();
+            /** You may introduce your own constants for this custom REST API */
+            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+            $result->setData([
+                'status' => __('ERROR'),
+                'message' => 'Callback body is invalid'
+            ]);
+
+            return $result;
+        }
+
+        // Invoice description is Magento's order ID
+        $description = $callbackPayload['description'];
+        // in case of multishipping, we separate order IDs with `-`
+        $orderIds = explode("-", $description);
+
+        $transactionId = $callbackPayload['id'];
+        $isMultishipping = (count($orderIds) > 1) ? true : false;
+
+        $invoice = $this->getXenditInvoice($transactionId);
+
+        if( $isMultishipping ) {
+            foreach ($orderIds as $key => $value) {
+                $order = $this->orderFactory->create();
+                $order->load($value);
+
+                $result = $this->checkOrder($order, false, $callbackPayload, $invoice, $description);
+            }
+            
+            return $result;
+        } else {
+            $order = $this->getOrderById($description);
+
+            if (!$order) {
+                $order = $this->orderFactory->create();
+                $order->load($description);
+            }
+
+            return $this->checkOrder($order, false, $callbackPayload, $invoice, $description);
+        }
+    }
+
+    public function handleEwalletCallback($callbackPayload) {
+        if (!$callbackPayload['external_id']) {
+            $result = $this->jsonResultFactory->create();
+            /** You may introduce your own constants for this custom REST API */
+            $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+            $result->setData([
+                'status' => __('ERROR'),
+                'message' => 'Callback external_id is invalid'
+            ]);
+
+            return $result;
+        }
+
+        $failureCode = 'UNKNOWN_ERROR';
+        if (isset($callbackPayload['failure_code'])) {
+            $failureCode = $callbackPayload['failure_code'];
+        }
+
+        $extIdPrefix = $this->dataHelper->getExternalIdPrefix();
+        // Trimmed external ID from prefix is Magento's order ID
+        $orderId = ltrim($callbackPayload['external_id'], $extIdPrefix);
+        $order = $this->getOrderById($orderId);
+
+        return $this->checkOrder($order, true, $callbackPayload, null, $orderId);
+    }
+
+    private function checkOrder($order, $isEwallet, $callbackPayload, $invoice, $callbackDescription) {
+        $transactionId = $callbackPayload['id'];
 
         if (!$order) {
             $result = $this->jsonResultFactory->create();
@@ -170,26 +185,22 @@ class Notification extends Action implements CsrfAwareActionInterface
             return $result;
         }
 
+        if (!$order->canInvoice()) {
+            $result = $this->jsonResultFactory->create();
+            $result->setData([
+                'status' => __('SUCCESS'),
+                'message' => 'Order is already processed'
+            ]);
+
+            return $result;
+        }
+
         if ($isEwallet) {
-            $order = $this->getOrderById($orderId);
-
-            if ($order->getState() === Order::STATE_PENDING_PAYMENT || $order->getState() === Order::STATE_PAYMENT_REVIEW) {
-                //get ewallet payment status
-                $paymentStatus = $this->getEwalletStatus($decodedPost['ewallet_type'], $decodedPost['external_id']);
-            } else {
-                $result = $this->jsonResultFactory->create();
-                $result->setData([
-                    'status' => __('SUCCESS'),
-                    'message' => 'eWallet transaction has been completed successfully'
-                ]);
-
-                return $result;
-            }
+            $paymentStatus = $this->getEwalletStatus($callbackPayload['ewallet_type'], $callbackPayload['external_id']);
         } else {
             $paymentStatus = $invoice['status'];
-            $invoiceOrderId = $invoice['description'];
 
-            if ($invoiceOrderId !== $callbackDescription) {
+            if ($invoice['description'] !== $callbackDescription) {
                 $result = $this->jsonResultFactory->create();
                 /** You may introduce your own constants for this custom REST API */
                 $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);

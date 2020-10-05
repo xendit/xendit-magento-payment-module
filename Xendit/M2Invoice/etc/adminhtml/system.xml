@@ -176,6 +176,13 @@
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\ChosenMethod</source_model>
                     <can_be_empty>1</can_be_empty>
                 </field>
+                <field id="send_invoice_email" translate="label" type="select" sortOrder="67" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Email Notification</label>
+                    <comment>
+                        Send Xendit payment email notification to end customer when they checkout using bank transfer or retail outlet
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="card_payment_type" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Card Payment Type</label>
                     <comment>

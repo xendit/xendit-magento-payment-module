@@ -172,6 +172,11 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getIsActive();
     }
 
+    public function getSendInvoiceEmail()
+    {
+        return $this->m2Invoice->getSendInvoiceEmail();
+    }
+
     public function jsonData()
     {
         $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);

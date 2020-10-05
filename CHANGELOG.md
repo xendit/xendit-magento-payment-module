@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2.2.2 (2020-10-01)
+
+Bugfix:
+
+- Handle invoice paid with OVO
+- Remove auto cancellation feature for now
+
+## 2.2.1 (2020-09-28)
+
+Improvements:
+
+- Add `Send Email Notification` setting
+- Fix invoice email format
+- Disable Xendit multishipping when plugin in not enabled
+- Support Sprint multishipping in Xendit's ecosystem
+
 ## 2.2.0 (2020-09-15)
 
 Features:

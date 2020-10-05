@@ -87,6 +87,11 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         return $this->getConfigData('active');
     }
 
+    public function getSendInvoiceEmail()
+    {
+        return $this->getConfigData('send_invoice_email');
+    }
+
     public function getEnabledPromo()
     {
         $promo = [];

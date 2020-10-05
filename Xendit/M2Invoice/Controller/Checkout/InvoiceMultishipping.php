@@ -12,7 +12,6 @@ class InvoiceMultishipping extends AbstractAction
     public function execute()
     {
         try {
-            $billingEmail        = $this->getRequest()->getParam('billing_email');
             $rawOrderIds        = $this->getRequest()->getParam('order_ids');
             $orderIds           = explode("-", $rawOrderIds);
 
@@ -32,6 +31,7 @@ class InvoiceMultishipping extends AbstractAction
                 $order->save();
     
                 $transactionAmount  += (int)$order->getTotalDue();
+                $billingEmail = $order->getCustomerEmail();
             }
 
             $preferredMethod = $this->getRequest()->getParam('preferred_method');
@@ -43,7 +43,7 @@ class InvoiceMultishipping extends AbstractAction
                 'description' => $rawOrderIds,
                 'payer_email' => $billingEmail,
                 'preferred_method' => $preferredMethod,
-                'should_send_email' => "true",
+                'should_send_email' => $this->getDataHelper()->getSendInvoiceEmail() ? "true" : "false",
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
                 'client_type' => 'INTEGRATION'
             ];
@@ -59,6 +59,7 @@ class InvoiceMultishipping extends AbstractAction
             return $resultRedirect;
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
+            $this->getLogger()->info($message);
             return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
         }
     }
