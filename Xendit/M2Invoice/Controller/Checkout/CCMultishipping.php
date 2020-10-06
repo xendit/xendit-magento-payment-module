@@ -21,6 +21,7 @@ class CCMultishipping extends AbstractAction
 
             $transactionAmount  = 0;
             $tokenId            = '';
+            $orderProcessed     = false;
             $orders             = [];
 
             if ($method === 'cc_subscription' && !$customerSession->isLoggedIn()) {
@@ -32,6 +33,12 @@ class CCMultishipping extends AbstractAction
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
                 $order  ->load($value);
+
+                $orderState = $order->getState();
+                if ($orderState === Order::STATE_PROCESSING && !$order->canInvoice()) {
+                    $orderProcessed = true;
+                    continue;
+                }
 
                 $order  ->setState(Order::STATE_PENDING_PAYMENT)
                         ->setStatus(Order::STATE_PENDING_PAYMENT)
@@ -50,6 +57,10 @@ class CCMultishipping extends AbstractAction
                 }
     
                 $transactionAmount  += (int)$order->getTotalDue();
+            }
+
+            if ($orderProcessed) {
+                return $this->_redirect('multishipping/checkout/success');
             }
 
             if ($method === 'cc') {
