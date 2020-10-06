@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.3.0 (2020-10-06)
+
+Features:
+
+- Enable custom external ID
+
 ## 2.2.2 (2020-10-01)
 
 Bugfix:
