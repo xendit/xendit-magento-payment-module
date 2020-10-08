@@ -162,9 +162,8 @@ class Notification extends Action implements CsrfAwareActionInterface
             $failureCode = $callbackPayload['failure_code'];
         }
 
-        $extIdPrefix = $this->dataHelper->getExternalIdPrefix();
-        // Trimmed external ID from prefix is Magento's order ID
-        $orderId = ltrim($callbackPayload['external_id'], $extIdPrefix);
+        $temp = explode('-', $callbackPayload['external_id']);
+        $orderId = end($temp);
         $order = $this->getOrderById($orderId);
 
         return $this->checkOrder($order, true, $callbackPayload, null, $orderId);

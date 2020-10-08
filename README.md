@@ -51,12 +51,15 @@ To activate this feature, you need to follow this additional steps:
 
 ## Supported Payment Method
 - Credit and Debit Card 
-- Mandiri VA
-- BNI VA
 - BCA VA
+- BNI VA
 - BRI VA
+- Mandiri VA
 - Permata VA
 - Alfamart
+- OVO
+- Credit Card Subscription
+- Credit Card Installment
 
 ## Refund Support
 Since v1.3.0, online refund (full and partial) is supported for payment through credit and debit card channel.

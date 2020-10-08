@@ -117,9 +117,12 @@ class Data extends AbstractHelper
 
     public function getExternalIdPrefix()
     {
-        $storeName = substr(preg_replace("/[^a-z0-9]/mi", "", $this->getStoreManager()->getStore()->getName()), 0, 20);
+        return $this->m2Invoice->getConfigData('external_id_prefix') . "-" . $this->getStoreName();
+    }
 
-        return "magento-xendit-$storeName";
+    public function getStoreName()
+    {
+        return substr(preg_replace("/[^a-z0-9]/mi", "", $this->getStoreManager()->getStore()->getName()), 0, 20);
     }
 
     public function getApiKey()

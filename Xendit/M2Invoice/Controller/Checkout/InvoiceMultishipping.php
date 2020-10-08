@@ -16,11 +16,18 @@ class InvoiceMultishipping extends AbstractAction
             $orderIds           = explode("-", $rawOrderIds);
 
             $transactionAmount  = 0;
-            
-            $orders = [];
+            $orderProcessed     = false;
+            $orders             = [];
+
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderFactory()->create();
                 $order->load($value);
+
+                $orderState = $order->getState();
+                if ($orderState === Order::STATE_PROCESSING && !$order->canInvoice()) {
+                    $orderProcessed = true;
+                    continue;
+                }
 
                 $order->setState(Order::STATE_PENDING_PAYMENT)
                     ->setStatus(Order::STATE_PENDING_PAYMENT)
@@ -32,6 +39,10 @@ class InvoiceMultishipping extends AbstractAction
     
                 $transactionAmount  += (int)$order->getTotalDue();
                 $billingEmail = $order->getCustomerEmail();
+            }
+
+            if ($orderProcessed) {
+                return $this->_redirect('multishipping/checkout/success');
             }
 
             $preferredMethod = $this->getRequest()->getParam('preferred_method');

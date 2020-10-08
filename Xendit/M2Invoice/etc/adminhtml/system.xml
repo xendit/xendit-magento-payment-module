@@ -103,6 +103,17 @@
                             shouldEnableSpecificMethod();
                             specificSelection.prop('size', 6);
 
+                            var externalIdPrefix = jQuery("input[id*='m2invoice_external_id_prefix']");
+                            jQuery(externalIdPrefix).attr("placeholder", "magento-xendit");
+                            jQuery(externalIdPrefix).attr("maxlength", 50);
+
+                            var defaultText = "Format: {Prefix}-{Store Name}-{Order ID}<br>Example: <b>"+externalIdPrefix.val()+"-mystore-245</b>";
+                            externalIdPrefix.siblings('.note').children()[0].innerHTML = defaultText;
+                            externalIdPrefix.change(function () {
+                                var newText = "Format: {Prefix}-{Store Name}-{Order ID}<br>Example: <b>"+externalIdPrefix.val()+"-mystore-245</b>";
+                                externalIdPrefix.siblings('.note').children()[0].innerHTML = newText;
+                            });
+
                             jQuery("textarea[id*='m2invoice_card_installment_description']").attr("placeholder", "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
 
                             if ( !jQuery("textarea[id*='m2invoice_card_installment_description']").val() ) {
@@ -176,7 +187,15 @@
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\ChosenMethod</source_model>
                     <can_be_empty>1</can_be_empty>
                 </field>
-                <field id="send_invoice_email" translate="label" type="select" sortOrder="67" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="external_id_prefix" translate="label" type="text" sortOrder="67" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>External ID Prefix</label>
+                    <comment>
+                        <![CDATA[Format: {Prefix}-{Store Name}-{Order ID}<br>
+                        Example: <b>magento-xendit-mystore-245</b>]]>
+                    </comment>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="send_invoice_email" translate="label" type="select" sortOrder="68" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Send Email Notification</label>
                     <comment>
                         Send Xendit payment email notification to end customer when they checkout using bank transfer or retail outlet
