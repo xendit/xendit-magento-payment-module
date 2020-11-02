@@ -119,6 +119,16 @@
                 <cctypes>VI,MC,AE,JCB</cctypes>
                 <sort_order>10</sort_order>
             </cc_subscription>
+            <dana>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\DANA</model>
+                <title>DANA</title>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>11</sort_order>
+            </dana>
             <ovo>
                 <active>1</active>
                 <payment_action>authorize</payment_action>
@@ -127,7 +137,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>11</sort_order>
+                <sort_order>12</sort_order>
             </ovo>
         </payment>
     </default>

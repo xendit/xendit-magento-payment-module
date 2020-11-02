@@ -22,6 +22,7 @@
                     <item name="mandiriva" xsi:type="string">Xendit_M2Invoice::multishipping/mandiriva.phtml</item>
                     <item name="permatava" xsi:type="string">Xendit_M2Invoice::multishipping/permatava.phtml</item>
                     <item name="ovo" xsi:type="string">Xendit_M2Invoice::multishipping/ovo.phtml</item>
+                    <item name="dana" xsi:type="string">Xendit_M2Invoice::multishipping/dana.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>

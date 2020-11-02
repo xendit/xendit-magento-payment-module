@@ -28,6 +28,7 @@ class ChosenMethod implements \Magento\Framework\Option\ArrayInterface
             ['value' => 'cc', 'label' => __('Credit Card')],
             ['value' => 'cc_installment', 'label' => __('Credit Card Installment')],
             ['value' => 'cc_subscription', 'label' => __('Credit Card Subscription')],
+            ['value' => 'dana', 'label' => __('DANA')],
             ['value' => 'ovo', 'label' => __('OVO')],
         ];
 

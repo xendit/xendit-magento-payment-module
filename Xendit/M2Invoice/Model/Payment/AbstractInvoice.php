@@ -123,11 +123,11 @@ class AbstractInvoice extends AbstractMethod
                 return true;
             }
             //uncomment this block for local testing
-            /*if($this->methodCode == 'OVO'){
+            /*if($this->methodCode == 'OVO' || $this->methodCode == 'DANA'){
                 return true;
             }*/
 
-            if ( !in_array( strtoupper($this->methodCode), $availableMethod ) ) {
+            if (!in_array(strtoupper($this->methodCode), $availableMethod)) {
                 return false;
             }
 
@@ -156,7 +156,7 @@ class AbstractInvoice extends AbstractMethod
             throw $e;
         }
 
-        if ( !isset($response['available_method']) ) {
+        if (!isset($response['available_method'])) {
             return [];
         }
 
