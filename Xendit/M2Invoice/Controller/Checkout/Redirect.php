@@ -136,10 +136,6 @@ class Redirect extends AbstractAction
             );
         }
 
-        if ($ewalletType == 'DANA') {
-            $response['status'] = $response['payment_status'];
-        }
-
         $statusList = array("COMPLETED", "PAID", "SUCCESS_COMPLETED"); //OVO, DANA, LINKAJA
         if (in_array($response['status'], $statusList)) {
             return "COMPLETED";
