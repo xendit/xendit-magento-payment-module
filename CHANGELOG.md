@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.4.0 (2020-11-02)
+
+Features:
+
+- Add DANA payment method
+
 ## 2.3.0 (2020-10-06)
 
 Features:
