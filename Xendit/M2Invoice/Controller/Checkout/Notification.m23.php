@@ -123,7 +123,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
         $invoice = $this->getXenditInvoice($transactionId);
 
-        if( $isMultishipping ) {
+        if ($isMultishipping) {
             foreach ($orderIds as $key => $value) {
                 $order = $this->orderFactory->create();
                 $order->load($value);
@@ -295,10 +295,6 @@ class Notification extends Action implements CsrfAwareActionInterface
             throw new LocalizedException(
                 new Phrase($e->getMessage())
             );
-        }
-
-        if ($ewalletType == 'DANA') {
-            $response['status'] = $response['payment_status'];
         }
 
         $statusList = array("COMPLETED", "PAID", "SUCCESS_COMPLETED"); //OVO, DANA, LINKAJA
