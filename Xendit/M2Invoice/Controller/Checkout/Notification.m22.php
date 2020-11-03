@@ -237,13 +237,12 @@ class Notification extends Action
                 $this->getCheckoutHelper()->restoreQuote(); //restore cart
             }
 
-            if ($isEwallet) {
-                $order  ->setState($orderState)
-                        ->setStatus($orderState);
-                $order  ->save();
+            $order  ->addStatusHistoryComment("Xendit payment " . strtolower($paymentStatus) . ". Transaction ID: $transactionId")
+                    ->save();
 
+            if ($isEwallet) {
                 $payment = $order->getPayment();
-                $payment->setAdditionalInformation('xendit_ewallet_failure_code', $failureCode);
+                $payment->setAdditionalInformation('xendit_ewallet_failure_code', $callbackPayload['failure_code']);
                 $payment->save();
             }
 
