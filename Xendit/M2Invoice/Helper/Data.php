@@ -284,7 +284,8 @@ class Data extends AbstractHelper
             "permatava" => "permata",
             "alfamart" => "alfamart",
             "ovo" => "ovo",
-            "dana" => "dana"
+            "dana" => "dana",
+            "indomaret" => "indomaret"
         ];
 
         $response = FALSE;

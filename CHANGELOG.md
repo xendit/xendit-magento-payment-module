@@ -5,6 +5,7 @@
 Features:
 
 - Add DANA payment method
+- Add Indomaret payment method
 
 ## 2.3.0 (2020-10-06)
 
