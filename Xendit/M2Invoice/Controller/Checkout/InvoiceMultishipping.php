@@ -56,7 +56,8 @@ class InvoiceMultishipping extends AbstractAction
                 'preferred_method' => $preferredMethod,
                 'should_send_email' => $this->getDataHelper()->getSendInvoiceEmail() ? "true" : "false",
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
-                'client_type' => 'INTEGRATION'
+                'client_type' => 'INTEGRATION',
+                'payment_methods' => json_encode([strtoupper($preferredMethod)])
             ];
 
             $invoice = $this->createInvoice($requestData);
