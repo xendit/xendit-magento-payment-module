@@ -248,13 +248,12 @@ class Notification extends Action implements CsrfAwareActionInterface
                 $this->getCheckoutHelper()->restoreQuote(); //restore cart
             }
 
+            $order  ->addStatusHistoryComment("Xendit payment " . strtolower($paymentStatus) . ". Transaction ID: $transactionId")
+                    ->save();
+
             if ($isEwallet) {
-                $order  ->setState($orderState)
-                        ->setStatus($orderState);
-                $order  ->save();
-                
                 $payment = $order->getPayment();
-                $payment->setAdditionalInformation('xendit_ewallet_failure_code', $failureCode);
+                $payment->setAdditionalInformation('xendit_ewallet_failure_code', $callbackPayload['failure_code']);
                 $payment->save();
             }
 
