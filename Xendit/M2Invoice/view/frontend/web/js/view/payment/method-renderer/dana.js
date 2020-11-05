@@ -25,11 +25,11 @@ define(
             },
 
             getCode: function() {
-                return 'permatava';
+                return 'dana';
             },
 
             getMethod: function() {
-                return 'Permata'
+                return 'DANA'
             },
 
             getTest: function() {
@@ -37,7 +37,7 @@ define(
             },
 
             getDescription: function() {
-                return `Bayar pesanan dengan transfer bank ${self.getMethod()} dengan virtual account melalui Xendit`;
+                return 'Bayar pesanan dengan akun DANA anda melalui Xendit';
             },
 
             getTestDescription: function () {
@@ -54,7 +54,7 @@ define(
             },
 
             afterPlaceOrder: function () {
-                window.location.replace(url.build('xendit/checkout/invoice?preferred_method=Permata'));
+                window.location.replace(url.build(`xendit/checkout/invoice?preferred_method=${self.getMethod()}`));
             },
 
             validate: function() {

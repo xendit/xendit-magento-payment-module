@@ -39,6 +39,14 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/ovo'
             },
             {
+                type: 'dana',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dana'
+            },
+            {
+                type: 'indomaret',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/indomaret'
+            },
+            {
                 type: 'cc',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc'
             },

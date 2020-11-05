@@ -112,7 +112,7 @@ class Notification extends Action
 
         $invoice = $this->getXenditInvoice($transactionId);
 
-        if( $isMultishipping ) {
+        if ($isMultishipping) {
             foreach ($orderIds as $key => $value) {
                 $order = $this->orderFactory->create();
                 $order->load($value);
@@ -237,13 +237,12 @@ class Notification extends Action
                 $this->getCheckoutHelper()->restoreQuote(); //restore cart
             }
 
-            if ($isEwallet) {
-                $order  ->setState($orderState)
-                        ->setStatus($orderState);
-                $order  ->save();
+            $order  ->addStatusHistoryComment("Xendit payment " . strtolower($paymentStatus) . ". Transaction ID: $transactionId")
+                    ->save();
 
+            if ($isEwallet) {
                 $payment = $order->getPayment();
-                $payment->setAdditionalInformation('xendit_ewallet_failure_code', $failureCode);
+                $payment->setAdditionalInformation('xendit_ewallet_failure_code', $callbackPayload['failure_code']);
                 $payment->save();
             }
 
@@ -284,10 +283,6 @@ class Notification extends Action
             throw new \Magento\Framework\Exception\LocalizedException(
                 new Phrase($e->getMessage())
             );
-        }
-
-        if ($ewalletType == 'DANA') {
-            $response['status'] = $response['payment_status'];
         }
 
         $statusList = array("COMPLETED", "PAID", "SUCCESS_COMPLETED"); //OVO, DANA, LINKAJA

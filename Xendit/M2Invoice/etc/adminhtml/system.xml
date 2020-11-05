@@ -64,7 +64,7 @@
                             function shouldDisplayAdditionalKYCWarningMethod() {
                                 var currentValue = specificSelection.val();
 
-                                if (currentValue.includes('ovo') || currentValue.includes('alfamart') || currentValue.includes('bcava')) {
+                                if (currentValue.includes('ovo') || currentValue.includes('alfamart') || currentValue.includes('bcava') || currentValue.includes('dana')) {
                                     displayAdditionalKYCWarning(true);
                                 } else {
                                     displayAdditionalKYCWarning(false);
