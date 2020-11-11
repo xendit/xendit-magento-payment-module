@@ -25,9 +25,10 @@
             </m2invoice>
             <alfamart>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\Alfamart</model>
                 <title>Alfamart</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -35,9 +36,10 @@
             </alfamart>
             <bcava>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\BCAVA</model>
                 <title>Bank Transfer - BCA</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -45,9 +47,10 @@
             </bcava>
             <bniva>
                 <active>1</active>
-                <payment_action>initialize</payment_action>
+                <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\BNIVA</model>
                 <title>Bank Transfer - BNI</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -55,9 +58,10 @@
             </bniva>
             <briva>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\BRIVA</model>
                 <title>Bank Transfer - BRI</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -65,9 +69,10 @@
             </briva>
             <mandiriva>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\MandiriVA</model>
                 <title>Bank Transfer - Mandiri</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -75,9 +80,10 @@
             </mandiriva>
             <permatava>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\PermataVA</model>
                 <title>Bank Transfer - Permata</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -121,9 +127,10 @@
             </cc_subscription>
             <dana>
                 <active>1</active>
-                <payment_action>initialize</payment_action>
+                <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\DANA</model>
                 <title>DANA</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -131,9 +138,10 @@
             </dana>
             <indomaret>
                 <active>1</active>
-                <payment_action>initialize</payment_action>
+                <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Indomaret</model>
                 <title>Indomaret</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -144,6 +152,7 @@
                 <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\OVO</model>
                 <title>OVO</title>
+                <order_status>pending_payment</order_status><!-- set default order -->
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
