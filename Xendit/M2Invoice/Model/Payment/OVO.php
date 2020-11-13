@@ -43,7 +43,7 @@ class OVO extends AbstractInvoice
 
         $orderId = $order->getRealOrderId();
         $billing = $order->getBillingAddress();
-        $phone = trim(!empty($additionalData['phone_number']) ?: $billing->getTelephone());
+        $phone = trim(!empty($additionalData['phone_number']) ? $additionalData['phone_number'] : $billing->getTelephone());
 
         try {
             // validate phone number
