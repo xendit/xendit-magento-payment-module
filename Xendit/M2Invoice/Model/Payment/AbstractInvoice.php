@@ -79,6 +79,11 @@ class AbstractInvoice extends AbstractMethod
         }
     }
 
+    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        $payment->setIsTransactionPending(true);
+    }
+
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         if ($quote === null) {
