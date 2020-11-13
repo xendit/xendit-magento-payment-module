@@ -42,18 +42,29 @@ class OVO extends AbstractInvoice
         }
 
         $orderId = $order->getRealOrderId();
+        $billing = $order->getBillingAddress();
+        $phone = trim(!empty($additionalData['phone_number']) ? $additionalData['phone_number'] : $billing->getTelephone());
+
         try {
+            // validate phone number
+            if (!$phone || strpos($phone, '08') !== 0) {
+                $message = $this->mapOvoErrorCode('INVALID_PHONE_NUMBER');
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    new Phrase($message)
+                );
+            }
+
             $args = [
                 'external_id' => $this->dataHelper->getExternalId($orderId),
                 'amount' => $amount,
-                'phone' => $additionalData['phone_number'],
+                'phone' => $phone,
                 'ewallet_type' => self::DEFAULT_EWALLET_TYPE,
                 'platform_callback_url' => $this->getXenditCallbackUrl()
             ];
 
             $ewalletPayment = $this->requestEwalletPayment($args);
 
-            if ( isset($ewalletPayment['error_code']) ) {
+            if (isset($ewalletPayment['error_code'])) {
                 if ($ewalletPayment['error_code'] == 'DUPLICATE_PAYMENT_REQUEST_ERROR') {
                     $args = array_replace($args, array(
                         'external_id' => $this->dataHelper->getExternalId($orderId, true)
@@ -147,9 +158,9 @@ class OVO extends AbstractInvoice
         $payment->setAdditionalInformation('xendit_failure_reason', $message);
     }
 
-    private function mapOvoErrorCode($errorCode)
+    private function mapOvoErrorCode($errorCode, $message = '')
     {
-        switch ( $errorCode ) {
+        switch ($errorCode) {
             case 'USER_DID_NOT_AUTHORIZE_THE_PAYMENT':
                 return 'Please complete the payment request within 60 seconds.';
             case 'USER_DECLINED_THE_TRANSACTION':
@@ -168,6 +179,8 @@ class OVO extends AbstractInvoice
             case 'DEVELOPMENT_MODE_PAYMENT_ACKNOWLEDGED':
                 return 'Development mode detected. Please refer to our documentations for successful payment
                     simulation';
+            case 'INVALID_PHONE_NUMBER':
+                return 'Phone number is either missing or incorrect. Format should be 08XXXXXXXXX (not using "+62").';
             default:
                 return "Failed to pay with eWallet. Error code: $errorCode";
         }

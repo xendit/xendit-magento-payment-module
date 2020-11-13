@@ -141,7 +141,6 @@ define(
             },
 
             block: function() {
-                var overlayBox
                 if ($("[class='xendit-overlay-box']").length === 0) {
                     var overlayDiv = $( "<div class='xendit-overlay-box'>" +
                         "<div id='xendit-overlay-content'>\n" +

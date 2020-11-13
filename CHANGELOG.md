@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.4.1 (2020-11-06)
+
+Improvements:
+
+- Add OVO phone validation
+- Set default order status for Invoice methods
+
 ## 2.4.0 (2020-11-02)
 
 Features:

@@ -15,7 +15,10 @@ class Invoice extends AbstractAction
             $order = $this->getOrder();
             $apiData = $this->getApiRequestData($order);
 
-            if ($order->getState() === Order::STATE_PROCESSING) {
+            if ($order->getState() === Order::STATE_PROCESSING || 
+                $order->getState() === Order::STATE_PENDING_PAYMENT || 
+                $order->getState() === Order::STATE_PAYMENT_REVIEW
+            ) {
                 $this->changePendingPaymentStatus($order);
                 $invoice = $this->createInvoice($apiData);
                 $this->addInvoiceData($order, $invoice);
