@@ -13,19 +13,19 @@ class Failure extends AbstractAction {
                 $order = $this->getOrderFactory()->create();
                 $order ->load($orderId);
     
-                $this->cancelOrder($order);
+                $this->shouldCancelOrder($order);
             }
         } else { //onepage
             $order = $this->getOrderById($this->getRequest()->get('order_id'));
 
-            $this->cancelOrder($order);
+            $this->shouldCancelOrder($order);
         }
 
         $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. Please click on 'Update Shopping Cart'."));
         $this->_redirect('checkout/cart');
     }
 
-    private function cancelOrder($order) {
+    private function shouldCancelOrder($order) {
         if ($order) {
             if ($order->canInvoice()) {
                 $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
