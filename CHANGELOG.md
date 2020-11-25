@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.4.2 (2020-11-23)
+
+Improvements:
+
+- Check order status before cancelling through failure endpoint
+
 ## 2.4.1 (2020-11-06)
 
 Improvements:
