@@ -195,7 +195,20 @@ class Notification extends Action implements CsrfAwareActionInterface
         }
 
         if ($isEwallet) {
-            $paymentStatus = $this->getEwalletStatus($callbackPayload['ewallet_type'], $callbackPayload['external_id']);
+            $ewallet = $this->getEwallet($callbackPayload['ewallet_type'], $callbackPayload['external_id']);
+            $paymentStatus = $ewallet['status'];
+
+            if ($ewallet['external_id'] !== $callbackPayload['external_id']) {
+                $result = $this->jsonResultFactory->create();
+                /** You may introduce your own constants for this custom REST API */
+                $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => 'Ewallet is not for this order'
+                ]);
+
+                return $result;
+            }
         } else {
             $paymentStatus = $invoice['status'];
 
@@ -283,7 +296,7 @@ class Notification extends Action implements CsrfAwareActionInterface
         return $invoice;
     }
 
-    private function getEwalletStatus($ewalletType, $externalId)
+    private function getEwallet($ewalletType, $externalId)
     {
         $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=".$ewalletType."&external_id=".$externalId;
         $ewalletMethod = \Zend\Http\Request::METHOD_GET;
@@ -296,12 +309,13 @@ class Notification extends Action implements CsrfAwareActionInterface
             );
         }
 
+        $status = $response['status'];
         $statusList = array("COMPLETED", "PAID", "SUCCESS_COMPLETED"); //OVO, DANA, LINKAJA
-        if (in_array($response['status'], $statusList)) {
-            return "COMPLETED";
+        if (in_array($status, $statusList)) {
+            $response['status'] = "COMPLETED";
         }
         
-        return $response['status'];
+        return $response;
     }
 
     private function invoiceOrder($order, $transactionId)
