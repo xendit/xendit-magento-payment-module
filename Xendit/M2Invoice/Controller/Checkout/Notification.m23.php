@@ -161,12 +161,11 @@ class Notification extends Action implements CsrfAwareActionInterface
         if (isset($callbackPayload['failure_code'])) {
             $failureCode = $callbackPayload['failure_code'];
         }
+        $prefix = $this->dataHelper->getExternalIdPrefix();
+        $trimmedExternalId = str_replace($prefix . "-", "", $callbackPayload['external_id']);
+        $order = $this->getOrderById($trimmedExternalId);
 
-        $temp = explode('-', $callbackPayload['external_id']);
-        $orderId = end($temp);
-        $order = $this->getOrderById($orderId);
-
-        return $this->checkOrder($order, true, $callbackPayload, null, $orderId);
+        return $this->checkOrder($order, true, $callbackPayload, null, $trimmedExternalId);
     }
 
     private function checkOrder($order, $isEwallet, $callbackPayload, $invoice, $callbackDescription) {
