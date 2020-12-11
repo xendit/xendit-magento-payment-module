@@ -19,7 +19,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
             $invoiceId = $payload['id'];
             $chargeId = $payload['credit_card_charge_id'];
 
-            //verify callback
+            // verify callback to ensure payment exist in xendit side 
             $callback = $this->getCallbackByInvoiceId($invoiceId);
             if (isset($callback['error_code']) || !isset($callback['status'])) {
                 $result->setData([

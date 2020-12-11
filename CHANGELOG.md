@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.4.3 (2020-12-10)
+
+Improvements:
+
+- Improve callback endpoint security to check order number from source of truth
+
 ## 2.4.2 (2020-11-23)
 
 Improvements:

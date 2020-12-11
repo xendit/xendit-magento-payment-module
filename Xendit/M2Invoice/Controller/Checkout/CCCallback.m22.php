@@ -6,12 +6,35 @@ use Magento\Framework\Controller\ResultFactory;
 use Magento\Sales\Model\Order;
 use Xendit\M2Invoice\Enum\LogDNALevel;
 
+/**
+ * This callback is only for order in multishipping flow. For order
+ * created in onepage checkout is handled in ProcessHosted.php
+ */
 class CCCallback extends ProcessHosted
 {
     public function execute()
     {
         try {
-            $orderIds = explode('-', $this->getRequest()->getParam('order_ids'));
+            $post = $this->getRequest()->getContent();
+            $callbackPayload = json_decode($post, true);
+
+            if (
+                !isset($callbackPayload['id']) ||
+                !isset($callbackPayload['hp_token']) ||
+                !isset($callbackPayload['order_number'])
+            ) {
+                $result = $this->getJsonResultFactory()->create();
+                $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => 'Callback body is invalid'
+                ]);
+
+                return $result;
+            }
+            $orderIds = explode('-', $callbackPayload['order_number']);
+            $hostedPaymentId = $callbackPayload['id'];
+            $hostedPaymentToken = $callbackPayload['hp_token'];
             
             $shouldRedirect = false;
             $isError = false;
@@ -23,40 +46,49 @@ class CCCallback extends ProcessHosted
 
                 $payment = $order->getPayment();
 
-                if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
-                    $requestData = [
-                        'id' => $payment->getAdditionalInformation('xendit_hosted_payment_id'),
-                        'hp_token' => $payment->getAdditionalInformation('xendit_hosted_payment_token')
-                    ];
-    
-                    if ($flag) { // complete hosted payment only once as status will be changed to USED
-                        $hostedPayment = $this->getCompletedHostedPayment($requestData);
-                        $flag = false;
+                $requestData = [
+                    'id' => $hostedPaymentId,
+                    'hp_token' => $hostedPaymentToken
+                ];
+
+                if ($flag) { // complete hosted payment only once as status will be changed to USED
+                    $hostedPayment = $this->getCompletedHostedPayment($requestData);
+                    $flag = false;
+                }
+                
+                if (isset($hostedPayment['error_code'])) {
+                    $isError = true;
+                }
+                else {
+                    if ($hostedPayment['order_number'] !== $callbackPayload['order_number']) {
+                        $result = $this->getJsonResultFactory()->create();
+                        $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
+                        $result->setData([
+                            'status' => __('ERROR'),
+                            'message' => 'Hosted payment is not for this order'
+                        ]);
+
+                        return $result;
                     }
-    
-                    if (isset($hostedPayment['error_code'])) {
-                        $isError = true;
-                    }
-                    else {
-                        if ($hostedPayment['paid_amount'] != $hostedPayment['amount']) {
-                            $order->setBaseDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
-                            $order->setDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
-                            $order->save();
-            
-                            $order->setBaseGrandTotal($order->getBaseGrandTotal() + $order->getBaseDiscountAmount());
-                            $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
-                            $order->save();
-                        }
-                        $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
-                        $payment->setAdditionalInformation('xendit_installment', $hostedPayment['installment']);
+
+                    if ($hostedPayment['paid_amount'] != $hostedPayment['amount']) {
+                        $order->setBaseDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
+                        $order->setDiscountAmount($hostedPayment['paid_amount'] - $hostedPayment['amount']);
+                        $order->save();
         
-                        $this->processSuccessfulTransaction(
-                            $order,
-                            $payment,
-                            'Xendit Credit Card payment completed. Transaction ID: ',
-                            $hostedPayment['charge_id']
-                        );
+                        $order->setBaseGrandTotal($order->getBaseGrandTotal() + $order->getBaseDiscountAmount());
+                        $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
+                        $order->save();
                     }
+                    $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
+                    $payment->setAdditionalInformation('xendit_installment', $hostedPayment['installment']);
+    
+                    $this->processSuccessfulTransaction(
+                        $order,
+                        $payment,
+                        'Xendit Credit Card payment completed. Transaction ID: ',
+                        $hostedPayment['charge_id']
+                    );
                 }
             }
 
