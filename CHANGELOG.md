@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.5.0 (2020-12-16)
+
+Improvements:
+
+- Migrate OVO to using XenInvoice
+
 ## 2.4.3 (2020-12-10)
 
 Improvements:
