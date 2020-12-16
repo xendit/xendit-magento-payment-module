@@ -47,44 +47,6 @@ class Redirect extends AbstractAction
                 return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
             }
 
-            if ($payment->getAdditionalInformation('xendit_ovo_external_id') !== null) {
-                $isSuccessful = false;
-                $loopCondition = true;
-                $startTime = time();
-                while ($loopCondition && (time() - $startTime < 70)) {
-                    $order = $this->getOrderById($orderId);
-
-                    if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
-                        $loopCondition = false;
-                        $isSuccessful = $order->getState() === Order::STATE_PROCESSING;
-                    }
-                    sleep(1);
-                }
-
-                if ($order->getState() === Order::STATE_PENDING_PAYMENT) {
-                    $ewalletStatus = $this->getEwalletStatus('OVO', $payment->getAdditionalInformation('xendit_ovo_external_id'));
-
-                    if ($ewalletStatus === 'COMPLETED') {
-                        $isSuccessful = true;
-                    }
-                }
-
-                if ($isSuccessful) {
-                    $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-                    return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
-                } else {
-                    $payment = $order->getPayment();
-                    $failureCode = $payment->getAdditionalInformation('xendit_ewallet_failure_code');
-
-                    if ($failureCode === null) {
-                        $failureCode = 'Payment is ' . $ewalletStatus;
-                    }
-
-                    $this->getCheckoutHelper()->restoreQuote();
-                    return $this->redirectToCart($failureCode);
-                }
-            }
-
             if ($payment->getAdditionalInformation('xendit_failure_reason') !== null) {
                 $failureReason = $payment->getAdditionalInformation('xendit_failure_reason');
 
