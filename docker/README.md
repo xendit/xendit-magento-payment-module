@@ -56,6 +56,6 @@ php bin/magento setup:install \
 ```
 
 ## TODO
-[ ] Create our own image
-[ ] Integrate with our plugin
-[ ] Support other version
+- [ ] Create our own image
+- [ ] Integrate with our plugin
+- [ ] Support other version
