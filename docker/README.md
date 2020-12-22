@@ -54,3 +54,8 @@ php bin/magento setup:install \
 --session-save=files \
 --use-sample-data
 ```
+
+## TODO
+[] Create our own image
+[] Integrate with our plugin
+[] Support other version
