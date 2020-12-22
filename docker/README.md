@@ -18,22 +18,12 @@ docker-compose up -d --build
 App: http://magento2.docker
 PHPMyAdmin: http://127.0.0.1:8080
 
-## Install Magento2
-
-Access docker container
+## Access docker container
 ```
 docker exec -it web bash
 ```
 
-Open App directory
-```
-cd /app
-```
-
-deploy sample data
-```
-php bin/magento sampledata:deploy
-```
+## Install Magento2
 
 Install
 ```
@@ -60,8 +50,30 @@ php bin/magento setup:install \
 --use-sample-data
 ```
 
+## Seeding sample data
+
+Add reference to repo.magento.com in composer.json, this is needed if you clone repo from github.
+
+```
+composer config repositories.0 composer https://repo.magento.com
+```
+nb: you need repo.magento.com cridential
+
+Install sample data:
+```
+php bin/magento sampledata:deploy
+```
+
+Run the following command to update the database
+```
+bin/magento setup:upgrade
+```
+
 ## TODO
 - [x] Create docker for magento
 - [ ] Create our own image
 - [x] Integrate with our plugin
 - [ ] Support other version
+- [ ] Seeding product
+- [ ] Add Xendit API Key
+- [ ] Integrate with E2E testing
