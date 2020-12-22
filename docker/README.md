@@ -12,13 +12,18 @@ sudo -- sh -c "echo '127.0.0.1 magento2.docker' >> /etc/hosts"
 
 ## Run
 ```
-docker exec -it web bash
+docker-compose up -d --build
 ```
 
 App: http://magento2.docker
 PHPMyAdmin: http://127.0.0.1:8080
 
 ## Install Magento2
+
+Access docker container
+```
+docker exec -it web bash
+```
 
 Open App directory
 ```
