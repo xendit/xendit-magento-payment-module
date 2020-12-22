@@ -90,3 +90,5 @@ fabric.properties
 telepresence.log
 
 .DS_Store
+
+docker/magento2
