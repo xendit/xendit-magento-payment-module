@@ -1,5 +1,5 @@
 ## Setup Magento 2
-open docker folder
+Clone magento 2 in docker folder
 ```
 git clone https://github.com/magento/magento2.git
 git checkout 2.1
@@ -61,6 +61,7 @@ php bin/magento setup:install \
 ```
 
 ## TODO
+- [x] Create docker for magento
 - [ ] Create our own image
-- [ ] Integrate with our plugin
+- [x] Integrate with our plugin
 - [ ] Support other version

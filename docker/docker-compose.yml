@@ -16,6 +16,7 @@ services:
         - PHP_UPLOAD_MAX_FILESIZE=1024M
       volumes:
         - ./magento2:/app:cached
+        - ../Xendit:/app/app/code/Xendit
         # - ./php.ini:/usr/local/etc/php/conf.d/99-docker.ini
       ports:
         - "80:80"
