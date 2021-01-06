@@ -174,17 +174,6 @@ class CCMultishipping extends AbstractAction
         }
     }
 
-    private function redirectToCart($failureReason)
-    {
-        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-        $this->getMessageManager()->addErrorMessage(__(
-            $failureReasonInsight
-        ));
-        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'));
-        return $resultRedirect;
-    }
-
     private function requestHostedPayment($requestData)
     {
         $hostedPaymentUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments";

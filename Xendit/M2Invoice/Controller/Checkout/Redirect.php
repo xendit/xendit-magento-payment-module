@@ -105,15 +105,4 @@ class Redirect extends AbstractAction
         
         return $response['status'];
     }
-
-    private function redirectToCart($failureReason)
-    {
-        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-        $this->getMessageManager()->addErrorMessage(__(
-            $failureReasonInsight
-        ));
-        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
-        return $resultRedirect;
-    }
 }

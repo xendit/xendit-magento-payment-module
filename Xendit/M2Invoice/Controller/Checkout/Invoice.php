@@ -34,20 +34,11 @@ class Invoice extends AbstractAction
                 $resultRedirect->setUrl($redirectUrl);
                 return $resultRedirect;
             } elseif ($order->getState() === Order::STATE_CANCELED) {
-                $this->getMessageManager()->addErrorMessage(__(
-                    'Order is cancelled, please try again.'
-                ));
-                $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-                $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
-                return $resultRedirect;
+                return $this->redirectToCart('Order is cancelled, please try again.');
             } else {
                 $this->getLogger()->debug('Order in unrecognized state: ' . $order->getState());
-                $this->getMessageManager()->addErrorMessage(__(
-                    'Order state is unrecognized, please try again.'
-                ));
-                $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-                $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
-                return $resultRedirect;
+
+                return $this->redirectToCart('Order state is unrecognized, please try again.');
             }
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/invoice: ' . $e->getMessage();
@@ -58,12 +49,7 @@ class Invoice extends AbstractAction
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message, $apiData);
 
             $this->cancelOrder($order, $e->getMessage());
-            $this->getMessageManager()->addErrorMessage(__(
-                $e->getMessage()
-            ));
-            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-            $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
-            return $resultRedirect;
+            return $this->redirectToCart($e->getMessage());
         }
     }
 
