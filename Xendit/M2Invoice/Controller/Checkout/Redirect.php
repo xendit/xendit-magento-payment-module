@@ -74,14 +74,14 @@ class Redirect extends AbstractAction
 
             $this->cancelOrder($order, 'No payment recorded');
 
-            return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
+            return $this->redirectToCart();
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
 
             $this->cancelOrder($order, $e->getMessage());
 
-            return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
+            return $this->redirectToCart($e->getMessage());
         }
     }
 

@@ -21,8 +21,7 @@ class Failure extends AbstractAction {
             $this->shouldCancelOrder($order);
         }
 
-        $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. Please click on 'Update Shopping Cart'."));
-        $this->_redirect('checkout/cart');
+        return $this->redirectToCart("Xendit payment failed. Please click on 'Update Shopping Cart'.");
     }
 
     private function shouldCancelOrder($order) {

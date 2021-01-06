@@ -257,7 +257,7 @@ abstract class AbstractAction extends Action
         );
     }
 
-    protected function redirectToCart($failureReason) {
+    protected function redirectToCart($failureReason = 'UNEXPECTED_PLUGIN_ISSUE') {
         $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
         $this->getMessageManager()->addErrorMessage(__(
             $failureReasonInsight

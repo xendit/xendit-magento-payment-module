@@ -53,7 +53,7 @@ class ThreeDSResult extends AbstractAction
             $hosted3DS = $this->getThreeDSResult($hosted3DSId);
 
             if ('VERIFIED' !== $hosted3DS['status']) {
-                return $this->processFailedPayment($orderIds, 'Authentication process failed. Please try again.');
+                return $this->processFailedPayment($orderIds, 'AUTHENTICATION_FAILED');
             }
 
             $charge = $this->createCharge($hosted3DS, $orderId);
@@ -141,14 +141,10 @@ class ThreeDSResult extends AbstractAction
     /**
      * $orderIds = prefixless order IDs
      */
-    private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error')
+    private function processFailedPayment($orderIds, $failureReason = 'UNEXPECTED_PLUGIN_ISSUE')
     {
         $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);
 
-        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-        $this->getMessageManager()->addErrorMessage(__(
-            $failureReasonInsight
-        ));
-        $this->_redirect('checkout/cart', array('_secure'=> false));
+        return $this->redirectToCart($failureReason);
     }
 }

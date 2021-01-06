@@ -257,15 +257,11 @@ class CCMultishipping extends AbstractAction
     /**
      * $orderIds = prefixless order IDs
      */
-    private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
+    private function processFailedPayment($orderIds, $failureReason = 'UNEXPECTED_PLUGIN_ISSUE')
     {
         $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);
 
-        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-        $this->getMessageManager()->addErrorMessage(__(
-            $failureReasonInsight
-        ));
-        $this->_redirect('checkout/cart', array('_secure'=> false));
+        return $this->redirectToCart($failureReason);
     }
 
     private function processSuccessfulPayment($orders, $payment, $charge)
