@@ -6,6 +6,7 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Phrase;
 use Magento\Framework\UrlInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Sales\Model\OrderFactory;
@@ -241,5 +242,17 @@ abstract class AbstractAction extends Action
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
 
         return $baseUrl . 'xendit/checkout/notification';
+    }
+
+    protected function throwXenditAPIError($errorResponse) {
+        $message = $errorResponse['message'];
+
+        if (isset($errorResponse['code'])) {
+            $message .= '. Code: ' . $errorResponse['code'];
+        }
+
+        throw new \Magento\Framework\Exception\LocalizedException(
+            new Phrase($message)
+        );
     }
 }

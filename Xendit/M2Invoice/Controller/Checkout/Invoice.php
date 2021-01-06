@@ -3,6 +3,7 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
+use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Enum\LogDNA_Level;
 use Xendit\M2Invoice\Enum\LogDNALevel;
@@ -21,6 +22,11 @@ class Invoice extends AbstractAction
             ) {
                 $this->changePendingPaymentStatus($order);
                 $invoice = $this->createInvoice($apiData);
+
+                if (isset($invoice['error_code'])) {
+                    $this->throwXenditAPIError($invoice);
+                }
+
                 $this->addInvoiceData($order, $invoice);
                 $redirectUrl = $this->getXenditRedirectUrl($invoice, $apiData['preferred_method']);
 
@@ -28,10 +34,20 @@ class Invoice extends AbstractAction
                 $resultRedirect->setUrl($redirectUrl);
                 return $resultRedirect;
             } elseif ($order->getState() === Order::STATE_CANCELED) {
-                $this->_redirect('checkout/cart');
+                $this->getMessageManager()->addErrorMessage(__(
+                    'Order is cancelled, please try again.'
+                ));
+                $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+                $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+                return $resultRedirect;
             } else {
                 $this->getLogger()->debug('Order in unrecognized state: ' . $order->getState());
-                $this->_redirect('checkout/cart');
+                $this->getMessageManager()->addErrorMessage(__(
+                    'Order state is unrecognized, please try again.'
+                ));
+                $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+                $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+                return $resultRedirect;
             }
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/invoice: ' . $e->getMessage();
@@ -43,9 +59,11 @@ class Invoice extends AbstractAction
 
             $this->cancelOrder($order, $e->getMessage());
             $this->getMessageManager()->addErrorMessage(__(
-                "There was an error in the Xendit payment. Failure reason: Unexpected Error"
+                $e->getMessage()
             ));
-            $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+            $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+            return $resultRedirect;
         }
     }
 
