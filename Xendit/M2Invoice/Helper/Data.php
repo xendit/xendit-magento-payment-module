@@ -214,17 +214,18 @@ class Data extends AbstractHelper
      */
     public function failureReasonInsight($failureReason)
     {
+        $cardDeclinedReason = 'The card you are trying to use has been declined. Please try again with a different card.';
         switch ($failureReason) {
             case 'CARD_DECLINED':
-                return 'The card you are trying to use has been declined. Please try again with a different card. Code: 200011';
+                return $cardDeclinedReason . ' Code: 200011';
             case 'STOLEN_CARD':
-                return 'The card you are trying to use has been declined. Please try again with a different card. Code: 200013';
+                return $cardDeclinedReason . ' Code: 200013';
             case 'INSUFFICIENT_BALANCE':
-                return 'The card you are trying to use has been declined. Please try again with a different card. Code: 200012';
+                return $cardDeclinedReason . ' Code: 200012';
             case 'INVALID_CVN':
                 return 'Please verify that all credit card information is correct. Code: 200015';
             case 'INACTIVE_CARD':
-                return 'The card you are trying to use has been declined. Please try again with a different card. Code: 200014';
+                return $cardDeclinedReason . ' Code: 200014';
             case 'EXPIRED_CARD':
                 return 'The card you are trying to use has expired. Please try again with a different card. Code: 200010';
             case 'PROCESSOR_ERROR':
