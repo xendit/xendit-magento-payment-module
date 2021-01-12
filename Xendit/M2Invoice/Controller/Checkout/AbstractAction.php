@@ -249,7 +249,7 @@ abstract class AbstractAction extends Action
         $message = $errorResponse['message'];
 
         if (isset($errorResponse['code'])) {
-            $message .= '. Code: ' . $errorResponse['code'];
+            $message .= ' Code: ' . $errorResponse['code'];
         }
 
         throw new \Magento\Framework\Exception\LocalizedException(

@@ -65,6 +65,31 @@ define(
                 return true;
             },
 
+            placeOrder: function (data, event) {
+                this.isPlaceOrderActionAllowed(false);
+                var self = this;
+                try {
+                    var paymentData = self.getData();
+                    var placeOrder = placeOrderAction(paymentData, false);
+
+                    $.when(placeOrder)
+                        .fail(function (e) {
+                            if (e.responseJSON) {
+                                e = e.responseJSON;
+                            }
+
+                            self.isPlaceOrderActionAllowed(true);
+                        })
+                        .done(function () {
+                            self.afterPlaceOrder();
+                        });
+
+                    return false;
+                } catch (e) {
+                    this.isPlaceOrderActionAllowed(true);
+                }
+            },
+
             afterPlaceOrder: function () {
                 var uiUrl = window.checkoutConfig.payment.m2invoice.ui_url;
                 var xenditScript = document.createElement('script');

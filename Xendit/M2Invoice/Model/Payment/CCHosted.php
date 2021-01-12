@@ -81,6 +81,11 @@ class CCHosted extends AbstractInvoice
 
             if (isset($hostedPayment['error_code'])) {
                 $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
+
+                if (isset($hostedPayment['code'])) {
+                    $message .= ' Code: ' . $hostedPayment['code'];
+                }
+
                 $this->processFailedPayment($payment, $message);
 
                 throw new \Magento\Framework\Exception\LocalizedException(

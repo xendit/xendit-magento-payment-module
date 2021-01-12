@@ -260,8 +260,13 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 return $this;
             }
             else if ($chargeError) {
+                $message = $charge['message'];
+                if (isset($charge['code'])) {
+                    $message .= ' Code: ' . $charge['code'];
+                }
+        
                 throw new \Magento\Framework\Exception\LocalizedException(
-                    __($charge['message'])
+                    new Phrase($message)
                 );
             }
 
