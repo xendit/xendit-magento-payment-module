@@ -106,19 +106,9 @@ class AbstractInvoice extends AbstractMethod
             $chosenMethods = $this->dataHelper->getChosenMethods();
             $currentCode = $this->_code;
 
-            if ($currentCode === 'cchosted') {
-                $currentCode = 'cc';
-            }
-
             if (!in_array($currentCode, explode(',', $chosenMethods))) {
                 return false;
             }
-        }
-
-        $cardPaymentType = $this->dataHelper->getCardPaymentType();
-
-        if (($cardPaymentType === 'popup' && $this->methodCode === 'CCHOSTED') || $this->methodCode === 'CC_INSTALLMENT' || $this->methodCode === 'CC_SUBSCRIPTION') {
-            return true;
         }
 
         try {
