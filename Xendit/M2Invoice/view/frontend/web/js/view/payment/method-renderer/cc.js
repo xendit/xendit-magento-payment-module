@@ -193,7 +193,7 @@ define(
 
                     Xendit.card.createToken(tokenData, function (err, token) {
                         if (err) {
-                            self.showError(err);
+                            self.showError('We encountered an issue while processing the checkout. Please contact us. Code: 200035');
                             self.isPlaceOrderActionAllowed(true);
                             return;
                         }
