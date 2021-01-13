@@ -250,17 +250,22 @@ define(
                 };
 
                 if (!tokenData.card_number || !tokenData.cvn || !tokenData.card_exp_month || !tokenData.card_exp_year) {
-                    this.showError('Card information is incomplete. Please complete it and try again.')
+                    this.showError('Card information is incomplete. Please complete it and try again. Code: 200034.')
 					return false;
                 }
                 
                 if (!Xendit.card.validateCardNumber(tokenData.card_number)) {
-					this.showError('Invalid Card Number. Please make sure the card is Visa / Mastercard / JCB.')
+					this.showError('Invalid Card Number. Please make sure the card is Visa / Mastercard / JCB. Code: 200030')
 					return false;
                 }
 
-                if (!Xendit.card.validateCvn(tokenData.cvn)) {
-					this.showError('The CVC that you entered is less than 3 digits. Please enter the correct value and try again.')
+                if (!Xendit.card.validateCvnForCardType(tokenData.cvn, tokenData.card_number)) {
+					this.showError('The CVC/CVN that you entered is less than 3 digits. Please enter the correct value and try again. Code: 200032')
+					return false;
+                }
+
+                if (!Xendit.card.validateExpiry(tokenData.card_exp_month, tokenData.card_exp_year)) {
+					this.showError('The card expiry that you entered does not meet the expected format. Please try again by entering the 2 digits of the month (MM) and the last 2 digits of the year (YY). Code: 200031')
 					return false;
                 }
 
