@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.6.0 (2021-01-19)
+
+Improvements:
+
+- Standardize Error Message
+
 ## 2.5.0 (2020-12-16)
 
 Improvements:
