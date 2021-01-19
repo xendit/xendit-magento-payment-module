@@ -62,6 +62,10 @@ class InvoiceMultishipping extends AbstractAction
 
             $invoice = $this->createInvoice($requestData);
 
+            if (isset($invoice['error_code'])) {
+                $this->throwXenditAPIError($invoice);
+            }
+
             $this->addInvoiceData($orders, $invoice);
 
             $redirectUrl = $this->getXenditRedirectUrl($invoice, $preferredMethod);
@@ -72,7 +76,11 @@ class InvoiceMultishipping extends AbstractAction
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogger()->info($message);
-            return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
+
+            foreach ($orders as $order) {
+                $this->cancelOrder($order, $e->getMessage());
+            }
+            return $this->redirectToCart($e->getMessage());
         }
     }
 
@@ -111,16 +119,5 @@ class InvoiceMultishipping extends AbstractAction
             
             $order->save();
         }
-    }
-    
-    private function redirectToCart($failureReason)
-    {
-        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-        $this->getMessageManager()->addErrorMessage(__(
-            $failureReasonInsight
-        ));
-        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
-        return $resultRedirect;
     }
 }

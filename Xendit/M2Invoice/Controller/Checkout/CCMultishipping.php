@@ -174,17 +174,6 @@ class CCMultishipping extends AbstractAction
         }
     }
 
-    private function redirectToCart($failureReason)
-    {
-        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-        $this->getMessageManager()->addErrorMessage(__(
-            $failureReasonInsight
-        ));
-        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'));
-        return $resultRedirect;
-    }
-
     private function requestHostedPayment($requestData)
     {
         $hostedPaymentUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments";
@@ -268,15 +257,11 @@ class CCMultishipping extends AbstractAction
     /**
      * $orderIds = prefixless order IDs
      */
-    private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
+    private function processFailedPayment($orderIds, $failureReason = 'UNEXPECTED_PLUGIN_ISSUE')
     {
         $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);
 
-        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
-        $this->getMessageManager()->addErrorMessage(__(
-            $failureReasonInsight
-        ));
-        $this->_redirect('checkout/cart', array('_secure'=> false));
+        return $this->redirectToCart($failureReason);
     }
 
     private function processSuccessfulPayment($orders, $payment, $charge)

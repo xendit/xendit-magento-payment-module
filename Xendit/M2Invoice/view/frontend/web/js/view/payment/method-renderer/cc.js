@@ -193,7 +193,7 @@ define(
 
                     Xendit.card.createToken(tokenData, function (err, token) {
                         if (err) {
-                            self.showError(err);
+                            self.showError('We encountered an issue while processing the checkout. Please contact us. Code: 200035');
                             self.isPlaceOrderActionAllowed(true);
                             return;
                         }
@@ -250,31 +250,22 @@ define(
                 };
 
                 if (!tokenData.card_number || !tokenData.cvn || !tokenData.card_exp_month || !tokenData.card_exp_year) {
-                    var fields = [];
-
-					if (!tokenData.card_number) {
-						fields.push('card number');
-                    }
-
-					if (!tokenData.cvn) {
-						fields.push('security number');
-                    }
-
-					if (!tokenData.card_exp_month || !tokenData.card_exp_year) {
-						fields.push('card expiry');
-					}
-                    
-                    this.showError('Missing Card Information. Please enter your ' + fields.join(', ') + ', then try again.')
+                    this.showError('Card information is incomplete. Please complete it and try again. Code: 200034.')
 					return false;
                 }
                 
                 if (!Xendit.card.validateCardNumber(tokenData.card_number)) {
-					this.showError('Invalid Card Number. The card number that you entered is not Visa/Master Card/JCB, please provide a card number that is supported and try again.')
+					this.showError('Invalid Card Number. Please make sure the card is Visa / Mastercard / JCB. Code: 200030')
 					return false;
                 }
 
-                if (!Xendit.card.validateCvn(tokenData.cvn)) {
-					this.showError('Invalid CVN/CVV Format. The CVC that you entered is less than 3 digits. Please enter the correct value and try again.')
+                if (!Xendit.card.validateCvnForCardType(tokenData.cvn, tokenData.card_number)) {
+					this.showError('The CVC/CVN that you entered is less than 3 digits. Please enter the correct value and try again. Code: 200032')
+					return false;
+                }
+
+                if (!Xendit.card.validateExpiry(tokenData.card_exp_month, tokenData.card_exp_year)) {
+					this.showError('The card expiry that you entered does not meet the expected format. Please try again by entering the 2 digits of the month (MM) and the last 2 digits of the year (YY). Code: 200031')
 					return false;
                 }
 

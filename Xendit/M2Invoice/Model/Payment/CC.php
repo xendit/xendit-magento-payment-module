@@ -115,10 +115,6 @@ class CC extends \Magento\Payment\Model\Method\Cc
             $chosenMethods = $this->dataHelper->getChosenMethods();
             $currentCode = $this->_code;
 
-            if ($currentCode === 'cchosted') {
-                $currentCode = 'cc';
-            }
-
             if (!in_array($currentCode, explode(',', $chosenMethods))) {
                 return false;
             }
@@ -128,25 +124,9 @@ class CC extends \Magento\Payment\Model\Method\Cc
 
         if ($cardPaymentType === 'form') {
             return true;
-        } else {
-            return false;
         }
 
-        try {
-            $availableMethod = $this->getAvailableMethods();
-
-            if (empty($availableMethod)) {
-                return true;
-            }
-
-            if (!in_array(strtoupper($this->methodCode), $availableMethod)) {
-                return false;
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            return true;
-        }
+        return false;
     }
 
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
@@ -260,8 +240,13 @@ class CC extends \Magento\Payment\Model\Method\Cc
                 return $this;
             }
             else if ($chargeError) {
+                $message = $charge['message'];
+                if (isset($charge['code'])) {
+                    $message .= ' Code: ' . $charge['code'];
+                }
+        
                 throw new \Magento\Framework\Exception\LocalizedException(
-                    __($charge['message'])
+                    new Phrase($message)
                 );
             }
 

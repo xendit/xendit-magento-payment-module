@@ -101,12 +101,12 @@ class ProcessHosted extends AbstractAction
 
         $this->cancelOrder($order, $reason);
 
-        $this->getMessageManager()->addErrorMessage(__(
-            "There was an error in the Xendit payment. Failure reason: $reason"
-        ));
-
         if ($shouldRedirect) {
-            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
+            return $this->redirectToCart($message);
+        } else {
+            $this->getMessageManager()->addErrorMessage(__(
+                "There was an error in the Xendit payment. Failure reason: $reason"
+            ));
         }
     }
 }

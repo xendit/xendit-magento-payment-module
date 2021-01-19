@@ -29,6 +29,46 @@ class CCHosted extends AbstractInvoice
     protected $_canRefund = true;
     protected $methodCode = 'CCHOSTED';
 
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        if ($quote === null) {
+            return false;
+        }
+
+        if ($this->dataHelper->getIsActive() === '0') {
+            return false;
+        }
+
+        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
+
+        if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
+            return false;
+        }
+
+        $allowedMethod = $this->dataHelper->getAllowedMethod();
+
+        if ($allowedMethod === 'specific') {
+            $chosenMethods = $this->dataHelper->getChosenMethods();
+            $currentCode = $this->_code;
+
+            if ($currentCode === 'cchosted') {
+                $currentCode = 'cc';
+            }
+
+            if (!in_array($currentCode, explode(',', $chosenMethods))) {
+                return false;
+            }
+        }
+
+        $cardPaymentType = $this->dataHelper->getCardPaymentType();
+
+        if (($cardPaymentType === 'popup' && $this->methodCode === 'CCHOSTED') || $this->methodCode === 'CC_INSTALLMENT' || $this->methodCode === 'CC_SUBSCRIPTION') {
+            return true;
+        }
+
+        return false;
+    }
+
     public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $payment->setIsTransactionPending(true);
@@ -81,6 +121,11 @@ class CCHosted extends AbstractInvoice
 
             if (isset($hostedPayment['error_code'])) {
                 $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
+
+                if (isset($hostedPayment['code'])) {
+                    $message .= ' Code: ' . $hostedPayment['code'];
+                }
+
                 $this->processFailedPayment($payment, $message);
 
                 throw new \Magento\Framework\Exception\LocalizedException(
