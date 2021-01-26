@@ -97,7 +97,7 @@ class CCMultishipping extends AbstractAction
                     return $this->processFailedPayment($orderIds, $charge['failure_reason']);
                 }
             }
-            else if ($method === 'cchosted' || $method === 'cc_installment' || $method === 'cc_subscription') {
+            else if ($method === 'cchosted' || $method === 'cc_subscription') {
                 $requestData = array(
                     'order_number'           => $rawOrderIds,
                     'amount'                 => $transactionAmount,
@@ -112,27 +112,7 @@ class CCMultishipping extends AbstractAction
                 $billingAddress = $orders[0]->getBillingAddress();
                 $shippingAddress = $orders[0]->getShippingAddress();
 
-                if ($method === 'cc_installment') {
-                    $firstName = $billingAddress->getFirstname() ?: $shippingAddress->getFirstname();
-                    $country = $billingAddress->getCountryId() ?: $shippingAddress->getCountryId();
-                    $billingDetails = array(
-                        'given_names'   => ($firstName ?: 'N/A'),
-                        'surname'       => ($billingAddress->getLastname() ?: null),
-                        'email'         => ($billingAddress->getEmail() ?: null),
-                        'phone_number'  => ($billingAddress->getTelephone() ?: null),
-                        'address' => array(
-                            'country'       => ($country ?: 'ID'),
-                            'street_line_1'  => ($billingAddress->getStreetLine(1) ?: null),
-                            'street_line_2'  => ($billingAddress->getStreetLine(2) ?: null),
-                            'city'          => ($billingAddress->getCity() ?: null),
-                            'state'         => ($billingAddress->getRegion() ?: null),
-                            'postal_code'   => ($billingAddress->getPostcode() ?: null)
-                        )
-                    );
-
-                    $requestData['is_installment'] = "true";
-                    $requestData['billing_details'] = json_encode($billingDetails, JSON_FORCE_OBJECT);
-                } else if ($method === 'cc_subscription') {
+                if ($method === 'cc_subscription') {
                     $requestData['payment_type'] = 'CREDIT_CARD_SUBSCRIPTION';
                     $requestData['is_subscription'] = "true";
                     $requestData['subscription_callback_url'] = $this->getDataHelper()->getXenditSubscriptionCallbackUrl(true);

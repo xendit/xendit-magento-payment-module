@@ -264,7 +264,6 @@ class Data extends AbstractHelper
         $listPayment = [
             "cc" => "cc",
             "cchosted" => "cchosted",
-            "cc_installment" => "cc_installment",
             "cc_subscription" => "cc_subscription",
             "bcava" => "bca",
             "bniva" => "bni",

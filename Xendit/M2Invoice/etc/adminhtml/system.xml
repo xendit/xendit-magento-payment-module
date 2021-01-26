@@ -114,12 +114,6 @@
                                 externalIdPrefix.siblings('.note').children()[0].innerHTML = newText;
                             });
 
-                            jQuery("textarea[id*='m2invoice_card_installment_description']").attr("placeholder", "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
-
-                            if ( !jQuery("textarea[id*='m2invoice_card_installment_description']").val() ) {
-                                jQuery("textarea[id*='m2invoice_card_installment_description']").val("Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
-                            }
-
                             jQuery("textarea[id*='m2invoice_card_subscription_card_subscription_description']").attr("placeholder", "Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI");
 
                             if ( !jQuery("textarea[id*='m2invoice_card_subscription_card_subscription_description']").val() ) {
@@ -209,10 +203,6 @@
                     </comment>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CardPaymentType</source_model>
                     <attribute type="shared">1</attribute>
-                </field>
-                <field id="card_installment_description" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Credit Card Installment Description</label>
-                    <comment>Customize your installment payment description on checkout page</comment>
                 </field>
 
                 <group id="card_subscription" translate="label" showInDefault="1" showInWebsite="1" sortOrder="100">

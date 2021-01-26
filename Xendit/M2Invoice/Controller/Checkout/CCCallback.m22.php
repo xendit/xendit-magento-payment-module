@@ -81,7 +81,6 @@ class CCCallback extends ProcessHosted
                         $order->save();
                     }
                     $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
-                    $payment->setAdditionalInformation('xendit_installment', $hostedPayment['installment']);
     
                     $this->processSuccessfulTransaction(
                         $order,
