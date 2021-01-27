@@ -257,7 +257,7 @@ class Data extends AbstractHelper
         
         //method name => frontend routing
         $listPayment = [
-            "cc" => "cc",
+            "cc" => "credit_card",
             "cchosted" => "cchosted",
             "cc_subscription" => "cc_subscription",
             "bcava" => "bca",
