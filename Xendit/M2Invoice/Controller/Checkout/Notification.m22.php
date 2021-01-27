@@ -225,6 +225,11 @@ class Notification extends Action
             $payment->setTransactionId($transactionId);
             $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
+            if (!empty($invoice['credit_card_charge_id'])) {
+                $payment->setAdditionalInformation('xendit_charge_id', $invoice['credit_card_charge_id']);
+                $payment->save();
+            }
+
             if ($isEwallet) {
                 $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
                 $payment->save();
