@@ -150,11 +150,6 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getEnvironment();
     }
 
-    public function getCardPaymentType()
-    {
-        return $this->m2Invoice->getCardPaymentType();
-    }
-
     public function getAllowedMethod()
     {
         return $this->m2Invoice->getAllowedMethod();
