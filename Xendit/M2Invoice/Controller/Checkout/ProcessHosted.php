@@ -37,7 +37,7 @@ class ProcessHosted extends AbstractAction
                     $order->save();
                 }
                 $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
-
+                $payment->setAdditionalInformation('xendit_installment', $hostedPayment['installment']);
                 return $this->processSuccessfulTransaction(
                     $order,
                     $payment,

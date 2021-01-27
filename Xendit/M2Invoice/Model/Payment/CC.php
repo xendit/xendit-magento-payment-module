@@ -10,8 +10,8 @@ class CC extends AbstractInvoice
      * @var string
      */
     protected $_code = 'cc';
-    protected $_minAmount = 10000;
-    protected $_maxAmount = 1000000000;
+    protected $_minAmount = 5000;
+    protected $_maxAmount = 200000000;
     protected $_canRefund = true;
     protected $methodCode = 'CREDIT_CARD';
 

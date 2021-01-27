@@ -63,41 +63,7 @@ class CCMultishipping extends AbstractAction
                 return $this->_redirect('multishipping/checkout/success');
             }
 
-            if ($method === 'cc') {
-                $requestData = array(
-                    'token_id' => $tokenId,
-                    'card_cvn' => $cvn,
-                    'amount' => $transactionAmount,
-                    'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds),
-                    'return_url' => $this->getDataHelper()->getThreeDSResultUrl($rawOrderIds, true)
-                );
-
-                $charge = $this->requestCharge($requestData);
-
-                $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-                if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
-                    $newRequestData = array_replace($requestData, array(
-                        'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds, true)
-                    ));
-                    $charge = $this->requestCharge($newRequestData);
-                }
-
-                $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-                if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
-                    return $this->handle3DSFlow($requestData, $payment, $orderIds, $orders);
-                }
-
-                if ($chargeError !== null) {
-                    return $this->processFailedPayment($orderIds, $chargeError);
-                }
-    
-                if ($charge['status'] === 'CAPTURED') {
-                    return $this->processSuccessfulPayment($orders, $payment, $charge);
-                } else {
-                    return $this->processFailedPayment($orderIds, $charge['failure_reason']);
-                }
-            }
-            else if ($method === 'cchosted' || $method === 'cc_subscription') {
+            if ($method === 'cc_subscription') {
                 $requestData = array(
                     'order_number'           => $rawOrderIds,
                     'amount'                 => $transactionAmount,
