@@ -196,14 +196,6 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="card_payment_type" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Card Payment Type</label>
-                    <comment>
-                        Choose popup if you don't want to hold sensitive card data on your site
-                    </comment>
-                    <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CardPaymentType</source_model>
-                    <attribute type="shared">1</attribute>
-                </field>
 
                 <group id="card_subscription" translate="label" showInDefault="1" showInWebsite="1" sortOrder="100">
                     <label>Credit Card Subscription Configuration</label>
