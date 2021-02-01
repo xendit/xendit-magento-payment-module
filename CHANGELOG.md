@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.7.0 (2021-02-01)
+
+Improvements:
+
+- Move Cards Payment Method to Invoice
+
 ## 2.6.0 (2021-01-19)
 
 Improvements:

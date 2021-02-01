@@ -225,6 +225,18 @@ class Notification extends Action
             $payment->setTransactionId($transactionId);
             $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
+            if (!empty($invoice['credit_card_charge_id'])) {
+                $payment->setAdditionalInformation('xendit_charge_id', $invoice['credit_card_charge_id']);
+
+                if ($invoice['payment_channel'] === 'CARD_INSTALLMENT') {
+                    $getCharge = $this->getChargeCC($invoice['credit_card_charge_id']);
+
+                    $payment->setAdditionalInformation('xendit_installment', $getCharge['installment']);
+                }
+
+                $payment->save();
+            }
+
             if ($isEwallet) {
                 $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
                 $payment->save();
@@ -266,6 +278,22 @@ class Notification extends Action
         }
 
         return $result;
+    }
+
+    private function getChargeCC($chargeId)
+    {
+        $requestUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/$chargeId";
+        $requestMethod = \Zend\Http\Request::METHOD_GET;
+
+        try {
+            $charge = $this->apiHelper->request($requestUrl, $requestMethod);
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            throw new LocalizedException(
+                new Phrase($e->getMessage())
+            );
+        }
+
+        return $charge;
     }
 
     private function getXenditInvoice($invoiceId)

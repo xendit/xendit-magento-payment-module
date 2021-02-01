@@ -69,7 +69,7 @@ define(
                 }
 
                 if (totals.grand_total < 10000) {
-                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 10,000.'});
+                    self.messageContainer.addErrorMessage({'message': 'The minimum amount for using this payment is IDR 10,000. Please put more item(s) to reach the minimum amount.'});
                     return false;
                 }
 

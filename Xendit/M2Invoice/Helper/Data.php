@@ -150,11 +150,6 @@ class Data extends AbstractHelper
         return $this->m2Invoice->getEnvironment();
     }
 
-    public function getCardPaymentType()
-    {
-        return $this->m2Invoice->getCardPaymentType();
-    }
-
     public function getAllowedMethod()
     {
         return $this->m2Invoice->getAllowedMethod();
@@ -262,9 +257,7 @@ class Data extends AbstractHelper
         
         //method name => frontend routing
         $listPayment = [
-            "cc" => "cc",
-            "cchosted" => "cchosted",
-            "cc_installment" => "cc_installment",
+            "cc" => "credit_card",
             "cc_subscription" => "cc_subscription",
             "bcava" => "bca",
             "bniva" => "bni",

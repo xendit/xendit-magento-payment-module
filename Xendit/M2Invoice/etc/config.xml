@@ -98,24 +98,6 @@
                 <cctypes>VI,MC,AE,JCB</cctypes>
                 <sort_order>7</sort_order>
             </cc>
-            <cchosted>
-                <active>1</active>
-                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
-                <model>Xendit\M2Invoice\Model\Payment\CCHosted</model>
-                <title>Credit and Debit Cards</title>
-                <order_status>pending_payment</order_status><!-- set default order -->
-                <cctypes>VI,MC,AE,JCB</cctypes>
-                <sort_order>8</sort_order>
-            </cchosted>
-            <cc_installment>
-                <active>1</active>
-                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
-                <model>Xendit\M2Invoice\Model\Payment\CCInstallment</model>
-                <title>Credit Card Installment</title>
-                <order_status>pending_payment</order_status><!-- set default order -->
-                <cctypes>VI,MC,AE,JCB</cctypes>
-                <sort_order>9</sort_order>
-            </cc_installment>
             <cc_subscription>
                 <active>1</active>
                 <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
