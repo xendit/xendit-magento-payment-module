@@ -1,7 +1,6 @@
 <?php
-/** @var Xendit\M2Invoice\Block\CustomView $block */
 
-if ($block->getPaymentMethod() === 'cc') {
+if ($block->getPaymentMethod() === 'cc_installment') {
     $installmentData = $block->getInstallmentData();
 
     if (empty($installmentData)) {

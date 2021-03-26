@@ -2,18 +2,15 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-use Magento\Framework\Api\ExtensionAttributesFactory;
-use Magento\Framework\Api\AttributeValueFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Model\Context;
 use Magento\Framework\Phrase;
-use Magento\Framework\Registry;
-use Magento\Payment\Helper\Data;
-use Magento\Payment\Model\Method\Logger;
-use Xendit\M2Invoice\Helper\ApiRequest;
-use Xendit\M2Invoice\Helper\LogDNA;
-use Xendit\M2Invoice\Enum\LogDNALevel;
+use Magento\Payment\Model\InfoInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Quote\Api\Data\CartInterface;
 
+/**
+ * Class CCHosted
+ * @package Xendit\M2Invoice\Model\Payment
+ */
 class CCHosted extends AbstractInvoice
 {
     const PLATFORM_NAME = 'MAGENTO2';
@@ -29,30 +26,113 @@ class CCHosted extends AbstractInvoice
     protected $_canRefund = true;
     protected $methodCode = 'CCHOSTED';
 
-    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    /**
+     * @param InfoInterface $payment
+     * @param float $amount
+     * @return $this|AbstractInvoice
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function authorize(InfoInterface $payment, $amount)
     {
-        if ($quote === null) {
-            return false;
+        $payment->setIsTransactionPending(true);
+
+        $order = $payment->getOrder();
+        $quoteId = $order->getQuoteId();
+        $quote = $this->quoteRepository->get($quoteId);
+
+        if ($quote->getIsMultiShipping()) {
+            return $this;
         }
 
-        if ($this->dataHelper->getIsActive() === '0') {
-            return false;
+        $orderId = $order->getRealOrderId();
+
+        try {
+            $rawAmount = ceil($order->getSubtotal() + $order->getShippingAmount());
+            $billingAddress = $order->getBillingAddress();
+
+            $args = [
+                'external_id'           => $this->dataHelper->getExternalId($orderId),
+                'payer_email'           => $billingAddress->getEmail(),
+                'description'           => $orderId,
+                'order_number'          => $orderId,
+                'amount'                => $amount,
+                'payment_type'          => self::CC_HOSTED_PAYMENT_TYPE,
+                'store_name'            => $this->storeManager->getStore()->getName(),
+                'platform_name'         => self::PLATFORM_NAME,
+                'success_redirect_url'  => $this->dataHelper->getSuccessUrl(false),
+                'failure_redirect_url'  => $this->dataHelper->getFailureUrl($orderId, false)
+            ];
+
+            $promo = $this->calculatePromo($order, $rawAmount);
+
+            if (!empty($promo)) {
+                $args['promotions'] = json_encode($promo);
+                $args['amount']     = $rawAmount;
+
+                $invalidDiscountAmount = $order->getBaseDiscountAmount();
+                $order->setBaseDiscountAmount(0);
+                $order->setBaseGrandTotal($order->getBaseGrandTotal() - $invalidDiscountAmount);
+
+                $invalidDiscountAmount = $order->getDiscountAmount();
+                $order->setDiscountAmount(0);
+                $order->setGrandTotal($order->getGrandTotal() - $invalidDiscountAmount);
+
+                $order->setBaseTotalDue($order->getBaseGrandTotal());
+                $order->setTotalDue($order->getGrandTotal());
+
+                $payment->setBaseAmountOrdered($order->getBaseGrandTotal());
+                $payment->setAmountOrdered($order->getGrandTotal());
+
+                $payment->setAmountAuthorized($order->getGrandTotal());
+                $payment->setBaseAmountAuthorized($order->getBaseGrandTotal());
+            }
+            // send Cardless Credit Payment request
+            $hostedPayment = $this->requestHostedPayment($args);
+
+            if (isset($hostedPayment['error_code'])) {
+                $message = $this->errorHandler->mapInvoiceErrorCode($hostedPayment['error_code']);
+                $this->processFailedPayment($payment, $message);
+            } elseif (isset($hostedPayment['id'])) {
+                $hostedPaymentId = $hostedPayment['id'];
+                $hostedPaymentToken = (isset($hostedPayment['hp_token']))? $hostedPayment['hp_token'] : '';
+                if (isset($hostedPayment['invoice_url'])) {
+                    $redirectUrl = $hostedPayment['invoice_url']."#credit-card";
+                    $payment->setAdditionalInformation('xendit_redirect_url', $redirectUrl);
+                }
+                if ($hostedPaymentId) {
+                    $payment->setAdditionalInformation('xendit_hosted_payment_id', $hostedPaymentId);
+                }
+                if ($hostedPaymentToken) {
+                    $payment->setAdditionalInformation('xendit_hosted_payment_token', $hostedPaymentToken);
+                }
+
+            } else {
+                $message = 'Error connecting to Xendit. Check your API key';
+                $this->processFailedPayment($payment, $message);
+
+                throw new LocalizedException(
+                    new Phrase($message)
+                );
+            }
+        } catch (\Exception $e) {
+            $errorMsg = $e->getMessage();
+            throw new LocalizedException(
+                new Phrase($errorMsg)
+            );
         }
 
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
-            return false;
-        }
-
-        if ($this->methodCode === 'CC_SUBSCRIPTION') {
-            return true;
-        }
-
-        return false;
+        return $this;
     }
 
-    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    /**
+     * @param InfoInterface $payment
+     * @param float $amount
+     * @return $this|AbstractInvoice
+     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function refund(InfoInterface $payment, $amount)
     {
         $chargeId = $payment->getParentTransactionId();
 
@@ -74,15 +154,21 @@ class CCHosted extends AbstractInvoice
 
             return $this;
         } else {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                 __("Refund not available because there is no capture")
             );
         }
     }
 
+    /**
+     * @param $chargeId
+     * @param $requestData
+     * @return mixed
+     * @throws \Exception
+     */
     private function requestRefund($chargeId, $requestData)
     {
-        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";
+        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/credit_card_charges/:$chargeId/refunds";
         $refundMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
@@ -94,9 +180,14 @@ class CCHosted extends AbstractInvoice
         return $refund;
     }
 
+    /**
+     * @param $requestData
+     * @return mixed
+     * @throws \Exception
+     */
     public function requestHostedPayment($requestData)
     {
-        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
+        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/v2/invoices#credit-card";
         $hostedPaymentMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
@@ -112,21 +203,31 @@ class CCHosted extends AbstractInvoice
         return $hostedPayment;
     }
 
+    /**
+     * @param $payment
+     * @param $message
+     */
     public function processFailedPayment($payment, $message)
     {
         $payment->setAdditionalInformation('xendit_failure_reason', $message);
     }
 
+    /**
+     * @param $payment
+     * @param $refund
+     * @param $canRefundMore
+     * @throws LocalizedException
+     */
     private function handleRefundResult($payment, $refund, $canRefundMore)
     {
         if (isset($refund['error_code'])) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                 __($refund['message'])
             );
         }
 
         if ($refund['status'] == 'FAILED') {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                 __('Refund failed, please check Xendit dashboard')
             );
         }
@@ -140,6 +241,13 @@ class CCHosted extends AbstractInvoice
         );
     }
 
+    /**
+     * @param $order
+     * @param $rawAmount
+     * @return array
+     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function calculatePromo($order, $rawAmount)
     {
         $promo = [];
@@ -164,13 +272,19 @@ class CCHosted extends AbstractInvoice
         return $promo;
     }
 
+    /**
+     * @param $rule
+     * @param $promotion
+     * @param $rawAmount
+     * @return array
+     */
     private function constructPromo($rule, $promotion, $rawAmount)
     {
         $constructedPromo = [
-            'bin_list' => $promotion['bin_list'],
-            'title' => $rule->getName(),
+            'bin_list'        => $promotion['bin_list'],
+            'title'           => $rule->getName(),
             'promo_reference' => $rule->getRuleId(),
-            'type' => $this->dataHelper->mapSalesRuleType($rule->getSimpleAction()),
+            'type'            => $this->dataHelper->mapSalesRuleType($rule->getSimpleAction()),
         ];
         $rate = $rule->getDiscountAmount();
 
@@ -192,5 +306,28 @@ class CCHosted extends AbstractInvoice
         $constructedPromo['rate'] = $rate;
 
         return $constructedPromo;
+    }
+
+    /**
+     * @param CartInterface|null $quote
+     * @return bool
+     */
+    public function isAvailable(CartInterface $quote = null)
+    {
+        if ($quote === null) {
+            return false;
+        }
+
+        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
+
+        if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
+            return false;
+        }
+
+        if(!$this->dataHelper->getCcHostedActive()){
+            return false;
+        }
+
+        return true;
     }
 }

@@ -2,19 +2,15 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-use Magento\Framework\Api\ExtensionAttributesFactory;
-use Magento\Framework\Api\AttributeValueFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Model\Context;
 use Magento\Framework\Phrase;
-use Magento\Framework\Registry;
-use Magento\Payment\Helper\Data;
-use Magento\Payment\Model\Method\Logger;
-use Xendit\M2Invoice\Helper\ApiRequest;
-use Xendit\M2Invoice\Helper\LogDNA;
-use Xendit\M2Invoice\Enum\LogDNALevel;
-use Xendit\M2Invoice\Model\Payment\M2Invoice;
+use Magento\Payment\Model\InfoInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Quote\Api\Data\CartInterface;
 
+/**
+ * Class CCSubscription
+ * @package Xendit\M2Invoice\Model\Payment
+ */
 class CCSubscription extends CCHosted
 {
     const PLATFORM_NAME = 'MAGENTO2';
@@ -31,9 +27,13 @@ class CCSubscription extends CCHosted
     protected $methodCode = 'CC_SUBSCRIPTION';
 
     /**
-     * Override
+     * @param InfoInterface $payment
+     * @param float $amount
+     * @return $this|AbstractInvoice|CCHosted
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    public function authorize(InfoInterface $payment, $amount)
     {
         $payment->setIsTransactionPending(true);
 
@@ -48,13 +48,10 @@ class CCSubscription extends CCHosted
             return $this;
         }
 
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
-
         try {
-            if( !$customerSession->isLoggedIn() ) {
+            if (!$this->customerSession->isLoggedIn()) {
                 $message = 'You must logged in to use this payment method';
-                throw new \Magento\Framework\Exception\LocalizedException(
+                throw new LocalizedException(
                     new Phrase($message)
                 );
             }
@@ -114,7 +111,7 @@ class CCSubscription extends CCHosted
                 $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
                 $this->processFailedPayment($payment, $message);
 
-                throw new \Magento\Framework\Exception\LocalizedException(
+                throw new LocalizedException(
                     new Phrase($message)
                 );
             } elseif (isset($hostedPayment['id'])) {
@@ -127,17 +124,40 @@ class CCSubscription extends CCHosted
                 $message = 'Error connecting to Xendit. Check your API key';
                 $this->processFailedPayment($payment, $message);
 
-                throw new \Magento\Framework\Exception\LocalizedException(
+                throw new LocalizedException(
                     new Phrase($message)
                 );
             }
         } catch (\Exception $e) {
             $errorMsg = $e->getMessage();
-            throw new \Magento\Framework\Exception\LocalizedException(
+            throw new LocalizedException(
                 new Phrase($errorMsg)
             );
         }
 
         return $this;
+    }
+
+    /**
+     * @param CartInterface|null $quote
+     * @return bool
+     */
+    public function isAvailable(CartInterface $quote = null)
+    {
+        if ($quote === null) {
+            return false;
+        }
+
+        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
+
+        if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
+            return false;
+        }
+
+        if(!$this->dataHelper->getCcSubscriptionActive()){
+            return false;
+        }
+
+        return true;
     }
 }

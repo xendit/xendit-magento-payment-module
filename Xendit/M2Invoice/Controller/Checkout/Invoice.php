@@ -3,11 +3,17 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
-use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Enum\LogDNA_Level;
 use Xendit\M2Invoice\Enum\LogDNALevel;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Controller\ResultFactory;
+use Zend\Http\Request;
 
+/**
+ * Class Invoice
+ * @package Xendit\M2Invoice\Controller\Checkout
+ */
 class Invoice extends AbstractAction
 {
     public function execute()
@@ -16,17 +22,9 @@ class Invoice extends AbstractAction
             $order = $this->getOrder();
             $apiData = $this->getApiRequestData($order);
 
-            if ($order->getState() === Order::STATE_PROCESSING || 
-                $order->getState() === Order::STATE_PENDING_PAYMENT || 
-                $order->getState() === Order::STATE_PAYMENT_REVIEW
-            ) {
+            if ($order->getState() === Order::STATE_NEW) {
                 $this->changePendingPaymentStatus($order);
                 $invoice = $this->createInvoice($apiData);
-
-                if (isset($invoice['error_code'])) {
-                    $this->throwXenditAPIError($invoice);
-                }
-
                 $this->addInvoiceData($order, $invoice);
                 $redirectUrl = $this->getXenditRedirectUrl($invoice, $apiData['preferred_method']);
 
@@ -34,11 +32,10 @@ class Invoice extends AbstractAction
                 $resultRedirect->setUrl($redirectUrl);
                 return $resultRedirect;
             } elseif ($order->getState() === Order::STATE_CANCELED) {
-                return $this->redirectToCart('Order is cancelled, please try again.');
+                $this->_redirect('checkout/cart');
             } else {
                 $this->getLogger()->debug('Order in unrecognized state: ' . $order->getState());
-
-                return $this->redirectToCart('Order state is unrecognized, please try again.');
+                $this->_redirect('checkout/cart');
             }
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/invoice: ' . $e->getMessage();
@@ -49,10 +46,15 @@ class Invoice extends AbstractAction
             $this->getLogDNA()->log(LogDNALevel::ERROR, $message, $apiData);
 
             $this->cancelOrder($order, $e->getMessage());
-            return $this->redirectToCart($e->getMessage());
+            return $this->redirectToCart($message);
         }
     }
 
+    /**
+     * @param $order
+     * @return array|void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     private function getApiRequestData($order)
     {
         if ($order == null) {
@@ -62,37 +64,52 @@ class Invoice extends AbstractAction
             return;
         }
 
-        $orderId = $order->getEntityId();
+        $orderId = $order->getRealOrderId();
         $preferredMethod = $this->getRequest()->getParam('preferred_method');
 
         $requestData = [
-            'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(),
-            'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderId),
-            'amount' => $order->getTotalDue(),
-            'external_id' => $this->getDataHelper()->getExternalId($orderId),
-            'description' => $orderId,
-            'payer_email' => $order->getCustomerEmail(),
-            'preferred_method' => $preferredMethod,
-            'should_send_email' => $this->getDataHelper()->getSendInvoiceEmail() ? "true" : "false",
+            'external_id'           => $this->getDataHelper()->getExternalId($orderId),
+            'payer_email'           => $order->getCustomerEmail(),
+            'description'           => $orderId,
+            'amount'                => $order->getTotalDue(),
+            'preferred_method'      => $preferredMethod,
+            'should_send_email'     => $this->getDataHelper()->getSendInvoiceEmail() ? "true" : "false",
+            'client_type'           => 'INTEGRATION',
+            'payment_methods'       => json_encode([strtoupper($preferredMethod)]),
             'platform_callback_url' => $this->getXenditCallbackUrl(),
-            'client_type' => 'INTEGRATION',
-            'payment_methods' => json_encode([strtoupper($preferredMethod)])
+            'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(),
+            'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderId)
         ];
 
         return $requestData;
     }
 
+    /**
+     * @param $requestData
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     private function createInvoice($requestData)
     {
-        $invoiceUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/invoice";
-        $invoiceMethod = \Zend\Http\Request::METHOD_POST;
+        $invoiceUrl = $this->getDataHelper()->getCheckoutUrl() . "/v2/invoices";
+        $invoiceMethod = Request::METHOD_POST;
+        $invoice = '';
 
         try {
-            $invoice = $this->getApiHelper()->request(
-                $invoiceUrl, $invoiceMethod, $requestData, false, $requestData['preferred_method']
-            );
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+            if (isset($requestData['preferred_method'])) {
+                $invoice = $this->getApiHelper()->request(
+                    $invoiceUrl, $invoiceMethod, $requestData, false, $requestData['preferred_method']
+                );
+            }
+            if (isset($invoice['error_code'])) {
+                $message = $this->getErrorHandler()->mapInvoiceErrorCode($invoice['error_code']);
+                throw new LocalizedException(
+                    new Phrase($message)
+                );
+            }
+
+        } catch (LocalizedException $e) {
+            throw new LocalizedException(
                 new Phrase($e->getMessage())
             );
         }
@@ -100,27 +117,56 @@ class Invoice extends AbstractAction
         return $invoice;
     }
 
+    /**
+     * @param $invoice
+     * @param $preferredMethod
+     * @return string
+     */
     private function getXenditRedirectUrl($invoice, $preferredMethod)
     {
         $url = $invoice['invoice_url'] . "#$preferredMethod";
-
         return $url;
     }
 
+    /**
+     * @param $order
+     */
     private function changePendingPaymentStatus($order)
     {
         $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
-
+        $order->addStatusHistoryComment("Pending Xendit payment.");
         $order->save();
     }
 
+    /**
+     * @param $order
+     * @param $invoice
+     */
     private function addInvoiceData($order, $invoice)
     {
         $payment = $order->getPayment();
         $payment->setAdditionalInformation('payment_gateway', 'xendit');
-        $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
-        $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
-
+        if (isset($invoice['id'])) {
+            $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
+        }
+        if (isset($invoice['expiry_date'])) {
+            $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
+        }
         $order->save();
+    }
+
+    /**
+     * @param $failureReason
+     * @return \Magento\Framework\Controller\ResultInterface
+     */
+    private function redirectToCart($failureReason)
+    {
+        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
+        $this->getMessageManager()->addErrorMessage(__(
+            $failureReasonInsight
+        ));
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        return $resultRedirect;
     }
 }

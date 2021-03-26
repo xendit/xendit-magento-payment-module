@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
-
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
   <preference for="Magento\Multishipping\Controller\Checkout\OverviewPost" type="Xendit\M2Invoice\Controller\Payment\OverviewPost" />
 
   <!-- Facade configuration -->
-  <virtualType name="M2InvoiceFacade" type="Magento\Payment\Model\Method\Adapter">
+  <virtualType name="XenditFacade" type="Magento\Payment\Model\Method\Adapter">
     <arguments>
       <argument name="code" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
       <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
       <argument name="infoBlockType" xsi:type="string">Xendit\M2Invoice\Block\Info</argument>
-      <argument name="valueHandlerPool" xsi:type="object">M2InvoiceValueHandlerPool</argument>
-      <argument name="commandPool" xsi:type="object">M2InvoiceCommandPool</argument>
+      <argument name="valueHandlerPool" xsi:type="object">XenditValueHandlerPool</argument>
+      <argument name="commandPool" xsi:type="object">XenditCommandPool</argument>
     </arguments>
   </virtualType>
 
@@ -22,28 +21,28 @@
   </type>
 
   <!-- Command pool -->
-  <virtualType name="M2InvoiceCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+  <virtualType name="XenditCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
     <arguments>
       <argument name="commands" xsi:type="array">
-        <item name="initialize" xsi:type="string">M2InvoiceInitializeCommand</item>
-        <item name="refund" xsi:type="string">M2InvoiceRefundCommand</item>
+        <item name="initialize" xsi:type="string">XenditInitializeCommand</item>
+        <item name="refund" xsi:type="string">XenditRefundCommand</item>
       </argument>
     </arguments>
   </virtualType>
 
   <!-- Initialize command -->
-  <virtualType name="M2InvoiceInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+  <virtualType name="XenditInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
     <arguments>
-      <argument name="requestBuilder" xsi:type="object">M2InvoiceInitializeRequest</argument>
+      <argument name="requestBuilder" xsi:type="object">XenditInitializeRequest</argument>
       <argument name="transferFactory" xsi:type="object">Xendit\M2Invoice\Gateway\Http\XenditTransferFactoryInterface</argument>
       <argument name="client" xsi:type="object">Xendit\M2Invoice\Gateway\Http\Client\InitializeClient</argument>
     </arguments>
   </virtualType>
 
   <!-- Refund command -->
-  <virtualType name="M2InvoiceRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+  <virtualType name="XenditRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
     <arguments>
-      <argument name="requestBuilder" xsi:type="object">M2InvoiceRefundRequest</argument>
+      <argument name="requestBuilder" xsi:type="object">XenditRefundRequest</argument>
       <argument name="transferFactory" xsi:type="object">Xendit\M2Invoice\Gateway\Http\XenditTransferFactoryInterface</argument>
       <argument name="handler" xsi:type="object">Xendit\M2Invoice\Model\Handler\RefundHandler</argument>
       <argument name="client" xsi:type="object">Xendit\M2Invoice\Gateway\Http\Client\RefundClient</argument>
@@ -51,7 +50,7 @@
   </virtualType>
 
   <!-- Initialization Request -->
-  <virtualType name="M2InvoiceInitializeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+  <virtualType name="XenditInitializeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
     <arguments>
       <argument name="builders" xsi:type="array">
         <item name="transaction" xsi:type="string">Xendit\M2Invoice\Gateway\Request\InitializationRequest</item>
@@ -60,7 +59,7 @@
   </virtualType>
 
   <!-- Refund Request -->
-  <virtualType name="M2InvoiceRefundRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+  <virtualType name="XenditRefundRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
     <arguments>
       <argument name="builders" xsi:type="array">
         <item name="transaction" xsi:type="string">Xendit\M2Invoice\Gateway\Request\RefundRequest</item>
@@ -84,14 +83,14 @@
   </type>
 
   <!-- Value handlers infrastructure -->
-  <virtualType name="M2InvoiceValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+  <virtualType name="XenditValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
     <arguments>
       <argument name="handlers" xsi:type="array">
-        <item name="default" xsi:type="string">M2InvoiceConfigValueHandler</item>
+        <item name="default" xsi:type="string">XenditConfigValueHandler</item>
       </argument>
     </arguments>
   </virtualType>
-  <virtualType name="M2InvoiceConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+  <virtualType name="XenditConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
     <arguments>
       <argument name="configInterface" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
     </arguments>
@@ -104,6 +103,20 @@
   </type>
 
   <type name="Magento\Quote\Model\Quote\Payment">
-    <plugin name="xenditM2invoiceQuotePayment" type="Xendit\M2Invoice\Plugin\QuotePaymentPlugin"/>
+    <plugin name="xenditXenditQuotePayment" type="Xendit\M2Invoice\Plugin\QuotePaymentPlugin"/>
+  </type>
+
+  <type name="Xendit\M2Invoice\Logger\Handler">
+    <arguments>
+      <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+    </arguments>
+  </type>
+  <type name="Xendit\M2Invoice\Logger\Logger">
+    <arguments>
+      <argument name="name" xsi:type="string">Logger</argument>
+      <argument name="handlers" xsi:type="array">
+        <item name="system" xsi:type="object">Xendit\M2Invoice\Logger\Handler</item>
+      </argument>
+    </arguments>
   </type>
 </config>

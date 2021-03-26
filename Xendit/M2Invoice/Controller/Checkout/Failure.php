@@ -2,7 +2,17 @@
 
 namespace Xendit\M2Invoice\Controller\Checkout;
 
+/**
+ * Class Failure
+ * @package Xendit\M2Invoice\Controller\Checkout
+ */
 class Failure extends AbstractAction {
+
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function execute()
     {
         $orderIds = explode('-', $this->getRequest()->get('order_id'));
@@ -13,28 +23,31 @@ class Failure extends AbstractAction {
                 $order = $this->getOrderFactory()->create();
                 $order ->load($orderId);
     
-                $this->shouldCancelOrder($order);
+                if ($order) {
+                    $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
+                    $this->cancelOrder($order, "customer cancelled the payment.");
+    
+                    $quoteId    = $order->getQuoteId();
+                    $quote      = $this->getQuoteRepository()->get($quoteId);
+    
+                    $this->getCheckoutHelper()->restoreQuote($quote); //restore cart
+                }
             }
         } else { //onepage
             $order = $this->getOrderById($this->getRequest()->get('order_id'));
-
-            $this->shouldCancelOrder($order);
-        }
-
-        return $this->redirectToCart("Xendit payment failed. Please click on 'Update Shopping Cart'.");
-    }
-
-    private function shouldCancelOrder($order) {
-        if ($order) {
-            if ($order->canInvoice()) {
+    
+            if ($order) {
                 $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
                 $this->cancelOrder($order, "customer cancelled the payment.");
-    
+
                 $quoteId    = $order->getQuoteId();
                 $quote      = $this->getQuoteRepository()->get($quoteId);
-    
+
                 $this->getCheckoutHelper()->restoreQuote($quote); //restore cart
             }
         }
+
+        $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. Please click on 'Update Shopping Cart'."));
+        $this->_redirect('checkout/cart');
     }
 }

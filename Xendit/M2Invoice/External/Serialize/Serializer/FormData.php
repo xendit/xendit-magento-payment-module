@@ -1,8 +1,4 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
 
 declare(strict_types=1);
 
@@ -10,6 +6,8 @@ namespace Xendit\M2Invoice\External\Serialize\Serializer;
 
 /**
  * Class for processing of serialized form data.
+ * Class FormData
+ * @package Xendit\M2Invoice\External\Serialize\Serializer
  */
 class FormData
 {
@@ -19,19 +17,19 @@ class FormData
     private $serializer;
 
     /**
+     * FormData constructor.
      * @param Json $serializer
      */
-    public function __construct(Json $serializer)
-    {
+    public function __construct(
+        Json $serializer
+    ) {
         $this->serializer = $serializer;
     }
 
     /**
      * Provides form data from the serialized data.
-     *
      * @param string $serializedData
      * @return array
-     * @throws \InvalidArgumentException
      */
     public function unserialize(string $serializedData): array
     {

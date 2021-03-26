@@ -2,12 +2,21 @@
 
 namespace Xendit\M2Invoice\Controller\Checkout;
 
-use Magento\Framework\Controller\ResultFactory;
 use Magento\Sales\Model\Order;
 use Xendit\M2Invoice\Enum\LogDNALevel;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Sales\Model\Order\Payment\Transaction;
+use Zend\Http\Request;
 
+/**
+ * Class ProcessHosted
+ * @package Xendit\M2Invoice\Controller\Checkout
+ */
 class ProcessHosted extends AbstractAction
 {
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     */
     public function execute()
     {
         try {
@@ -36,8 +45,13 @@ class ProcessHosted extends AbstractAction
                     $order->setGrandTotal($order->getGrandTotal() + $order->getDiscountAmount());
                     $order->save();
                 }
-                $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
-                $payment->setAdditionalInformation('xendit_installment', $hostedPayment['installment']);
+                if (isset($hostedPayment['token_id'])) {
+                    $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
+                }
+                if (isset($hostedPayment['installment'])) {
+                    $payment->setAdditionalInformation('xendit_installment', $hostedPayment['installment']);
+                }
+
                 return $this->processSuccessfulTransaction(
                     $order,
                     $payment,
@@ -55,6 +69,15 @@ class ProcessHosted extends AbstractAction
         }
     }
 
+    /**
+     * @param $order
+     * @param $payment
+     * @param $paymentMessage
+     * @param $transactionId
+     * @param bool $shouldRedirect
+     * @return \Magento\Framework\App\ResponseInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     private function processSuccessfulTransaction($order, $payment, $paymentMessage, $transactionId, $shouldRedirect = true)
     {
         $orderState = Order::STATE_PROCESSING;
@@ -65,7 +88,7 @@ class ProcessHosted extends AbstractAction
         $order->save();
 
         $payment->setTransactionId($transactionId);
-        $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+        $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
 
         $this->invoiceOrder($order, $transactionId);
 
@@ -76,17 +99,22 @@ class ProcessHosted extends AbstractAction
         }
     }
 
+    /**
+     * @param $requestData
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     private function getCompletedHostedPayment($requestData)
     {
         $url = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments/" . $requestData['id'] . "?hp_token=" . $requestData['hp_token'] . '&statuses[]=COMPLETED';
-        $method = \Zend\Http\Request::METHOD_GET;
+        $method = Request::METHOD_GET;
 
         try {
             $hostedPayment = $this->getApiHelper()->request(
                 $url, $method
             );
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+        } catch (LocalizedException $e) {
+            throw new LocalizedException(
                 new Phrase($e->getMessage())
             );
         }
@@ -100,12 +128,12 @@ class ProcessHosted extends AbstractAction
 
         $this->cancelOrder($order, $reason);
 
+        $this->getMessageManager()->addErrorMessage(__(
+            "There was an error in the Xendit payment. Failure reason: $reason"
+        ));
+
         if ($shouldRedirect) {
-            return $this->redirectToCart($message);
-        } else {
-            $this->getMessageManager()->addErrorMessage(__(
-                "There was an error in the Xendit payment. Failure reason: $reason"
-            ));
+            return $this->_redirect('checkout/cart', [ '_secure'=> false ]);
         }
     }
 }

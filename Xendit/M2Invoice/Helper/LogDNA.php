@@ -2,10 +2,13 @@
 
 namespace Xendit\M2Invoice\Helper;
 
-use Magento\Framework\Phrase;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * Class LogDNA
+ * @package Xendit\M2Invoice\Helper
+ */
 class LogDNA
 {
     public static $ingestion_key = "be2ecce05cf23f7d46673940d58c5266";
@@ -13,10 +16,27 @@ class LogDNA
     public static $hostname = "xendit.co";
     public static $app_name = "magento2-module";
 
+    /**
+     * @var Curl
+     */
     private $curlClient;
+
+    /**
+     * @var StoreManagerInterface
+     */
     private $storeManager;
+
+    /**
+     * @var Crypto
+     */
     private $cryptoHelper;
 
+    /**
+     * LogDNA constructor.
+     * @param Curl $httpClientFactory
+     * @param StoreManagerInterface $storeManager
+     * @param Crypto $cryptoHelper
+     */
     public function __construct(
         Curl $httpClientFactory,
         StoreManagerInterface $storeManager,
@@ -27,6 +47,9 @@ class LogDNA
         $this->cryptoHelper = $cryptoHelper;
     }
 
+    /**
+     * @return array
+     */
     public function getHeaders()
     {
         $headers = [
@@ -38,6 +61,13 @@ class LogDNA
         return $headers;
     }
 
+    /**
+     * @param $level
+     * @param $message
+     * @param $context
+     * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getBody( $level, $message, $context )
     {
         $default_log_meta = [
@@ -61,6 +91,13 @@ class LogDNA
         ];
     }
 
+    /**
+     * @param $level
+     * @param $message
+     * @param null $context
+     * @return string|void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function log( $level, $message, $context = null )
     {
         $headers = $this->getHeaders();

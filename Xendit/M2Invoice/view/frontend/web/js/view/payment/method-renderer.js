@@ -43,6 +43,10 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dana'
             },
             {
+                type: 'linkaja',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/linkaja'
+            },
+            {
                 type: 'indomaret',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/indomaret'
             },
@@ -55,8 +59,24 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cchosted'
             },
             {
+                type: 'cc_installment',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc_installment'
+            },
+            {
                 type: 'cc_subscription',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc_subscription'
+            },
+            {
+                type: 'qr_codes',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/qr_codes'
+            },
+            {
+                type: 'dd_bri',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_bri'
+            },
+            {
+                type: 'kredivo',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/kredivo'
             }
         );
         return Component.extend({});

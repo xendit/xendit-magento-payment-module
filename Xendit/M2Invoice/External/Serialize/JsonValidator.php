@@ -1,19 +1,17 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace Xendit\M2Invoice\External\Serialize;
 
 /**
  * Validate JSON string
+ * Class JsonValidator
+ * @package Xendit\M2Invoice\External\Serialize
  */
 class JsonValidator
 {
     /**
      * Check if string is valid JSON string
-     *
-     * @param string $string
+     * @param $string
      * @return bool
      */
     public function isValid($string)

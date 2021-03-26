@@ -1,13 +1,17 @@
 <?php
+
 namespace Xendit\M2Invoice\Model\Adminhtml\Source;
+
+use Magento\Framework\Option\ArrayInterface;
 
 /**
  * Class EnvRadioBtn
+ * @package Xendit\M2Invoice\Model\Adminhtml\Source
  */
-class EnvRadioBtn implements \Magento\Framework\Option\ArrayInterface
+class EnvRadioBtn implements ArrayInterface
 {
     /**
-     * {@inheritdoc}
+     * @return array
      */
     public function toOptionArray()
     {

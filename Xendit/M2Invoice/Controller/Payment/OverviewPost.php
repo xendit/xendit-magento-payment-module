@@ -2,57 +2,88 @@
 
 namespace Xendit\M2Invoice\Controller\Payment;
 
+use Magento\Multishipping\Controller\Checkout;
+use Magento\Framework\App\Action\Context;
+use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Framework\Data\Form\FormKey\Validator;
 use Magento\Multishipping\Model\Checkout\Type\Multishipping\State;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Checkout\Api\AgreementsValidatorInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Xendit\M2Invoice\Helper\Data as XenditHelper;
+use Magento\Checkout\Exception;
 use Magento\Framework\Exception\PaymentException;
-use Magento\Framework\Exception\ValidatorException;
+use Magento\Checkout\Helper\Data as CheckoutHelper;
+use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 
 /**
  * Class OverviewPost
+ * @package Kemana\Xendit\Controller\Payment
  */
-class OverviewPost extends \Magento\Multishipping\Controller\Checkout
+class OverviewPost extends Checkout
 {
     /**
-     * @var \Magento\Framework\Data\Form\FormKey\Validator
+     * @var Validator
      */
     protected $formKeyValidator;
 
     /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var \Magento\Checkout\Api\AgreementsValidatorInterface
+     * @var AgreementsValidatorInterface
      */
     protected $agreementsValidator;
 
-    protected $moduleManager;
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
 
     /**
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Customer\Model\Session $customerSession
+     * @var XenditHelper
+     */
+    protected $xenditHelper;
+
+    /**
+     * @var CheckoutHelper
+     */
+    protected $checkoutHelper;
+
+    /**
+     * @var XenditLogger
+     */
+    protected $xenditLogger;
+
+    /**
+     * OverviewPost constructor.
+     * @param Context $context
+     * @param CustomerSession $customerSession
      * @param CustomerRepositoryInterface $customerRepository
      * @param AccountManagementInterface $accountManagement
-     * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Checkout\Api\AgreementsValidatorInterface $agreementValidator
+     * @param Validator $formKeyValidator
+     * @param AgreementsValidatorInterface $agreementValidator
+     * @param StoreManagerInterface $storeManager
+     * @param XenditHelper $xenditHelper
+     * @param CheckoutHelper $checkoutHelper
+     * @param XenditLogger $xenditLogger
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Customer\Model\Session $customerSession,
+        Context $context,
+        CustomerSession $customerSession,
         CustomerRepositoryInterface $customerRepository,
         AccountManagementInterface $accountManagement,
-        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Checkout\Api\AgreementsValidatorInterface $agreementValidator,
-        \Magento\Framework\Module\Manager $moduleManager
+        Validator $formKeyValidator,
+        AgreementsValidatorInterface $agreementValidator,
+        StoreManagerInterface $storeManager,
+        XenditHelper $xenditHelper,
+        CheckoutHelper $checkoutHelper,
+        XenditLogger $xenditLogger
     ) {
         $this->formKeyValidator = $formKeyValidator;
-        $this->logger = $logger;
         $this->agreementsValidator = $agreementValidator;
-        $this->moduleManager = $moduleManager;
+        $this->storeManager = $storeManager;
+        $this->xenditHelper = $xenditHelper;
+        $this->checkoutHelper = $checkoutHelper;
+        $this->xenditLogger = $xenditLogger;
 
         parent::__construct(
             $context,
@@ -99,50 +130,39 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->_getCheckout()->createOrders();
             $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);
 
-            $baseUrl = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
-            
-            /**
-             * Check if sprint multishipping module is enabled
-             * Reason: both plugins are overriding this class
-             * To ensure both can coexists, we include sprint logic
-             */
-            $sprintPaymentMethod = '';
-            if ($this->moduleManager->isEnabled('Sprint_Sprintmultishipping')) {
-                $sprintPaymentMethod = $this->_objectManager->get('Sprint\Sprintmultishipping\Helper\Data')->sprintPaymentMethod($paymentInstance->getMethod());
-            }
+            $baseUrl = $this->storeManager->getStore()->getBaseUrl();
 
             //XENDIT PAYMENT METHOD
-            $xenditPaymentMethod = $this->_objectManager->get('Xendit\M2Invoice\Helper\Data')->xenditPaymentMethod($paymentInstance->getMethod());
+            $xenditPaymentMethod = $this->xenditHelper->xenditPaymentMethod($paymentInstance->getMethod());
+            $orderIds = $this->_getCheckout()->getOrderIds();
             if ($xenditPaymentMethod) {
-                $ids = $this->_getCheckout()->getOrderIds();
-
-                if (empty($ids)) {
+                if (empty($orderIds)) {
                     $this->messageManager->addError(
                         __('Failed to create order.')
                     );
                     $this->_redirect('*/*/billing');
                 }
+                $params  = implode("-", $orderIds);
 
-                $params  = implode("-", $ids);
-                if ($xenditPaymentMethod === 'cc_subscription') {
+                $xenditCCMethods                = ['cc', 'cchosted', 'cc_installment', 'cc_subscription'];
+                $xenditEwalletMethods           = ['dana','ovo','linkaja'];
+                $xenditCardlessCreditMethods    = ['kredivo'];
+                $xenditQrCodeMethods            = ['qr_codes'];
+
+                if (in_array($xenditPaymentMethod, $xenditCCMethods)) {
                     $redirect = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
+                } elseif (in_array($xenditPaymentMethod, $xenditEwalletMethods)) {
+                    $redirect = $baseUrl . '/xendit/checkout/ewalletmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
+                } elseif (in_array($xenditPaymentMethod, $xenditCardlessCreditMethods)) {
+                    $redirect = $baseUrl . '/xendit/checkout/cardlesscreditmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
+                } elseif (in_array($xenditPaymentMethod, $xenditQrCodeMethods)) {
+                    $redirect = $baseUrl . '/xendit/checkout/qrcodemultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
                 } else {
                     $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping?order_ids=' . $params.'&preferred_method='.$xenditPaymentMethod;
                 }
                 $this->_redirect($redirect);
-            }
-
-            //SPRINT PAYMENT METHOD
-            else if ($sprintPaymentMethod) {
-                $ids = $this->_getCheckout()->getOrderIds();
-                $params     = implode("|", $ids);
-                $redirect   = $baseUrl . $sprintPaymentMethod . '/payment/redirectmultishipping/orderIds/' . $params;
-                $this->_redirect($redirect);
-            }
-
-            //OTHERS
-            else
-            {
+            } else {
+                //OTHERS
                 $this->_getState()->setActiveStep(State::STEP_SUCCESS);
                 $this->_getCheckout()->getCheckoutSession()->clearQuote();
                 $this->_getCheckout()->getCheckoutSession()->setDisplaySuccess(true);
@@ -154,10 +174,8 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
                 $this->messageManager->addError($message);
             }
             $this->_redirect('*/*/billing');
-        } catch (\Magento\Checkout\Exception $e) {
-            $this->_objectManager->get(
-                'Magento\Checkout\Helper\Data'
-            )->sendPaymentFailedEmail(
+        } catch (Exception $e) {
+            $this->checkoutHelper->sendPaymentFailedEmail(
                 $this->_getCheckout()->getQuote(),
                 $e->getMessage(),
                 'multi-shipping'
@@ -166,9 +184,7 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->messageManager->addError($e->getMessage());
             $this->_redirect('*/cart');
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            $this->_objectManager->get(
-                'Magento\Checkout\Helper\Data'
-            )->sendPaymentFailedEmail(
+            $this->checkoutHelper->sendPaymentFailedEmail(
                 $this->_getCheckout()->getQuote(),
                 $e->getMessage(),
                 'multi-shipping'
@@ -176,22 +192,18 @@ class OverviewPost extends \Magento\Multishipping\Controller\Checkout
             $this->messageManager->addError($e->getMessage());
             $this->_redirect('*/*/billing');
         } catch (\Exception $e) {
-            $this->logger->critical($e);
+            $this->xenditLogger->critical($e);
             try {
-                $this->_objectManager->get(
-                    'Magento\Checkout\Helper\Data'
-                )->sendPaymentFailedEmail(
+                $this->checkoutHelper->sendPaymentFailedEmail(
                     $this->_getCheckout()->getQuote(),
                     $e->getMessage(),
                     'multi-shipping'
                 );
             } catch (\Exception $e) {
-                $this->logger->error($e->getMessage());
+                $this->xenditLogger->error($e->getMessage());
             }
-            $logger = new \Zend\Log\Logger();
-            $logger->addWriter(new \Zend\Log\Writer\Stream(BP . '/var/log/smart_checkout_error.log'));
-            $logger->info('Log error checkout: ');
-            $logger->info($e->getMessage());
+            $this->xenditLogger->info('Log error checkout: ');
+            $this->xenditLogger->info($e->getMessage());
             $this->messageManager->addError(__('Order place error'));
             $this->_redirect('*/*/billing');
         }

@@ -2,13 +2,14 @@
 
 namespace Xendit\M2Invoice\Model\Adminhtml\Source;
 
+use Magento\Framework\Option\ArrayInterface;
+
 /**
  * Options provider for countries list
- *
- * @api
- * @since 100.0.2
+ * Class ChosenMethod
+ * @package Xendit\M2Invoice\Model\Adminhtml\Source
  */
-class ChosenMethod implements \Magento\Framework\Option\ArrayInterface
+class ChosenMethod implements ArrayInterface
 {
     /**
      * Return options array
@@ -26,10 +27,15 @@ class ChosenMethod implements \Magento\Framework\Option\ArrayInterface
             ['value' => 'mandiriva', 'label' => __('Bank Transfer Mandiri')],
             ['value' => 'permatava', 'label' => __('Bank Transfer Permata')],
             ['value' => 'cc', 'label' => __('Credit Card')],
+            ['value' => 'cc_installment', 'label' => __('Credit Card Installment')],
             ['value' => 'cc_subscription', 'label' => __('Credit Card Subscription')],
             ['value' => 'dana', 'label' => __('DANA')],
             ['value' => 'indomaret', 'label' => __('Indomaret')],
             ['value' => 'ovo', 'label' => __('OVO')],
+            ['value' => 'linkaja', 'label' => __('LINKAJA')],
+            ['value' => 'qr_codes', 'label' => __('QR Codes')],
+            ['value' => 'dd_bri', 'label' => __('Direct Debit (BRI)')],
+            ['value' => 'kredivo', 'label' => __('Cardless Credit (KREDIVO)')],
         ];
 
         if (!$isMultiselect) {

@@ -22,7 +22,7 @@ define(
             },
 
             getDescription: function() {
-                return window.checkoutConfig.payment.m2invoice.card_subscription_description;
+                return window.checkoutConfig.payment.xendit.card_subscription_description;
             }
         });
     }

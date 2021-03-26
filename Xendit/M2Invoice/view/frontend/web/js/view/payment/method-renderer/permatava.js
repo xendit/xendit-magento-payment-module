@@ -37,19 +37,19 @@ define(
             },
 
             getDescription: function() {
-                return `Bayar pesanan dengan transfer bank ${self.getMethod()} dengan virtual account melalui Xendit`;
+                return window.checkoutConfig.payment.permatava.description;
             },
 
             getTestDescription: function () {
-                var environment = window.checkoutConfig.payment.m2invoice.xendit_env;
+                var environment = window.checkoutConfig.payment.xendit.xendit_env;
 
                 if (environment !== 'test') {
                     return {};
                 }
 
                 return {
-                    prefix: window.checkoutConfig.payment.m2invoice.test_prefix,
-                    content: window.checkoutConfig.payment.m2invoice.test_content
+                    prefix: window.checkoutConfig.payment.xendit.test_prefix,
+                    content: window.checkoutConfig.payment.xendit.test_content
                 };
             },
 
@@ -68,8 +68,8 @@ define(
                     return false;
                 }
 
-                if (totals.grand_total < 10000) {
-                    self.messageContainer.addErrorMessage({'message': 'The minimum amount for using this payment is IDR 10,000. Please put more item(s) to reach the minimum amount.'});
+                if (totals.grand_total < window.checkoutConfig.payment.permatava.min_order_amount) {
+                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 1.'});
                     return false;
                 }
 

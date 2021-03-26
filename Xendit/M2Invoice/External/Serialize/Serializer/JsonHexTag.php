@@ -1,8 +1,4 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
 
 declare(strict_types=1);
 
@@ -15,14 +11,14 @@ use Xendit\M2Invoice\External\Serialize\SerializerInterface;
  * (All < and > are converted to \u003C and \u003E),
  * unserialize JSON encoded data
  *
- * @api
- * @since 100.2.0
+ * Class JsonHexTag
+ * @package Xendit\M2Invoice\External\Serialize\Serializer
  */
 class JsonHexTag extends Json implements SerializerInterface
 {
     /**
-     * @inheritDoc
-     * @since 100.2.0
+     * @param array|bool|float|int|string|null $data
+     * @return string
      */
     public function serialize($data): string
     {
