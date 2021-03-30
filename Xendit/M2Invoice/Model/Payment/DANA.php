@@ -114,7 +114,7 @@ class Dana extends AbstractInvoice
 
         $this->xenditLogger->info(json_encode($requestData));
 
-        $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/ewallets";
+        $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets";
         $ewalletMethod = \Zend\Http\Request::METHOD_POST;
         $options = [
             'timeout' => 60

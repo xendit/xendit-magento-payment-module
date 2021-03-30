@@ -168,7 +168,7 @@ class CCHosted extends AbstractInvoice
      */
     private function requestRefund($chargeId, $requestData)
     {
-        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/credit_card_charges/:$chargeId/refunds";
+        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/:$chargeId/refunds";
         $refundMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
@@ -187,7 +187,7 @@ class CCHosted extends AbstractInvoice
      */
     public function requestHostedPayment($requestData)
     {
-        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/v2/invoices#credit-card";
+        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds";
         $hostedPaymentMethod = \Zend\Http\Request::METHOD_POST;
 
         try {

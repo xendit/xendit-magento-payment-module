@@ -505,7 +505,7 @@ class CC extends MagentoPaymentMethodCc
      */
     private function request3DS($requestData)
     {
-        $hosted3DSUrl = $this->dataHelper->getCheckoutUrl() . "/v2/invoices#credit-card";
+        $hosted3DSUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds";
         $hosted3DSMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
@@ -524,7 +524,7 @@ class CC extends MagentoPaymentMethodCc
      */
     private function requestCharge($requestData)
     {
-        $chargeUrl = $this->dataHelper->getCheckoutUrl() . "/credit_card_charges";
+        $chargeUrl = $this->dataHelper->getCheckoutUrl() . "payment/xendit/credit-card/charges";
         $chargeMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
@@ -538,7 +538,7 @@ class CC extends MagentoPaymentMethodCc
 
     private function requestRefund($chargeId, $requestData)
     {
-        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/credit_card_charges/:$chargeId/refunds";
+        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/credit-card/charges/:$chargeId/refunds";
         $refundMethod = \Zend\Http\Request::METHOD_POST;
 
         try {

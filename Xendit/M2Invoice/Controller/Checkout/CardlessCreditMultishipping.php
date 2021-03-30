@@ -164,7 +164,7 @@ class CardlessCreditMultishipping extends AbstractAction
     {
         $this->logger->info(json_encode($requestData));
 
-        $cardlessCreditUrl = $this->getDataHelper()->getCheckoutUrl() . "/cardless-credit";
+        $cardlessCreditUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/cardless-credit";
         $cardlessCreditMethod = Request::METHOD_POST;
         $options = [
             'timeout' => 60

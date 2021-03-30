@@ -361,7 +361,7 @@ class CCMultishipping extends AbstractAction
      */
     private function request3DS($requestData)
     {
-        $hosted3DSUrl = $this->getDataHelper()->getCheckoutUrl() . "/v2/invoices#credit-card";
+        $hosted3DSUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds";
         $hosted3DSMethod = Request::METHOD_POST;
 
         try {
@@ -380,7 +380,7 @@ class CCMultishipping extends AbstractAction
      */
     private function requestCharge($requestData)
     {
-        $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/credit_card_charges";
+        $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charges";
         $chargeMethod = Request::METHOD_POST;
 
         try {
