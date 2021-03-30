@@ -187,7 +187,7 @@ class CCHosted extends AbstractInvoice
      */
     public function requestHostedPayment($requestData)
     {
-        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds";
+        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
         $hostedPaymentMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
