@@ -201,53 +201,53 @@
                         <label>Virtual Accounts</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
-                        <include path="Kemana_Xendit::virtual_account/bcava.xml"/>
-                        <include path="Kemana_Xendit::virtual_account/bniva.xml"/>
-                        <include path="Kemana_Xendit::virtual_account/briva.xml"/>
-                        <include path="Kemana_Xendit::virtual_account/mandiriva.xml"/>
-                        <include path="Kemana_Xendit::virtual_account/permatava.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/bcava.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/bniva.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/briva.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/mandiriva.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/permatava.xml"/>
                     </group>
 
                     <group id="credit_cards" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Credit Cards</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
-                        <include path="Kemana_Xendit::credit_card/cchosted.xml"/>
-                        <include path="Kemana_Xendit::credit_card/cc_installment.xml"/>
-                        <include path="Kemana_Xendit::credit_card/cc_subscription.xml"/>
+                        <include path="Xendit_M2Invoice::credit_card/cchosted.xml"/>
+                        <include path="Xendit_M2Invoice::credit_card/cc_installment.xml"/>
+                        <include path="Xendit_M2Invoice::credit_card/cc_subscription.xml"/>
                     </group>
 
                     <group id="retail_outlets" translate="label" sortOrder="94" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Retail Outlets</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
-                        <include path="Kemana_Xendit::retail_outlets/alfamart.xml"/>
-                        <include path="Kemana_Xendit::retail_outlets/indomarat.xml"/>
+                        <include path="Xendit_M2Invoice::retail_outlets/alfamart.xml"/>
+                        <include path="Xendit_M2Invoice::retail_outlets/indomarat.xml"/>
                     </group>
 
                     <group id="ewallets" translate="label" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Ewallets</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
-                        <include path="Kemana_Xendit::ewallets/dana.xml"/>
-                        <include path="Kemana_Xendit::ewallets/ovo.xml"/>
-                        <include path="Kemana_Xendit::ewallets/linkaja.xml"/>
+                        <include path="Xendit_M2Invoice::ewallets/dana.xml"/>
+                        <include path="Xendit_M2Invoice::ewallets/ovo.xml"/>
+                        <include path="Xendit_M2Invoice::ewallets/linkaja.xml"/>
                     </group>
 
-                    <include path="Kemana_Xendit::qr_codes/qr_codes.xml"/>
+                    <include path="Xendit_M2Invoice::qr_codes/qr_codes.xml"/>
 
                     <group id="direct_debit" translate="label" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Direct Debit</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
-                        <include path="Kemana_Xendit::direct_debit/dd_bri.xml"/>
+                        <include path="Xendit_M2Invoice::direct_debit/dd_bri.xml"/>
                     </group>
 
                     <group id="cashless_credit" translate="label" sortOrder="98" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Cashless Credit</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
-                        <include path="Kemana_Xendit::cashless_credit/kredivo.xml"/>
+                        <include path="Xendit_M2Invoice::cashless_credit/kredivo.xml"/>
                     </group>
                 </group>
 

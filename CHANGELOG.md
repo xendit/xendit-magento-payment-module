@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.8.0 (2021-03-30)
+
+Improvements:
+
+- Upgrade to Enterprise Edition (Require Magento 2.3 & PHP 7.3 or above)
+  
 ## 2.7.0 (2021-02-01)
 
 Improvements:

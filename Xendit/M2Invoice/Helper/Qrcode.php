@@ -2,7 +2,11 @@
 
 namespace Xendit\M2Invoice\Helper;
 
-use BaconQrCode\Renderer\Image\Png as BaconQrCodePng;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+use Xendit\M2Invoice\Helper\Data as XenditHelperData;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
@@ -11,8 +15,6 @@ use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Io\File;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Xendit\M2Invoice\Helper\Data as XenditHelperData;
-use BaconQrCode\Writer;
 
 /**
  * Class Qrcode
@@ -20,13 +22,8 @@ use BaconQrCode\Writer;
  */
 class Qrcode extends AbstractHelper
 {
-    const IMAGE_EXTENSION   = '.png';
+    const IMAGE_EXTENSION   = '.svg';
     const QRCODE_IMAGE_PATH = 'payment/qrcode';
-
-    /**
-     * @var BaconQrCodePng
-     */
-    protected $baconQrCodePng;
 
     /**
      * @var Filesystem
@@ -51,7 +48,6 @@ class Qrcode extends AbstractHelper
     /**
      * Qrcode constructor.
      * @param Context $context
-     * @param BaconQrCodePng $baconQrCodePng
      * @param Filesystem $filesystem
      * @param File $file
      * @param StoreManagerInterface $storeManager
@@ -59,13 +55,11 @@ class Qrcode extends AbstractHelper
      */
     public function __construct(
         Context $context,
-        BaconQrCodePng $baconQrCodePng,
         Filesystem $filesystem,
         File $file,
         StoreManagerInterface $storeManager,
         XenditHelperData $xenditHelperData
     ) {
-        $this->baconQrCodePng = $baconQrCodePng;
         $this->filesystem = $filesystem;
         $this->storeManager = $storeManager;
         $this->file = $file;
@@ -80,15 +74,16 @@ class Qrcode extends AbstractHelper
      * @return string
      * @throws LocalizedException
      */
-    public function generateQrcode($qrString, $externalId) {
+    public function generateQrcode($qrString, $externalId)
+    {
         // get qrcode image save path
         $qrcodeImagePath = $this->getQrcodeImagePath($externalId);
         $qrcodeImageUrl = $this->getQrcodeImageUrl($externalId);
         // generate QrImage
-        $renderer = $this->baconQrCodePng;
-        $renderer->setMargin(1);
-        $renderer->setHeight($this->xenditHelperData->getQrCodesImageHeight());
-        $renderer->setWidth($this->xenditHelperData->getQrCodesImageWidth());
+        $renderer = new ImageRenderer(
+            new RendererStyle($this->xenditHelperData->getQrCodesImageWidth()),
+            new SvgImageBackEnd()
+        );
         $writer = new Writer($renderer);
         $writer->writeFile($qrString, $qrcodeImagePath);
         return $qrcodeImageUrl;
@@ -139,5 +134,4 @@ class Qrcode extends AbstractHelper
         }
         return $qrcodeImagePath;
     }
-
 }

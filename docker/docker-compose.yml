@@ -1,7 +1,7 @@
 version: '3'
 services:
     web:
-      image: webdevops/php-apache-dev:ubuntu-16.04
+      image: webdevops/php-apache-dev:7.3
       container_name: web
       restart: always
       user: application
