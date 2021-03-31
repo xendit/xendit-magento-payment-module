@@ -2,11 +2,9 @@
 
 namespace Xendit\M2Invoice\Controller\Checkout;
 
-use Xendit\M2Invoice\Enum\LogDNALevel;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Data;
-use Xendit\M2Invoice\Helper\LogDNA;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
@@ -56,11 +54,6 @@ class Notification extends Action implements CsrfAwareActionInterface
     private $apiHelper;
 
     /**
-     * @var LogDNA
-     */
-    private $logDNA;
-
-    /**
      * @var XenditLogger
      */
     private $logger;
@@ -83,7 +76,6 @@ class Notification extends Action implements CsrfAwareActionInterface
      * @param OrderFactory $orderFactory
      * @param Data $dataHelper
      * @param ApiRequest $apiHelper
-     * @param LogDNA $logDNA
      * @param XenditLogger $logger
      * @param DbTransaction $dbTransaction
      * @param InvoiceService $invoiceService
@@ -95,7 +87,6 @@ class Notification extends Action implements CsrfAwareActionInterface
         OrderFactory $orderFactory,
         Data $dataHelper,
         ApiRequest $apiHelper,
-        LogDNA $logDNA,
         XenditLogger $logger,
         DbTransaction $dbTransaction,
         InvoiceService $invoiceService
@@ -106,7 +97,6 @@ class Notification extends Action implements CsrfAwareActionInterface
         $this->orderFactory = $orderFactory;
         $this->dataHelper = $dataHelper;
         $this->apiHelper = $apiHelper;
-        $this->logDNA = $logDNA;
         $this->logger = $logger;
         $this->dbTransaction = $dbTransaction;
         $this->invoiceService = $invoiceService;
@@ -154,7 +144,6 @@ class Notification extends Action implements CsrfAwareActionInterface
         } catch (\Exception $e) {
             $message = "Error invoice callback: " . $e->getMessage();
             $this->logger->info($message);
-            $this->logDNA->log(LogDNALevel::ERROR, $message, $callbackPayload);
 
             $result = $this->jsonResultFactory->create();
             /** You may introduce your own constants for this custom REST API */

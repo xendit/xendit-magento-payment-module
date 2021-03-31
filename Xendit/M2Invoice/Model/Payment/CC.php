@@ -12,8 +12,6 @@ use Magento\SalesRule\Model\RuleRepository;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data as XenditHelper;
-use Xendit\M2Invoice\Helper\LogDNA;
-use Xendit\M2Invoice\Enum\LogDNALevel;
 use Magento\Payment\Model\Method\Cc as MagentoPaymentMethodCc;
 use Magento\Framework\Registry;
 use Magento\Framework\Api\ExtensionAttributesFactory;
@@ -84,11 +82,6 @@ class CC extends MagentoPaymentMethodCc
     protected $responseFactory;
 
     /**
-     * @var LogDNA
-     */
-    protected $logdnaHelper;
-
-    /**
      * @var RuleRepository
      */
     protected $ruleRepo;
@@ -115,7 +108,6 @@ class CC extends MagentoPaymentMethodCc
      * @param RequestInterface $httpRequest
      * @param UrlInterface $url
      * @param ResponseFactory $responseFactory
-     * @param LogDNA $logdnaHelper
      * @param RuleRepository $ruleRepo
      * @param CartRepositoryInterface $quoteRepository
      * @param AbstractResource|null $resource
@@ -138,7 +130,6 @@ class CC extends MagentoPaymentMethodCc
         RequestInterface $httpRequest,
         UrlInterface $url,
         ResponseFactory $responseFactory,
-        LogDNA $logdnaHelper,
         RuleRepository $ruleRepo,
         CartRepositoryInterface $quoteRepository,
         AbstractResource $resource = null,
@@ -166,7 +157,6 @@ class CC extends MagentoPaymentMethodCc
         $this->request = $httpRequest;
         $this->url = $url;
         $this->responseFactory = $responseFactory;
-        $this->logdnaHelper = $logdnaHelper;
         $this->ruleRepo = $ruleRepo;
         $this->quoteRepository = $quoteRepository;
     }
@@ -368,7 +358,6 @@ class CC extends MagentoPaymentMethodCc
             $errorMsg = $e->getMessage();
         } finally {
             if (!empty($errorMsg)) {
-                $this->logdnaHelper->log(LogDNALevel::ERROR, 'HTTP Error: ' . $errorMsg);
                 throw new LocalizedException(
                     new Phrase($errorMsg)
                 );

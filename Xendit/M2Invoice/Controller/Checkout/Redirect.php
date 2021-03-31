@@ -4,7 +4,6 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Sales\Model\Order;
-use Xendit\M2Invoice\Enum\LogDNALevel;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -136,7 +135,6 @@ class Redirect extends AbstractAction
             }
 
             $message = 'No action on xendit/checkout/redirect';
-            $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
 
             $this->cancelOrder($order, 'No payment recorded');
 
@@ -144,7 +142,6 @@ class Redirect extends AbstractAction
 
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
-            $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
 
             $this->cancelOrder($order, $e->getMessage());
 

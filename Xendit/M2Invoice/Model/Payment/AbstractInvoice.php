@@ -15,7 +15,6 @@ use Magento\Payment\Model\Method\AbstractMethod;
 use Magento\SalesRule\Model\RuleRepository;
 use Magento\Store\Model\StoreManagerInterface;
 use Xendit\M2Invoice\Helper\ApiRequest;
-use Xendit\M2Invoice\Helper\LogDNA;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 use Magento\Framework\Serialize\Serializer\Json as MagentoSerializerJson;
@@ -59,11 +58,6 @@ class AbstractInvoice extends AbstractMethod
      * @var ApiRequest
      */
     protected $apiHelper;
-
-    /**
-     * @var LogDNA
-     */
-    protected $logDNA;
 
     /**
      * @var \Magento\Framework\App\CacheInterface
@@ -152,7 +146,6 @@ class AbstractInvoice extends AbstractMethod
      * @param Logger $logger
      * @param ApiRequest $apiHelper
      * @param \Xendit\M2Invoice\Helper\Data $dataHelper
-     * @param LogDNA $logDNA
      * @param DataObjectFactory $dataObjectFactory
      * @param StoreManagerInterface $storeManager
      * @param RuleRepository $ruleRepo
@@ -177,7 +170,6 @@ class AbstractInvoice extends AbstractMethod
         Logger $logger,
         ApiRequest $apiHelper,
         \Xendit\M2Invoice\Helper\Data $dataHelper,
-        LogDNA $logDNA,
         DataObjectFactory $dataObjectFactory,
         StoreManagerInterface $storeManager,
         RuleRepository $ruleRepo,
@@ -204,7 +196,6 @@ class AbstractInvoice extends AbstractMethod
         $this->_scopeConfig = $scopeConfig;
         $this->dataHelper               = $dataHelper;
         $this->apiHelper                = $apiHelper;
-        $this->logDNA                   = $logDNA;
         $this->cache                    = $context->getCacheManager();
         $this->dataObjectFactory        = $dataObjectFactory;
         $this->storeManager             = $storeManager;

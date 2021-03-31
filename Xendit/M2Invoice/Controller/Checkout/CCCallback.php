@@ -8,7 +8,6 @@ use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
-use Xendit\M2Invoice\Enum\LogDNALevel;
 
 /**
  * This callback is only for order in multishipping flow. For order

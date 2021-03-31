@@ -52,9 +52,6 @@ class CCHosted extends AbstractInvoice
             $billingAddress = $order->getBillingAddress();
 
             $args = [
-                'external_id'           => $this->dataHelper->getExternalId($orderId),
-                'payer_email'           => $billingAddress->getEmail(),
-                'description'           => $orderId,
                 'order_number'          => $orderId,
                 'amount'                => $amount,
                 'payment_type'          => self::CC_HOSTED_PAYMENT_TYPE,

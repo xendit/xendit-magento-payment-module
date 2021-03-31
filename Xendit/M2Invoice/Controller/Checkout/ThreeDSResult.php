@@ -3,7 +3,6 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
-use Xendit\M2Invoice\Enum\LogDNALevel;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -75,7 +74,6 @@ class ThreeDSResult extends AbstractAction
             return $this->processXenditPayment($charge, $orders, $orderIds, $isMultishipping);
         } catch (LocalizedException $e) {
             $message = 'Exception caught on xendit/checkout/threedsresult: ' . $e->getMessage();
-            $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
             
             return $this->processFailedPayment($orderIds);
         }

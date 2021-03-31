@@ -66,13 +66,13 @@ class ApiRequest
         $headers = $this->getHeaders($isPublicRequest, $preferredMethod, $customHeaders);
 
         try {
-            if (isset($headers['Content-Type'])) {
-                $this->magentoCurl->addHeader("Content-Type", $headers['Content-Type']);
-            }
-            if (isset($headers['Authorization'])) {
-                $this->magentoCurl->addHeader("Authorization", $headers['Authorization']);
-            }
+            $this->magentoCurl->addHeader("Content-Type", $headers['Content-Type']);
+            $this->magentoCurl->addHeader("Authorization", $headers['Authorization']);
+            $this->magentoCurl->addHeader("x-plugin-name", $headers['x-plugin-name']);
+            $this->magentoCurl->addHeader("user-agent", $headers['user-agent']);
+            $this->magentoCurl->addHeader("x-plugin-version", $headers['x-plugin-version']);
             $this->magentoCurl->setTimeout(30);
+            
             if ($method == Request::METHOD_GET) {
                 // GET request
                 $this->magentoCurl->get($url);
@@ -113,7 +113,7 @@ class ApiRequest
             'Content-Type' => 'application/json',
             'x-plugin-name' => 'MAGENTO2',
             'user-agent' => 'Magento 2 Module',
-            'x-plugin-version' => '2.4.0'
+            'x-plugin-version' => '3.0.0'
         ];
 
         if ($preferredMethod !== null) {

@@ -7,7 +7,6 @@ use Xendit\M2Invoice\Helper\ErrorHandler;
 use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
-use Xendit\M2Invoice\Helper\LogDNA;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
@@ -91,11 +90,6 @@ abstract class AbstractAction extends Action
     protected $resultRedirectFactory;
 
     /**
-     * @var LogDNA
-     */
-    private $logDNA;
-
-    /**
      * @var StoreManagerInterface
      */
     private $storeManager;
@@ -156,7 +150,6 @@ abstract class AbstractAction extends Action
      * @param Checkout $checkoutHelper
      * @param OrderRepositoryInterface $orderRepo
      * @param ApiRequest $apiHelper
-     * @param LogDNA $logDNA
      * @param StoreManagerInterface $storeManager
      * @param CartRepositoryInterface $quoteRepository
      * @param JsonFactory $jsonResultFactory
@@ -178,7 +171,6 @@ abstract class AbstractAction extends Action
         Checkout $checkoutHelper,
         OrderRepositoryInterface $orderRepo,
         ApiRequest $apiHelper,
-        LogDNA $logDNA,
         StoreManagerInterface $storeManager,
         CartRepositoryInterface $quoteRepository,
         JsonFactory $jsonResultFactory,
@@ -204,7 +196,6 @@ abstract class AbstractAction extends Action
         $this->orderRepo = $orderRepo;
         $this->apiHelper = $apiHelper;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
-        $this->logDNA = $logDNA;
         $this->storeManager = $storeManager;
         $this->quoteRepository = $quoteRepository;
         $this->jsonResultFactory = $jsonResultFactory;
@@ -413,14 +404,6 @@ abstract class AbstractAction extends Action
     protected function getRedirectFactory()
     {
         return $this->resultRedirectFactory;
-    }
-
-    /**
-     * @return LogDNA
-     */
-    protected function getLogDNA()
-    {
-        return $this->logDNA;
     }
 
     /**

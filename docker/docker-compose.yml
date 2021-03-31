@@ -14,6 +14,7 @@ services:
         - PHP_MAX_EXECUTION_TIME=300
         - PHP_POST_MAX_SIZE=500M
         - PHP_UPLOAD_MAX_FILESIZE=1024M
+        - COMPOSER_VERSION=1
       volumes:
         - ./magento2:/app:cached
         - ../Xendit:/app/app/code/Xendit

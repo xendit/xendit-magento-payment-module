@@ -61,6 +61,12 @@ To activate this feature, you need to follow this additional steps:
 - OVO
 - Credit Card Subscription
 - Credit Card Installment
+- DANA
+- LinkAja
+- Indomaret
+- Kredivo
+- QRIS
+- Direct Debit BRI
 
 ## Refund Support
 Since v1.3.0, online refund (full and partial) is supported for payment through credit and debit card channel.

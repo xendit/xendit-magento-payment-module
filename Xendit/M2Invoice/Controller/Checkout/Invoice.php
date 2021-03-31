@@ -4,8 +4,6 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
 use Magento\Framework\Phrase;
-use Xendit\M2Invoice\Enum\LogDNA_Level;
-use Xendit\M2Invoice\Enum\LogDNALevel;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Controller\ResultFactory;
 use Zend\Http\Request;
@@ -42,8 +40,6 @@ class Invoice extends AbstractAction
 
             $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $message);
             $this->getLogger()->debug($e->getTraceAsString());
-
-            $this->getLogDNA()->log(LogDNALevel::ERROR, $message, $apiData);
 
             $this->cancelOrder($order, $e->getMessage());
             return $this->redirectToCart($message);

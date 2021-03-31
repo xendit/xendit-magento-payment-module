@@ -3,7 +3,6 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
-use Xendit\M2Invoice\Enum\LogDNALevel;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Zend\Http\Request;
@@ -124,8 +123,6 @@ class ProcessHosted extends AbstractAction
 
     public function handlePaymentFailure($order, $message, $reason, $shouldRedirect = true)
     {
-        $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
-
         $this->cancelOrder($order, $reason);
 
         $this->getMessageManager()->addErrorMessage(__(
