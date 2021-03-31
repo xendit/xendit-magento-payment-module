@@ -2,6 +2,7 @@
 Clone magento 2 in docker folder
 ```
 git clone https://github.com/magento/magento2.git
+cd magento2
 git checkout 2.3
 ```
 
@@ -16,6 +17,7 @@ docker-compose up -d --build
 ```
 
 App: http://magento2.docker
+
 PHPMyAdmin: http://127.0.0.1:8080
 
 ## Access docker container
