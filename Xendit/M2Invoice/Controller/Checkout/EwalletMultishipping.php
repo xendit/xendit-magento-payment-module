@@ -173,7 +173,7 @@ class EwalletMultishipping extends AbstractAction
     {
         $this->logger->info(json_encode($requestData));
 
-        $ewalletUrl = $this->getDataHelper()->getCheckoutUrl() . "/ewallets";
+        $ewalletUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/ewallets";
         $ewalletMethod = Request::METHOD_POST;
         $options = [
             'timeout' => 60
@@ -209,7 +209,7 @@ class EwalletMultishipping extends AbstractAction
      */
     private function getEwalletStatus($ewalletType, $externalId)
     {
-        $ewalletUrl = $this->getDataHelper()->getCheckoutUrl() . "/ewallets?ewallet_type=" . $ewalletType . "&external_id=" . $externalId;
+        $ewalletUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=" . $ewalletType . "&external_id=" . $externalId;
         $ewalletMethod = Request::METHOD_GET;
 
         try {

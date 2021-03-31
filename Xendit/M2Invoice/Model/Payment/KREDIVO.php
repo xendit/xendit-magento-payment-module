@@ -215,7 +215,7 @@ class KREDIVO extends AbstractInvoice
     {
         $this->_logger->info(json_encode($requestData));
 
-        $cardlessCreditUrl = $this->dataHelper->getCheckoutUrl() . "/cardless-credit";
+        $cardlessCreditUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/cardless-credit";
         $cardlessCreditMethod = Request::METHOD_POST;
         $options = [
             'timeout' => 60

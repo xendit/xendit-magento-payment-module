@@ -140,9 +140,6 @@
                     </comment>
                     <attribute type="shared">1</attribute>
                 </field>
-                <field id="xendit_url" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="15" translate="label" type="text">
-                    <label>Xendit API Url</label>
-                </field>
                 <field id="test_public_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Test - Public Key</label>
                     <comment>

@@ -58,7 +58,10 @@ class QrCodeMultishipping extends AbstractAction
                 'type'          => $this->type,
                 'description'   => $orderIncrementIds,
                 'callback_url'  => $this->getXenditCallbackUrl(),
-                'amount'        => round($transactionAmount)
+                'amount'        => round($transactionAmount),
+                'platform_callback_url' => $this->getXenditCallbackUrl(),
+                'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(),
+                'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($rawOrderIds)
             ];
 
             // send Qrcode Payment request
@@ -129,7 +132,7 @@ class QrCodeMultishipping extends AbstractAction
     {
         $this->logger->info(json_encode($requestData));
 
-        $qrocodeUrl = $this->getDataHelper()->getCheckoutUrl() . "/qr_codes";
+        $qrocodeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/qris";
         $qrcodeMethod = Request::METHOD_POST;
         $options = [
             'timeout' => 60

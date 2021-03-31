@@ -112,7 +112,7 @@ class LINKAJA extends AbstractInvoice
      */
     private function requestEwalletPayment($requestData, $isRetried = true)
     {
-        $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/ewallets";
+        $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets";
         $ewalletMethod = Request::METHOD_POST;
         $options = [
             'timeout' => 60

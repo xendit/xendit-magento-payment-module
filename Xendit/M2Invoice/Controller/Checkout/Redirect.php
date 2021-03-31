@@ -160,7 +160,7 @@ class Redirect extends AbstractAction
      */
     private function getEwalletStatus($ewalletType, $externalId)
     {
-        $ewalletUrl = $this->getDataHelper()->getCheckoutUrl() . "/ewallets?ewallet_type=".$ewalletType."&external_id=".$externalId;
+        $ewalletUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=".$ewalletType."&external_id=".$externalId;
         $ewalletMethod = \Zend\Http\Request::METHOD_GET;
 
         try {

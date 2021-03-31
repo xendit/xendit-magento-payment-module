@@ -69,7 +69,10 @@ class QRCODES extends AbstractInvoice
                 'type'          => $this->type,
                 'description'   => $orderId,
                 'callback_url'  => $this->getXenditCallbackUrl(), ///TODO: need to change this
-                'amount'        => round($amount)
+                'amount'        => round($amount),
+                'platform_callback_url' => $this->getXenditCallbackUrl(),
+                'success_redirect_url'  => $this->dataHelper->getSuccessUrl(),
+                'failure_redirect_url'  => $this->dataHelper->getFailureUrl($rawOrderIds)
             ];
 
             // send Qrcode Payment request
@@ -130,7 +133,7 @@ class QRCODES extends AbstractInvoice
     {
         $this->_logger->info(json_encode($requestData));
 
-        $qrocodeUrl = $this->dataHelper->getCheckoutUrl() . "/qr_codes";
+        $qrocodeUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/qris";
         $qrcodeMethod = Request::METHOD_POST;
         $options = [
             'timeout' => 60
@@ -175,7 +178,7 @@ class QRCODES extends AbstractInvoice
     {
         $this->_logger->info(json_encode($requestData));
 
-        $simulateUrl = $this->dataHelper->getCheckoutUrl() . "/qr_codes/" . $requestData['external_id'] . '/payments/simulate' ;
+        $simulateUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/qris/" . $requestData['external_id'] . '/simulate-payment' ;
         $simulateMethod = Request::METHOD_POST;
         $options = [
             'timeout' => 60
@@ -334,7 +337,7 @@ class QRCODES extends AbstractInvoice
     public function checkQrCodeStatus($requestData)
     {
         $response = '';
-        $url = $this->dataHelper->getCheckoutUrl() . "/qr_codes/" . $requestData['externalId'];
+        $url = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/qris/" . $requestData['externalId'];
         $method = Request::METHOD_GET;
         $options = [
             'timeout' => 60

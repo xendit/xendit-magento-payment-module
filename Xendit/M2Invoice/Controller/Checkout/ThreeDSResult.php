@@ -111,7 +111,7 @@ class ThreeDSResult extends AbstractAction
      */
     private function createCharge($hosted3DS, $orderId, $duplicate = false)
     {
-        $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/credit_card_charges";
+        $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charges";
         $chargeMethod = \Zend\Http\Request::METHOD_POST;
         $originalExternalId = $this->getDataHelper()->getExternalId($orderId);
         $duplicateExternalId = $this->getDataHelper()->getExternalId($orderId, true);
