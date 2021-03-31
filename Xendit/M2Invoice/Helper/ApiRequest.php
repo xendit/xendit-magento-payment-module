@@ -66,11 +66,9 @@ class ApiRequest
         $headers = $this->getHeaders($isPublicRequest, $preferredMethod, $customHeaders);
 
         try {
-            $this->magentoCurl->addHeader("Content-Type", $headers['Content-Type']);
-            $this->magentoCurl->addHeader("Authorization", $headers['Authorization']);
-            $this->magentoCurl->addHeader("x-plugin-name", $headers['x-plugin-name']);
-            $this->magentoCurl->addHeader("user-agent", $headers['user-agent']);
-            $this->magentoCurl->addHeader("x-plugin-version", $headers['x-plugin-version']);
+            foreach ($headers as $key => $value) {
+                $this->magentoCurl->addHeader($key, $value);
+            }
             $this->magentoCurl->setTimeout(30);
             
             if ($method == Request::METHOD_GET) {
