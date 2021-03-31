@@ -66,9 +66,8 @@ class ApiRequest
         $headers = $this->getHeaders($isPublicRequest, $preferredMethod, $customHeaders);
 
         try {
-            foreach ($headers as $key => $value) {
-                $this->magentoCurl->addHeader($key, $value);
-            }
+            $this->magentoCurl->setHeaders($headers);
+
             $this->magentoCurl->setTimeout(30);
             
             if ($method == Request::METHOD_GET) {
@@ -115,17 +114,13 @@ class ApiRequest
         ];
 
         if ($preferredMethod !== null) {
-            array_push(
-                $headers,
-                [ 'x-plugin-method' => $preferredMethod ]
-            );
+            $headers['x-plugin-method'] = $preferredMethod;
         }
 
-        foreach ($customHeaders as $customHeader => $value) {
-            array_push(
-                $headers,
-                [ $customHeader => $value ]
-            );
+        if (!empty($customHeaders)) {
+            foreach ($customHeaders as $customHeader => $value) {
+                $headers[$customHeader] = $value;
+            }
         }
 
         return $headers;

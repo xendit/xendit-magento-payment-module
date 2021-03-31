@@ -54,21 +54,21 @@ php bin/magento setup:install \
 --use-rewrites=1 \
 --language=en_US \
 --currency=IDR \
---timezone=America/New_York \
+--timezone=Asia/Jakarta \
 --use-secure-admin=1 \
 --admin-use-security-key=1 \
 --session-save=files \
 --use-sample-data
 ```
 
-## Seeding sample data
+## Seeding sample data (Optional)
 
 Add reference to repo.magento.com in composer.json, this is needed if you clone repo from github.
 
 ```
 composer config repositories.0 composer https://repo.magento.com
 ```
-nb: you need repo.magento.com cridential
+Note: you need repo.magento.com credentials
 
 Install sample data:
 ```
@@ -86,13 +86,37 @@ If you encounter this kind of error when running `php bin/magento setup:di:compi
 
 ![Error Qr Code](assets/composer_qr.jpeg "Error Qr Code")
 
-Please add `bacon/bacon-qr-code` as a dependencies with command
+Please add `bacon/bacon-qr-code` as a dependencies in magento root folder with command
 
 ```
 composer require bacon/bacon-qr-code
 ```
 
 Then try to run `php bin/magento setup:di:compile` again
+
+## Installation Troubleshoot
+
+If you encounter this problem when trying to install Magento inside docker
+```
+Fatal error: Uncaught Error: Call to undefined function xdebug_disable()
+```
+
+Go to this directory (after finished installing dependencies)
+```
+vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/_bootstrap.php
+```
+
+replace this line
+```
+xdebug_disable();
+```
+
+into
+```
+if (function_exists('xdebug_disable')) {
+        xdebug_disable();
+}
+```
 
 ## TODO
 - [x] Create docker for magento
