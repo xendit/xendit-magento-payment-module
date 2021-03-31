@@ -32,6 +32,8 @@ After the code is inside the `MAGENTO_DIR`, proceed to run these commands:
    4. Run `php bin/magento module:status` again to ensure `Xendit_M2Invoice` is enabled already.
    5. You should flush Magento cache by using `php bin/magento cache:flush`
    6. Compile Magento with newly added module by using `php bin/magento setup:di:compile`
+   7. After finished compiling, run `php bin/magento setup:static-content:deploy -f`
+   8. Then flush the cache again with `php bin/magento cache:flush`
 2. You can see Xendit's setting page by navigating to **Stores -> Configuration -> Sales -> Payment Method**
 3. Once you enable Xendit on the setting page, you should see Xendit's payment methods (credit card and bank transfer) on payment section during checkout flow.
 

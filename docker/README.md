@@ -2,7 +2,7 @@
 Clone magento 2 in docker folder
 ```
 git clone https://github.com/magento/magento2.git
-git checkout 2.1
+git checkout 2.3
 ```
 
 ## Setup local domain
@@ -21,6 +21,17 @@ PHPMyAdmin: http://127.0.0.1:8080
 ## Access docker container
 ```
 docker exec -it web bash
+```
+
+Go to magento folder inside docker container
+
+```
+cd app
+```
+
+Then run composer install in the root directory of Magento
+```
+composer install
 ```
 
 ## Install Magento2
@@ -68,6 +79,20 @@ Run the following command to update the database
 ```
 bin/magento setup:upgrade
 ```
+
+## Install Bacon QR Code in Magento (Optional)
+
+If you encounter this kind of error when running `php bin/magento setup:di:compile` after Magento has been installed
+
+![Error Qr Code](assets/composer_qr.jpeg "Error Qr Code")
+
+Please add `bacon/bacon-qr-code` as a dependencies with command
+
+```
+composer require bacon/bacon-qr-code
+```
+
+Then try to run `php bin/magento setup:di:compile` again
 
 ## TODO
 - [x] Create docker for magento
