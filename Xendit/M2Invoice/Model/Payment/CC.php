@@ -23,7 +23,7 @@ class CC extends AbstractInvoice
      * @var string
      */
     protected $_code = 'cc';
-    protected $methodCode = 'CC';
+    protected $methodCode = 'CREDIT_CARD';
 
     /**
      * @param CartInterface|null $quote

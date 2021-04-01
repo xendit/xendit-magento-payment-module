@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'BRI'
+                return 'BRI';
             },
 
             getTest: function() {

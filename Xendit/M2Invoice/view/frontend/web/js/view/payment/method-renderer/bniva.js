@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'BNI'
+                return 'BNI';
             },
 
             getTest: function() {

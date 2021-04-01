@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'CREDIT_CARD'
+                return 'CREDIT_CARD';
             },
 
             getTest: function() {

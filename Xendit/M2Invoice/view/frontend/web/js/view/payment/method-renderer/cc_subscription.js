@@ -21,7 +21,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/cc-hosted',
+                template: 'Xendit_M2Invoice/payment/cc-subscription',
                 redirectAfterPlaceOrder: false
             },
 
@@ -35,7 +35,7 @@ define(
             },
 
             getMethod: function() {
-                return 'CC_SUBSCRIPTION'
+                return 'CC_SUBSCRIPTION';
             },
 
             getTest: function() {

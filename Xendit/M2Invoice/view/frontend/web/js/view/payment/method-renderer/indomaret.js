@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'Indomaret'
+                return 'Indomaret';
             },
 
             getTest: function() {

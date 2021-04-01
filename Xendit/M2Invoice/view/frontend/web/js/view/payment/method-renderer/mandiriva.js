@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'MANDIRI'
+                return 'MANDIRI';
             },
 
             getTest: function() {

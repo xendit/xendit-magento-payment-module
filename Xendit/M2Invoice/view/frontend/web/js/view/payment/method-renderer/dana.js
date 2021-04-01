@@ -33,7 +33,7 @@ define(
             },
 
             getMethod: function() {
-                return 'DANA'
+                return 'DANA';
             },
 
             getTest: function() {

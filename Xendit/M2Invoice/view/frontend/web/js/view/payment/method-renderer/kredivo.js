@@ -35,7 +35,7 @@ define(
             },
 
             getMethod: function() {
-                return 'KREDIVO'
+                return 'KREDIVO';
             },
 
             getTest: function() {

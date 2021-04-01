@@ -35,7 +35,7 @@ define(
             },
 
             getMethod: function() {
-                return 'OVO'
+                return 'OVO';
             },
 
             getTest: function() {

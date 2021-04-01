@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'QRCODES'
+                return 'QRCODES';
             },
 
             getTest: function() {

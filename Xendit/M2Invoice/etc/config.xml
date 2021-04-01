@@ -107,8 +107,8 @@
                 <model>Xendit\M2Invoice\Model\Payment\CC</model>
                 <title>Credit and Debit Cards</title>
                 <description>Bayar pesanan dengan kartu kredit atau debit anda melalui Xendit</description>
-                <min_order_total>5000</min_order_total>
-                <max_order_total>200000000</max_order_total>
+                <min_order_total>1</min_order_total>
+                <max_order_total>50000000000</max_order_total>
                 <order_status>pending_payment</order_status><!-- set default order -->
                 <cctypes>VI,MC,AE,JCB</cctypes>
                 <sort_order>8</sort_order>

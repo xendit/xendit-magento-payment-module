@@ -35,7 +35,7 @@ define(
             },
 
             getMethod: function() {
-                return 'LINKAJA'
+                return 'LINKAJA';
             },
 
             getTest: function() {

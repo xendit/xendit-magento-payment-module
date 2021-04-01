@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'Permata'
+                return 'Permata';
             },
 
             getTest: function() {
