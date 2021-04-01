@@ -76,8 +76,8 @@ class CCSubscription extends CCHosted
                 'subscription_callback_url' => $this->dataHelper->getXenditSubscriptionCallbackUrl(),
                 'payer_email' => $billingAddress->getEmail(),
                 'subscription_option' => json_encode(array(
-                    'interval' => $this->dataHelper->getSubscriptionInterval(),
-                    'interval_count' => $this->dataHelper->getSubscriptionIntervalCount(),
+                    'interval' => $this->dataHelper->getCcSubscriptionInterval(),
+                    'interval_count' => $this->dataHelper->getCcSubscriptionIntervalCount(),
                 ), JSON_FORCE_OBJECT)
             );
 

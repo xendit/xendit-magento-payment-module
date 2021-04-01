@@ -59,8 +59,6 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $defaultCCSubscriptionDesc = "Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI";
-
         $config = [
             'payment' => [
                 Config::CODE => [
@@ -72,8 +70,7 @@ class ConfigProvider implements ConfigProviderInterface
                     'available_types' => ['cc' => $this->ccConfig->getCcAvailableTypes()],
                     'months' => ['cc' => $this->ccConfig->getCcMonths()],
                     'years' => ['cc' => $this->ccConfig->getCcYears()],
-                    'has_verification' => $this->ccConfig->hasVerification(),
-                    'card_subscription_description' => ($this->xendit->getSubscriptionDescription() ?: $defaultCCSubscriptionDesc)
+                    'has_verification' => $this->ccConfig->hasVerification()
                 ],
                 'dana' => [
                     'title' => $this->xenditHelper->getDanaTitle(),
@@ -158,6 +155,14 @@ class ConfigProvider implements ConfigProviderInterface
                     'min_order_amount' => $this->xenditHelper->getCcHostedMinOrderAmount(),
                     'max_order_amount' => $this->xenditHelper->getCcHostedMaxOrderAmount(),
                     'description' => $this->xenditHelper->getCcHostedDescription()
+                ],
+                'cc_subscription' => [
+                    'title' => $this->xenditHelper->getCcSubscriptionTitle(),
+                    'min_order_amount' => $this->xenditHelper->getCcSubscriptionMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getCcSubscriptionMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getCcSubscriptionDescription(),
+                    'interval' => $this->xenditHelper->getCcSubscriptionInterval(),
+                    'interval_count' => $this->xenditHelper->getCcSubscriptionIntervalCount()
                 ]
             ]
         ];

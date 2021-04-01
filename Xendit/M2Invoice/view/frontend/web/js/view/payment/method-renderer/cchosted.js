@@ -5,7 +5,6 @@ define(
         'Magento_Checkout/js/model/quote',
         'underscore',
         'jquery',
-        'Magento_Checkout/js/action/place-order',
         'Magento_Ui/js/model/messageList'
     ],
     function (
@@ -14,7 +13,6 @@ define(
         quote,
         _,
         $,
-        placeOrderAction,
         messageList
     ) {
         'use strict';

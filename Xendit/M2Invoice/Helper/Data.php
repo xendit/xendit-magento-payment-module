@@ -78,7 +78,13 @@ class Data extends AbstractHelper
     /*
      *  CC Subscription
      */
-    const XML_PATH_CC_SUBSCRIPTION_ACTIVE   = 'payment/cc_subscription/active';
+    const XML_PATH_CC_SUBSCRIPTION_ACTIVE           = 'payment/cc_subscription/active';
+    const XML_PATH_CC_SUBSCRIPTION_TITLE            = 'payment/cc_subscription/title';
+    const XML_PATH_CC_SUBSCRIPTION_MIN_AMOUNT       = 'payment/cc_subscription/min_order_total';
+    const XML_PATH_CC_SUBSCRIPTION_MAX_AMOUNT       = 'payment/cc_subscription/max_order_total';
+    const XML_PATH_CC_SUBSCRIPTION_DESCRIPTION      = 'payment/cc_subscription/description';
+    const XML_PATH_CC_SUBSCRIPTION_INTERVAL         = 'payment/cc_subscription/interval';
+    const XML_PATH_CC_SUBSCRIPTION_INTERVAL_COUNT   = 'payment/cc_subscription/interval_count';
 
     /*
      *  DD BRI
@@ -393,22 +399,6 @@ class Data extends AbstractHelper
     public function getPublicApiKey()
     {
         return $this->xendit->getPublicApiKey();
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubscriptionInterval()
-    {
-        return $this->xendit->getSubscriptionInterval() ?: 'MONTH';
-    }
-
-    /**
-     * @return int
-     */
-    public function getSubscriptionIntervalCount()
-    {
-        return $this->xendit->getSubscriptionIntervalCount() ?: 1;
     }
 
     /**
@@ -976,6 +966,56 @@ class Data extends AbstractHelper
     public function getCcSubscriptionActive()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionInterval()
+    {
+        $value = $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_INTERVAL, ScopeInterface::SCOPE_STORE);
+        return $value ?: 'MONTH';
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionIntervalCount()
+    {
+        $value = $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_INTERVAL_COUNT, ScopeInterface::SCOPE_STORE);
+        return $value ?: 1;
     }
 
     /**

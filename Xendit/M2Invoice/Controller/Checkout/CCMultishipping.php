@@ -137,8 +137,8 @@ class CCMultishipping extends AbstractAction
                     $requestData['payer_email'] = $billingAddress->getEmail();
                     $requestData['subscription_option'] = json_encode(
                         [
-                            'interval' => $this->getDataHelper()->getSubscriptionInterval(),
-                            'interval_count' => $this->getDataHelper()->getSubscriptionIntervalCount()
+                            'interval' => $this->getDataHelper()->getCcSubscriptionInterval(),
+                            'interval_count' => $this->getDataHelper()->getCcSubscriptionIntervalCount()
                         ], JSON_FORCE_OBJECT
                     );
                 }
