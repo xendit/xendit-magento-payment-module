@@ -45,19 +45,19 @@ define(
             },
 
             getDescription: function() {
-                return 'Bayar pesanan dengan kartu kredit atau debit anda melalui Xendit';
+                return window.checkoutConfig.payment.cchosted.description;
             },
 
             getTestDescription: function () {
-                var environment = window.checkoutConfig.payment.m2invoice.xendit_env;
+                var environment = window.checkoutConfig.payment.xendit.xendit_env;
 
                 if (environment !== 'test') {
                     return {};
                 }
 
                 return {
-                    prefix: window.checkoutConfig.payment.m2invoice.test_prefix,
-                    content: window.checkoutConfig.payment.m2invoice.test_content
+                    prefix: window.checkoutConfig.payment.xendit.test_prefix,
+                    content: window.checkoutConfig.payment.xendit.test_content
                 };
             },
 
@@ -65,58 +65,13 @@ define(
                 return true;
             },
 
-            placeOrder: function (data, event) {
-                this.isPlaceOrderActionAllowed(false);
-                var self = this;
-                try {
-                    var paymentData = self.getData();
-                    var placeOrder = placeOrderAction(paymentData, false);
-
-                    $.when(placeOrder)
-                        .fail(function (e) {
-                            if (e.responseJSON) {
-                                e = e.responseJSON;
-                            }
-
-                            self.isPlaceOrderActionAllowed(true);
-                        })
-                        .done(function () {
-                            self.afterPlaceOrder();
-                        });
-
-                    return false;
-                } catch (e) {
-                    this.isPlaceOrderActionAllowed(true);
-                }
-            },
-
             afterPlaceOrder: function () {
-                var uiUrl = window.checkoutConfig.payment.m2invoice.ui_url;
+                var uiUrl = window.checkoutConfig.payment.xendit.ui_url;
                 var xenditScript = document.createElement('script');
                 xenditScript.src = uiUrl + '/js/xendit-hp.min.js';
                 document.body.appendChild(xenditScript);
 
-                $.ajax({
-                    type: 'get',
-                    url: url.build('xendit/checkout/redirect'),
-                    success: function (data) {
-                        var hpId = data.id;
-                        var hpData = {
-                            token: data.hp_token,
-                            onSuccess: function () {
-                                window.location.replace(url.build('xendit/checkout/processhosted'));
-                            },
-                            onError: function () {
-                                window.location.replace(url.build('xendit/checkout/failure?order_id=' + data.order_id));
-                            },
-                            onClose: function () {
-                                window.location.replace(url.build('xendit/checkout/failure?order_id=' + data.order_id));
-                            }
-                        };
-
-                        renderHostedPayment(hpId, hpData);
-                    }
-                });
+                window.location.replace(url.build('xendit/checkout/redirect'));
 
                 function renderHostedPayment(hpId, hpData) {
                     var retry = 0;

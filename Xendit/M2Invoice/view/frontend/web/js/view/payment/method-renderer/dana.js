@@ -2,21 +2,25 @@ define(
     [
         'Magento_Checkout/js/view/payment/default',
         'mage/url',
-        'Magento_Checkout/js/model/quote'
+        'Magento_Checkout/js/model/quote',
+        'underscore',
+        'jquery',
     ],
     function (
         Component,
         url,
-        quote
-        ) {
+        quote,
+        _,
+        $
+    ) {
         'use strict';
 
         var self;
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/invoiceva',
-                redirectAfterPlaceOrder: false,
+                template: 'Xendit_M2Invoice/payment/dana',
+                redirectAfterPlaceOrder: false
             },
 
             initialize: function() {
@@ -37,24 +41,36 @@ define(
             },
 
             getDescription: function() {
-                return 'Bayar pesanan dengan akun DANA anda melalui Xendit';
+                return window.checkoutConfig.payment.dana.description;
             },
 
             getTestDescription: function () {
-                var environment = window.checkoutConfig.payment.m2invoice.xendit_env;
+                var environment = window.checkoutConfig.payment.xendit.xendit_env;
 
                 if (environment !== 'test') {
                     return {};
                 }
 
                 return {
-                    prefix: window.checkoutConfig.payment.m2invoice.test_prefix,
-                    content: window.checkoutConfig.payment.m2invoice.test_content
+                    prefix: window.checkoutConfig.payment.xendit.test_prefix,
+                    content: window.checkoutConfig.payment.xendit.test_content
                 };
             },
 
+            isActive: function() {
+                return true;
+            },
+
             afterPlaceOrder: function () {
-                window.location.replace(url.build(`xendit/checkout/invoice?preferred_method=${self.getMethod()}`));
+                if ($("[class='xendit-overlay-box']").length === 0) {
+                    var overlayDiv = $( "<div class='xendit-overlay-box'>" +
+                        "<div id='xendit-overlay-content'></div>" +
+                        "</div>" );
+                    $( 'body' ).append(overlayDiv);
+                }
+
+                $( "[class='xendit-overlay-box']" ).css("display", "flex");
+                window.location.replace(url.build('xendit/checkout/redirect'));
             },
 
             validate: function() {
@@ -68,13 +84,13 @@ define(
                     return false;
                 }
 
-                if (totals.grand_total < 10000) {
-                    self.messageContainer.addErrorMessage({'message': 'The minimum amount for using this payment is IDR 10,000. Please put more item(s) to reach the minimum amount.'});
+                if (totals.grand_total < window.checkoutConfig.payment.dana.min_order_amount) {
+                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 1.'});
                     return false;
                 }
 
                 return true;
-            }
+            },
         });
     }
 );

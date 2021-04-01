@@ -2,13 +2,16 @@
 
 namespace Xendit\M2Invoice\Model\Adminhtml\Source;
 
+use Magento\Framework\Option\ArrayInterface;
+
 /**
- * @since 1.4.1
+ * Class AllowedMethod
+ * @package Xendit\M2Invoice\Model\Adminhtml\Source
  */
-class AllowedMethod implements \Magento\Framework\Option\ArrayInterface
+class AllowedMethod implements ArrayInterface
 {
     /**
-     * {@inheritdoc}
+     * @return array
      */
     public function toOptionArray()
     {

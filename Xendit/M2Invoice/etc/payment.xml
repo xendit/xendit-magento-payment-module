@@ -1,4 +1,4 @@
-<?xml version='1.0'?>
+<?xml version="1.0"?>
 <payment
 	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
 	xsi:noNamespaceSchemaLocation='urn:magento:module:Magento_Payment:etc/payment.xsd'
@@ -30,6 +30,12 @@ https://github.com/magento/magento2/blob/2.2.0-rc2.1/app/code/Magento/Multishipp
         <method name='cc'>
             <allow_multiple_address>1</allow_multiple_address>
         </method>
+        <method name='cchosted'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+        <method name='cc_installment'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
         <method name='cc_subscription'>
             <allow_multiple_address>1</allow_multiple_address>
         </method>
@@ -40,6 +46,18 @@ https://github.com/magento/magento2/blob/2.2.0-rc2.1/app/code/Magento/Multishipp
             <allow_multiple_address>1</allow_multiple_address>
         </method>
         <method name='ovo'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+        <method name='linkaja'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+        <method name='qr_codes'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+        <method name='dd_bri'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+        <method name='kredivo'>
             <allow_multiple_address>1</allow_multiple_address>
         </method>
     </methods>

@@ -1,10 +1,4 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
--->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
@@ -12,6 +6,8 @@
             <arguments>
                 <argument name="form_templates" xsi:type="array">
                     <item name="cc" xsi:type="string">Xendit_M2Invoice::multishipping/cc.phtml</item>
+                    <item name="cchosted" xsi:type="string">Xendit_M2Invoice::multishipping/cchosted.phtml</item>
+                    <item name="cc_installment" xsi:type="string">Xendit_M2Invoice::multishipping/cc_installment.phtml</item>
                     <item name="cc_subscription" xsi:type="string">Xendit_M2Invoice::multishipping/cc_subscription.phtml</item>
                     <item name="alfamart" xsi:type="string">Xendit_M2Invoice::multishipping/alfamart.phtml</item>
                     <item name="bcava" xsi:type="string">Xendit_M2Invoice::multishipping/bcava.phtml</item>
@@ -22,6 +18,10 @@
                     <item name="ovo" xsi:type="string">Xendit_M2Invoice::multishipping/ovo.phtml</item>
                     <item name="dana" xsi:type="string">Xendit_M2Invoice::multishipping/dana.phtml</item>
                     <item name="indomaret" xsi:type="string">Xendit_M2Invoice::multishipping/indomaret.phtml</item>
+                    <item name="linkaja" xsi:type="string">Xendit_M2Invoice::multishipping/linkaja.phtml</item>
+                    <item name="qr_codes" xsi:type="string">Xendit_M2Invoice::multishipping/qr_codes.phtml</item>
+                    <item name="dd_bri" xsi:type="string">Xendit_M2Invoice::multishipping/dd_bri.phtml</item>
+                    <item name="kredivo" xsi:type="string">Xendit_M2Invoice::multishipping/kredivo.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>

@@ -3,10 +3,18 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Sales\Model\Order;
-use Xendit\M2Invoice\Enum\LogDNALevel;
+use Magento\Sales\Model\Order\Payment\Transaction;
+use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * Class ThreeDSResult
+ * @package Xendit\M2Invoice\Controller\Checkout
+ */
 class ThreeDSResult extends AbstractAction
 {
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     */
     public function execute()
     {
         $orderId = $this->getRequest()->get('order_id');
@@ -53,7 +61,7 @@ class ThreeDSResult extends AbstractAction
             $hosted3DS = $this->getThreeDSResult($hosted3DSId);
 
             if ('VERIFIED' !== $hosted3DS['status']) {
-                return $this->processFailedPayment($orderIds, 'AUTHENTICATION_FAILED');
+                return $this->processFailedPayment($orderIds, 'Authentication process failed. Please try again.');
             }
 
             $charge = $this->createCharge($hosted3DS, $orderId);
@@ -64,14 +72,18 @@ class ThreeDSResult extends AbstractAction
             }
 
             return $this->processXenditPayment($charge, $orders, $orderIds, $isMultishipping);
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+        } catch (LocalizedException $e) {
             $message = 'Exception caught on xendit/checkout/threedsresult: ' . $e->getMessage();
-            $this->getLogDNA()->log(LogDNALevel::ERROR, $message);
             
             return $this->processFailedPayment($orderIds);
         }
     }
 
+    /**
+     * @param $hosted3DSId
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     private function getThreeDSResult($hosted3DSId)
     {
         $hosted3DSUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds/$hosted3DSId";
@@ -79,8 +91,8 @@ class ThreeDSResult extends AbstractAction
         
         try {
             $hosted3DS = $this->getApiHelper()->request($hosted3DSUrl, $hosted3DSMethod, null, true);
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+        } catch (LocalizedException $e) {
+            throw new LocalizedException(
                 __('Failed to retrieve hosted 3DS data')
             );
         }
@@ -88,6 +100,13 @@ class ThreeDSResult extends AbstractAction
         return $hosted3DS;
     }
 
+    /**
+     * @param $hosted3DS
+     * @param $orderId
+     * @param bool $duplicate
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     private function createCharge($hosted3DS, $orderId, $duplicate = false)
     {
         $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charges";
@@ -103,8 +122,8 @@ class ThreeDSResult extends AbstractAction
 
         try {
             $charge = $this->getApiHelper()->request($chargeUrl, $chargeMethod, $chargeData, false);
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
+        } catch (LocalizedException $e) {
+            throw new LocalizedException(
                 __('Failed to create charge')
             );
         }
@@ -112,6 +131,13 @@ class ThreeDSResult extends AbstractAction
         return $charge;
     }
 
+    /**
+     * @param $charge
+     * @param $orders
+     * @param $orderIds
+     * @param bool $isMultishipping
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     private function processXenditPayment($charge, $orders, $orderIds, $isMultishipping = false)
     {
         if ($charge['status'] === 'CAPTURED') {
@@ -125,7 +151,7 @@ class ThreeDSResult extends AbstractAction
                 
                 $payment = $order->getPayment();
                 $payment->setTransactionId($transactionId);
-                $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+                $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
 
                 $order->save();
 
@@ -140,11 +166,17 @@ class ThreeDSResult extends AbstractAction
 
     /**
      * $orderIds = prefixless order IDs
+     * @param $orderIds
+     * @param string $failureReason
      */
-    private function processFailedPayment($orderIds, $failureReason = 'UNEXPECTED_PLUGIN_ISSUE')
+    private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error')
     {
         $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);
 
-        return $this->redirectToCart($failureReason);
+        $failureReasonInsight = $this->getDataHelper()->failureReasonInsight($failureReason);
+        $this->getMessageManager()->addErrorMessage(__(
+            $failureReasonInsight
+        ));
+        $this->_redirect('checkout/cart', array('_secure'=> false));
     }
 }

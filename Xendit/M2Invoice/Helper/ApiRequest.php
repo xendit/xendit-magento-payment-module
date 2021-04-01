@@ -3,33 +3,55 @@
 namespace Xendit\M2Invoice\Helper;
 
 use Magento\Framework\Phrase;
-use Magento\Framework\App\ProductMetadataInterface;
-use Magento\Framework\HTTP\ZendClientFactory;
-use Psr\Log\LoggerInterface;
-use Xendit\M2Invoice\Model\Payment\M2Invoice;
+use Xendit\M2Invoice\Logger\Logger as XenditLogger;
+use Xendit\M2Invoice\Model\Payment\Xendit;
+use Magento\Payment\Gateway\Http\ClientException;
+use Magento\Framework\HTTP\Client\Curl as MagentoCurl;
+use Zend\Http\Request;
 
+/**
+ * Class ApiRequest
+ * @package Xendit\M2Invoice\Helper
+ */
 class ApiRequest
 {
-    private $httpClientFactory;
-
+    /**
+     * @var Crypto
+     */
     private $cryptoHelper;
 
-    private $m2Invoice;
+    /**
+     * @var Xendit
+     */
+    private $xendit;
 
-    private $logger;
+    /**
+     * @var XenditLogger
+     */
+    private $xenditLogger;
 
+    /**
+     * @var MagentoCurl
+     */
+    private $magentoCurl;
+
+    /**
+     * ApiRequest constructor.
+     * @param Crypto $cryptoHelper
+     * @param Xendit $xendit
+     * @param XenditLogger $xenditLogger
+     * @param MagentoCurl $magentoCurl
+     */
     public function __construct(
-        ZendClientFactory $httpClientFactory,
         Crypto $cryptoHelper,
-        M2Invoice $m2Invoice,
-        LoggerInterface $logger,
-        ProductMetadataInterface $productMetadata
+        Xendit $xendit,
+        XenditLogger $xenditLogger,
+        MagentoCurl $magentoCurl
     ) {
-        $this->httpClientFactory = $httpClientFactory;
         $this->cryptoHelper = $cryptoHelper;
-        $this->m2Invoice = $m2Invoice;
-        $this->logger = $logger;
-        $this->productMetadata = $productMetadata;
+        $this->xendit = $xendit;
+        $this->xenditLogger = $xenditLogger;
+        $this->magentoCurl = $magentoCurl;
     }
 
     public function request(
@@ -41,33 +63,30 @@ class ApiRequest
         $customOptions = [],
         $customHeaders = []
     ) {
-        $client = $this->httpClientFactory->create();
         $headers = $this->getHeaders($isPublicRequest, $preferredMethod, $customHeaders);
-        $options = [
-            'timeout' => 30
-        ];
-
-        $client->setUri($url);
-        $client->setMethod($method);
-        $client->setHeaders($headers);
-        $client->setConfig(array_merge($options, $customOptions));
-
-        if ($requestData != null) {
-            $client->setParameterPost($requestData);
-        }
 
         try {
-            $response = $client->request();
+            $this->magentoCurl->setHeaders($headers);
 
-            if (empty($response->getBody())) {
+            $this->magentoCurl->setTimeout(30);
+            
+            if ($method == Request::METHOD_GET) {
+                // GET request
+                $this->magentoCurl->get($url);
+            } else {
+                // POST request
+                $this->magentoCurl->post($url, json_encode($requestData));
+            }
+
+            if (empty($this->magentoCurl->getBody())) {
                 throw new \Magento\Framework\Exception\LocalizedException(
                     new Phrase('There was a problem connecting to Xendit')
                 );
             }
 
-            $jsonResponse = json_decode($response->getBody(), true);
+            $jsonResponse = json_decode($this->magentoCurl->getBody(), true);
         } catch (\Zend_Http_Client_Exception $e) {
-            throw new \Magento\Payment\Gateway\Http\ClientException(__($e->getMessage()));
+            throw new ClientException(__($e->getMessage()));
         } catch (\Exception $e) {
             throw $e;
         }
@@ -75,9 +94,15 @@ class ApiRequest
         return $jsonResponse;
     }
 
+    /**
+     * @param $isPublicRequest
+     * @param null $preferredMethod
+     * @param array $customHeaders
+     * @return array
+     */
     private function getHeaders($isPublicRequest, $preferredMethod = null, $customHeaders = [])
     {
-        $apiKey = $isPublicRequest ? $this->m2Invoice->getPublicApiKey() : $this->m2Invoice->getApiKey();
+        $apiKey = $isPublicRequest ? $this->xendit->getPublicApiKey() : $this->xendit->getApiKey();
         $auth = $this->cryptoHelper->generateBasicAuth($apiKey);
 
         $headers = [
@@ -85,21 +110,17 @@ class ApiRequest
             'Content-Type' => 'application/json',
             'x-plugin-name' => 'MAGENTO2',
             'user-agent' => 'Magento 2 Module',
-            'x-plugin-version' => '2.7.0'
+            'x-plugin-version' => '3.0.0'
         ];
 
         if ($preferredMethod !== null) {
-            array_push(
-                $headers,
-                [ 'x-plugin-method' => $preferredMethod ]
-            );
+            $headers['x-plugin-method'] = $preferredMethod;
         }
 
-        foreach ($customHeaders as $customHeader => $value) {
-            array_push(
-                $headers,
-                [ $customHeader => $value ]
-            );
+        if (!empty($customHeaders)) {
+            foreach ($customHeaders as $customHeader => $value) {
+                $headers[$customHeader] = $value;
+            }
         }
 
         return $headers;

@@ -1,0 +1,22 @@
+<fieldset data-bind="attr: {class: 'fieldset payment items ovo ' + getCode(), id: 'payment_form_' + getCode()}">
+    <div class="field number required">
+        <div class="control">
+            <input type="text"
+                    autocomplete="off"
+                    name="payment[ovo_number]"
+                    class="input-text"
+                    maxlength="16"
+                    value=""
+                    data-bind="attr: {
+                                    autocomplete: off,
+                                    id: getCode() + '_ovo_number',
+                                    title: $t('Phone Number'),
+                                    placeholder: 'Phone Number',
+                                    'data-container': getCode() + '-ovo-number',
+                                    'data-validate': JSON.stringify({'required-number':true})},
+                              enable: isActive($parents),
+                              valueUpdate: 'keyup' "/>
+        </div>
+    </div>
+    <!-- /ko -->
+</fieldset>

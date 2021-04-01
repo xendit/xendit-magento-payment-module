@@ -1,7 +1,7 @@
 version: '3'
 services:
     web:
-      image: webdevops/php-apache-dev:ubuntu-16.04
+      image: webdevops/php-apache-dev:7.3
       container_name: web
       restart: always
       user: application
@@ -14,6 +14,7 @@ services:
         - PHP_MAX_EXECUTION_TIME=300
         - PHP_POST_MAX_SIZE=500M
         - PHP_UPLOAD_MAX_FILESIZE=1024M
+        - COMPOSER_VERSION=1
       volumes:
         - ./magento2:/app:cached
         - ../Xendit:/app/app/code/Xendit

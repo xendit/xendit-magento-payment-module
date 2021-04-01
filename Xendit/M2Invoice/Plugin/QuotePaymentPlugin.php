@@ -2,12 +2,10 @@
 
 namespace Xendit\M2Invoice\Plugin;
 
-use Psr\Log\LoggerInterface;
+use Magento\Quote\Model\Quote\Payment;
 
 class QuotePaymentPlugin
 {
-    private $logger;
-
     /**
      * @var array
      */
@@ -17,18 +15,13 @@ class QuotePaymentPlugin
         'cc_cid'
     ];
 
-    public function __construct(
-        LoggerInterface $logger
-    ) {
-        $this->logger = $logger;
-    }
-
     /**
-     * @param \Magento\Quote\Model\Quote\Payment $subject
+     * @param Payment $subject
      * @param array $data
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function beforeImportData(\Magento\Quote\Model\Quote\Payment $subject, array $data)
+    public function beforeImportData(Payment $subject, array $data)
     {
         if (array_key_exists('additional_data', $data)) {
             $additionalData = $data['additional_data'];

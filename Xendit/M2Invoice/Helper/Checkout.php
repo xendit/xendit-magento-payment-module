@@ -7,23 +7,33 @@ use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 
+/**
+ * Class Checkout
+ * @package Xendit\M2Invoice\Helper
+ */
 class Checkout
 {
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     private $session;
-    /**
-     * @param \Magento\Checkout\Model\Session $session
-     */
 
+    /**
+     * @var OrderFactory
+     */
     private $orderFactory;
 
     /**
-     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
+     * @var CartRepositoryInterface
      */
     private $quoteRepository;
 
+    /**
+     * Checkout constructor.
+     * @param Session $session
+     * @param OrderFactory $order
+     * @param CartRepositoryInterface $quoteRepository
+     */
     public function __construct(
         Session $session,
         OrderFactory $order,
@@ -33,6 +43,7 @@ class Checkout
         $this->orderFactory = $order;
         $this->quoteRepository = $quoteRepository;
     }
+
     /**
      * Cancel last placed order with specified comment message
      *
@@ -50,6 +61,7 @@ class Checkout
         }
         return false;
     }
+
     /**
      * Restores quote (restores cart)
      *
@@ -63,6 +75,7 @@ class Checkout
 
         return $this->session->restoreQuote();
     }
+
     /**
      * Cancel specified order with specified comment message
      *
@@ -83,9 +96,10 @@ class Checkout
 
     /**
      * Cancel multiple orders
-     * 
+     *
      * @param array $orderIds Prefixless order IDs
      * @param string $failureReason
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function processOrdersFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
     {

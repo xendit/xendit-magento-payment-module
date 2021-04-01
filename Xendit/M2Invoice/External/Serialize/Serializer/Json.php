@@ -1,23 +1,19 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace Xendit\M2Invoice\External\Serialize\Serializer;
 
 use Xendit\M2Invoice\External\Serialize\SerializerInterface;
 
 /**
  * Serialize data to JSON, unserialize JSON encoded data
- *
- * @api
- * @since 100.2.0
+ * Class Json
+ * @package Xendit\M2Invoice\External\Serialize\Serializer
  */
 class Json implements SerializerInterface
 {
     /**
-     * @inheritDoc
-     * @since 100.2.0
+     * @param array|bool|float|int|string|null $data
+     * @return bool|false|string
      */
     public function serialize($data)
     {
@@ -29,8 +25,8 @@ class Json implements SerializerInterface
     }
 
     /**
-     * @inheritDoc
-     * @since 100.2.0
+     * @param string $string
+     * @return array|bool|float|int|mixed|string|null
      */
     public function unserialize($string)
     {

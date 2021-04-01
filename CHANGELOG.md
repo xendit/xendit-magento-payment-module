@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.0.0 (2021-03-30)
+
+Improvements:
+
+- Add compatibility for Magento Enterprise (Require Magento 2.3 & PHP 7.3 or above)
+  
 ## 2.7.0 (2021-02-01)
 
 Improvements:

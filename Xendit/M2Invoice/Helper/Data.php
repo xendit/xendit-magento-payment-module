@@ -5,7 +5,6 @@ namespace Xendit\M2Invoice\Helper;
 use Magento\Catalog\Model\Product;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\CustomerFactory;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\DataObject;
@@ -14,78 +13,320 @@ use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Store\Model\StoreManagerInterface;
-use Xendit\M2Invoice\Model\Payment\M2Invoice;
+use Xendit\M2Invoice\Model\Payment\Xendit;
+use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Sales\Model\Service\InvoiceService;
+use Magento\Framework\DB\Transaction as DbTransaction;
+use Magento\Sales\Model\OrderNotifier;
+use Magento\Sales\Model\Order\Invoice;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment\Transaction;
 
+/**
+ * Class Data
+ * @package Xendit\M2Invoice\Helper
+ */
 class Data extends AbstractHelper
 {
-    private $objectManager;
+    /*
+     *  Alfamart
+     */
+    const XML_PATH_ALFAMART_ACTIVE          = 'payment/alfamart/active';
+    const XML_PATH_ALFAMART_TITLE           = 'payment/alfamart/title';
+    const XML_PATH_ALFAMART_MIN_AMOUNT      = 'payment/alfamart/min_order_total';
+    const XML_PATH_ALFAMART_MAX_AMOUNT      = 'payment/alfamart/max_order_total';
+    const XML_PATH_ALFAMART_DESCRIPTION     = 'payment/alfamart/description';
 
+    /*
+     *  BCAVA
+     */
+    const XML_PATH_BCAVA_ACTIVE             = 'payment/bcava/active';
+    const XML_PATH_BCAVA_TITLE              = 'payment/bcava/title';
+    const XML_PATH_BCAVA_MIN_AMOUNT         = 'payment/bcava/min_order_total';
+    const XML_PATH_BCAVA_MAX_AMOUNT         = 'payment/bcava/max_order_total';
+    const XML_PATH_BCAVA_DESCRIPTION        = 'payment/bcava/description';
+
+    /*
+     *  BNIVA
+     */
+    const XML_PATH_BNIVA_ACTIVE             = 'payment/bniva/active';
+    const XML_PATH_BNIVA_TITLE              = 'payment/bniva/title';
+    const XML_PATH_BNIVA_MIN_AMOUNT         = 'payment/bniva/min_order_total';
+    const XML_PATH_BNIVA_MAX_AMOUNT         = 'payment/bniva/max_order_total';
+    const XML_PATH_BNIVA_DESCRIPTION        = 'payment/bniva/description';
+
+    /*
+     *  BRIVA
+     */
+    const XML_PATH_BRIVA_ACTIVE             = 'payment/briva/active';
+    const XML_PATH_BRIVA_TITLE              = 'payment/briva/title';
+    const XML_PATH_BRIVA_MIN_AMOUNT         = 'payment/briva/min_order_total';
+    const XML_PATH_BRIVA_MAX_AMOUNT         = 'payment/briva/max_order_total';
+    const XML_PATH_BRIVA_DESCRIPTION        = 'payment/briva/description';
+
+    /*
+     *  CC Hosted
+     */
+    const XML_PATH_CCHOSTED_ACTIVE          = 'payment/cchosted/active';
+    const XML_PATH_CCHOSTED_TITLE           = 'payment/cchosted/title';
+    const XML_PATH_CCHOSTED_MIN_AMOUNT      = 'payment/cchosted/min_order_total';
+    const XML_PATH_CCHOSTED_MAX_AMOUNT      = 'payment/cchosted/max_order_total';
+    const XML_PATH_CCHOSTED_DESCRIPTION     = 'payment/cchosted/description';
+
+    /*
+     *  CC Installment
+     */
+    const XML_PATH_CC_INSTALMENT_ACTIVE     = 'payment/cc_installment/active';
+
+    /*
+     *  CC Subscription
+     */
+    const XML_PATH_CC_SUBSCRIPTION_ACTIVE   = 'payment/cc_subscription/active';
+
+    /*
+     *  DD BRI
+     */
+    const XML_PATH_DDBRI_ACTIVE             = 'payment/dd_bri/active';
+    const XML_PATH_DDBRI_TITLE              = 'payment/dd_bri/title';
+    const XML_PATH_DDBRI_MIN_AMOUNT         = 'payment/dd_bri/min_order_total';
+    const XML_PATH_DDBRI_MAX_AMOUNT         = 'payment/dd_bri/max_order_total';
+    const XML_PATH_DDBRI_DESCRIPTION        = 'payment/dd_bri/description';
+
+    /*
+     *  Dana
+     */
+    const XML_PATH_DANA_ACTIVE              = 'payment/dana/active';
+    const XML_PATH_DANA_TITLE               = 'payment/dana/title';
+    const XML_PATH_DANA_MIN_AMOUNT          = 'payment/dana/min_order_total';
+    const XML_PATH_DANA_MAX_AMOUNT          = 'payment/dana/max_order_total';
+    const XML_PATH_DANA_DESCRIPTION         = 'payment/dana/description';
+
+    /*
+     *  Indomarat
+     */
+    const XML_PATH_INDOMARAT_ACTIVE         = 'payment/indomaret/active';
+    const XML_PATH_INDOMARAT_TITLE          = 'payment/indomaret/title';
+    const XML_PATH_INDOMARAT_MIN_AMOUNT     = 'payment/indomaret/min_order_total';
+    const XML_PATH_INDOMARAT_MAX_AMOUNT     = 'payment/indomaret/max_order_total';
+    const XML_PATH_INDOMARAT_DESCRIPTION    = 'payment/indomaret/description';
+
+    /*
+     *  Kredivo
+     */
+    const XML_PATH_KREDIVO_ACTIVE           = 'payment/kredivo/active';
+    const XML_PATH_KREDIVO_TITLE            = 'payment/kredivo/title';
+    const XML_PATH_KREDIVO_MIN_AMOUNT       = 'payment/kredivo/min_order_total';
+    const XML_PATH_KREDIVO_MAX_AMOUNT       = 'payment/kredivo/max_order_total';
+    const XML_PATH_KREDIVO_DESCRIPTION      = 'payment/kredivo/description';
+
+    /*
+     *  Linkaja
+     */
+    const XML_PATH_LINKAJA_ACTIVE           = 'payment/linkaja/active';
+    const XML_PATH_LINKAJA_TITLE            = 'payment/linkaja/title';
+    const XML_PATH_LINKAJA_MIN_AMOUNT       = 'payment/linkaja/min_order_total';
+    const XML_PATH_LINKAJA_MAX_AMOUNT       = 'payment/linkaja/max_order_total';
+    const XML_PATH_LINKAJA_DESCRIPTION      = 'payment/linkaja/description';
+
+    /*
+     *  MANDIRIVA
+     */
+    const XML_PATH_MANDIRIVA_ACTIVE         = 'payment/mandiriva/active';
+    const XML_PATH_MANDIRIVA_TITLE          = 'payment/mandiriva/title';
+    const XML_PATH_MANDIRIVA_MIN_AMOUNT     = 'payment/mandiriva/min_order_total';
+    const XML_PATH_MANDIRIVA_MAX_AMOUNT     = 'payment/mandiriva/max_order_total';
+    const XML_PATH_MANDIRIVA_DESCRIPTION    = 'payment/mandiriva/description';
+
+    /*
+     *  Ovo
+     */
+    const XML_PATH_OVO_ACTIVE               = 'payment/ovo/active';
+    const XML_PATH_OVO_TITLE                = 'payment/ovo/title';
+    const XML_PATH_OVO_MIN_AMOUNT           = 'payment/ovo/min_order_total';
+    const XML_PATH_OVO_MAX_AMOUNT           = 'payment/ovo/max_order_total';
+    const XML_PATH_OVO_DESCRIPTION          = 'payment/ovo/description';
+
+    /*
+     *  PERMATAVA
+     */
+    const XML_PATH_PERMATAVA_ACTIVE         = 'payment/permatava/active';
+    const XML_PATH_PERMATAVA_TITLE          = 'payment/permatava/title';
+    const XML_PATH_PERMATAVA_MIN_AMOUNT     = 'payment/permatava/min_order_total';
+    const XML_PATH_PERMATAVA_MAX_AMOUNT     = 'payment/permatava/max_order_total';
+    const XML_PATH_PERMATAVA_DESCRIPTION    = 'payment/permatava/description';
+
+    /*
+     *  QR Codes
+     */
+    const XML_PATH_QRCODES_ACTIVE           = 'payment/qr_codes/active';
+    const XML_PATH_QRCODES_TITLE            = 'payment/qr_codes/title';
+    const XML_PATH_QRCODES_MIN_AMOUNT       = 'payment/qr_codes/min_order_total';
+    const XML_PATH_QRCODES_MAX_AMOUNT       = 'payment/qr_codes/max_order_total';
+    const XML_PATH_QRCODES_DESCRIPTION      = 'payment/qr_codes/description';
+    const XML_PATH_QRCODES_IMAGE_WIDTH      = 'payment/qr_codes/image_width';
+    const XML_PATH_QRCODES_IMAGE_HEIGHT     = 'payment/qr_codes/image_height';
+
+    /**
+     * @var StoreManagerInterface
+     */
     private $storeManager;
 
-    private $m2Invoice;
+    /**
+     * @var Xendit
+     */
+    private $xendit;
 
+    /**
+     * @var File
+     */
     private $fileSystem;
 
+    /**
+     * @var Product
+     */
     private $product;
 
+    /**
+     * @var CustomerRepositoryInterface
+     */
     private $customerRepository;
 
+    /**
+     * @var CustomerFactory
+     */
     private $customerFactory;
 
+    /**
+     * @var QuoteFactory
+     */
     private $quote;
 
+    /**
+     * @var QuoteManagement
+     */
     private $quoteManagement;
 
+    /**
+     * @var DateTimeFactory
+     */
+    private $dateTimeFactory;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
+     * @var InvoiceService
+     */
+    protected $invoiceService;
+
+    /**
+     * @var DbTransaction
+     */
+    protected $dbTransaction;
+
+    /**
+     * @var
+     */
+    protected $orderNotifier;
+
+    /**
+     * Data constructor.
+     * @param Context $context
+     * @param StoreManagerInterface $storeManager
+     * @param Xendit $xendit
+     * @param File $fileSystem
+     * @param Product $product
+     * @param CustomerRepositoryInterface $customerRepository
+     * @param CustomerFactory $customerFactory
+     * @param QuoteFactory $quote
+     * @param QuoteManagement $quoteManagement
+     * @param DateTimeFactory $dateTimeFactory
+     * @param ScopeConfigInterface $scopeConfig
+     * @param InvoiceService $invoiceService
+     * @param DbTransaction $dbTransaction
+     * @param OrderNotifier $orderNotifier
+     */
     public function __construct(
-        ObjectManagerInterface $objectManager,
         Context $context,
         StoreManagerInterface $storeManager,
-        M2Invoice $m2Invoice,
+        Xendit $xendit,
         File $fileSystem,
         Product $product,
         CustomerRepositoryInterface $customerRepository,
         CustomerFactory $customerFactory,
         QuoteFactory $quote,
-        QuoteManagement $quoteManagement
+        QuoteManagement $quoteManagement,
+        DateTimeFactory $dateTimeFactory,
+        ScopeConfigInterface $scopeConfig,
+        InvoiceService $invoiceService,
+        DbTransaction $dbTransaction,
+        OrderNotifier $orderNotifier
     ) {
-        $this->objectManager = $objectManager;
         $this->storeManager = $storeManager;
-        $this->m2Invoice = $m2Invoice;
+        $this->xendit = $xendit;
         $this->fileSystem = $fileSystem;
         $this->product = $product;
         $this->customerRepository = $customerRepository;
         $this->customerFactory = $customerFactory;
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
+        $this->dateTimeFactory = $dateTimeFactory;
+        $this->scopeConfig = $scopeConfig;
+        $this->invoiceService = $invoiceService;
+        $this->dbTransaction = $dbTransaction;
+        $this->orderNotifier = $orderNotifier;
 
         parent::__construct($context);
     }
 
+    /**
+     * @return StoreManagerInterface
+     */
     protected function getStoreManager()
     {
         return $this->storeManager;
     }
 
+    /**
+     * @return mixed
+     */
     public function getCheckoutUrl()
     {
-        return $this->m2Invoice->getConfigData('xendit_url');
+        return $this->xendit->getConfigData('xendit_url');
     }
 
+    /**
+     * @return mixed
+     */
     public function getUiUrl()
     {
-        return $this->m2Invoice->getUiUrl();
+        return $this->xendit->getUiUrl();
     }
 
+    /**
+     * @param bool $isMultishipping
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getSuccessUrl($isMultishipping = false)
     {
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . 'xendit/checkout/success';
         if ($isMultishipping) {
             $baseUrl .= '?type=multishipping';
         }
-
         return $baseUrl;
     }
 
+    /**
+     * @param $orderId
+     * @param bool $isMultishipping
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getFailureUrl($orderId, $isMultishipping = false)
     {
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/failure?order_id=$orderId";
@@ -95,6 +336,12 @@ class Data extends AbstractHelper
         return $baseUrl;
     }
 
+    /**
+     * @param $orderId
+     * @param bool $isMultishipping
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getThreeDSResultUrl($orderId, $isMultishipping = false)
     {
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/threedsresult?order_id=$orderId";
@@ -104,77 +351,131 @@ class Data extends AbstractHelper
         return $baseUrl;
     }
 
+    /**
+     * @param $orderId
+     * @param bool $duplicate
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getExternalId($orderId, $duplicate = false)
     {
         $defaultExtId = $this->getExternalIdPrefix() . "-$orderId";
-
         if ($duplicate) {
             return uniqid() . "-" . $defaultExtId;
         }
-
         return $defaultExtId;
     }
 
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getExternalIdPrefix()
     {
-        return $this->m2Invoice->getConfigData('external_id_prefix') . "-" . $this->getStoreName();
+        return $this->xendit->getConfigData('external_id_prefix') . "-" . $this->getStoreName();
     }
 
+    /**
+     * @return bool|string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getStoreName()
     {
         return substr(preg_replace("/[^a-z0-9]/mi", "", $this->getStoreManager()->getStore()->getName()), 0, 20);
     }
 
+    /**
+     * @return mixed
+     */
     public function getApiKey()
     {
-        return $this->m2Invoice->getApiKey();
+        return $this->xendit->getApiKey();
     }
 
+    /**
+     * @return mixed
+     */
     public function getPublicApiKey()
     {
-        return $this->m2Invoice->getPublicApiKey();
+        return $this->xendit->getPublicApiKey();
     }
 
+    /**
+     * @return string
+     */
     public function getSubscriptionInterval()
     {
-        return $this->m2Invoice->getSubscriptionInterval() ?: 'MONTH';
+        return $this->xendit->getSubscriptionInterval() ?: 'MONTH';
     }
 
+    /**
+     * @return int
+     */
     public function getSubscriptionIntervalCount()
     {
-        return $this->m2Invoice->getSubscriptionIntervalCount() ?: 1;
+        return $this->xendit->getSubscriptionIntervalCount() ?: 1;
     }
 
+    /**
+     * @return mixed
+     */
     public function getEnvironment()
     {
-        return $this->m2Invoice->getEnvironment();
+        return $this->xendit->getEnvironment();
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCardPaymentType()
+    {
+        return $this->xendit->getCardPaymentType();
+    }
+
+    /**
+     * @return mixed
+     */
     public function getAllowedMethod()
     {
-        return $this->m2Invoice->getAllowedMethod();
+        return $this->xendit->getAllowedMethod();
     }
 
+    /**
+     * @return mixed
+     */
     public function getChosenMethods()
     {
-        return $this->m2Invoice->getChosenMethods();
+        return $this->xendit->getChosenMethods();
     }
 
+    /**
+     * @return array
+     */
     public function getEnabledPromo()
     {
-        return $this->m2Invoice->getEnabledPromo();
+        return $this->xendit->getEnabledPromo();
     }
 
+    /**
+     * @return mixed
+     */
     public function getIsActive()
     {
-        return $this->m2Invoice->getIsActive();
+        return $this->xendit->getIsActive();
     }
 
+    /**
+     * @return mixed
+     */
     public function getSendInvoiceEmail()
     {
-        return $this->m2Invoice->getSendInvoiceEmail();
+        return $this->xendit->getSendInvoiceEmail();
     }
 
+    /**
+     * @return array
+     * @throws \Magento\Framework\Exception\FileSystemException
+     */
     public function jsonData()
     {
         $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);
@@ -191,6 +492,11 @@ class Data extends AbstractHelper
         return (array) $inputs;
     }
 
+    /**
+     * @param bool $isMultishipping
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getXenditSubscriptionCallbackUrl($isMultishipping = false) {
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
 
@@ -209,26 +515,37 @@ class Data extends AbstractHelper
      */
     public function failureReasonInsight($failureReason)
     {
-        $cardDeclinedReason = 'The card you are trying to use has been declined. Please try again with a different card.';
         switch ($failureReason) {
             case 'CARD_DECLINED':
-                return $cardDeclinedReason . ' Code: 200011';
-            case 'STOLEN_CARD':
-                return $cardDeclinedReason . ' Code: 200013';
-            case 'INSUFFICIENT_BALANCE':
-                return $cardDeclinedReason . ' Code: 200012';
-            case 'INVALID_CVN':
-                return 'Please verify that all credit card information is correct. Code: 200015';
-            case 'INACTIVE_CARD':
-                return $cardDeclinedReason . ' Code: 200014';
-            case 'EXPIRED_CARD':
-                return 'The card you are trying to use has expired. Please try again with a different card. Code: 200010';
-            case 'PROCESSOR_ERROR':
-                return 'We encountered an issue processing your checkout, please contact us. Code: 200009';
-            case 'AUTHENTICATION_FAILED':
-                return 'Authentication process failed. Please try again. Code: 200001';
-            case 'UNEXPECTED_PLUGIN_ISSUE':
-                return 'We encountered an issue processing your checkout, please contact us. Code: 999999';
+            case 'STOLEN_CARD': return 'The bank that issued this card declined the payment but didn\'t tell us why.
+                Try another card, or try calling your bank to ask why the card was declined.';
+            case 'INSUFFICIENT_BALANCE': return "Your bank declined this payment due to insufficient balance. Ensure
+                that sufficient balance is available, or try another card";
+            case 'INVALID_CVN': return "Your bank declined the payment due to incorrect card details entered. Try to
+                enter your card details again, including expiration date and CVV";
+            case 'INACTIVE_CARD': return "This card number does not seem to be enabled for eCommerce payments. Try
+                another card that is enabled for eCommerce, or ask your bank to enable eCommerce payments for your card.";
+            case 'EXPIRED_CARD': return "Your bank declined the payment due to the card being expired. Please try
+                another card that has not expired.";
+            case 'PROCESSOR_ERROR': return 'We encountered issue in processing your card. Please try again with another card';
+            case 'USER_DID_NOT_AUTHORIZE_THE_PAYMENT':
+                return 'Please complete the payment request within 60 seconds.';
+            case 'USER_DECLINED_THE_TRANSACTION':
+                return 'You rejected the payment request, please try again when needed.';
+            case 'PHONE_NUMBER_NOT_REGISTERED':
+                return 'Your number is not registered in OVO, please register first or contact OVO Customer Service.';
+            case 'EXTERNAL_ERROR':
+                return 'There is a technical issue happens on OVO, please contact the merchant to solve this issue.';
+            case 'SENDING_TRANSACTION_ERROR':
+                return 'Your transaction is not sent to OVO, please try again.';
+            case 'EWALLET_APP_UNREACHABLE':
+                return 'Do you have OVO app on your phone? Please check your OVO app on your phone and try again.';
+            case 'REQUEST_FORBIDDEN_ERROR':
+                return 'Your merchant disable OVO payment from his side, please contact your merchant to re-enable it
+                    before trying it again.';
+            case 'DEVELOPMENT_MODE_PAYMENT_ACKNOWLEDGED':
+                return 'Development mode detected. Please refer to our documentations for successful payment
+                    simulation';
             default: return $failureReason;
         }
     }
@@ -252,26 +569,36 @@ class Data extends AbstractHelper
                 return $type;
         }
     }
-    
+
+    /**
+     * @param $payment
+     * @return bool|mixed
+     */
     public function xenditPaymentMethod( $payment ){
         
         //method name => frontend routing
         $listPayment = [
-            "cc" => "credit_card",
-            "cc_subscription" => "cc_subscription",
-            "bcava" => "bca",
-            "bniva" => "bni",
-            "briva" => "bri",
-            "mandiriva" => "mandiri",
-            "permatava" => "permata",
-            "alfamart" => "alfamart",
-            "ovo" => "ovo",
-            "dana" => "dana",
-            "indomaret" => "indomaret"
+            "cc"                => "cc",
+            "cchosted"          => "cchosted",
+            "cc_installment"    => "cc_installment",
+            "cc_subscription"   => "cc_subscription",
+            "bcava"             => "bca",
+            "bniva"             => "bni",
+            "briva"             => "bri",
+            "mandiriva"         => "mandiri",
+            "permatava"         => "permata",
+            "alfamart"          => "alfamart",
+            "ovo"               => "ovo",
+            "dana"              => "dana",
+            "linkaja"           => "linkaja",
+            "indomaret"         => "indomaret",
+            "qr_codes"          => "qr_codes",
+            "dd_bri"            => "dd_bri",
+            "kredivo"           => "kredivo"
         ];
 
         $response = FALSE;
-        if( !!array_key_exists($payment, $listPayment) ){
+        if (!!array_key_exists($payment, $listPayment)) {
             $response = $listPayment[$payment];
         }
 
@@ -280,11 +607,12 @@ class Data extends AbstractHelper
 
     /**
      * Create Order Programatically
-     * 
+     *
      * @param array $orderData
      * @return array
-     * 
-    */
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function createMageOrder($orderData) {
         $store = $this->getStoreManager()->getStore();
         $websiteId = $this->getStoreManager()->getStore()->getWebsiteId();
@@ -293,7 +621,7 @@ class Data extends AbstractHelper
         $customer->setWebsiteId($websiteId);
         $customer->loadByEmail($orderData['email']); //load customer by email address
         
-        if(!$customer->getEntityId()){
+        if (!$customer->getEntityId()) {
             //if not available then create this customer 
             $customer->setWebsiteId($websiteId)
                      ->setStore($store)
@@ -312,9 +640,8 @@ class Data extends AbstractHelper
         $quote->assignCustomer($customer); //assign quote to customer
  
         //add items in quote
-        foreach($orderData['items'] as $item){
-            $_product = $this->objectManager->create(\Magento\Catalog\Model\Product::class);
-            $product = $_product->load($item['product_id']);
+        foreach ($orderData['items'] as $item) {
+            $product = $this->product->load($item['product_id']);
             $product->setPrice($item['price']);
 
             $normalizedProductRequest = array_merge(
@@ -359,7 +686,7 @@ class Data extends AbstractHelper
         $orderData['payment']['cc_number'] = str_replace('X', '0', $orderData['masked_card_number']);
         $quote->getPayment()->importData($orderData['payment']);
 
-        foreach($orderData['payment']['additional_information'] AS $key=>$value) {
+        foreach ($orderData['payment']['additional_information'] AS $key => $value) {
             $quote->getPayment()->setAdditionalInformation($key, $value);
         }
         $quote->getPayment()->setAdditionalInformation('xendit_is_subscription', true);
@@ -371,7 +698,7 @@ class Data extends AbstractHelper
         $order = $this->quoteManagement->submit($quote);
 
         //update order status
-        $orderState = \Magento\Sales\Model\Order::STATE_PROCESSING;
+        $orderState = Order::STATE_PROCESSING;
         $message = "Xendit subscription payment completed. Transaction ID: " . $orderData['transaction_id'] . ". ";
         $message .= "Original Order: #" . $orderData['parent_order_id'] . ".";
         $order->setState($orderState)
@@ -383,37 +710,661 @@ class Data extends AbstractHelper
         //save order payment details
         $payment = $order->getPayment();
         $payment->setTransactionId($orderData['transaction_id']);
-        $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
+        $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
 
         //create invoice
         if ($order->canInvoice()) {
-            $invoice = $this->objectManager->create('Magento\Sales\Model\Service\InvoiceService')
-                                           ->prepareInvoice($order);
+            $invoice = $this->invoiceService->prepareInvoice($order);
             
             if ($invoice->getTotalQty()) {
-                $invoice->setTransactionId($orderData['transaction_id']);
-                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
+                if (isset($orderData['transaction_id'])) {
+                    $invoice->setTransactionId($orderData['transaction_id']);
+                }
+                $invoice->setRequestedCaptureCase(Invoice::CAPTURE_OFFLINE);
                 $invoice->register();
-                $invoice->setState(\Magento\Sales\Model\Order\Invoice::STATE_PAID)->save();
+                $invoice->setState(Invoice::STATE_PAID)->save();
 
-                $transaction = $this->objectManager->create('Magento\Framework\DB\Transaction')
-                                                   ->addObject($invoice)
-                                                   ->addObject($invoice->getOrder());
+                $transaction = $this->dbTransaction->addObject($invoice)->addObject($invoice->getOrder());
                 $transaction->save();
             }
         }
 
         //notify customer
-        $this->objectManager->create('Magento\Sales\Model\OrderNotifier')->notify($order);
+        $this->orderNotifier->notify($order);
         $order->setEmailSent(1);
         $order->save();
 
-        if($order->getEntityId()){
+        if ($order->getEntityId()) {
             $result['order_id'] = $order->getRealOrderId();
-        }else{
+        } else {
             $result = array('error' => 1, 'msg' => 'Error creating order');
         }
 
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return true;
+    }
+
+    /**
+     * @return bool|false|string
+     */
+    public function getDanaExpirationDate()
+    {
+        $expired = $this->scopeConfig->getValue('payment/xendit/dana_expired', ScopeInterface::SCOPE_STORE);
+
+        if ($expired != null) :
+            $expired = strtotime('+'.$expired.' hours');
+
+            return $this->convertDateTime($expired);
+        endif;
+
+        return false;
+    }
+
+    /**
+     * @param $date
+     * @return false|string
+     */
+    protected function convertDateTime($date)
+    {
+        return gmdate(DATE_W3C, $date);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAlfamartActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_ALFAMART_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAlfamartTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_ALFAMART_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAlfamartDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_ALFAMART_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAlfamartMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_ALFAMART_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAlfamartMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_ALFAMART_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBcaVaActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BCAVA_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBcaVaTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BCAVA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBcaVaDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BCAVA_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBcaVaMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BCAVA_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBcaVaMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BCAVA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBniVaActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BNIVA_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBniVaTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BNIVA_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBniVaDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BNIVA_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBniVaMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BNIVA_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBniVaMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BNIVA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBriVaActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BRIVA_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBriVaTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BRIVA_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBriVaDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BRIVA_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBriVaMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BRIVA_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBriVaMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BRIVA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcHostedActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcHostedTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcHostedDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcHostedMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcHostedMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcInstallmentActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_INSTALMENT_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDanaActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DANA_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDanaTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DANA_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDanaDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DANA_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDanaMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DANA_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDanaMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DANA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBriActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBRI_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBriTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBRI_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBriDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBRI_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBriMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBRI_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBriMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBRI_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIndomaratActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIndomaratTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIndomaratDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIndomaratMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIndomaratMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKredivoActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKredivoTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKredivoDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKredivoMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKredivoMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLinkajaActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_LINKAJA_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLinkajaTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_LINKAJA_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLinkajaDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_LINKAJA_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLinkajaMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_LINKAJA_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLinkajaMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_LINKAJA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMandiriVaActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_MANDIRIVA_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMandiriVaTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_MANDIRIVA_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMandiriVaDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_MANDIRIVA_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMandiriVaMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_MANDIRIVA_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMandiriVaMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_MANDIRIVA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOvoActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_OVO_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOvoTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_OVO_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOvoDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_OVO_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOvoMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_OVO_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOvoMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_OVO_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPermataVaActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PERMATAVA_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPermataVaTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PERMATAVA_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPermataVaDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PERMATAVA_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPermataVaMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PERMATAVA_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPermataVaMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PERMATAVA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQrCodesActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQrCodesTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQrCodesDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQrCodesMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQrCodesMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQrCodesImageWidth()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_IMAGE_WIDTH, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQrCodesImageHeight()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_IMAGE_HEIGHT, ScopeInterface::SCOPE_STORE);
     }
 }

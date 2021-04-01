@@ -1,0 +1,23 @@
+<fieldset data-bind="attr: {class: 'fieldset payment items kredivo ' + getCode(), id: 'payment_form_' + getCode()}">
+    <div class="field number required">
+        <div class="control">
+            <select
+                   autocomplete="off"
+                   name="payment[payment_type]"
+                   data-bind="
+                   attr: { id: getCode() + '_payment_type', 'data-validate': JSON.stringify({required:true})},
+                   options: getPaymentTypeValues(),
+                   optionsValue: 'value',
+                   optionsText: 'text',
+                   value: 'value',
+                   optionsCaption: ' - Select a payment type -'
+                   ">
+            </select>
+            <div class="messages" style="display: none">
+                <div  class="message message-error error">
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>

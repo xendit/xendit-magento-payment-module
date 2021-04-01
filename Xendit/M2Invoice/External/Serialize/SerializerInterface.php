@@ -1,17 +1,11 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- *
- * Hosted this on Xendit extension because it's not available in M2.1.
- */
+
 namespace Xendit\M2Invoice\External\Serialize;
 
 /**
  * Interface for serializing
- *
- * @api
- * @since 100.2.0
+ * Interface SerializerInterface
+ * @package Xendit\M2Invoice\External\Serialize
  */
 interface SerializerInterface
 {

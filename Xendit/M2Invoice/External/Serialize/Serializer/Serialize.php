@@ -1,8 +1,5 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace Xendit\M2Invoice\External\Serialize\Serializer;
 
 use Xendit\M2Invoice\External\Serialize\SerializerInterface;
@@ -10,11 +7,14 @@ use Xendit\M2Invoice\External\Serialize\SerializerInterface;
 /**
  * Less secure than Json implementation, but gives higher performance on big arrays. Does not unserialize objects.
  * Using this implementation is discouraged as it may lead to security vulnerabilities
+ * Class Serialize
+ * @package Xendit\M2Invoice\External\Serialize\Serializer
  */
 class Serialize implements SerializerInterface
 {
     /**
-     * {@inheritDoc}
+     * @param array|bool|float|int|string|null $data
+     * @return bool|string
      */
     public function serialize($data)
     {
@@ -25,7 +25,8 @@ class Serialize implements SerializerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $string
+     * @return array|bool|float|int|mixed|string|null
      */
     public function unserialize($string)
     {

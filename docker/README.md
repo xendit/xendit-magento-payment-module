@@ -2,7 +2,8 @@
 Clone magento 2 in docker folder
 ```
 git clone https://github.com/magento/magento2.git
-git checkout 2.1
+cd magento2
+git checkout 2.3
 ```
 
 ## Setup local domain
@@ -16,11 +17,23 @@ docker-compose up -d --build
 ```
 
 App: http://magento2.docker
+
 PHPMyAdmin: http://127.0.0.1:8080
 
 ## Access docker container
 ```
 docker exec -it web bash
+```
+
+Go to magento folder inside docker container
+
+```
+cd app
+```
+
+Then run composer install in the root directory of Magento
+```
+composer install
 ```
 
 ## Install Magento2
@@ -43,30 +56,56 @@ php bin/magento setup:install \
 --use-rewrites=1 \
 --language=en_US \
 --currency=IDR \
---timezone=America/New_York \
+--timezone=Asia/Jakarta \
 --use-secure-admin=1 \
 --admin-use-security-key=1 \
 --session-save=files \
 --use-sample-data
 ```
 
-## Seeding sample data
-
-Add reference to repo.magento.com in composer.json, this is needed if you clone repo from github.
-
-```
-composer config repositories.0 composer https://repo.magento.com
-```
-nb: you need repo.magento.com cridential
-
-Install sample data:
-```
-php bin/magento sampledata:deploy
-```
+## Update the database
 
 Run the following command to update the database
 ```
-bin/magento setup:upgrade
+php bin/magento setup:upgrade
+```
+
+## Install Bacon QR Code in Magento (Optional)
+
+If you encounter this kind of error when running `php bin/magento setup:di:compile` after Magento has been installed
+
+![Error Qr Code](assets/composer_qr.jpeg "Error Qr Code")
+
+Please add `bacon/bacon-qr-code` as a dependencies in magento root folder with command
+
+```
+composer require bacon/bacon-qr-code
+```
+
+Then try to run `php bin/magento setup:di:compile` again
+
+## Installation Troubleshoot
+
+If you encounter this problem when trying to install Magento inside docker
+```
+Fatal error: Uncaught Error: Call to undefined function xdebug_disable()
+```
+
+Go to this directory (after finished installing dependencies)
+```
+vendor/magento/magento2-functional-testing-framework/src/Magento/FunctionalTestingFramework/_bootstrap.php
+```
+
+replace this line
+```
+xdebug_disable();
+```
+
+into
+```
+if (function_exists('xdebug_disable')) {
+        xdebug_disable();
+}
 ```
 
 ## TODO

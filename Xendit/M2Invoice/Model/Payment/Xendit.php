@@ -2,15 +2,24 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
+use Magento\Payment\Model\Method\AbstractMethod;
+
+/**
+ * Class Xendit
+ * @package Xendit\M2Invoice\Model\Payment
+ */
+class Xendit extends AbstractMethod
 {
     /**
      * Payment code
      *
      * @var string
      */
-    protected $_code = 'm2invoice';
+    protected $_code = 'xendit';
 
+    /**
+     * @return mixed
+     */
     public function getApiKey()
     {
         if ($this->isLive()) {
@@ -20,6 +29,9 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function getPublicApiKey()
     {
         if ($this->isLive()) {
@@ -29,18 +41,30 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function getSubscriptionInterval() {
         return $this->getConfigData('card_subscription_interval');
     }
 
+    /**
+     * @return mixed
+     */
     public function getSubscriptionIntervalCount() {
         return $this->getConfigData('card_subscription_interval_count');
     }
 
+    /**
+     * @return mixed
+     */
     public function getSubscriptionDescription() {
         return $this->getConfigData('card_subscription_description');
     }
 
+    /**
+     * @return bool
+     */
     public function isLive()
     {
         $xenditEnv = $this->getConfigData('xendit_env');
@@ -52,41 +76,73 @@ class M2Invoice extends \Magento\Payment\Model\Method\AbstractMethod
         return false;
     }
 
+    /**
+     * @return mixed
+     */
     public function getEnvironment()
     {
         return $this->getConfigData('xendit_env');
     }
 
+    /**
+     * @return mixed
+     */
     public function getUrl()
     {
         return $this->getConfigData('xendit_url');
     }
 
+    /**
+     * @return mixed
+     */
     public function getUiUrl()
     {
         return $this->getConfigData('ui_url');
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCardPaymentType()
+    {
+        return $this->getConfigData('card_payment_type');
+    }
+
+    /**
+     * @return mixed
+     */
     public function getAllowedMethod()
     {
         return $this->getConfigData('allowed_method');
     }
 
+    /**
+     * @return mixed
+     */
     public function getChosenMethods()
     {
         return $this->getConfigData('chosen_methods');
     }
 
+    /**
+     * @return mixed
+     */
     public function getIsActive()
     {
         return $this->getConfigData('active');
     }
 
+    /**
+     * @return mixed
+     */
     public function getSendInvoiceEmail()
     {
         return $this->getConfigData('send_invoice_email');
     }
 
+    /**
+     * @return array
+     */
     public function getEnabledPromo()
     {
         $promo = [];

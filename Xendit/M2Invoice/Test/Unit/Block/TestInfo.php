@@ -2,20 +2,41 @@
 
 namespace Xendit\M2Invoice\Test\Unit\Block;
 
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
+use Xendit\M2Invoice\Block\Info;
 
+/**
+ * Class TestInfo
+ * @package Xendit\M2Invoice\Test\Unit\Block
+ */
 class TestInfo extends TestCase
 {
-    protected $objectManager;
+    /**
+     * @var Info
+     */
     protected $info;
 
-    protected function setUp()
-    {
-        $this->objectManager = new ObjectManager($this);
-        $this->info = $this->objectManager->getObject("Xendit\M2Invoice\Block\Info");
+    /**
+     * TestInfo constructor.
+     * @param Info $info
+     */
+    public function __construct(
+        Info $info
+    ) {
+        $this->info = $info;
     }
 
+    /**
+     *
+     */
+    protected function setUp()
+    {
+        $this->info;
+    }
+
+    /**
+     *
+     */
     public function testGetLabel()
     {
         $label = "Something";
