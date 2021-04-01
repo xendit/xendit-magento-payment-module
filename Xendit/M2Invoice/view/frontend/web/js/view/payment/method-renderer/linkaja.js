@@ -2,27 +2,21 @@ define(
     [
         'Magento_Checkout/js/view/payment/default',
         'mage/url',
-        'Magento_Checkout/js/model/quote',
-        'underscore',
-        'jquery',
-        'Magento_Checkout/js/action/place-order'
+        'Magento_Checkout/js/model/quote'
     ],
     function (
         Component,
         url,
         quote,
-        _,
-        $,
-        placeOrderAction
-    ) {
+        ) {
         'use strict';
 
         var self;
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/linkaja',
-                redirectAfterPlaceOrder: false
+                template: 'Xendit_M2Invoice/payment/invoiceva',
+                redirectAfterPlaceOrder: false,
             },
 
             initialize: function() {
@@ -43,7 +37,7 @@ define(
             },
 
             getDescription: function() {
-                return window.checkoutConfig.payment.linkaja.description;
+                return window.checkoutConfig.payment.linkaja.description;;
             },
 
             getTestDescription: function () {
@@ -59,23 +53,8 @@ define(
                 };
             },
 
-            isActive: function() {
-                return true;
-            },
-
             afterPlaceOrder: function () {
-                if ($("[class='xendit-overlay-box']").length === 0) {
-                    var overlayDiv = $( "<div class='xendit-overlay-box'>" +
-                        "<div id='xendit-overlay-content'>\n" +
-                        "  <span class='xendit-overlay-text' style='margin-top: 80px;'>Periksa kembali telepon selular Anda, buka aplikasi Linkaja anda dan</span>\n" +
-                        "  <span class='xendit-overlay-text'>konfirmasikan transaksi anda dengan memasukkan PIN</span>" +
-                        "</div>" +
-                        "</div>" );
-                    $( 'body' ).append(overlayDiv);
-                }
-
-                $( "[class='xendit-overlay-box']" ).css("display", "flex");
-                window.location.replace(url.build('xendit/checkout/redirect'));
+                window.location.replace(url.build(`xendit/checkout/invoice?preferred_method=${self.getMethod()}`));
             },
 
             validate: function() {
@@ -90,74 +69,11 @@ define(
                 }
 
                 if (totals.grand_total < window.checkoutConfig.payment.linkaja.min_order_amount) {
-                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 1.'});
+                    self.messageContainer.addErrorMessage({'message': 'The minimum amount for using this payment is IDR 10,000. Please put more item(s) to reach the minimum amount.'});
                     return false;
                 }
 
                 return true;
-            },
-
-            placeOrder: function (data, event) {
-                this.isPlaceOrderActionAllowed(false);
-                var self = this;
-
-                try {
-                    var linkajaPhoneNumber = $('#linkaja_linkaja_number').val();
-
-                    if (!self.isPhoneNumber(linkajaPhoneNumber)) {
-                        alert('Invalid LINKAJA phone number, please check again');
-                        self.isPlaceOrderActionAllowed(true);
-                        self.unblock();
-                        return;
-                    }
-
-                    var paymentData = self.getData();
-                    paymentData.additional_data = {
-                        phone_number: linkajaPhoneNumber
-                    };
-
-                    var placeOrder = placeOrderAction(paymentData, false);
-
-                    $.when(placeOrder)
-                        .fail(function () {
-                            self.isPlaceOrderActionAllowed(true);
-                            self.unblock();
-                        })
-                        .done(function () {
-                            self.afterPlaceOrder();
-                        });
-                    return false;
-                } catch (e) {
-                    alert(e);
-                    self.isPlaceOrderActionAllowed(true);
-                    self.unblock();
-                }
-            },
-
-            isPhoneNumber: function (string) {
-                var pattern = /^\d+$/;
-
-                return pattern.test(string);
-            },
-
-            block: function() {
-                var overlayBox
-                if ($("[class='xendit-overlay-box']").length === 0) {
-                    var overlayDiv = $( "<div class='xendit-overlay-box'>" +
-                        "<div id='xendit-overlay-content'>\n" +
-                        "  <span class='xendit-overlay-text' style='margin-top: 80px;'>Periksa kembali telepon selular Anda, buka aplikasi Linkaja anda dan</span>\n" +
-                        "  <span class='xendit-overlay-text'>konfirmasikan transaksi anda dengan memasukkan PIN</span>" +
-                        "</div>" +
-                        "</div>" );
-                    $( 'body' ).append(overlayDiv);
-                }
-
-                $( "[class='xendit-overlay-box']" ).css("display", "flex");
-                // return;
-            },
-
-            unblock: function() {
-                $('.xendit-overlay-box').css("display", "none");
             }
         });
     }

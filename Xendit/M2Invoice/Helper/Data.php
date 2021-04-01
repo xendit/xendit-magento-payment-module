@@ -754,18 +754,18 @@ class Data extends AbstractHelper
     /**
      * @return bool|false|string
      */
-    public function getDanaExpirationDate()
-    {
-        $expired = $this->scopeConfig->getValue('payment/xendit/dana_expired', ScopeInterface::SCOPE_STORE);
+    // public function getDanaExpirationDate()
+    // {
+    //     $expired = $this->scopeConfig->getValue('payment/xendit/dana_expired', ScopeInterface::SCOPE_STORE);
 
-        if ($expired != null) :
-            $expired = strtotime('+'.$expired.' hours');
+    //     if ($expired != null) :
+    //         $expired = strtotime('+'.$expired.' hours');
 
-            return $this->convertDateTime($expired);
-        endif;
+    //         return $this->convertDateTime($expired);
+    //     endif;
 
-        return false;
-    }
+    //     return false;
+    // }
 
     /**
      * @param $date

@@ -142,7 +142,7 @@
             </cc_subscription>
             <dana>
                 <active>1</active>
-                <payment_action>authorize</payment_action>
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Dana</model>
                 <title>DANA</title>
                 <description>Bayar pesanan dengan akun DANA anda melalui Xendit</description>
@@ -151,7 +151,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>12</sort_order>
+                <sort_order>11</sort_order>
             </dana>
             <indomaret>
                 <active>1</active>
@@ -168,7 +168,7 @@
             </indomaret>
             <ovo>
                 <active>1</active>
-                <payment_action>authorize</payment_action>
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\OVO</model>
                 <title>OVO</title>
                 <description>Bayar pesanan dengan akun OVO anda melalui Xendit</description>
@@ -181,7 +181,7 @@
             </ovo>
             <linkaja>
                 <active>1</active>
-                <payment_action>authorize</payment_action>
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\LINKAJA</model>
                 <title>LINKAJA</title>
                 <description>Bayar pesanan dengan akun LINKAJA anda melalui Xendit</description>
@@ -190,7 +190,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>13</sort_order>
+                <sort_order>14</sort_order>
             </linkaja>
             <qr_codes>
                 <active>1</active>
@@ -205,7 +205,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>14</sort_order>
+                <sort_order>15</sort_order>
             </qr_codes>
             <dd_bri>
                 <active>1</active>
@@ -218,7 +218,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>14</sort_order>
+                <sort_order>16</sort_order>
             </dd_bri>
             <kredivo>
                 <active>1</active>
@@ -231,7 +231,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>14</sort_order>
+                <sort_order>17</sort_order>
             </kredivo>
         </payment>
     </default>

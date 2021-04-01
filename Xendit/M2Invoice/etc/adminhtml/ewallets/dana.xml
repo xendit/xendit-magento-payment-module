@@ -25,10 +25,10 @@
             <frontend_class>validate-zero-or-greater</frontend_class>
             <config_path>payment/dana/max_order_total</config_path>
         </field>
-        <field id="dana_expired" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="85" translate="label" type="text" canRestore="1">
+        <!-- <field id="dana_expired" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="85" translate="label" type="text" canRestore="1">
             <label>Dana Expired</label>
             <comment>In Hours</comment>
             <config_path>payment/xendit/dana_expired</config_path>
-        </field>
+        </field> -->
     </group>
 </include>

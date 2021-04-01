@@ -2,25 +2,21 @@ define(
     [
         'Magento_Checkout/js/view/payment/default',
         'mage/url',
-        'Magento_Checkout/js/model/quote',
-        'underscore',
-        'jquery',
+        'Magento_Checkout/js/model/quote'
     ],
     function (
         Component,
         url,
-        quote,
-        _,
-        $
-    ) {
+        quote
+        ) {
         'use strict';
 
         var self;
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/dana',
-                redirectAfterPlaceOrder: false
+                template: 'Xendit_M2Invoice/payment/invoiceva',
+                redirectAfterPlaceOrder: false,
             },
 
             initialize: function() {
@@ -57,20 +53,8 @@ define(
                 };
             },
 
-            isActive: function() {
-                return true;
-            },
-
             afterPlaceOrder: function () {
-                if ($("[class='xendit-overlay-box']").length === 0) {
-                    var overlayDiv = $( "<div class='xendit-overlay-box'>" +
-                        "<div id='xendit-overlay-content'></div>" +
-                        "</div>" );
-                    $( 'body' ).append(overlayDiv);
-                }
-
-                $( "[class='xendit-overlay-box']" ).css("display", "flex");
-                window.location.replace(url.build('xendit/checkout/redirect'));
+                window.location.replace(url.build(`xendit/checkout/invoice?preferred_method=${self.getMethod()}`));
             },
 
             validate: function() {
@@ -85,12 +69,12 @@ define(
                 }
 
                 if (totals.grand_total < window.checkoutConfig.payment.dana.min_order_amount) {
-                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 1.'});
+                    self.messageContainer.addErrorMessage({'message': 'The minimum amount for using this payment is IDR 10,000. Please put more item(s) to reach the minimum amount.'});
                     return false;
                 }
 
                 return true;
-            },
+            }
         });
     }
 );
