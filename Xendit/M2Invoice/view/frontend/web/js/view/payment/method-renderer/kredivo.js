@@ -74,10 +74,6 @@ define(
                     return false;
                 }
 
-                if (totals.grand_total < window.checkoutConfig.payment.kredivo.min_order_amount) {
-                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 1.'});
-                    return false;
-                }
 
                 return true;
             },

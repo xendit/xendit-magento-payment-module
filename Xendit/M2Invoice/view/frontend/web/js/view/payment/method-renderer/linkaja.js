@@ -89,10 +89,6 @@ define(
                     return false;
                 }
 
-                if (totals.grand_total < window.checkoutConfig.payment.linkaja.min_order_amount) {
-                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 1.'});
-                    return false;
-                }
 
                 return true;
             },
@@ -105,7 +101,7 @@ define(
                     var linkajaPhoneNumber = $('#linkaja_linkaja_number').val();
 
                     if (!self.isPhoneNumber(linkajaPhoneNumber)) {
-                        alert('Invalid LINKAJA phone number, please check again');
+                        alert('Invalid LinkAja phone number, please check again');
                         self.isPlaceOrderActionAllowed(true);
                         self.unblock();
                         return;

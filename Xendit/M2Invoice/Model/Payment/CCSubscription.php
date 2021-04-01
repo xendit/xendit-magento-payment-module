@@ -11,7 +11,7 @@ use Magento\Quote\Api\Data\CartInterface;
  * Class CCSubscription
  * @package Xendit\M2Invoice\Model\Payment
  */
-class CCSubscription extends CCHosted
+class CCSubscription extends AbstractInvoice
 {
     const PLATFORM_NAME = 'MAGENTO2';
     const PAYMENT_TYPE = 'CREDIT_CARD_SUBSCRIPTION';
@@ -21,15 +21,13 @@ class CCSubscription extends CCHosted
      * @var string
      */
     protected $_code = 'cc_subscription';
-    protected $_minAmount = 10000;
-    protected $_maxAmount = 10000000;
-    protected $_canRefund = true;
     protected $methodCode = 'CC_SUBSCRIPTION';
+    protected $_canRefund = true;
 
     /**
      * @param InfoInterface $payment
      * @param float $amount
-     * @return $this|AbstractInvoice|CCHosted
+     * @return $this|AbstractInvoice
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -150,7 +148,7 @@ class CCSubscription extends CCHosted
 
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
-        if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
+        if ($amount < $this->dataHelper->getCcSubscriptionMinOrderAmount() || $amount > $this->dataHelper->getCcSubscriptionMaxOrderAmount()) {
             return false;
         }
 
@@ -159,5 +157,188 @@ class CCSubscription extends CCHosted
         }
 
         return true;
+    }
+
+    /**
+     * @param InfoInterface $payment
+     * @param float $amount
+     * @return $this|AbstractInvoice
+     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function refund(InfoInterface $payment, $amount)
+    {
+        $chargeId = $payment->getParentTransactionId();
+
+        if ($chargeId) {
+            $order = $payment->getOrder();
+            $orderId = $order->getRealOrderId();
+            $canRefundMore = $payment->getCreditmemo()->getInvoice()->canRefund();
+            $isFullRefund = !$canRefundMore &&
+                0 == (double)$order->getBaseTotalOnlineRefunded() + (double)$order->getBaseTotalOfflineRefunded();
+
+            
+            $refundData = [
+                'amount' => $amount,
+                'external_id' => $this->dataHelper->getExternalId($orderId, true)
+            ];
+            $refund = $this->requestRefund($chargeId, $refundData);
+
+            $this->handleRefundResult($payment, $refund, $canRefundMore);
+
+            return $this;
+        } else {
+            throw new LocalizedException(
+                __("Refund not available because there is no capture")
+            );
+        }
+    }
+
+    /**
+     * @param $chargeId
+     * @param $requestData
+     * @return mixed
+     * @throws \Exception
+     */
+    private function requestRefund($chargeId, $requestData)
+    {
+        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/:$chargeId/refunds";
+        $refundMethod = \Zend\Http\Request::METHOD_POST;
+
+        try {
+            $refund = $this->apiHelper->request($refundUrl, $refundMethod, $requestData);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $refund;
+    }
+
+    /**
+     * @param $payment
+     * @param $refund
+     * @param $canRefundMore
+     * @throws LocalizedException
+     */
+    private function handleRefundResult($payment, $refund, $canRefundMore)
+    {
+        if (isset($refund['error_code'])) {
+            throw new LocalizedException(
+                __($refund['message'])
+            );
+        }
+
+        if ($refund['status'] == 'FAILED') {
+            throw new LocalizedException(
+                __('Refund failed, please check Xendit dashboard')
+            );
+        }
+
+        $payment->setTransactionId(
+            $refund['id']
+        )->setIsTransactionClosed(
+            1
+        )->setShouldCloseParentTransaction(
+            !$canRefundMore
+        );
+    }
+
+    /**
+     * @param $requestData
+     * @return mixed
+     * @throws \Exception
+     */
+    public function requestHostedPayment($requestData)
+    {
+        $hostedPaymentUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/hosted-payments";
+        $hostedPaymentMethod = \Zend\Http\Request::METHOD_POST;
+
+        try {
+            $hostedPayment = $this->apiHelper->request(
+                $hostedPaymentUrl,
+                $hostedPaymentMethod,
+                $requestData
+            );
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $hostedPayment;
+    }
+
+    /**
+     * @param $order
+     * @param $rawAmount
+     * @return array
+     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function calculatePromo($order, $rawAmount)
+    {
+        $promo = [];
+        $ruleIds = $order->getAppliedRuleIds();
+        $enabledPromotions = $this->dataHelper->getEnabledPromo();
+
+        if (empty($ruleIds) || empty($enabledPromotions)) {
+            return $promo;
+        }
+
+        $ruleIds = explode(',', $ruleIds);
+
+        foreach ($ruleIds as $ruleId) {
+            foreach ($enabledPromotions as $promotion) {
+                if ($promotion['rule_id'] === $ruleId) {
+                    $rule = $this->ruleRepo->getById($ruleId);
+                    $promo[] = $this->constructPromo($rule, $promotion, $rawAmount);
+                }
+            }
+        }
+
+        return $promo;
+    }
+
+    /**
+     * @param $rule
+     * @param $promotion
+     * @param $rawAmount
+     * @return array
+     */
+    private function constructPromo($rule, $promotion, $rawAmount)
+    {
+        $constructedPromo = [
+            'bin_list'        => $promotion['bin_list'],
+            'title'           => $rule->getName(),
+            'promo_reference' => $rule->getRuleId(),
+            'type'            => $this->dataHelper->mapSalesRuleType($rule->getSimpleAction()),
+        ];
+        $rate = $rule->getDiscountAmount();
+
+        switch ($rule->getSimpleAction()) {
+            case 'to_percent':
+                $rate = 1 - ($rule->getDiscountAmount() / 100);
+                break;
+            case 'by_percent':
+                $rate = ($rule->getDiscountAmount() / 100);
+                break;
+            case 'to_fixed':
+                $rate = (int)$rawAmount - $rule->getDiscountAmount();
+                break;
+            case 'by_fixed':
+                $rate = (int)$rule->getDiscountAmount();
+                break;
+        }
+
+        $constructedPromo['rate'] = $rate;
+
+        return $constructedPromo;
+    }
+
+    /**
+     * @param $payment
+     * @param $message
+     */
+    public function processFailedPayment($payment, $message)
+    {
+        $payment->setAdditionalInformation('xendit_failure_reason', $message);
     }
 }

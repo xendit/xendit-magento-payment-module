@@ -76,43 +76,7 @@ class CCMultishipping extends AbstractAction
                 return $this->_redirect('multishipping/checkout/success');
             }
 
-            if ($method === 'cc') {
-                $requestData = [
-                    'token_id'          => $tokenId,
-                    'authentication_id' => $tokenId,
-                    'card_cvn'          => $cvn,
-                    'amount'            => $transactionAmount,
-                    'external_id'       => $this->getDataHelper()->getExternalId($rawOrderIds),
-                    'return_url'        => $this->getDataHelper()->getThreeDSResultUrl($rawOrderIds, true),
-                    "capture"           => (boolean)true
-                ];
-
-                $charge = $this->requestCharge($requestData);
-
-                $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-                if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
-                    $newRequestData = array_replace($requestData, [
-                        'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds, true)
-                    ]);
-                    $charge = $this->requestCharge($newRequestData);
-                }
-
-                $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-                if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
-                    return $this->handle3DSFlow($requestData, $payment, $orderIds, $orders);
-                }
-
-                if ($chargeError !== null) {
-                    return $this->processFailedPayment($orderIds, $chargeError);
-                }
-    
-                if ($charge['status'] === 'CAPTURED') {
-                    return $this->processSuccessfulPayment($orders, $payment, $charge);
-                } else {
-                    return $this->processFailedPayment($orderIds, $charge['failure_reason']);
-                }
-            } else if ($method === 'cchosted' || $method === 'cc_subscription') {
-
+            if ($method === 'cc_subscription') {
                 $billingAddress     = $orders[0]->getBillingAddress(); // billing address of 1st order
                 $shippingAddress    = $orders[0]->getShippingAddress(); // shipping address of 1st order
 
@@ -130,19 +94,17 @@ class CCMultishipping extends AbstractAction
                     'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
                 ];
 
-                if ($method === 'cc_subscription') {
-                    $requestData['payment_type'] = 'CREDIT_CARD_SUBSCRIPTION';
-                    $requestData['is_subscription'] = "true";
-                    $requestData['subscription_callback_url'] = $this->getDataHelper()->getXenditSubscriptionCallbackUrl(true);
-                    $requestData['payer_email'] = $billingAddress->getEmail();
-                    $requestData['subscription_option'] = json_encode(
-                        [
-                            'interval' => $this->getDataHelper()->getCcSubscriptionInterval(),
-                            'interval_count' => $this->getDataHelper()->getCcSubscriptionIntervalCount()
-                        ], JSON_FORCE_OBJECT
-                    );
-                }
-
+                $requestData['payment_type'] = 'CREDIT_CARD_SUBSCRIPTION';
+                $requestData['is_subscription'] = "true";
+                $requestData['subscription_callback_url'] = $this->getDataHelper()->getXenditSubscriptionCallbackUrl(true);
+                $requestData['payer_email'] = $billingAddress->getEmail();
+                $requestData['subscription_option'] = json_encode(
+                    [
+                        'interval' => $this->getDataHelper()->getCcSubscriptionInterval(),
+                        'interval_count' => $this->getDataHelper()->getCcSubscriptionIntervalCount()
+                    ], JSON_FORCE_OBJECT
+                );
+                
                 $hostedPayment = $this->requestHostedPayment($requestData);
 
                 if (isset($hostedPayment['error_code'])) {

@@ -69,11 +69,11 @@ class Data extends AbstractHelper
     /*
      *  CC Hosted
      */
-    const XML_PATH_CCHOSTED_ACTIVE          = 'payment/cchosted/active';
-    const XML_PATH_CCHOSTED_TITLE           = 'payment/cchosted/title';
-    const XML_PATH_CCHOSTED_MIN_AMOUNT      = 'payment/cchosted/min_order_total';
-    const XML_PATH_CCHOSTED_MAX_AMOUNT      = 'payment/cchosted/max_order_total';
-    const XML_PATH_CCHOSTED_DESCRIPTION     = 'payment/cchosted/description';
+    const XML_PATH_CC_ACTIVE          = 'payment/cc/active';
+    const XML_PATH_CC_TITLE           = 'payment/cc/title';
+    const XML_PATH_CC_MIN_AMOUNT      = 'payment/cc/min_order_total';
+    const XML_PATH_CC_MAX_AMOUNT      = 'payment/cc/max_order_total';
+    const XML_PATH_CC_DESCRIPTION     = 'payment/cc/description';
 
     /*
      *  CC Subscription
@@ -564,7 +564,6 @@ class Data extends AbstractHelper
         //method name => frontend routing
         $listPayment = [
             "cc"                => "cc",
-            "cchosted"          => "cchosted",
             "cc_subscription"   => "cc_subscription",
             "bcava"             => "bca",
             "bniva"             => "bni",
@@ -923,41 +922,41 @@ class Data extends AbstractHelper
     /**
      * @return mixed
      */
-    public function getCcHostedActive()
+    public function getCcActive()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_ACTIVE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_ACTIVE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getCcHostedTitle()
+    public function getCcTitle()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_TITLE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_TITLE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getCcHostedDescription()
+    public function getCcDescription()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_DESCRIPTION, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getCcHostedMinOrderAmount()
+    public function getCcMinOrderAmount()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getCcHostedMaxOrderAmount()
+    public function getCcMaxOrderAmount()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
     /**

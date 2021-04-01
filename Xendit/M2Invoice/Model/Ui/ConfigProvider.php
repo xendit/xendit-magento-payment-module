@@ -150,11 +150,11 @@ class ConfigProvider implements ConfigProviderInterface
                     'max_order_amount' => $this->xenditHelper->getKredivoMaxOrderAmount(),
                     'description' => $this->xenditHelper->getKredivoDescription()
                 ],
-                'cchosted' => [
-                    'title' => $this->xenditHelper->getCcHostedTitle(),
-                    'min_order_amount' => $this->xenditHelper->getCcHostedMinOrderAmount(),
-                    'max_order_amount' => $this->xenditHelper->getCcHostedMaxOrderAmount(),
-                    'description' => $this->xenditHelper->getCcHostedDescription()
+                'cc' => [
+                    'title' => $this->xenditHelper->getCcTitle(),
+                    'min_order_amount' => $this->xenditHelper->getCcMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getCcMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getCcDescription()
                 ],
                 'cc_subscription' => [
                     'title' => $this->xenditHelper->getCcSubscriptionTitle(),

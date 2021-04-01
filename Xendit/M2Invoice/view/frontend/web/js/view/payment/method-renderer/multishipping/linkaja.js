@@ -25,7 +25,7 @@ define(
                     var linkajaPhoneNumber = $('#linkaja_linkaja_number').val();
 
                     if (!self.isPhoneNumber(linkajaPhoneNumber)) {
-                        alert('Invalid LINKAJA phone number, please check again');
+                        alert('Invalid LinkAja phone number, please check again');
                         self.isPlaceOrderActionAllowed(true);
                         self.unblock();
                         return;

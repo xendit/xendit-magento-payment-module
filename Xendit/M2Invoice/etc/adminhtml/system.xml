@@ -193,7 +193,7 @@
                         <label>Credit Cards</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
-                        <include path="Xendit_M2Invoice::credit_card/cchosted.xml"/>
+                        <include path="Xendit_M2Invoice::credit_card/cc.xml"/>
                         <include path="Xendit_M2Invoice::credit_card/cc_subscription.xml"/>
                     </group>
 

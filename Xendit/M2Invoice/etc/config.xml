@@ -11,7 +11,7 @@
                 <model>Xendit\M2Invoice\Model\Payment\Xendit</model>
                 <title>Xendit</title>
                 <checkout_test_prefix>TEST MODE -</checkout_test_prefix>
-                <checkout_test_content>Bank account number below are for testing. Real payment will not be detected</checkout_test_content>
+                <checkout_test_content>Real payment will not be detected</checkout_test_content>
                 <test_public_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <public_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <test_private_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
@@ -106,30 +106,21 @@
                 <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\CC</model>
                 <title>Credit and Debit Cards</title>
-                <order_status>pending_payment</order_status><!-- set default order -->
-                <cctypes>VI,MC,AE,JCB</cctypes>
-                <sort_order>7</sort_order>
-            </cc>
-            <cchosted>
-                <active>1</active>
-                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
-                <model>Xendit\M2Invoice\Model\Payment\CCHosted</model>
-                <title>Credit and Debit Cards</title>
                 <description>Bayar pesanan dengan kartu kredit atau debit anda melalui Xendit</description>
-                <min_order_total>10000</min_order_total>
-                <max_order_total>10000000</max_order_total>
+                <min_order_total>5000</min_order_total>
+                <max_order_total>200000000</max_order_total>
                 <order_status>pending_payment</order_status><!-- set default order -->
                 <cctypes>VI,MC,AE,JCB</cctypes>
                 <sort_order>8</sort_order>
-            </cchosted>
+            </cc>
             <cc_subscription>
                 <active>0</active>
                 <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\CCSubscription</model>
                 <title>Credit Card Subscription</title>
                 <description>Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit</description>
-                <min_order_total>10000</min_order_total>
-                <max_order_total>10000000</max_order_total>
+                <min_order_total>5000</min_order_total>
+                <max_order_total>200000000</max_order_total>
                 <interval>MONTH</interval>
                 <interval_count>1</interval_count>
                 <order_status>pending_payment</order_status><!-- set default order -->
@@ -166,8 +157,8 @@
                 <active>1</active>
                 <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\LINKAJA</model>
-                <title>LINKAJA</title>
-                <description>Bayar pesanan dengan akun LINKAJA anda melalui Xendit</description>
+                <title>LinkAja</title>
+                <description>Bayar pesanan dengan akun LinkAja anda melalui Xendit</description>
                 <min_order_total>100</min_order_total>
                 <max_order_total>10000000</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -220,8 +211,8 @@
                 <active>1</active>
                 <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\KREDIVO</model>
-                <title>Cardless Credit (KREDIVO)</title>
-                <description>Bayar pesanan dengan Cardless Credit (KREDIVO) melalui Xendit</description>
+                <title>Kredivo</title>
+                <description>Bayar pesanan dengan akun Kredivo anda melalui Xendit</description>
                 <min_order_total>10000</min_order_total>
                 <max_order_total>1000000000</max_order_total>
                 <is_gateway>1</is_gateway>
