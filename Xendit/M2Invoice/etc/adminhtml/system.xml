@@ -114,12 +114,6 @@
                                 externalIdPrefix.siblings('.note').children()[0].innerHTML = newText;
                             });
 
-                            jQuery("textarea[id*='xendit_card_installment_description']").attr("placeholder", "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
-
-                            if ( !jQuery("textarea[id*='xendit_card_installment_description']").val() ) {
-                                jQuery("textarea[id*='xendit_card_installment_description']").val("Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\nBank yang tersedia: BCA, BRI");
-                            }
-
                             jQuery("textarea[id*='xendit_card_subscription_card_subscription_description']").attr("placeholder", "Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI");
 
                             if ( !jQuery("textarea[id*='xendit_card_subscription_card_subscription_description']").val() ) {
@@ -187,10 +181,6 @@
                     </comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="card_installment_description" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Credit Card Installment Description</label>
-                    <comment>Customize your installment payment description on checkout page</comment>
-                </field>
 
                 <group id="other_configurations" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Other Configurations</label>
@@ -210,7 +200,6 @@
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
                         <include path="Xendit_M2Invoice::credit_card/cchosted.xml"/>
-                        <include path="Xendit_M2Invoice::credit_card/cc_installment.xml"/>
                         <include path="Xendit_M2Invoice::credit_card/cc_subscription.xml"/>
                     </group>
 

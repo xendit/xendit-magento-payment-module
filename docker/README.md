@@ -63,11 +63,12 @@ php bin/magento setup:install \
 --use-sample-data
 ```
 
-## Update the database
+## Setup & compile
 
-Run the following command to update the database
 ```
-php bin/magento setup:upgrade
+1. php bin/magento setup:upgrade
+2. php bin/magento setup:di:compile
+3. php bin/magento cache:flush
 ```
 
 ## Install Bacon QR Code in Magento (Optional)

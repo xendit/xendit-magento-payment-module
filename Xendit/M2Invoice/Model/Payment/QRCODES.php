@@ -72,7 +72,7 @@ class QRCODES extends AbstractInvoice
                 'amount'        => round($amount),
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
                 'success_redirect_url'  => $this->dataHelper->getSuccessUrl(),
-                'failure_redirect_url'  => $this->dataHelper->getFailureUrl($rawOrderIds)
+                'failure_redirect_url'  => $this->dataHelper->getFailureUrl($orderId)
             ];
 
             // send Qrcode Payment request

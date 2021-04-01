@@ -76,11 +76,6 @@ class Data extends AbstractHelper
     const XML_PATH_CCHOSTED_DESCRIPTION     = 'payment/cchosted/description';
 
     /*
-     *  CC Installment
-     */
-    const XML_PATH_CC_INSTALMENT_ACTIVE     = 'payment/cc_installment/active';
-
-    /*
      *  CC Subscription
      */
     const XML_PATH_CC_SUBSCRIPTION_ACTIVE   = 'payment/cc_subscription/active';
@@ -580,7 +575,6 @@ class Data extends AbstractHelper
         $listPayment = [
             "cc"                => "cc",
             "cchosted"          => "cchosted",
-            "cc_installment"    => "cc_installment",
             "cc_subscription"   => "cc_subscription",
             "bcava"             => "bca",
             "bniva"             => "bni",
@@ -974,14 +968,6 @@ class Data extends AbstractHelper
     public function getCcHostedMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCcInstallmentActive()
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_CC_INSTALMENT_ACTIVE, ScopeInterface::SCOPE_STORE);
     }
 
     /**

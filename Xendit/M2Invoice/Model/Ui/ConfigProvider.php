@@ -59,7 +59,6 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $defaultCCInstallmentDesc = "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI";
         $defaultCCSubscriptionDesc = "Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI";
 
         $config = [
@@ -74,7 +73,6 @@ class ConfigProvider implements ConfigProviderInterface
                     'months' => ['cc' => $this->ccConfig->getCcMonths()],
                     'years' => ['cc' => $this->ccConfig->getCcYears()],
                     'has_verification' => $this->ccConfig->hasVerification(),
-                    'card_installment_description' => ($this->xendit->getConfigData('card_installment_description') ?: $defaultCCInstallmentDesc),
                     'card_subscription_description' => ($this->xendit->getSubscriptionDescription() ?: $defaultCCSubscriptionDesc)
                 ],
                 'dana' => [
