@@ -111,7 +111,7 @@
                 <max_order_total>50000000000</max_order_total>
                 <order_status>pending_payment</order_status><!-- set default order -->
                 <cctypes>VI,MC,AE,JCB</cctypes>
-                <sort_order>8</sort_order>
+                <sort_order>7</sort_order>
             </cc>
             <cc_subscription>
                 <active>0</active>
@@ -125,7 +125,7 @@
                 <interval_count>1</interval_count>
                 <order_status>pending_payment</order_status><!-- set default order -->
                 <cctypes>VI,MC,AE,JCB</cctypes>
-                <sort_order>9</sort_order>
+                <sort_order>8</sort_order>
             </cc_subscription>
             <dana>
                 <active>1</active>
@@ -138,8 +138,21 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>10</sort_order>
+                <sort_order>9</sort_order>
             </dana>
+            <dd_bri>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\DDBRI</model>
+                <title>Direct Debit (BRI)</title>
+                <description>Bayar pesanan dengan Direct Debit (BRI) melalui Xendit</description>
+                <min_order_total>10000</min_order_total>
+                <max_order_total>1000000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>10</sort_order>
+            </dd_bri>
             <indomaret>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -153,6 +166,19 @@
                 <can_use_checkout>1</can_use_checkout>
                 <sort_order>11</sort_order>
             </indomaret>
+            <kredivo>
+                <active>1</active>
+                <payment_action>authorize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\KREDIVO</model>
+                <title>Kredivo</title>
+                <description>Bayar pesanan dengan akun Kredivo anda melalui Xendit</description>
+                <min_order_total>10000</min_order_total>
+                <max_order_total>1000000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>12</sort_order>
+            </kredivo>
             <linkaja>
                 <active>1</active>
                 <payment_action>authorize</payment_action>
@@ -164,7 +190,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>12</sort_order>
+                <sort_order>13</sort_order>
             </linkaja>
             <ovo>
                 <active>1</active>
@@ -177,7 +203,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>13</sort_order>
+                <sort_order>14</sort_order>
             </ovo>
             <qr_codes>
                 <active>1</active>
@@ -192,34 +218,8 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>14</sort_order>
-            </qr_codes>
-            <dd_bri>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\DDBRI</model>
-                <title>Direct Debit (BRI)</title>
-                <description>Bayar pesanan dengan Direct Debit (BRI) melalui Xendit</description>
-                <min_order_total>10000</min_order_total>
-                <max_order_total>1000000000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
                 <sort_order>15</sort_order>
-            </dd_bri>
-            <kredivo>
-                <active>1</active>
-                <payment_action>authorize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\KREDIVO</model>
-                <title>Kredivo</title>
-                <description>Bayar pesanan dengan akun Kredivo anda melalui Xendit</description>
-                <min_order_total>10000</min_order_total>
-                <max_order_total>1000000000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>16</sort_order>
-            </kredivo>
+            </qr_codes>
         </payment>
     </default>
 </config>

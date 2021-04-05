@@ -59,7 +59,6 @@ define(
 
             validate: function() {
                 var billingAddress = quote.billingAddress();
-                var totals = quote.totals();
 
                 self.messageContainer.clear();
 

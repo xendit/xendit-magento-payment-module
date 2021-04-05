@@ -101,20 +101,6 @@ class Redirect extends AbstractAction
                     return $this->redirectToCart($failureCode);
                 }
             }
-            // CC Subscription
-            if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
-                $hostedPaymentId = $payment->getAdditionalInformation('xendit_hosted_payment_id');
-                $hostedPaymentToken = $payment->getAdditionalInformation('xendit_hosted_payment_token');
-                $data = [
-                    'id' => $hostedPaymentId,
-                    'hp_token' => $hostedPaymentToken,
-                    'order_id' => $order->getRealOrderId()
-                ];
-
-                $result = $this->resultFactory->create(ResultFactory::TYPE_JSON);
-                $result->setData($data);
-                return $result;
-            }
 
             $this->cancelOrder($order, 'No payment recorded');
 

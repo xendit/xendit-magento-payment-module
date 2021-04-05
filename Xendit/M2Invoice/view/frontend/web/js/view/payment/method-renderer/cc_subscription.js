@@ -64,37 +64,7 @@ define(
             },
 
             afterPlaceOrder: function () {
-                var uiUrl = window.checkoutConfig.payment.xendit.ui_url;
-                var xenditScript = document.createElement('script');
-                xenditScript.src = uiUrl + '/js/xendit-hp.min.js';
-                document.body.appendChild(xenditScript);
-
                 window.location.replace(url.build('xendit/checkout/redirect'));
-
-                function renderHostedPayment(hpId, hpData) { // need?
-                    var retry = 0;
-                    var hpExecuted = false;
-
-                    var hpTimer = setInterval(function () {
-                        try {
-                            HostedPayment.render(hpId, hpData);
-                            hpExecuted = true;
-                        } catch (e) {
-                            retry++;
-
-                            if (retry === 5) {
-                                messageList.addErrorMessage({
-                                    message: 'Please wait while Xendit is getting ready..'
-                                });
-                            }
-                        } finally {
-                            if (hpExecuted) {
-                                $('.loading-mask').hide();
-                                clearInterval(hpTimer);
-                            }
-                        }
-                    }, 1000);
-                }
             },
 
             validate: function() {

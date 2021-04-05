@@ -70,6 +70,9 @@ class CCSubscription extends AbstractInvoice
                 'payment_type' => self::PAYMENT_TYPE,
                 'store_name' => $this->storeManager->getStore()->getName(),
                 'platform_name' => self::PLATFORM_NAME,
+                'platform_callback_url' => $this->dataHelper->getCCCallbackUrl(),
+                'success_redirect_url' => $this->dataHelper->getSuccessUrl(),
+                'failure_redirect_url' => $this->dataHelper->getFailureUrl($orderId),
                 'is_subscription' => "true",
                 'subscription_callback_url' => $this->dataHelper->getXenditSubscriptionCallbackUrl(),
                 'payer_email' => $billingAddress->getEmail(),
@@ -112,12 +115,13 @@ class CCSubscription extends AbstractInvoice
                 throw new LocalizedException(
                     new Phrase($message)
                 );
-            } elseif (isset($hostedPayment['id'])) {
+            } else if (isset($hostedPayment['id'])) {
                 $hostedPaymentId = $hostedPayment['id'];
                 $hostedPaymentToken = $hostedPayment['hp_token'];
 
                 $payment->setAdditionalInformation('xendit_hosted_payment_id', $hostedPaymentId);
                 $payment->setAdditionalInformation('xendit_hosted_payment_token', $hostedPaymentToken);
+                $payment->setAdditionalInformation('xendit_redirect_url', $this->dataHelper->getUiUrl()."/hosted-payments/".$hostedPaymentId."?hp_token=".$hostedPaymentToken);
             } else {
                 $message = 'Error connecting to Xendit. Check your API key';
                 $this->processFailedPayment($payment, $message);

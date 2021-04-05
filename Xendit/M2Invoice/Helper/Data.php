@@ -493,6 +493,21 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @param bool $isMultishipping
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getCCCallbackUrl($isMultishipping = false) {
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/cccallback';
+
+        if ($isMultishipping) {
+            $baseUrl .= '?type=multishipping';
+        }
+        
+        return $baseUrl;
+    }
+
+    /**
      * Map card's failure reason to more detailed explanation based on current insight.
      *
      * @param $failureReason
