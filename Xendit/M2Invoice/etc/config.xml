@@ -143,7 +143,7 @@
             <dana>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\Dana</model>
+                <model>Xendit\M2Invoice\Model\Payment\DANA</model>
                 <title>DANA</title>
                 <description>Bayar pesanan dengan akun DANA anda melalui Xendit</description>
                 <min_order_total>1</min_order_total>

@@ -5,10 +5,10 @@ namespace Xendit\M2Invoice\Model\Payment;
 use Magento\Quote\Api\Data\CartInterface;
 
 /**
- * Class Dana
+ * Class DANA
  * @package Xendit\M2Invoice\Model\Payment
  */
-class Dana extends AbstractInvoice
+class DANA extends AbstractInvoice
 {
     /**
      * Payment Method feature
@@ -37,7 +37,7 @@ class Dana extends AbstractInvoice
 
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
-        if ($amount < $this->dataHelper->getDanaMinOrderAmount() || $amount > $this->dataHelper->getDanaMinOrderAmount()) {
+        if ($amount < $this->dataHelper->getDanaMinOrderAmount() || $amount > $this->dataHelper->getDanaMaxOrderAmount()) {
             return false;
         }
 
