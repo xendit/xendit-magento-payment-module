@@ -68,8 +68,8 @@ define(
                     return false;
                 }
 
-                if (totals.grand_total < window.checkoutConfig.payment.ovo.min_order_amoun) {
-                    self.messageContainer.addErrorMessage({'message': 'The minimum amount for using this payment is IDR 10,000. Please put more item(s) to reach the minimum amount.'});
+                if (totals.grand_total < window.checkoutConfig.payment.ovo.min_order_amount) {
+                    self.messageContainer.addErrorMessage({'message': 'The minimum amount for using this payment is IDR 10,000. Please put more item(s) to reach the minimum amount. Code: 100001'});
                     return false;
                 }
 
