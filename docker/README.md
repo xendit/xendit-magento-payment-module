@@ -71,6 +71,20 @@ php bin/magento setup:install \
 3. php bin/magento cache:flush
 ```
 
+## Seeding sample data (Optional)
+
+Add reference to repo.magento.com in composer.json, this is needed if you clone repo from github.
+
+```
+composer config repositories.0 composer https://repo.magento.com
+```
+Note: you need repo.magento.com credentials
+
+Install sample data:
+```
+php bin/magento sampledata:deploy
+```
+
 ## Install Bacon QR Code in Magento (Optional)
 
 If you encounter this kind of error when running `php bin/magento setup:di:compile` after Magento has been installed
