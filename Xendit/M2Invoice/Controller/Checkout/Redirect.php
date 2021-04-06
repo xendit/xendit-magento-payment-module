@@ -35,31 +35,13 @@ class Redirect extends AbstractAction
                 $this->cancelOrder($order, $failureReason);
                 return $this->redirectToCart($failureReason);
             }
-            // Dana / Kredivo / Linkaja / CC - Hosted
+            // Dana / Kredivo / Linkaja / CC Subscription
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
 
                 $resultRedirect = $this->getRedirectFactory()->create();
                 $resultRedirect->setUrl($redirectUrl);
                 return $resultRedirect;
-            }
-            // CC - Form (not use anymore)
-            if ($payment->getAdditionalInformation('xendit_charge_id') !== null) {
-                $chargeId = $payment->getAdditionalInformation('xendit_charge_id');
-                $orderState = Order::STATE_PROCESSING;
-                $order->setState($orderState)
-                    ->setStatus($orderState)
-                    ->addStatusHistoryComment("Xendit payment completed without 3DS. Transaction ID: $chargeId");
-
-                $order->save();
-
-                $payment->setTransactionId($chargeId);
-                $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
-
-                $this->invoiceOrder($order, $chargeId);
-
-                $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-                return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
             }
             // Qrcode
             if ($payment->getAdditionalInformation('xendit_qrcode_external_id') !== null) {
@@ -118,20 +100,6 @@ class Redirect extends AbstractAction
                     $this->getCheckoutHelper()->restoreQuote();
                     return $this->redirectToCart($failureCode);
                 }
-            }
-            // Credit Card - Hosted
-            if ($payment->getAdditionalInformation('xendit_hosted_payment_id') !== null) {
-                $hostedPaymentId = $payment->getAdditionalInformation('xendit_hosted_payment_id');
-                $hostedPaymentToken = $payment->getAdditionalInformation('xendit_hosted_payment_token');
-                $data = [
-                    'id' => $hostedPaymentId,
-                    'hp_token' => $hostedPaymentToken,
-                    'order_id' => $order->getRealOrderId()
-                ];
-
-                $result = $this->resultFactory->create(ResultFactory::TYPE_JSON);
-                $result->setData($data);
-                return $result;
             }
 
             $this->cancelOrder($order, 'No payment recorded');

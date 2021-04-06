@@ -1,16 +1,33 @@
 define(
     [
-        'Xendit_M2Invoice/js/view/payment/method-renderer/cchosted'
+        'Magento_Checkout/js/view/payment/default',
+        'mage/url',
+        'Magento_Checkout/js/model/quote',
+        'underscore',
+        'jquery',
+        'Magento_Ui/js/model/messageList'
     ],
     function (
-        Component
+        Component,
+        url,
+        quote,
+        _,
+        $,
+        messageList
     ) {
         'use strict';
 
+        var self;
+
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/cc-hosted',
+                template: 'Xendit_M2Invoice/payment/cc-subscription',
                 redirectAfterPlaceOrder: false
+            },
+
+            initialize: function() {
+                this._super();
+                self = this;
             },
 
             getCode: function() {
@@ -21,9 +38,47 @@ define(
                 return 'CC_SUBSCRIPTION';
             },
 
+            getTest: function() {
+                return '1';
+            },
+
             getDescription: function() {
-                return window.checkoutConfig.payment.xendit.card_subscription_description;
-            }
+                return window.checkoutConfig.payment.cc_subscription.description;
+            },
+
+            getTestDescription: function () {
+                var environment = window.checkoutConfig.payment.xendit.xendit_env;
+
+                if (environment !== 'test') {
+                    return {};
+                }
+
+                return {
+                    prefix: window.checkoutConfig.payment.xendit.test_prefix,
+                    content: window.checkoutConfig.payment.xendit.test_content
+                };
+            },
+
+            isActive: function() {
+                return true;
+            },
+
+            afterPlaceOrder: function () {
+                window.location.replace(url.build('xendit/checkout/redirect'));
+            },
+
+            validate: function() {
+                var billingAddress = quote.billingAddress();
+
+                self.messageContainer.clear();
+
+                if (!billingAddress) {
+                    self.messageContainer.addErrorMessage({'message': 'Please enter your billing address'});
+                    return false;
+                }
+
+                return true;
+            },
         });
     }
-); 
+);

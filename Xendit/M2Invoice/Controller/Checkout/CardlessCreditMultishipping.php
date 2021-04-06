@@ -81,7 +81,7 @@ class CardlessCreditMultishipping extends AbstractAction
             $shippingAddressData['address']      = $shippingAddress->getData('street');
             $shippingAddressData['city']         = $shippingAddress->getData('city');
             $shippingAddressData['postal_code']  = $shippingAddress->getData('postcode');
-            $shippingAddressData['phone']        =  $shippingAddress->getData('telephone');
+            $shippingAddressData['phone']        = $shippingAddress->getData('telephone');
             $shippingAddressData['country_code'] = 'IDN'; // TODO: make dynamic
 
             $preferredMethod = $this->getRequest()->getParam('preferred_method');

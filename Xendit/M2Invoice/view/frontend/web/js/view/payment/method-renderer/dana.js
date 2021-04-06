@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'DANA'
+                return 'DANA';
             },
 
             getTest: function() {
@@ -59,17 +59,11 @@ define(
 
             validate: function() {
                 var billingAddress = quote.billingAddress();
-                var totals = quote.totals();
 
                 self.messageContainer.clear();
 
                 if (!billingAddress) {
                     self.messageContainer.addErrorMessage({'message': 'Please enter your billing address'});
-                    return false;
-                }
-
-                if (totals.grand_total < window.checkoutConfig.payment.dana.min_order_amount) {
-                    self.messageContainer.addErrorMessage({'message': 'The minimum amount for using this payment is IDR 10,000. Please put more item(s) to reach the minimum amount. Code: 100001'});
                     return false;
                 }
 

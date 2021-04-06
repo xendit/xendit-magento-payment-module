@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'DD_BRI'
+                return 'DD_BRI';
             },
 
             getTest: function() {
@@ -59,7 +59,6 @@ define(
 
             validate: function() {
                 var billingAddress = quote.billingAddress();
-                var totals = quote.totals();
 
                 self.messageContainer.clear();
 
@@ -68,10 +67,6 @@ define(
                     return false;
                 }
 
-                if (totals.grand_total < window.checkoutConfig.payment.dd_bri.min_order_amount) {
-                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 10,000.'});
-                    return false;
-                }
 
                 return true;
             }

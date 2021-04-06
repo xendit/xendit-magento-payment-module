@@ -64,8 +64,8 @@ class CCMultishipping extends AbstractAction
 
                 $additionalInfo     = $quote->getPayment()->getAdditionalInformation();
                 if (isset($additionalInfo['token_id']) && isset($additionalInfo['cc_cid'])) {
-                    $tokenId            = $additionalInfo['token_id'];
-                    $cvn                = $additionalInfo['cc_cid'];
+                    $tokenId        = $additionalInfo['token_id'];
+                    $cvn            = $additionalInfo['cc_cid'];
                 }
     
                 $transactionAmount  += (int)$order->getTotalDue();
@@ -76,111 +76,45 @@ class CCMultishipping extends AbstractAction
                 return $this->_redirect('multishipping/checkout/success');
             }
 
-            if ($method === 'cc') {
-                $requestData = [
-                    'token_id'          => $tokenId,
-                    'authentication_id' => $tokenId,
-                    'card_cvn'          => $cvn,
-                    'amount'            => $transactionAmount,
-                    'external_id'       => $this->getDataHelper()->getExternalId($rawOrderIds),
-                    'return_url'        => $this->getDataHelper()->getThreeDSResultUrl($rawOrderIds, true),
-                    "capture"           => (boolean)true
-                ];
-
-                $charge = $this->requestCharge($requestData);
-
-                $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-                if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
-                    $newRequestData = array_replace($requestData, [
-                        'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds, true)
-                    ]);
-                    $charge = $this->requestCharge($newRequestData);
-                }
-
-                $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-                if ($chargeError == 'AUTHENTICATION_ID_MISSING_ERROR') {
-                    return $this->handle3DSFlow($requestData, $payment, $orderIds, $orders);
-                }
-
-                if ($chargeError !== null) {
-                    return $this->processFailedPayment($orderIds, $chargeError);
-                }
-    
-                if ($charge['status'] === 'CAPTURED') {
-                    return $this->processSuccessfulPayment($orders, $payment, $charge);
-                } else {
-                    return $this->processFailedPayment($orderIds, $charge['failure_reason']);
-                }
-            } else if ($method === 'cchosted' || $method === 'cc_installment' || $method === 'cc_subscription') {
-
+            if ($method === 'cc_subscription') {
                 $billingAddress     = $orders[0]->getBillingAddress(); // billing address of 1st order
                 $shippingAddress    = $orders[0]->getShippingAddress(); // shipping address of 1st order
 
                 $requestData = [
-                    'external_id'            => $this->getDataHelper()->getExternalId($rawOrderIds),
-                    'payer_email'            => $billingAddress->getEmail(),
-                    'description'            => $rawOrderIds,
-                    'order_number'           => $rawOrderIds,
-                    'amount'                 => $transactionAmount,
-                    'payment_type'           => 'CREDIT_CARD',
-                    'store_name'             => $this->getStoreManager()->getStore()->getName(),
-                    'platform_name'          => 'MAGENTO2',
-                    'success_redirect_url'   => $this->getDataHelper()->getSuccessUrl(true),
-                    'failure_redirect_url'   => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true),
-                    'platform_callback_url'  => $this->_url->getUrl('xendit/checkout/cccallback') . '?order_ids=' . $rawOrderIds
-                ];
-
-                if ($method === 'cc_installment') {
-                    $firstName  = $billingAddress->getFirstname() ?: $shippingAddress->getFirstname();
-                    $country    = $billingAddress->getCountryId() ?: $shippingAddress->getCountryId();
-                    $billingDetails = [
-                        'given_names'   => ($firstName ?: 'N/A'),
-                        'surname'       => ($billingAddress->getLastname() ?: null),
-                        'email'         => ($billingAddress->getEmail() ?: null),
-                        'phone_number'  => ($billingAddress->getTelephone() ?: null),
-                        'address' => [
-                            'country'       => ($country ?: 'ID'),
-                            'street_line_1'  => ($billingAddress->getStreetLine(1) ?: null),
-                            'street_line_2'  => ($billingAddress->getStreetLine(2) ?: null),
-                            'city'          => ($billingAddress->getCity() ?: null),
-                            'state'         => ($billingAddress->getRegion() ?: null),
-                            'postal_code'   => ($billingAddress->getPostcode() ?: null)
-                        ]
-                    ];
-                    $requestData['is_installment'] = "true";
-                    $requestData['billing_details'] = json_encode($billingDetails, JSON_FORCE_OBJECT);
-
-                } else if ($method === 'cc_subscription') {
-                    $requestData['payment_type'] = 'CREDIT_CARD_SUBSCRIPTION';
-                    $requestData['is_subscription'] = "true";
-                    $requestData['subscription_callback_url'] = $this->getDataHelper()->getXenditSubscriptionCallbackUrl(true);
-                    $requestData['payer_email'] = $billingAddress->getEmail();
-                    $requestData['subscription_option'] = json_encode(
+                    'payer_email'               => $billingAddress->getEmail(),
+                    'order_number'              => $rawOrderIds,
+                    'amount'                    => $transactionAmount,
+                    'payment_type'              => 'CREDIT_CARD_SUBSCRIPTION',
+                    'store_name'                => $this->getStoreManager()->getStore()->getName(),
+                    'platform_name'             => 'MAGENTO2',
+                    'success_redirect_url'      => $this->getDataHelper()->getSuccessUrl(true),
+                    'failure_redirect_url'      => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true),
+                    'platform_callback_url'     => $this->getDataHelper()->getCCCallbackUrl(true),// '?order_ids=' . $rawOrderIds,
+                    'is_subscription'           => 'true',
+                    'subscription_callback_url' => $this->getDataHelper()->getXenditSubscriptionCallbackUrl(true),
+                    'subscription_option'       => json_encode(
                         [
-                            'interval' => $this->getDataHelper()->getSubscriptionInterval(),
-                            'interval_count' => $this->getDataHelper()->getSubscriptionIntervalCount()
+                            'interval' => $this->getDataHelper()->getCcSubscriptionInterval(),
+                            'interval_count' => $this->getDataHelper()->getCcSubscriptionIntervalCount()
                         ], JSON_FORCE_OBJECT
-                    );
-                }
-
+                    )
+                ];
+                
                 $hostedPayment = $this->requestHostedPayment($requestData);
 
                 if (isset($hostedPayment['error_code'])) {
-                    $message = $this->getErrorHandler()->mapInvoiceErrorCode($hostedPayment['error_code']);
+                    $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
                     // cancel order and redirect to cart
                     return $this->processFailedPayment($orderIds, $message);
-                } elseif (isset($hostedPayment['id'])) {
-
+                } else if (isset($hostedPayment['id'])) {
                     $this->addCCHostedData($orders, $hostedPayment);
 
                     // redirect to hosted payment page
-                    if (isset($hostedPayment['invoice_url'])) {
-                        $redirect = $hostedPayment['invoice_url']."#credit-card";
-                        $resultRedirect = $this->getRedirectFactory()->create();
-                        $resultRedirect->setUrl($redirect);
+                    $redirect = $this->getDataHelper()->getUiUrl()."/hosted-payments/".$hostedPayment['id']."?hp_token=".$hostedPayment['hp_token'];
+                    $resultRedirect = $this->getRedirectFactory()->create();
+                    $resultRedirect->setUrl($redirect);
 
-                        return $resultRedirect;
-                    }
+                    return $resultRedirect;
                 } else {
                     $message = 'Error connecting to Xendit. Please check your API key.';
                     return $this->processFailedPayment($orderIds, $message);
@@ -215,7 +149,7 @@ class CCMultishipping extends AbstractAction
      */
     private function requestHostedPayment($requestData)
     {
-        $hostedPaymentUrl = $this->getDataHelper()->getCheckoutUrl() . "/v2/invoices#credit-card";
+        $hostedPaymentUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/hosted-payments";
         $hostedPaymentMethod = Request::METHOD_POST;
 
         try {
@@ -252,62 +186,6 @@ class CCMultishipping extends AbstractAction
     }
 
     /**
-     * @param $requestData
-     * @param $payment
-     * @param $orderIds
-     * @param $orders
-     * @return \Magento\Framework\Controller\Result\Redirect|void
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    private function handle3DSFlow($requestData, $payment, $orderIds, $orders)
-    {
-        unset($requestData['card_cvn']);
-        $hosted3DSRequestData = array_replace([], $requestData);
-        $hosted3DS = $this->request3DS($hosted3DSRequestData);
-
-        $hosted3DSError = isset($hosted3DS['error_code']) ? $hosted3DS['error_code'] : null;
-
-        if ($hosted3DSError !== null) {
-            return $this->processFailedPayment($orderIds, $hosted3DSError);
-        }
-
-        if ('IN_REVIEW' === $hosted3DS['status']) {
-            $hostedUrl = $hosted3DS['redirect']['url'];
-            $hostedId = $hosted3DS['id'];
-            $payment->setAdditionalInformation('payment_gateway', 'xendit');
-            $payment->setAdditionalInformation('xendit_redirect_url', $hostedUrl);
-            $payment->setAdditionalInformation('xendit_hosted_3ds_id', $hostedId);
-
-            foreach ($orderIds as $key => $value) {
-                $order = $this->getOrderFactory()->create();
-                $order->load($value);
-                $order->addStatusHistoryComment("Xendit payment waiting for authentication. 3DS ID: $hostedId");
-                $order->save();
-            }
-
-            $resultRedirect = $this->getRedirectFactory()->create();
-            $resultRedirect->setUrl($hostedUrl);
-            return $resultRedirect;
-        }
-
-        if ('VERIFIED' === $hosted3DS['status']) {
-            $newRequestData = array_replace($requestData, [
-                'authentication_id' => $hosted3DS['authentication_id']
-            ]);
-            $charge = $this->requestCharge($newRequestData);
-
-            if ($charge['status'] === 'CAPTURED') {
-                return $this->processSuccessfulPayment($orders, $payment, $charge);
-            } else {
-                return $this->processFailedPayment($orderIds, $charge['failure_reason']);
-            }
-        }
-
-        return $this->processFailedPayment($orderIds);
-    }
-
-    /**
      * @param $orderIds
      * @param string $failureReason
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -321,74 +199,5 @@ class CCMultishipping extends AbstractAction
             $failureReasonInsight
         ));
         $this->_redirect('checkout/cart', ['_secure'=> false]);
-    }
-
-    /**
-     * @param $orders
-     * @param $payment
-     * @param $charge
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function processSuccessfulPayment($orders, $payment, $charge)
-    {
-        $transactionId = $charge['id'];
-        $payment->setTransactionId($transactionId);
-        $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
-
-        foreach ($orders as $key => $order) {
-            $orderState = Order::STATE_PROCESSING;
-
-            $order->setState($orderState)
-                  ->setStatus($orderState)
-                  ->addStatusHistoryComment("Xendit payment completed. Transaction ID: $transactionId");
-
-            $payment = $order->getPayment();
-            $payment->setTransactionId($transactionId);
-            $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
-
-            $order->save();
-
-            $this->invoiceOrder($order, $transactionId);
-        }
-
-        $this->_redirect($this->getDataHelper()->getSuccessUrl(true));
-    }
-
-    /**
-     * @param $requestData
-     * @return mixed
-     * @throws \Exception
-     */
-    private function request3DS($requestData)
-    {
-        $hosted3DSUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/hosted-3ds";
-        $hosted3DSMethod = Request::METHOD_POST;
-
-        try {
-            $hosted3DS = $this->getApiHelper()->request($hosted3DSUrl, $hosted3DSMethod, $requestData, true);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-
-        return $hosted3DS;
-    }
-
-    /**
-     * @param $requestData
-     * @return mixed
-     * @throws \Exception
-     */
-    private function requestCharge($requestData)
-    {
-        $chargeUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/credit-card/charges";
-        $chargeMethod = Request::METHOD_POST;
-
-        try {
-            $hosted3DS = $this->getApiHelper()->request($chargeUrl, $chargeMethod, $requestData);
-        } catch (\Exception $e) {
-            throw $e;
-        }
-
-        return $hosted3DS;
     }
 }

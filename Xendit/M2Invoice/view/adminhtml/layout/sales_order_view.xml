@@ -9,7 +9,6 @@
     <body>
         <referenceBlock name="order_additional_info">
             <block class="Xendit\M2Invoice\Block\CustomView" name="subscription_order_view" template="Xendit_M2Invoice::order/subscription_info.phtml"/>
-            <block class="Xendit\M2Invoice\Block\CustomView" name="installment_order_view" template="Xendit_M2Invoice::order/installment_info.phtml"/>
         </referenceBlock>
     </body>
 </page>

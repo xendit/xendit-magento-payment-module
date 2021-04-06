@@ -135,10 +135,10 @@ class Notification extends Action implements CsrfAwareActionInterface
             $this->logger->info($post);
 
             if (!empty($callbackPayload['invoice_url'])) {
-                // Invoice payment (CC / Kredivo / Direct Debit-BRI)
+                // Invoice payment (CC / Kredivo / Direct Debit BRI)
                 return $this->handleInvoiceCallback($callbackPayload);
             } else {
-                // E-wallet payment (OVO/DANA/LINKAJA)
+                // E-wallet payment (OVO / DANA / LINKAJA)
                 return $this->handleEwalletCallback($callbackPayload);
             }
         } catch (\Exception $e) {

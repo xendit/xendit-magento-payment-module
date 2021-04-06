@@ -144,7 +144,7 @@ class OverviewPost extends Checkout
                 }
                 $params  = implode("-", $orderIds);
 
-                $xenditCCMethods                = ['cc', 'cchosted', 'cc_installment', 'cc_subscription'];
+                $xenditCCMethods                = ['cc_subscription'];
                 $xenditCardlessCreditMethods    = ['kredivo'];
                 $xenditQrCodeMethods            = ['qr_codes'];
 
