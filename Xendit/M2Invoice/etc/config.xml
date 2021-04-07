@@ -206,7 +206,7 @@
                 <sort_order>14</sort_order>
             </ovo>
             <qr_codes>
-                <active>1</active>
+                <active>0</active>
                 <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\QRCODES</model>
                 <title>QR Codes</title>
