@@ -71,4 +71,12 @@ class CustomView extends Template
 
         return $data;
     }
+
+    /**
+     * @return string
+     */
+    public function getInstallmentData()
+    {
+        return $this->getOrder()->getPayment()->getAdditionalInformation('xendit_installment');
+    }
 }

@@ -218,8 +218,8 @@ class CCCallback extends Action implements CsrfAwareActionInterface
                 ]);
             } else {
                 $result->setData([
-                    'status' => __('OK'),
-                    'message' => 'Callback processed successfully.'
+                    'status' => __('SUCCESS'),
+                    'message' => 'CC paid'
                 ]);
             }
             return $result;
@@ -270,12 +270,6 @@ class CCCallback extends Action implements CsrfAwareActionInterface
         $payment->addTransaction(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE, null, true);
 
         $this->invoiceOrder($order, $transactionId);
-
-        $result = $this->jsonResultFactory->create();
-        $result->setData([
-            'status' => __('SUCCESS'),
-            'message' => 'CC paid'
-        ]);
     }
 
     private function invoiceOrder($order, $transactionId)

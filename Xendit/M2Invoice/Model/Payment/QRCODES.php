@@ -225,9 +225,7 @@ class QRCODES extends AbstractInvoice
         }
         $this->logger->debug(['payment status: ' => $paymentStatus]);
 
-        $statusList = [
-            'COMPLETED'
-        ];
+        $statusList = ['COMPLETED'];
         if (in_array($paymentStatus, $statusList)) {
             $orderState = Order::STATE_PROCESSING;
 
@@ -255,7 +253,7 @@ class QRCODES extends AbstractInvoice
             $result = [
                 'status_code'   => 'success',
                 'status'        => __('SUCCESS'),
-                'message'       => ('Invoice paid')
+                'message'       => ('QRIS paid')
             ];
         } else {
             //FAILED or EXPIRED
@@ -275,7 +273,7 @@ class QRCODES extends AbstractInvoice
             $result = [
                 'status_code'   => 'failed',
                 'status'        => __('FAILED'),
-                'message'       => ('Invoice not paid')
+                'message'       => ('QRIS not paid')
             ];
         }
 

@@ -1,0 +1,31 @@
+<?php
+/** @var Xendit\M2Invoice\Block\CustomView $block */
+if ($block->getPaymentMethod() === 'cc') {
+    $installmentData = $block->getInstallmentData();
+
+    if (empty($installmentData)) {
+        return;
+    }
+?>
+<div id="xendit-installment-info" style="display: none;">
+    <br clear="all"><br><br>
+    <div class="admin__page-section-item-title">
+        <span class="title">Installment Information</span>
+    </div>
+    <div class="admin__page-section-item-content">
+        <?php
+        echo $installmentData['count'] . ' ' . strtolower($installmentData['interval']) . ' installment';
+        ?>
+    </div>
+</div>
+<script>
+    require([
+        'jquery'
+    ], function ($) {
+        $(function () {
+            var html = $('#xendit-installment-info').html();
+            $('.order-view-billing-shipping .admin__page-section-content').append('<div class="admin__page-section-item">' + html + '</div>');
+        })
+    })
+</script>
+<?php } ?>

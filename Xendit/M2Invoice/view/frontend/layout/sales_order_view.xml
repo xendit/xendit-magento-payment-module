@@ -4,6 +4,7 @@
         <referenceContainer name="content">
             <container name="custom.view.container" htmlTag="div" htmlClass="custom-view" after="sales.order.info">
                 <block class="Xendit\M2Invoice\Block\CustomView" name="subscription_order_view" template="Xendit_M2Invoice::order/subscription_info.phtml"/>
+                <block class="Xendit\M2Invoice\Block\CustomView" name="installment_order_view" template="Xendit_M2Invoice::order/installment_info.phtml"/>
             </container>
         </referenceContainer>
     </body>
