@@ -42,27 +42,6 @@ class Xendit extends AbstractMethod
     }
 
     /**
-     * @return mixed
-     */
-    public function getSubscriptionInterval() {
-        return $this->getConfigData('card_subscription_interval');
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSubscriptionIntervalCount() {
-        return $this->getConfigData('card_subscription_interval_count');
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSubscriptionDescription() {
-        return $this->getConfigData('card_subscription_description');
-    }
-
-    /**
      * @return bool
      */
     public function isLive()

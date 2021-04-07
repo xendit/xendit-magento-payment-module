@@ -144,15 +144,12 @@ class OverviewPost extends Checkout
                 }
                 $params  = implode("-", $orderIds);
 
-                $xenditCCMethods                = ['cc', 'cchosted', 'cc_installment', 'cc_subscription'];
-                $xenditEwalletMethods           = ['dana','ovo','linkaja'];
+                $xenditCCMethods                = ['cc_subscription'];
                 $xenditCardlessCreditMethods    = ['kredivo'];
                 $xenditQrCodeMethods            = ['qr_codes'];
 
                 if (in_array($xenditPaymentMethod, $xenditCCMethods)) {
                     $redirect = $baseUrl . '/xendit/checkout/ccmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
-                } elseif (in_array($xenditPaymentMethod, $xenditEwalletMethods)) {
-                    $redirect = $baseUrl . '/xendit/checkout/ewalletmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
                 } elseif (in_array($xenditPaymentMethod, $xenditCardlessCreditMethods)) {
                     $redirect = $baseUrl . '/xendit/checkout/cardlesscreditmultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
                 } elseif (in_array($xenditPaymentMethod, $xenditQrCodeMethods)) {

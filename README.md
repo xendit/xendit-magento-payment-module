@@ -54,6 +54,8 @@ To activate this feature, you need to follow this additional steps:
 
 ## Supported Payment Method
 - Credit and Debit Card 
+-- Installment
+-- Subscription
 - BCA VA
 - BNI VA
 - BRI VA
@@ -61,8 +63,6 @@ To activate this feature, you need to follow this additional steps:
 - Permata VA
 - Alfamart
 - OVO
-- Credit Card Subscription
-- Credit Card Installment
 - DANA
 - LinkAja
 - Indomaret

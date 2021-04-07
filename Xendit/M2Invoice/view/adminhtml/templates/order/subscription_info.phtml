@@ -3,7 +3,7 @@
 
 if ($block->getPaymentMethod() === 'cc_subscription') {
     $subscriptionData = $block->getSubscriptionConfig();
-    $moreThan1 = ($subscriptionData['card_subscription_interval_count'] > 1 ? true : false);
+    $moreThan1 = ($subscriptionData['interval_count'] > 1 ? true : false);
 ?>
 <div id="xendit-subscription-info" style="display: none;">
     <br clear="all"><br><br>
@@ -12,9 +12,9 @@ if ($block->getPaymentMethod() === 'cc_subscription') {
     </div>
     <div class="admin__page-section-item-content">Every <?php
         if ($moreThan1) {
-            echo $subscriptionData['card_subscription_interval_count'] . ' ';
+            echo $subscriptionData['interval_count'] . ' ';
         }
-        echo strtolower($subscriptionData['card_subscription_interval']);
+        echo strtolower($subscriptionData['interval']);
         if ($moreThan1) {
             echo 's';
         }

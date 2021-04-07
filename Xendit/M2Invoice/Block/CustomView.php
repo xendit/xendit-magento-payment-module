@@ -66,17 +66,9 @@ class CustomView extends Template
     public function getSubscriptionConfig()
     {
         $data = array();
-        $data['card_subscription_interval'] = $this->dataHelper->getSubscriptionInterval();
-        $data['card_subscription_interval_count'] = $this->dataHelper->getSubscriptionIntervalCount();
+        $data['interval'] = $this->dataHelper->getCcSubscriptionInterval();
+        $data['interval_count'] = $this->dataHelper->getCcSubscriptionIntervalCount();
 
         return $data;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getInstallmentData()
-    {
-        return $this->getOrder()->getPayment()->getAdditionalInformation('xendit_installment');
     }
 }

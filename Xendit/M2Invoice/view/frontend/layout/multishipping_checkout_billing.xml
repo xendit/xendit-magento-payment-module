@@ -6,8 +6,6 @@
             <arguments>
                 <argument name="form_templates" xsi:type="array">
                     <item name="cc" xsi:type="string">Xendit_M2Invoice::multishipping/cc.phtml</item>
-                    <item name="cchosted" xsi:type="string">Xendit_M2Invoice::multishipping/cchosted.phtml</item>
-                    <item name="cc_installment" xsi:type="string">Xendit_M2Invoice::multishipping/cc_installment.phtml</item>
                     <item name="cc_subscription" xsi:type="string">Xendit_M2Invoice::multishipping/cc_subscription.phtml</item>
                     <item name="alfamart" xsi:type="string">Xendit_M2Invoice::multishipping/alfamart.phtml</item>
                     <item name="bcava" xsi:type="string">Xendit_M2Invoice::multishipping/bcava.phtml</item>

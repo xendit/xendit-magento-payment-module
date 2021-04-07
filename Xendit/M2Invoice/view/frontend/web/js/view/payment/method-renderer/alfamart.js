@@ -29,7 +29,7 @@ define(
             },
 
             getMethod: function() {
-                return 'Alfamart'
+                return 'Alfamart';
             },
 
             getTest: function() {
@@ -59,17 +59,11 @@ define(
 
             validate: function() {
                 var billingAddress = quote.billingAddress();
-                var totals = quote.totals();
 
                 self.messageContainer.clear();
 
                 if (!billingAddress) {
                     self.messageContainer.addErrorMessage({'message': 'Please enter your billing address'});
-                    return false;
-                }
-
-                if (totals.grand_total < window.checkoutConfig.payment.alfamart.min_order_amount) {
-                    self.messageContainer.addErrorMessage({'message': 'Xendit doesn\'t support purchases less than Rp 10,000.'});
                     return false;
                 }
 

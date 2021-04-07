@@ -69,21 +69,22 @@ class Data extends AbstractHelper
     /*
      *  CC Hosted
      */
-    const XML_PATH_CCHOSTED_ACTIVE          = 'payment/cchosted/active';
-    const XML_PATH_CCHOSTED_TITLE           = 'payment/cchosted/title';
-    const XML_PATH_CCHOSTED_MIN_AMOUNT      = 'payment/cchosted/min_order_total';
-    const XML_PATH_CCHOSTED_MAX_AMOUNT      = 'payment/cchosted/max_order_total';
-    const XML_PATH_CCHOSTED_DESCRIPTION     = 'payment/cchosted/description';
-
-    /*
-     *  CC Installment
-     */
-    const XML_PATH_CC_INSTALMENT_ACTIVE     = 'payment/cc_installment/active';
+    const XML_PATH_CC_ACTIVE          = 'payment/cc/active';
+    const XML_PATH_CC_TITLE           = 'payment/cc/title';
+    const XML_PATH_CC_MIN_AMOUNT      = 'payment/cc/min_order_total';
+    const XML_PATH_CC_MAX_AMOUNT      = 'payment/cc/max_order_total';
+    const XML_PATH_CC_DESCRIPTION     = 'payment/cc/description';
 
     /*
      *  CC Subscription
      */
-    const XML_PATH_CC_SUBSCRIPTION_ACTIVE   = 'payment/cc_subscription/active';
+    const XML_PATH_CC_SUBSCRIPTION_ACTIVE           = 'payment/cc_subscription/active';
+    const XML_PATH_CC_SUBSCRIPTION_TITLE            = 'payment/cc_subscription/title';
+    const XML_PATH_CC_SUBSCRIPTION_MIN_AMOUNT       = 'payment/cc_subscription/min_order_total';
+    const XML_PATH_CC_SUBSCRIPTION_MAX_AMOUNT       = 'payment/cc_subscription/max_order_total';
+    const XML_PATH_CC_SUBSCRIPTION_DESCRIPTION      = 'payment/cc_subscription/description';
+    const XML_PATH_CC_SUBSCRIPTION_INTERVAL         = 'payment/cc_subscription/interval';
+    const XML_PATH_CC_SUBSCRIPTION_INTERVAL_COUNT   = 'payment/cc_subscription/interval_count';
 
     /*
      *  DD BRI
@@ -401,22 +402,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return string
-     */
-    public function getSubscriptionInterval()
-    {
-        return $this->xendit->getSubscriptionInterval() ?: 'MONTH';
-    }
-
-    /**
-     * @return int
-     */
-    public function getSubscriptionIntervalCount()
-    {
-        return $this->xendit->getSubscriptionIntervalCount() ?: 1;
-    }
-
-    /**
      * @return mixed
      */
     public function getEnvironment()
@@ -508,6 +493,21 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @param bool $isMultishipping
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getCCCallbackUrl($isMultishipping = false) {
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/cccallback';
+
+        if ($isMultishipping) {
+            $baseUrl .= '?type=multishipping';
+        }
+        
+        return $baseUrl;
+    }
+
+    /**
      * Map card's failure reason to more detailed explanation based on current insight.
      *
      * @param $failureReason
@@ -579,8 +579,6 @@ class Data extends AbstractHelper
         //method name => frontend routing
         $listPayment = [
             "cc"                => "cc",
-            "cchosted"          => "cchosted",
-            "cc_installment"    => "cc_installment",
             "cc_subscription"   => "cc_subscription",
             "bcava"             => "bca",
             "bniva"             => "bni",
@@ -749,22 +747,6 @@ class Data extends AbstractHelper
     public function isEnabled()
     {
         return true;
-    }
-
-    /**
-     * @return bool|false|string
-     */
-    public function getDanaExpirationDate()
-    {
-        $expired = $this->scopeConfig->getValue('payment/xendit/dana_expired', ScopeInterface::SCOPE_STORE);
-
-        if ($expired != null) :
-            $expired = strtotime('+'.$expired.' hours');
-
-            return $this->convertDateTime($expired);
-        endif;
-
-        return false;
     }
 
     /**
@@ -939,49 +921,41 @@ class Data extends AbstractHelper
     /**
      * @return mixed
      */
-    public function getCcHostedActive()
+    public function getCcActive()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_ACTIVE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_ACTIVE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getCcHostedTitle()
+    public function getCcTitle()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_TITLE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_TITLE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getCcHostedDescription()
+    public function getCcDescription()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_DESCRIPTION, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getCcHostedMinOrderAmount()
+    public function getCcMinOrderAmount()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getCcHostedMaxOrderAmount()
+    public function getCcMaxOrderAmount()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CCHOSTED_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCcInstallmentActive()
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_CC_INSTALMENT_ACTIVE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -990,6 +964,56 @@ class Data extends AbstractHelper
     public function getCcSubscriptionActive()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionInterval()
+    {
+        $value = $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_INTERVAL, ScopeInterface::SCOPE_STORE);
+        return $value ?: 'MONTH';
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcSubscriptionIntervalCount()
+    {
+        $value = $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_INTERVAL_COUNT, ScopeInterface::SCOPE_STORE);
+        return $value ?: 1;
     }
 
     /**

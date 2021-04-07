@@ -63,11 +63,26 @@ php bin/magento setup:install \
 --use-sample-data
 ```
 
-## Update the database
+## Setup & compile
 
-Run the following command to update the database
 ```
-php bin/magento setup:upgrade
+1. php bin/magento setup:upgrade
+2. php bin/magento setup:di:compile
+3. php bin/magento cache:flush
+```
+
+## Seeding sample data (Optional)
+
+Add reference to repo.magento.com in composer.json, this is needed if you clone repo from github.
+
+```
+composer config repositories.0 composer https://repo.magento.com
+```
+Note: you need repo.magento.com credentials
+
+Install sample data:
+```
+php bin/magento sampledata:deploy
 ```
 
 ## Install Bacon QR Code in Magento (Optional)

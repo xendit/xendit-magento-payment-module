@@ -59,9 +59,6 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $defaultCCInstallmentDesc = "Bayar pesanan dengan cicilan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI";
-        $defaultCCSubscriptionDesc = "Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit.\r\nBank yang tersedia: BCA, BRI";
-
         $config = [
             'payment' => [
                 Config::CODE => [
@@ -73,9 +70,7 @@ class ConfigProvider implements ConfigProviderInterface
                     'available_types' => ['cc' => $this->ccConfig->getCcAvailableTypes()],
                     'months' => ['cc' => $this->ccConfig->getCcMonths()],
                     'years' => ['cc' => $this->ccConfig->getCcYears()],
-                    'has_verification' => $this->ccConfig->hasVerification(),
-                    'card_installment_description' => ($this->xendit->getConfigData('card_installment_description') ?: $defaultCCInstallmentDesc),
-                    'card_subscription_description' => ($this->xendit->getSubscriptionDescription() ?: $defaultCCSubscriptionDesc)
+                    'has_verification' => $this->ccConfig->hasVerification()
                 ],
                 'dana' => [
                     'title' => $this->xenditHelper->getDanaTitle(),
@@ -155,11 +150,19 @@ class ConfigProvider implements ConfigProviderInterface
                     'max_order_amount' => $this->xenditHelper->getKredivoMaxOrderAmount(),
                     'description' => $this->xenditHelper->getKredivoDescription()
                 ],
-                'cchosted' => [
-                    'title' => $this->xenditHelper->getCcHostedTitle(),
-                    'min_order_amount' => $this->xenditHelper->getCcHostedMinOrderAmount(),
-                    'max_order_amount' => $this->xenditHelper->getCcHostedMaxOrderAmount(),
-                    'description' => $this->xenditHelper->getCcHostedDescription()
+                'cc' => [
+                    'title' => $this->xenditHelper->getCcTitle(),
+                    'min_order_amount' => $this->xenditHelper->getCcMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getCcMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getCcDescription()
+                ],
+                'cc_subscription' => [
+                    'title' => $this->xenditHelper->getCcSubscriptionTitle(),
+                    'min_order_amount' => $this->xenditHelper->getCcSubscriptionMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getCcSubscriptionMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getCcSubscriptionDescription(),
+                    'interval' => $this->xenditHelper->getCcSubscriptionInterval(),
+                    'interval_count' => $this->xenditHelper->getCcSubscriptionIntervalCount()
                 ]
             ]
         ];

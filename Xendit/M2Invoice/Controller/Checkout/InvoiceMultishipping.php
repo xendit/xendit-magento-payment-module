@@ -62,6 +62,10 @@ class InvoiceMultishipping extends AbstractAction
             }
 
             $preferredMethod = $this->getRequest()->getParam('preferred_method');
+            if ($preferredMethod == 'cc') {
+                $preferredMethod = 'CREDIT_CARD';
+            }
+
             $requestData = [
                 'external_id'           => $this->getDataHelper()->getExternalId($rawOrderIds),
                 'payer_email'           => $billingEmail,
