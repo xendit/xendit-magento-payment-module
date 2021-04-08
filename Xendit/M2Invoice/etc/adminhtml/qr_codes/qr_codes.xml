@@ -4,7 +4,7 @@
         <label>QR Codes</label>
         <field id="active" translate="label comment" sortOrder="1" type="select" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Enable</label>
-            <comment>Bacon QR code : https://packagist.org/packages/bacon/bacon-qr-code</comment>
+            <comment>Bacon QR code: https://packagist.org/packages/bacon/bacon-qr-code</comment>
             <tooltip>In order to fully activate this payment feature, please add 'Bacon QR Code' dependency into your magento root folder</tooltip>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/qr_codes/active</config_path>
