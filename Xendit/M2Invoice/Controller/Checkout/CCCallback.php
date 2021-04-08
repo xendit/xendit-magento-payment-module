@@ -158,7 +158,8 @@ class CCCallback extends Action implements CsrfAwareActionInterface
 
                         $payment = $order->getPayment();
                         $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
-        
+                        $payment->setAdditionalInformation('xendit_charge_id', $hostedPayment['charge_id']);
+
                         $this->processSuccessfulTransaction(
                             $order,
                             $payment,
@@ -198,7 +199,8 @@ class CCCallback extends Action implements CsrfAwareActionInterface
 
                     $payment = $order->getPayment();
                     $payment->setAdditionalInformation('token_id', $hostedPayment['token_id']);
-    
+                    $payment->setAdditionalInformation('xendit_charge_id', $hostedPayment['charge_id']);
+
                     $this->processSuccessfulTransaction(
                         $order,
                         $payment,

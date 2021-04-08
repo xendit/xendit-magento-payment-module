@@ -172,7 +172,7 @@ class CCSubscription extends AbstractInvoice
      */
     public function refund(InfoInterface $payment, $amount)
     {
-        $chargeId = $payment->getParentTransactionId();
+        $chargeId = $payment->getAdditionalInformation('xendit_charge_id');
 
         if ($chargeId) {
             $order = $payment->getOrder();
@@ -206,7 +206,7 @@ class CCSubscription extends AbstractInvoice
      */
     private function requestRefund($chargeId, $requestData)
     {
-        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/:$chargeId/refunds";
+        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";
         $refundMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
