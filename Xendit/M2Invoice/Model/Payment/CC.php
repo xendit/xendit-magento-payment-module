@@ -24,6 +24,7 @@ class CC extends AbstractInvoice
      */
     protected $_code = 'cc';
     protected $methodCode = 'CREDIT_CARD';
+    protected $_canRefund = true;
 
     /**
      * @param CartInterface|null $quote
@@ -46,5 +47,70 @@ class CC extends AbstractInvoice
         }
 
         return true;
+    }
+
+    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    {
+        $chargeId = $payment->getAdditionalInformation('xendit_charge_id');
+
+        if ($chargeId) {
+            $order = $payment->getOrder();
+            $orderId = $order->getRealOrderId();
+            $canRefundMore = $payment->getCreditmemo()->getInvoice()->canRefund();
+            $isFullRefund = !$canRefundMore &&
+                0 == (double)$order->getBaseTotalOnlineRefunded() + (double)$order->getBaseTotalOfflineRefunded();
+
+            
+            $refundData = [
+                'amount' => $amount,
+                'external_id' => $this->dataHelper->getExternalId($orderId, true)
+            ];
+            $refund = $this->requestRefund($chargeId, $refundData);
+
+            $this->handleRefundResult($payment, $refund, $canRefundMore);
+
+            return $this;
+        } else {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __("Refund not available because there is no capture")
+            );
+        }
+    }
+
+    private function handleRefundResult($payment, $refund, $canRefundMore)
+    {
+        if (isset($refund['error_code'])) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __($refund['message'])
+            );
+        }
+
+        if ($refund['status'] == 'FAILED') {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('Refund failed, please check Xendit dashboard')
+            );
+        }
+
+        $payment->setTransactionId(
+            $refund['id']
+        )->setIsTransactionClosed(
+            1
+        )->setShouldCloseParentTransaction(
+            !$canRefundMore
+        );
+    }
+
+    private function requestRefund($chargeId, $requestData)
+    {
+        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";
+        $refundMethod = \Zend\Http\Request::METHOD_POST;
+
+        try {
+            $refund = $this->apiHelper->request($refundUrl, $refundMethod, $requestData);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $refund;
     }
 }

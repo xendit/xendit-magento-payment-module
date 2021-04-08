@@ -134,13 +134,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             $this->logger->info("callbackPayload");
             $this->logger->info($post);
 
-            if (!empty($callbackPayload['invoice_url'])) {
-                // Invoice payment (CC / Kredivo / Direct Debit BRI)
-                return $this->handleInvoiceCallback($callbackPayload);
-            } else {
-                // E-wallet payment (OVO / DANA / LINKAJA)
-                return $this->handleEwalletCallback($callbackPayload);
-            }
+            return $this->handleInvoiceCallback($callbackPayload);
         } catch (\Exception $e) {
             $message = "Error invoice callback: " . $e->getMessage();
             $this->logger->info($message);
@@ -204,50 +198,6 @@ class Notification extends Action implements CsrfAwareActionInterface
             }
 
             return $this->checkOrder($order, false, $callbackPayload, $invoice, $description);
-        }
-    }
-
-    /**
-     * @param $callbackPayload
-     * @return \Magento\Framework\Controller\Result\Json
-     * @throws LocalizedException
-     */
-    public function handleEwalletCallback($callbackPayload)
-    {
-        if (!isset($callbackPayload['external_id'])) {
-            $result = $this->jsonResultFactory->create();
-            /** You may introduce your own constants for this custom REST API */
-            $result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
-            $result->setData([
-                'status' => __('ERROR'),
-                'message' => 'Callback external_id is invalid'
-            ]);
-
-            return $result;
-        }
-
-        $orderIdList = explode('-', $callbackPayload['external_id']);
-        $orderIds = [];
-        foreach ($orderIdList as $orderId) {
-            if (is_numeric($orderId)) {
-                $orderIds[] = $orderId;
-            }
-        }
-        $this->logger->info("orderIdList");
-        $this->logger->info(print_r($orderIdList));
-        $this->logger->info(print_r($orderIds));
-
-        $isMultishipping = (count($orderIds) > 1) ? true : false;
-        if ($isMultishipping) {
-            foreach ($orderIds as $orderId) {
-                $order = $this->getOrderById($orderId);
-                $result = $this->checkOrder($order, true, $callbackPayload, null, $orderId);
-            }
-            return $result;
-        } else {
-            $description = isset($callbackPayload['description']) ? $callbackPayload['description'] : '';
-            $order = $this->getOrderById($description);
-            return $this->checkOrder($order, true, $callbackPayload, null, $description);
         }
     }
 
@@ -350,6 +300,12 @@ class Notification extends Action implements CsrfAwareActionInterface
             $payment = $order->getPayment();
             $payment->setTransactionId($transactionId);
             $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
+
+            if (!empty($invoice['credit_card_charge_id'])) {
+                $payment->setAdditionalInformation('xendit_charge_id', $invoice['credit_card_charge_id']);
+
+                $payment->save();
+            }
 
             if ($isEwallet && $transactionId) {
                 $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
