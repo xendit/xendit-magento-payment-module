@@ -27,6 +27,11 @@ class QRCODES extends AbstractInvoice
      */
     public function isAvailable(CartInterface $quote = null)
     {
+        // handle class bacon qr code
+        if (self::isQrDependenciesNotExists()) {
+            return false;
+        }
+
         if ($quote === null) {
             return false;
         }
@@ -167,6 +172,17 @@ class QRCODES extends AbstractInvoice
     private function processFailedPayment($payment, $message)
     {
         $payment->setAdditionalInformation('xendit_failure_reason', $message);
+    }
+
+    /**
+     * @return boolean
+     */
+    private function isQrDependenciesNotExists()
+    {
+        return !class_exists('BaconQrCode\Renderer\ImageRenderer') 
+            || !class_exists('BaconQrCode\Renderer\RendererStyle\RendererStyle')
+            || !class_exists('BaconQrCode\Writer')
+            || !class_exists('BaconQrCode\Renderer\Image\SvgImageBackEnd');
     }
 
     /**
