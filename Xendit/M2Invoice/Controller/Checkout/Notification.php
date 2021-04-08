@@ -334,6 +334,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             'SUCCESS_COMPLETED',
             'settlement'
         ];
+
         if (in_array($paymentStatus, $statusList)) {
             $orderState = Order::STATE_PROCESSING;
 
@@ -353,6 +354,10 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             if ($isEwallet && $transactionId) {
                 $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
+                $payment->save();
+            }
+            if ($invoice['payment_channel'] == 'CARD_INSTALLMENT' && !empty($callbackPayload['installment'])) {
+                $payment->setAdditionalInformation('xendit_installment', $callbackPayload['installment']);
                 $payment->save();
             }
             $order->save();

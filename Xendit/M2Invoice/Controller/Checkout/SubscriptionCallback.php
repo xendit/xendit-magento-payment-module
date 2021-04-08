@@ -148,8 +148,8 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
             }
 
             $result->setData([
-                'status' => __('OK'),
-                'message' => 'Callback processed successfully.'
+                'status' => __('SUCCESS'),
+                'message' => 'CC Subscription paid'
             ]);
 
             return $result;
