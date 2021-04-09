@@ -167,13 +167,14 @@
                 <sort_order>11</sort_order>
             </indomaret>
             <kredivo>
-                <active>1</active>
+                <active>0</active>
                 <payment_action>authorize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\KREDIVO</model>
                 <title>Kredivo</title>
                 <description>Bayar pesanan dengan akun Kredivo anda melalui Xendit</description>
                 <min_order_total>10000</min_order_total>
                 <max_order_total>1000000000</max_order_total>
+                <callback_authentication_token></callback_authentication_token>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>

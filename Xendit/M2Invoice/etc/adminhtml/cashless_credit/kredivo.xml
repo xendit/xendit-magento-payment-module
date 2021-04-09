@@ -25,5 +25,9 @@
             <frontend_class>validate-zero-or-greater</frontend_class>
             <config_path>payment/kredivo/max_order_total</config_path>
         </field>
+        <field id="callback_authentication_token" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Callback Authentication Token</label>
+            <config_path>payment/kredivo/callback_authentication_token</config_path>
+        </field>
     </group>
 </include>
