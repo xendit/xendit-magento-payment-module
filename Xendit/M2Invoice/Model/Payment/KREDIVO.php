@@ -37,6 +37,10 @@ class KREDIVO extends AbstractInvoice
             return false;
         }
 
+        if(empty($this->dataHelper->getKredivoCallbackAuthenticationToken())){
+            return false;
+        }
+
         return true;
     }
 
@@ -107,7 +111,8 @@ class KREDIVO extends AbstractInvoice
                 'customer_details'      => $customerDetails,
                 'shipping_address'      => $shippingAddressData,
                 'redirect_url'          => $this->dataHelper->getSuccessUrl(false),
-                'callback_url'          => $this->getXenditCallbackUrl()
+                'callback_url'          => $this->dataHelper->getCheckoutUrl()."/payment/xendit/cardless-credit/callback",
+                'platform_callback_url' => $this->getXenditCallbackUrl()
             ];
 
             if (isset($additionalData['xendit_payment_type'])) {

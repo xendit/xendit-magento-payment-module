@@ -134,7 +134,13 @@ class Notification extends Action implements CsrfAwareActionInterface
             $this->logger->info("callbackPayload");
             $this->logger->info($post);
 
-            return $this->handleInvoiceCallback($callbackPayload);
+            if (!empty($callbackPayload["callback_authentication_token"]) && $callbackPayload["cardless_credit_type"] === "KREDIVO") {
+                // Kredivo
+                return $this->handleKredivoCallback($callbackPayload);
+            } else {
+                // Invoice: Regular CC, Ewallet, Retail Outlet
+                return $this->handleInvoiceCallback($callbackPayload);
+            }
         } catch (\Exception $e) {
             $message = "Error invoice callback: " . $e->getMessage();
             $this->logger->info($message);
@@ -185,7 +191,7 @@ class Notification extends Action implements CsrfAwareActionInterface
                 $order = $this->orderFactory->create();
                 $order->load($value);
 
-                $result = $this->checkOrder($order, false, $callbackPayload, $invoice, $description);
+                $result = $this->checkOrder($order, $callbackPayload, $invoice, $description);
             }
 
             return $result;
@@ -197,34 +203,72 @@ class Notification extends Action implements CsrfAwareActionInterface
                 $order->load($description);
             }
 
-            return $this->checkOrder($order, false, $callbackPayload, $invoice, $description);
+            return $this->checkOrder($order, $callbackPayload, $invoice, $description);
+        }
+    }
+
+    /**
+     * @param $callbackPayload
+     * @return \Magento\Framework\Controller\Result\Json
+     * @throws LocalizedException
+     */
+    public function handleKredivoCallback($callbackPayload)
+    {
+        if (
+            !isset($callbackPayload['description']) ||
+            !isset($callbackPayload['transaction_status']) ||
+            !isset($callbackPayload['callback_authentication_token']) ||
+            !isset($callbackPayload['cardless_credit_type'])
+        ) {
+            $result = $this->jsonResultFactory->create();
+            /** You may introduce your own constants for this custom REST API */
+            $result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
+            $result->setData([
+                'status' => __('ERROR'),
+                'message' => 'Callback body is invalid'
+            ]);
+
+            return $result;
+        }
+
+        // Kredivo description is Magento's order ID
+        $description = $callbackPayload['description'];
+        // in case of multishipping, we separate order IDs with `-`
+        $orderIds = explode("-", $description);
+
+        $isMultishipping = (count($orderIds) > 1) ? true : false;
+
+        if ($isMultishipping) {
+            foreach ($orderIds as $key => $value) {
+                $order = $this->orderFactory->create();
+                $order->load($value);
+
+                $result = $this->checkOrder($order, $callbackPayload, null, $description);
+            }
+
+            return $result;
+        } else {
+            $order = $this->getOrderById($description);
+
+            if (!$order) {
+                $order = $this->orderFactory->create();
+                $order->load($description);
+            }
+
+            return $this->checkOrder($order, $callbackPayload, null, $description);
         }
     }
 
     /**
      * @param $order
-     * @param $isEwallet
      * @param $callbackPayload
      * @param $invoice
      * @param $callbackDescription
      * @return \Magento\Framework\Controller\Result\Json
      * @throws LocalizedException
      */
-    private function checkOrder($order, $isEwallet, $callbackPayload, $invoice, $callbackDescription)
+    private function checkOrder($order, $callbackPayload, $invoice, $callbackDescription)
     {
-        $transactionId = '';
-        if (isset($callbackPayload['callback_authentication_token'])) {
-            $transactionId = $callbackPayload['callback_authentication_token'];
-        } elseif (isset($callbackPayload['id'])) {
-            $transactionId = $callbackPayload['id'];
-        } elseif (isset($callbackPayload['business_id'])) {
-            $transactionId = $callbackPayload['business_id'];
-        }
-        // Kredivo
-        elseif (isset($callbackPayload['transaction_id'])) {
-            $transactionId = $callbackPayload['transaction_id'];
-        }
-
         if (!$order) {
             $result = $this->jsonResultFactory->create();
             /** You may introduce your own constants for this custom REST API */
@@ -246,21 +290,15 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             return $result;
         }
+        
         $this->logger->info("checkOrder");
+
         $paymentStatus = '';
-        if (isset($callbackPayload['status'])) {
-            $paymentStatus = $callbackPayload['status'];
-        } elseif (isset($callbackPayload['payment_status'])) {
-            $paymentStatus = $callbackPayload['payment_status'];
-        } elseif (isset($callbackPayload['transaction_status'])) {
-            $paymentStatus = $callbackPayload['transaction_status'];
-        }
-        if ($isEwallet) {
-            if (isset($callbackPayload['ewallet_type']) && isset($callbackPayload['external_id'])) {
-                $paymentStatus = $this->getEwalletStatus($callbackPayload['ewallet_type'], $callbackPayload['external_id']);
-            }
-        } else {
-            $paymentStatus = (isset($invoice['status'])) ? $invoice['status'] : '';
+        $transactionId = '';
+        // Invoice
+        if (!empty($invoice)) {
+            $transactionId = $callbackPayload['id'];
+            $paymentStatus = $invoice['status'];
 
             if (isset($invoice['description'])) {
                 if ($invoice['description'] !== $callbackDescription) {
@@ -271,11 +309,29 @@ class Notification extends Action implements CsrfAwareActionInterface
                         'status' => __('ERROR'),
                         'message' => 'Invoice is not for this order'
                     ]);
-
+    
                     return $result;
                 }
             }
         }
+        // Kredivo
+        else {
+            $transactionId = $callbackPayload['transaction_id'];
+            $paymentStatus = $callbackPayload['transaction_status'];
+
+            if ($callbackPayload["callback_authentication_token"] !== $this->dataHelper->getKredivoCallbackAuthenticationToken()) {
+                $result = $this->jsonResultFactory->create();
+                /** You may introduce your own constants for this custom REST API */
+                $result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
+                $result->setData([
+                    'status' => __('ERROR'),
+                    'message' => 'The callback is not for this order'
+                ]);
+
+                return $result;
+            }
+        }
+
         $this->logger->info($paymentStatus);
         $statusList = [
             'PAID',
@@ -308,10 +364,6 @@ class Notification extends Action implements CsrfAwareActionInterface
                 $payment->save();
             }
 
-            if ($isEwallet && $transactionId) {
-                $payment->setAdditionalInformation('xendit_ewallet_id', $transactionId);
-                $payment->save();
-            }
             if ($invoice['payment_channel'] == 'CARD_INSTALLMENT' && !empty($callbackPayload['installment'])) {
                 $payment->setAdditionalInformation('xendit_installment', $callbackPayload['installment']);
                 $payment->save();
@@ -323,7 +375,7 @@ class Notification extends Action implements CsrfAwareActionInterface
             $result = $this->jsonResultFactory->create();
             $result->setData([
                 'status' => __('SUCCESS'),
-                'message' => ($isEwallet ? 'eWallet paid' : 'Invoice paid')
+                'message' => 'Transaction paid'
             ]);
         } else { //FAILED or EXPIRED
             $orderState = Order::STATE_CANCELED;
@@ -338,16 +390,10 @@ class Notification extends Action implements CsrfAwareActionInterface
             $order->addStatusHistoryComment("Xendit payment " . strtolower($paymentStatus) . ". Transaction ID: $transactionId")
                 ->save();
 
-            if ($isEwallet && isset($callbackPayload['failure_code'])) {
-                $payment = $order->getPayment();
-                $payment->setAdditionalInformation('xendit_ewallet_failure_code', $callbackPayload['failure_code']);
-                $payment->save();
-            }
-
             $result = $this->jsonResultFactory->create();
             $result->setData([
                 'status' => __('FAILED'),
-                'message' => ($isEwallet ? 'eWallet not paid' : 'Invoice not paid')
+                'message' => 'Transaction not paid'
             ]);
         }
 

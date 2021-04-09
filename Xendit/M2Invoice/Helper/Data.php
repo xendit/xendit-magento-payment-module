@@ -116,11 +116,12 @@ class Data extends AbstractHelper
     /*
      *  Kredivo
      */
-    const XML_PATH_KREDIVO_ACTIVE           = 'payment/kredivo/active';
-    const XML_PATH_KREDIVO_TITLE            = 'payment/kredivo/title';
-    const XML_PATH_KREDIVO_MIN_AMOUNT       = 'payment/kredivo/min_order_total';
-    const XML_PATH_KREDIVO_MAX_AMOUNT       = 'payment/kredivo/max_order_total';
-    const XML_PATH_KREDIVO_DESCRIPTION      = 'payment/kredivo/description';
+    const XML_PATH_KREDIVO_ACTIVE                           = 'payment/kredivo/active';
+    const XML_PATH_KREDIVO_TITLE                            = 'payment/kredivo/title';
+    const XML_PATH_KREDIVO_MIN_AMOUNT                       = 'payment/kredivo/min_order_total';
+    const XML_PATH_KREDIVO_MAX_AMOUNT                       = 'payment/kredivo/max_order_total';
+    const XML_PATH_KREDIVO_DESCRIPTION                      = 'payment/kredivo/description';
+    const XML_PATH_KREDIVO_CALLBACK_AUTHENTICATION_TOKEN    = 'payment/kredivo/callback_authentication_token';
 
     /*
      *  Linkaja
@@ -1174,6 +1175,14 @@ class Data extends AbstractHelper
     public function getKredivoMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKredivoCallbackAuthenticationToken()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_CALLBACK_AUTHENTICATION_TOKEN, ScopeInterface::SCOPE_STORE);
     }
 
     /**
