@@ -66,6 +66,7 @@ class CCSubscription extends AbstractInvoice
 
             $args = array(
                 'order_number' => $orderId,
+                'currency' => $order->getBaseCurrencyCode(),
                 'amount' => $amount,
                 'payment_type' => self::PAYMENT_TYPE,
                 'store_name' => $this->storeManager->getStore()->getName(),

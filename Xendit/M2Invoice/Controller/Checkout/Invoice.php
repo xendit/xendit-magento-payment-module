@@ -68,6 +68,7 @@ class Invoice extends AbstractAction
             'payer_email'           => $order->getCustomerEmail(),
             'description'           => $orderId,
             'amount'                => $order->getTotalDue(),
+            'currency'              => $order->getBaseCurrencyCode(),
             'preferred_method'      => $preferredMethod,
             'should_send_email'     => $this->getDataHelper()->getSendInvoiceEmail() ? "true" : "false",
             'client_type'           => 'INTEGRATION',

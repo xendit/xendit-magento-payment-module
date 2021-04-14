@@ -54,6 +54,7 @@ class InvoiceMultishipping extends AbstractAction
     
                 $transactionAmount  += (int)$order->getTotalDue();
                 $billingEmail = $order->getCustomerEmail();
+                $currency = $order->getBaseCurrencyCode();
                 $c++;
             }
 
@@ -71,6 +72,7 @@ class InvoiceMultishipping extends AbstractAction
                 'payer_email'           => $billingEmail,
                 'description'           => $rawOrderIds,
                 'amount'                => $transactionAmount,
+                'currency'              => $currency,
                 'preferred_method'      => $preferredMethod,
                 'should_send_email'     => $this->getDataHelper()->getSendInvoiceEmail() ? "true" : "false",
                 'client_type'           => 'INTEGRATION',

@@ -69,6 +69,7 @@ class CCMultishipping extends AbstractAction
                 }
     
                 $transactionAmount  += (int)$order->getTotalDue();
+                $currency = $order->getBaseCurrencyCode();
                 $c++;
             }
 
@@ -82,6 +83,7 @@ class CCMultishipping extends AbstractAction
 
                 $requestData = [
                     'payer_email'               => $billingAddress->getEmail(),
+                    'currency'                  => $currency,
                     'order_number'              => $rawOrderIds,
                     'amount'                    => $transactionAmount,
                     'payment_type'              => 'CREDIT_CARD_SUBSCRIPTION',
