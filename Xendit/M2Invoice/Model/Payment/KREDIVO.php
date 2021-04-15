@@ -107,7 +107,7 @@ class KREDIVO extends AbstractInvoice
                 'amount'                => round($amount),
                 'payment_type'          => '3_months',
                 'items'                 => $items,
-                'description'           => $order->getId(),
+                'description'           => $order->getRealOrderId(),
                 'customer_details'      => $customerDetails,
                 'shipping_address'      => $shippingAddressData,
                 'redirect_url'          => $this->dataHelper->getSuccessUrl(false),
