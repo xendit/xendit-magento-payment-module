@@ -92,3 +92,4 @@ telepresence.log
 .DS_Store
 
 docker/magento2
+docker/magento-empty

@@ -35,6 +35,10 @@ class BNIVA extends AbstractInvoice
             return false;
         }
 
+        if ($this->getCurrency() != "IDR") {
+            return false;
+        }
+
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
         if ($amount < $this->dataHelper->getBniVaMinOrderAmount() || $amount > $this->dataHelper->getBniVaMaxOrderAmount()) {
