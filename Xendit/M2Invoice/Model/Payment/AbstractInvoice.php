@@ -350,6 +350,6 @@ class AbstractInvoice extends AbstractMethod
      */
     protected function getCurrency()
     {
-        return $this->storeManager->getStore()->getCurrency();
+        return $this->storeManager->getStore()->getCurrentCurrencyCode();
     }
 }
