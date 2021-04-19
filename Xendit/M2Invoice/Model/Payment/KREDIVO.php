@@ -103,7 +103,7 @@ class KREDIVO extends AbstractInvoice
 
             $args = [
                 'cardless_credit_type'  => $this->methodCode,
-                'external_id'           => $this->dataHelper->getExternalId($order->getId()),
+                'external_id'           => $this->dataHelper->getExternalId($order->getRealOrderId()),
                 'amount'                => round($amount),
                 'payment_type'          => '3_months',
                 'items'                 => $items,
