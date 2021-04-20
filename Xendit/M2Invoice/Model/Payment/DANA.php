@@ -35,6 +35,10 @@ class DANA extends AbstractInvoice
             return false;
         }
 
+        if ($this->getCurrency() != "IDR") {
+            return false;
+        }
+
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
         if ($amount < $this->dataHelper->getDanaMinOrderAmount() || $amount > $this->dataHelper->getDanaMaxOrderAmount()) {

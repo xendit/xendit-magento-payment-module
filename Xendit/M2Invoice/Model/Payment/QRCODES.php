@@ -32,6 +32,10 @@ class QRCODES extends AbstractInvoice
             return false;
         }
 
+        if ($this->getCurrency() != "IDR") {
+            return false;
+        }
+
         if ($quote === null) {
             return false;
         }

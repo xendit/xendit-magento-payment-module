@@ -27,6 +27,11 @@ class KREDIVO extends AbstractInvoice
         if ($quote === null) {
             return false;
         }
+
+        if ($this->getCurrency() != "IDR") {
+            return false;
+        }
+        
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
         if ($amount < $this->dataHelper->getKredivoMinOrderAmount() || $amount > $this->dataHelper->getKredivoMaxOrderAmount()) {

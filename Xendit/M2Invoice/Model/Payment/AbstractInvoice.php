@@ -344,4 +344,12 @@ class AbstractInvoice extends AbstractMethod
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
         return $baseUrl . 'xendit/checkout/notification';
     }
+
+    /**
+     * @return string
+     */
+    protected function getCurrency()
+    {
+        return $this->storeManager->getStore()->getCurrentCurrencyCode();
+    }
 }
