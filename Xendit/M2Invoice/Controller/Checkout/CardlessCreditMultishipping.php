@@ -96,7 +96,7 @@ class CardlessCreditMultishipping extends AbstractAction
                 'customer_details'      => $customerDetails,
                 'shipping_address'      => $shippingAddressData,
                 'redirect_url'          => $this->getDataHelper()->getSuccessUrl(true),
-                'callback_url'          => $this->dataHelper->getCheckoutUrl()."/payment/xendit/cardless-credit/callback",
+                'callback_url'          => $this->getDataHelper()->getCheckoutUrl()."/payment/xendit/cardless-credit/callback",
                 'platform_callback_url' => $this->getXenditCallbackUrl()
             ];
 
