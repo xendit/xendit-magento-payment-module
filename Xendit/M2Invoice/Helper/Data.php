@@ -599,7 +599,7 @@ class Data extends AbstractHelper
             "ovo"               => "ovo",
             "dana"              => "dana",
             "linkaja"           => "linkaja",
-            "shopeepay"               => "shopeepay",
+            "shopeepay"         => "shopeepay",
             "indomaret"         => "indomaret",
             "qr_codes"          => "qr_codes",
             "dd_bri"            => "dd_bri",
