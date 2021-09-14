@@ -84,6 +84,12 @@ class ConfigProvider implements ConfigProviderInterface
                     'max_order_amount' => $this->xenditHelper->getOvoMaxOrderAmount(),
                     'description' => $this->xenditHelper->getOvoDescription()
                 ],
+                'shopeepay' => [
+                    'title' => $this->xenditHelper->getShopeePayTitle(),
+                    'min_order_amount' => $this->xenditHelper->getShopeePayMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getShopeePayMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getShopeePayDescription()
+                ],
                 'linkaja' => [
                     'title' => $this->xenditHelper->getLinkajaTitle(),
                     'min_order_amount' => $this->xenditHelper->getLinkajaMinOrderAmount(),

@@ -212,6 +212,7 @@
                         <include path="Xendit_M2Invoice::ewallets/dana.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/ovo.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/linkaja.xml"/>
+                        <include path="Xendit_M2Invoice::ewallets/shopeepay.xml"/>
                     </group>
 
                     <include path="Xendit_M2Invoice::qr_codes/qr_codes.xml"/>
