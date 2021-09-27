@@ -112,14 +112,6 @@ class Xendit extends AbstractMethod
     }
 
     /**
-     * @return mixed
-     */
-    public function getSendInvoiceEmail()
-    {
-        return $this->getConfigData('send_invoice_email');
-    }
-
-    /**
      * @return array
      */
     public function getEnabledPromo()
