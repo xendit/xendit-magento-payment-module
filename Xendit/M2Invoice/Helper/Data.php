@@ -460,14 +460,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return mixed
-     */
-    public function getSendInvoiceEmail()
-    {
-        return $this->xendit->getSendInvoiceEmail();
-    }
-
-    /**
      * @return array
      * @throws \Magento\Framework\Exception\FileSystemException
      */

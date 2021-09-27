@@ -21,7 +21,6 @@
                 <card_payment_type>popup</card_payment_type>
                 <allowed_method>all</allowed_method>
                 <external_id_prefix>magento-xendit</external_id_prefix>
-                <send_invoice_email>1</send_invoice_email>
             </xendit>
             <alfamart>
                 <active>1</active>
