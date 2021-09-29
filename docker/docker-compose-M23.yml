@@ -1,12 +1,12 @@
 version: '3'
 services:
     web:
-        image: webdevops/php-apache-dev:7.4
+        image: webdevops/php-apache-dev:7.3
         container_name: web
         restart: always
         user: application
         environment:
-          - WEB_ALIAS_DOMAIN=magento24.local
+          - WEB_ALIAS_DOMAIN=magento23.local
           - WEB_DOCUMENT_ROOT=/app/pub
           - PHP_DATE_TIMEZONE=EST
           - PHP_DISPLAY_ERRORS=1
@@ -16,15 +16,15 @@ services:
           - PHP_UPLOAD_MAX_FILESIZE=1024M
         volumes:
           - ./magento2:/app:cached
+          - ../Xendit:/app/app/code/Xendit
         ports:
           - "80:80"
           - "443:443"
           - "32823:22"
         links:
           - mysql
-          - elasticsearch
     mysql:
-        image: mariadb:10.4
+        image: mariadb:10
         container_name: mysql
         restart: always
         ports:
@@ -48,18 +48,7 @@ services:
           - mysql:db
         depends_on:
           - mysql
-    elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
-        container_name: elasticsearch
-        ports:
-            - "9200:9200"
-            - "9300:9300"
-        environment:
-            - discovery.type=single-node
-        volumes:
-            - elasticsearch_data:/var/lib/elastisearch
+
 volumes:
     db-data:
         external: false
-    elasticsearch_data:                        
-        external: false        
