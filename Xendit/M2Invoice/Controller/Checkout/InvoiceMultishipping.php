@@ -55,6 +55,7 @@ class InvoiceMultishipping extends AbstractAction
                 $transactionAmount  += (int)$order->getTotalDue();
                 $billingEmail = $order->getCustomerEmail();
                 $billingFirstName = $order->getCustomerFirstname();
+                $billingLastName = $order->getCustomerLastname();
                 $billingaddress = $order->getBillingAddress();
                 $currency = $order->getBaseCurrencyCode();
                 $c++;
@@ -82,7 +83,7 @@ class InvoiceMultishipping extends AbstractAction
                 'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(true),
                 'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true),
                 'customer'              => (object) [
-                    'given_names'   => $billingFirstName,
+                    'given_names'   => $billingFirstName . ' ' . $billingLastName,
                     'email'         => $billingEmail,
                     'mobile_number' => $billingaddress->getTelephone()
                 ]

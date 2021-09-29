@@ -78,7 +78,7 @@ class Invoice extends AbstractAction
             'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(),
             'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderId),
             'customer'              => (object) [
-                'given_names'   => $order->getCustomerFirstname(),
+                'given_names'   => $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname(),
                 'email'         => $order->getCustomerEmail(),
                 'mobile_number' => $billingaddress->getTelephone()
             ]
