@@ -54,6 +54,9 @@ class InvoiceMultishipping extends AbstractAction
     
                 $transactionAmount  += (int)$order->getTotalDue();
                 $billingEmail = $order->getCustomerEmail();
+                $billingFirstName = $order->getCustomerFirstname();
+                $billingLastName = $order->getCustomerLastname();
+                $billingaddress = $order->getBillingAddress();
                 $currency = $order->getBaseCurrencyCode();
                 $c++;
             }
@@ -78,7 +81,12 @@ class InvoiceMultishipping extends AbstractAction
                 'payment_methods'       => json_encode([strtoupper($preferredMethod)]),
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
                 'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(true),
-                'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true)
+                'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true),
+                'customer'              => (object) [
+                    'given_names'   => $billingFirstName . ' ' . $billingLastName,
+                    'email'         => $billingEmail,
+                    'mobile_number' => $billingaddress->getTelephone()
+                ]
             ];
 
             $invoice = $this->createInvoice($requestData);

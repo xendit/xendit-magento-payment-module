@@ -63,6 +63,8 @@ class Invoice extends AbstractAction
         $orderId = $order->getRealOrderId();
         $preferredMethod = $this->getRequest()->getParam('preferred_method');
 
+        $billingaddress = $order->getBillingAddress();
+
         $requestData = [
             'external_id'           => $this->getDataHelper()->getExternalId($orderId),
             'payer_email'           => $order->getCustomerEmail(),
@@ -74,7 +76,12 @@ class Invoice extends AbstractAction
             'payment_methods'       => json_encode([strtoupper($preferredMethod)]),
             'platform_callback_url' => $this->getXenditCallbackUrl(),
             'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(),
-            'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderId)
+            'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderId),
+            'customer'              => (object) [
+                'given_names'   => $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname(),
+                'email'         => $order->getCustomerEmail(),
+                'mobile_number' => $billingaddress->getTelephone()
+            ]
         ];
 
         return $requestData;
