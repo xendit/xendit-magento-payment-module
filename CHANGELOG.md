@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.1.0 (2021-08-09)
+Improvements:
+- Add Shopeepay payment method
+- Add WA and SMS notification
+
 ## 3.0.1 (2021-08-09)
 
 Bugfix:
