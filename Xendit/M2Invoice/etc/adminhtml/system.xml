@@ -168,13 +168,6 @@
                     </comment>
                     <validate>required-entry</validate>
                 </field>
-                <field id="send_invoice_email" translate="label" type="select" sortOrder="68" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Send Email Notification</label>
-                    <comment>
-                        Send Xendit payment email notification to end customer when they checkout using bank transfer or retail outlet
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
 
                 <group id="other_configurations" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Other Configurations</label>
@@ -212,6 +205,7 @@
                         <include path="Xendit_M2Invoice::ewallets/dana.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/ovo.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/linkaja.xml"/>
+                        <include path="Xendit_M2Invoice::ewallets/shopeepay.xml"/>
                     </group>
 
                     <include path="Xendit_M2Invoice::qr_codes/qr_codes.xml"/>

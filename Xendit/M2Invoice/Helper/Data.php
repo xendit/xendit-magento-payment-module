@@ -170,6 +170,15 @@ class Data extends AbstractHelper
     const XML_PATH_QRCODES_IMAGE_WIDTH      = 'payment/qr_codes/image_width';
     const XML_PATH_QRCODES_IMAGE_HEIGHT     = 'payment/qr_codes/image_height';
 
+    /*
+     *  ShopeePay
+     */
+    const XML_PATH_SHOPEEPAY_ACTIVE               = 'payment/shopeepay/active';
+    const XML_PATH_SHOPEEPAY_TITLE                = 'payment/shopeepay/title';
+    const XML_PATH_SHOPEEPAY_MIN_AMOUNT           = 'payment/shopeepay/min_order_total';
+    const XML_PATH_SHOPEEPAY_MAX_AMOUNT           = 'payment/shopeepay/max_order_total';
+    const XML_PATH_SHOPEEPAY_DESCRIPTION          = 'payment/shopeepay/description';
+
     /**
      * @var StoreManagerInterface
      */
@@ -451,14 +460,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return mixed
-     */
-    public function getSendInvoiceEmail()
-    {
-        return $this->xendit->getSendInvoiceEmail();
-    }
-
-    /**
      * @return array
      * @throws \Magento\Framework\Exception\FileSystemException
      */
@@ -590,6 +591,7 @@ class Data extends AbstractHelper
             "ovo"               => "ovo",
             "dana"              => "dana",
             "linkaja"           => "linkaja",
+            "shopeepay"         => "shopeepay",
             "indomaret"         => "indomaret",
             "qr_codes"          => "qr_codes",
             "dd_bri"            => "dd_bri",
@@ -1303,6 +1305,46 @@ class Data extends AbstractHelper
     public function getOvoMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_OVO_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getShopeePayActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SHOPEEPAY_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShopeePayTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SHOPEEPAY_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShopeePayDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SHOPEEPAY_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShopeePayMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SHOPEEPAY_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShopeePayMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SHOPEEPAY_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
     /**

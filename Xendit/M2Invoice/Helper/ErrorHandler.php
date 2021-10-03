@@ -46,28 +46,6 @@ class ErrorHandler
      * @param $errorCode
      * @return string
      */
-    public function mapDanaErrorCode($errorCode)
-    {
-        switch ( $errorCode ) {
-            case 'API_VALIDATION_ERROR':
-                return 'There is invalid input in one of the required request fields.';
-            case 'EWALLET_TYPE_NOT_SUPPORTED':
-                return 'Your requested ewallet_type is not supported yet.';
-            case 'DUPLICATE_ERROR':
-                return 'The payment with the same external_id has already been made before.';
-            case 'CHECKOUT_ERROR':
-                return 'There was an external error from DANA. Please try again in a few minutes or contact our customer success team.';
-            case 'REQUEST_FORBIDDEN_ERROR':
-                return 'API key in use does not have necessary permissions to perform the request. Please assign proper permissions for the key.';
-            default:
-                return "Failed to pay with eWallet. Error code: $errorCode";
-        }
-    }
-
-    /**
-     * @param $errorCode
-     * @return string
-     */
     public function mapCardlessCreditErrorCode($errorCode)
     {
         switch ( $errorCode ) {
@@ -82,66 +60,6 @@ class ErrorHandler
                 Please assign proper permissions for the key.';
             default:
                 return "Failed to pay with Kredivo. Error code: $errorCode";
-        }
-    }
-
-    /**
-     * @param $errorCode
-     * @return string
-     */
-    public function mapLinkajaErrorCode($errorCode)
-    {
-        switch ($errorCode) {
-            case 'API_VALIDATION_ERROR':
-                return 'There is invalid input in one of the required request fields.';
-            case 'GENERATE_CHECKOUT_TOKEN_ERROR':
-                return 'An error occured when generating the checkout_url..';
-            case 'EWALLET_TYPE_NOT_SUPPORTED':
-                return 'Your requested ewallet_type is not supported yet.';
-            case 'DUPLICATE_PAYMENT_ERROR':
-                return 'The payment with the same external_id has already been made before.';
-            case 'REQUEST_FORBIDDEN_ERROR':
-                return 'API key in use does not have necessary permissions to perform the request. Please assign proper permissions for the key.';
-            default:
-                return "Failed to pay with eWallet. Error code: $errorCode";
-        }
-    }
-
-    /**
-     * @param $errorCode
-     * @return string
-     */
-    public function mapOvoErrorCode($errorCode)
-    {
-        switch ($errorCode) {
-            case 'USER_DID_NOT_AUTHORIZE_THE_PAYMENT':
-                return 'User did not authorize the payment request within time limit.';
-            case 'USER_DECLINED_THE_TRANSACTION':
-                return 'User declined the payment request.';
-            case 'PHONE_NUMBER_NOT_REGISTERED':
-                return 'Phone number the user tried to pay is not registered.';
-            case 'EWALLET_APP_UNREACHABLE':
-                return 'The ewallet provider/server can\'t reach the user ewallet app/phone. Common cases are the ewallet app is uninstalled.';
-            case 'OVO_TIMEOUT_ERROR':
-                return 'There was a connection timeout from the OVO app to the OVO server.';
-            case 'CREDENTIALS_ERROR':
-                return 'The merchant is not registered in e-wallet provider system.';
-            case 'ACCOUNT_AUTHENTICATION_ERROR':
-                return 'User authentication has failed.';
-            case 'ACCOUNT_BLOCKED_ERROR':
-                return 'Unable to process the transaction because the user account is blocked';
-            case 'EXTERNAL_ERROR':
-                return 'There is an error on the e-wallet provider side';
-            case 'API_VALIDATION_ERROR':
-                return 'There is invalid input in one of the required request fields.';
-            case 'EWALLET_TYPE_NOT_SUPPORTED':
-                return 'Your requested ewallet_type is not supported yet.';
-            case 'DUPLICATE_PAYMENT_REQUEST_ERROR':
-                return 'The payment with the same external_id has already been made before.';
-            case 'REQUEST_FORBIDDEN_ERROR':
-                return 'API key in use does not have necessary permissions to perform the request. Please assign proper permissions for the key.';
-            default:
-                return "Failed to pay with eWallet. Error code: $errorCode";
         }
     }
 
@@ -165,31 +83,4 @@ class ErrorHandler
                 return "Failed to pay with QRIS. Error code: $errorCode";
         }
     }
-
-    /**
-     * @param $errorCode
-     * @return string
-     */
-    public function mapEwalletsErrorCode($errorCode)
-    {
-        switch ($errorCode) {
-            case 'API_VALIDATION_ERROR':
-                return 'There is invalid input in one of the required request fields.';
-            case 'GENERATE_CHECKOUT_TOKEN_ERROR':
-                return 'An error occured when generating the checkout_url..';
-            case 'EWALLET_TYPE_NOT_SUPPORTED':
-                return 'Your requested ewallet_type is not supported yet.';
-            case 'DUPLICATE_ERROR':
-            case 'DUPLICATE_PAYMENT_REQUEST_ERROR':
-            case 'DUPLICATE_PAYMENT_ERROR':
-                return 'The payment with the same external_id has already been made before.';
-            case 'REQUEST_FORBIDDEN_ERROR':
-                return 'API key in use does not have necessary permissions to perform the request. Please assign proper permissions for the key.';
-            case 'CHECKOUT_ERROR':
-                return 'There was an external error from DANA. Please try again in a few minutes or contact our customer success team.';
-            default:
-                return "Failed to pay with eWallet. Error code: $errorCode";
-        }
-    }
-
 }
