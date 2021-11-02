@@ -37,29 +37,10 @@ class ErrorHandler
                 return 'There is no available payment code in your retail outlet range.';
             case 'INVALID_REMINDER_TIME':
                 return 'The reminder_time value is not allowed.';
-            default:
-                return "Failed to pay with Invoice. Error code: $errorCode";
-        }
-    }
-
-    /**
-     * @param $errorCode
-     * @return string
-     */
-    public function mapCardlessCreditErrorCode($errorCode)
-    {
-        switch ( $errorCode ) {
             case 'MERCHANT_NOT_FOUND':
                 return 'You are not registered yet to use this payment method.';
-            case 'GENERATE_CHECKOUT_URL_ERROR':
-                return 'Your request did not meet the requirement or there is a problem in the Kredivo / Partner server..';
-            case 'PHONE_NUMBER_NOT_REGISTERED':
-                return 'Your number is not registered in DANA, please register first or contact DANA Customer Service.';
-            case 'REQUEST_FORBIDDEN_ERROR':
-                return 'API key in use does not have necessary permissions to perform the request. 
-                Please assign proper permissions for the key.';
             default:
-                return "Failed to pay with Kredivo. Error code: $errorCode";
+                return "Failed to pay with Invoice. Error code: $errorCode";
         }
     }
 

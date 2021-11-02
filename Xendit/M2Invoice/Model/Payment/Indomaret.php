@@ -41,11 +41,11 @@ class Indomaret extends AbstractInvoice
 
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
-        if ($amount < $this->dataHelper->getIndomaratMinOrderAmount() || $amount > $this->dataHelper->getIndomaratMaxOrderAmount()) {
+        if ($amount < $this->dataHelper->getIndomaretMinOrderAmount() || $amount > $this->dataHelper->getIndomaretMaxOrderAmount()) {
             return false;
         }
 
-        if(!$this->dataHelper->getIndomaratActive()){
+        if(!$this->dataHelper->getIndomaretActive()){
             return false;
         }
 

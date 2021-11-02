@@ -79,7 +79,6 @@ class CCMultishipping extends AbstractAction
 
             if ($method === 'cc_subscription') {
                 $billingAddress     = $orders[0]->getBillingAddress(); // billing address of 1st order
-                $shippingAddress    = $orders[0]->getShippingAddress(); // shipping address of 1st order
 
                 $requestData = [
                     'payer_email'               => $billingAddress->getEmail(),
