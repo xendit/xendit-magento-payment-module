@@ -195,7 +195,7 @@
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
                         <include path="Xendit_M2Invoice::retail_outlets/alfamart.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/indomarat.xml"/>
+                        <include path="Xendit_M2Invoice::retail_outlets/indomaret.xml"/>
                     </group>
 
                     <group id="ewallets" translate="label" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -217,11 +217,11 @@
                         <include path="Xendit_M2Invoice::direct_debit/dd_bri.xml"/>
                     </group>
 
-                    <group id="cashless_credit" translate="label" sortOrder="98" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Cardless Credit</label>
+                    <group id="paylater" translate="label" sortOrder="98" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>PayLater</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
-                        <include path="Xendit_M2Invoice::cashless_credit/kredivo.xml"/>
+                        <include path="Xendit_M2Invoice::paylater/kredivo.xml"/>
                     </group>
                 </group>
 

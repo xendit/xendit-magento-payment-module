@@ -68,6 +68,7 @@ php bin/magento setup:install \
 Magento 2.4
 ```
 php bin/magento setup:install \
+--cleanup-database \
 --admin-firstname=Admin \
 --admin-lastname=TPI \
 --admin-email=tpi@admin.com \

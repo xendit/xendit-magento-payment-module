@@ -26,8 +26,10 @@ class InvoiceMultishipping extends AbstractAction
             $transactionAmount  = 0;
             $orderProcessed     = false;
             $orders             = [];
+            $addresses          = [];
+            $items              = [];
 
-            $orderIncrementIds = '';
+            $orderIncrementIds  = '';
 
             $c = 0;
             foreach ($orderIds as $key => $value) {
@@ -53,11 +55,32 @@ class InvoiceMultishipping extends AbstractAction
                 $order->save();
     
                 $transactionAmount  += (int)$order->getTotalDue();
-                $billingEmail = $order->getCustomerEmail();
-                $billingFirstName = $order->getCustomerFirstname();
-                $billingLastName = $order->getCustomerLastname();
-                $billingaddress = $order->getBillingAddress();
+                $billingEmail = $order->getCustomerEmail() ?: 'noreply@mail.com';
+                $shippingAddress = $order->getShippingAddress();
                 $currency = $order->getBaseCurrencyCode();
+
+                $address = [
+                    'street_line1'  => $shippingAddress->getData('street') ?: 'N/A',
+                    'city'          => $shippingAddress->getData('city') ?: 'N/A',
+                    'state'         => $shippingAddress->getData('region') ?: 'N/A',
+                    'postal_code'   => $shippingAddress->getData('postcode') ?: 'N/A',
+                    'country'       => $shippingAddress->getData('country_id') ?: 'ID'
+                ];
+                $addresses[] = (object) $address;
+
+                $orderItems = $order->getAllItems();
+                foreach ($orderItems as $orderItem) {
+                    $item = [];
+                    $product = $orderItem->getProduct();
+                    $item['reference_id'] = $product->getId();
+                    $item['name'] = $product->getName();
+                    $item['price'] = $product->getPrice();
+                    $item['type'] = 'PRODUCT';
+                    $item['url'] = $product->getProductUrl();
+                    $item['quantity'] = (int) $orderItem->getQtyOrdered();
+                    $items[] = (object) $item;
+                }
+
                 $c++;
             }
 
@@ -83,10 +106,13 @@ class InvoiceMultishipping extends AbstractAction
                 'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(true),
                 'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true),
                 'customer'              => (object) [
-                    'given_names'   => $billingFirstName . ' ' . $billingLastName,
-                    'email'         => $billingEmail,
-                    'mobile_number' => $billingaddress->getTelephone()
-                ]
+                    'given_names'       => $order->getCustomerFirstname() ?: 'N/A',
+                    'surname'           => $order->getCustomerLastname() ?: 'N/A',
+                    'email'             => $billingEmail,
+                    'mobile_number'     => $shippingAddress->getTelephone() ?: 'N/A',
+                    'addresses'         => $addresses
+                ],
+                'items'                 => $items
             ];
 
             $invoice = $this->createInvoice($requestData);
