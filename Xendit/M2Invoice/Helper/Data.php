@@ -105,23 +105,22 @@ class Data extends AbstractHelper
     const XML_PATH_DANA_DESCRIPTION         = 'payment/dana/description';
 
     /*
-     *  Indomarat
+     *  Indomaret
      */
-    const XML_PATH_INDOMARAT_ACTIVE         = 'payment/indomaret/active';
-    const XML_PATH_INDOMARAT_TITLE          = 'payment/indomaret/title';
-    const XML_PATH_INDOMARAT_MIN_AMOUNT     = 'payment/indomaret/min_order_total';
-    const XML_PATH_INDOMARAT_MAX_AMOUNT     = 'payment/indomaret/max_order_total';
-    const XML_PATH_INDOMARAT_DESCRIPTION    = 'payment/indomaret/description';
+    const XML_PATH_INDOMARET_ACTIVE         = 'payment/indomaret/active';
+    const XML_PATH_INDOMARET_TITLE          = 'payment/indomaret/title';
+    const XML_PATH_INDOMARET_MIN_AMOUNT     = 'payment/indomaret/min_order_total';
+    const XML_PATH_INDOMARET_MAX_AMOUNT     = 'payment/indomaret/max_order_total';
+    const XML_PATH_INDOMARET_DESCRIPTION    = 'payment/indomaret/description';
 
     /*
      *  Kredivo
      */
-    const XML_PATH_KREDIVO_ACTIVE                           = 'payment/kredivo/active';
-    const XML_PATH_KREDIVO_TITLE                            = 'payment/kredivo/title';
-    const XML_PATH_KREDIVO_MIN_AMOUNT                       = 'payment/kredivo/min_order_total';
-    const XML_PATH_KREDIVO_MAX_AMOUNT                       = 'payment/kredivo/max_order_total';
-    const XML_PATH_KREDIVO_DESCRIPTION                      = 'payment/kredivo/description';
-    const XML_PATH_KREDIVO_CALLBACK_AUTHENTICATION_TOKEN    = 'payment/kredivo/callback_authentication_token';
+    const XML_PATH_KREDIVO_ACTIVE           = 'payment/kredivo/active';
+    const XML_PATH_KREDIVO_TITLE            = 'payment/kredivo/title';
+    const XML_PATH_KREDIVO_MIN_AMOUNT       = 'payment/kredivo/min_order_total';
+    const XML_PATH_KREDIVO_MAX_AMOUNT       = 'payment/kredivo/max_order_total';
+    const XML_PATH_KREDIVO_DESCRIPTION      = 'payment/kredivo/description';
 
     /*
      *  Linkaja
@@ -1102,41 +1101,41 @@ class Data extends AbstractHelper
     /**
      * @return mixed
      */
-    public function getIndomaratActive()
+    public function getIndomaretActive()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_ACTIVE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARET_ACTIVE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getIndomaratTitle()
+    public function getIndomaretTitle()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_TITLE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARET_TITLE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getIndomaratDescription()
+    public function getIndomaretDescription()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARET_DESCRIPTION, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getIndomaratMinOrderAmount()
+    public function getIndomaretMinOrderAmount()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARET_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getIndomaratMaxOrderAmount()
+    public function getIndomaretMaxOrderAmount()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARAT_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_INDOMARET_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -1177,14 +1176,6 @@ class Data extends AbstractHelper
     public function getKredivoMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getKredivoCallbackAuthenticationToken()
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_KREDIVO_CALLBACK_AUTHENTICATION_TOKEN, ScopeInterface::SCOPE_STORE);
     }
 
     /**

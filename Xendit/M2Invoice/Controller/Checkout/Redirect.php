@@ -5,7 +5,6 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment\Transaction;
-use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Class Redirect
@@ -15,7 +14,6 @@ class Redirect extends AbstractAction
 {
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute()
     {
@@ -35,7 +33,7 @@ class Redirect extends AbstractAction
                 $this->cancelOrder($order, $failureReason);
                 return $this->redirectToCart($failureReason);
             }
-            // Dana / Kredivo / Linkaja / CC Subscription
+            // CC Subscription
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
 
@@ -63,44 +61,6 @@ class Redirect extends AbstractAction
                 $resultRedirect->setPath('xendit/checkout/qrcode', $urlData);
                 return $resultRedirect;
             }
-            // OVO payment
-            if ($payment->getAdditionalInformation('xendit_ovo_external_id') !== null) {
-                $isSuccessful = false;
-                $loopCondition = true;
-                $startTime = time();
-                while ($loopCondition && (time() - $startTime < 70)) {
-                    $order = $this->getOrderById($orderId);
-
-                    if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
-                        $loopCondition = false;
-                        $isSuccessful = $order->getState() === Order::STATE_PROCESSING;
-                    }
-                    sleep(1);
-                }
-
-                if ($order->getState() === Order::STATE_PENDING_PAYMENT) {
-                    $ewalletStatus = $this->getEwalletStatus('OVO', $payment->getAdditionalInformation('xendit_ovo_external_id'));
-
-                    if ($ewalletStatus === 'COMPLETED') {
-                        $isSuccessful = true;
-                    }
-                }
-
-                if ($isSuccessful) {
-                    $this->getMessageManager()->addSuccessMessage(__("Your payment with Xendit is completed"));
-                    return $this->_redirect('checkout/onepage/success', [ '_secure'=> false ]);
-                } else {
-                    $payment = $order->getPayment();
-                    $failureCode = $payment->getAdditionalInformation('xendit_ewallet_failure_code');
-
-                    if ($failureCode === null) {
-                        $failureCode = 'Payment is ' . $ewalletStatus;
-                    }
-
-                    $this->getCheckoutHelper()->restoreQuote();
-                    return $this->redirectToCart($failureCode);
-                }
-            }
 
             $this->cancelOrder($order, 'No payment recorded');
 
@@ -111,33 +71,6 @@ class Redirect extends AbstractAction
 
             return $this->redirectToCart("There was an error in the Xendit payment. Failure reason: Unexpected Error");
         }
-    }
-
-    /**
-     * @param $ewalletType
-     * @param $externalId
-     * @return string
-     * @throws LocalizedException
-     */
-    private function getEwalletStatus($ewalletType, $externalId)
-    {
-        $ewalletUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=".$ewalletType."&external_id=".$externalId;
-        $ewalletMethod = \Zend\Http\Request::METHOD_GET;
-
-        try {
-            $response = $this->getApiHelper()->request($ewalletUrl, $ewalletMethod);
-        } catch (LocalizedException $e) {
-            throw new LocalizedException(
-                new Phrase($e->getMessage())
-            );
-        }
-
-        $statusList = array("COMPLETED", "PAID", "SUCCESS_COMPLETED"); //OVO, DANA, LINKAJA
-        if (in_array($response['status'], $statusList)) {
-            return "COMPLETED";
-        }
-        
-        return $response['status'];
     }
 
     /**

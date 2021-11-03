@@ -63,7 +63,7 @@
             </bniva>
             <briva>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\BRIVA</model>
                 <title>Bank Transfer - BRI</title>
                 <description>Bayar pesanan dengan transfer bank BRI dengan virtual account melalui Xendit</description>
@@ -76,7 +76,7 @@
             </briva>
             <mandiriva>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\MandiriVA</model>
                 <title>Bank Transfer - Mandiri</title>
                 <description>Bayar pesanan dengan transfer bank Mandiri dengan virtual account melalui Xendit</description>
@@ -89,7 +89,7 @@
             </mandiriva>
             <permatava>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\PermataVA</model>
                 <title>Bank Transfer - Permata</title>
                 <description>Bayar pesanan dengan transfer bank Permata dengan virtual account melalui Xendit</description>
@@ -166,14 +166,13 @@
                 <sort_order>11</sort_order>
             </indomaret>
             <kredivo>
-                <active>0</active>
-                <payment_action>authorize</payment_action>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\KREDIVO</model>
                 <title>Kredivo</title>
                 <description>Bayar pesanan dengan akun Kredivo anda melalui Xendit</description>
                 <min_order_total>10000</min_order_total>
-                <max_order_total>1000000000</max_order_total>
-                <callback_authentication_token></callback_authentication_token>
+                <max_order_total>30000000</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -190,11 +189,11 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>14</sort_order>
+                <sort_order>13</sort_order>
             </linkaja>
             <ovo>
                 <active>1</active>
-                <payment_action>authorize</payment_action>
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\OVO</model>
                 <title>OVO</title>
                 <description>Bayar pesanan dengan akun OVO anda melalui Xendit</description>
@@ -222,7 +221,7 @@
             </qr_codes>
             <shopeepay>
                 <active>1</active>
-                <payment_action>authorize</payment_action>
+                <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\SHOPEEPAY</model>
                 <title>ShopeePay</title>
                 <description>Bayar pesanan dengan akun ShopeePay anda melalui Xendit</description>
@@ -231,7 +230,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>14</sort_order>
+                <sort_order>16</sort_order>
             </shopeepay>
         </payment>
     </default>

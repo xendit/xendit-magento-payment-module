@@ -134,13 +134,9 @@ class Notification extends Action implements CsrfAwareActionInterface
             $this->logger->info("callbackPayload");
             $this->logger->info($post);
 
-            if (!empty($callbackPayload["callback_authentication_token"]) && $callbackPayload["cardless_credit_type"] === "KREDIVO") {
-                // Kredivo
-                return $this->handleKredivoCallback($callbackPayload);
-            } else {
-                // Invoice: Regular CC, Ewallet, Retail Outlet
-                return $this->handleInvoiceCallback($callbackPayload);
-            }
+            // Invoice: Regular CC, Ewallet, Retail Outlet, PayLater
+            return $this->handleInvoiceCallback($callbackPayload);
+
         } catch (\Exception $e) {
             $message = "Error invoice callback: " . $e->getMessage();
             $this->logger->info($message);
@@ -208,58 +204,6 @@ class Notification extends Action implements CsrfAwareActionInterface
     }
 
     /**
-     * @param $callbackPayload
-     * @return \Magento\Framework\Controller\Result\Json
-     * @throws LocalizedException
-     */
-    public function handleKredivoCallback($callbackPayload)
-    {
-        if (
-            !isset($callbackPayload['description']) ||
-            !isset($callbackPayload['transaction_status']) ||
-            !isset($callbackPayload['callback_authentication_token']) ||
-            !isset($callbackPayload['cardless_credit_type'])
-        ) {
-            $result = $this->jsonResultFactory->create();
-            /** You may introduce your own constants for this custom REST API */
-            $result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
-            $result->setData([
-                'status' => __('ERROR'),
-                'message' => 'Callback body is invalid'
-            ]);
-
-            return $result;
-        }
-
-        // Kredivo description is Magento's order ID
-        $description = $callbackPayload['description'];
-        // in case of multishipping, we separate order IDs with `-`
-        $orderIds = explode("-", $description);
-
-        $isMultishipping = (count($orderIds) > 1) ? true : false;
-
-        if ($isMultishipping) {
-            foreach ($orderIds as $key => $value) {
-                $order = $this->orderFactory->create();
-                $order->load($value);
-
-                $result = $this->checkOrder($order, $callbackPayload, null, $description);
-            }
-
-            return $result;
-        } else {
-            $order = $this->getOrderById($description);
-
-            if (!$order) {
-                $order = $this->orderFactory->create();
-                $order->load($description);
-            }
-
-            return $this->checkOrder($order, $callbackPayload, null, $description);
-        }
-    }
-
-    /**
      * @param $order
      * @param $callbackPayload
      * @param $invoice
@@ -312,23 +256,6 @@ class Notification extends Action implements CsrfAwareActionInterface
     
                     return $result;
                 }
-            }
-        }
-        // Kredivo
-        else {
-            $transactionId = $callbackPayload['transaction_id'];
-            $paymentStatus = $callbackPayload['transaction_status'];
-
-            if ($callbackPayload["callback_authentication_token"] !== $this->dataHelper->getKredivoCallbackAuthenticationToken()) {
-                $result = $this->jsonResultFactory->create();
-                /** You may introduce your own constants for this custom REST API */
-                $result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
-                $result->setData([
-                    'status' => __('ERROR'),
-                    'message' => 'The callback is not for this order'
-                ]);
-
-                return $result;
             }
         }
 
@@ -422,33 +349,6 @@ class Notification extends Action implements CsrfAwareActionInterface
         }
 
         return $invoice;
-    }
-
-    /**
-     * @param $ewalletType
-     * @param $externalId
-     * @return string
-     * @throws \Magento\Payment\Gateway\Http\ClientException
-     */
-    private function getEwalletStatus($ewalletType, $externalId)
-    {
-        $ewalletUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/ewallets?ewallet_type=" . $ewalletType . "&external_id=" . $externalId;
-        $ewalletMethod = Request::METHOD_GET;
-
-        try {
-            $response = $this->apiHelper->request($ewalletUrl, $ewalletMethod);
-        } catch (LocalizedException $e) {
-            throw new LocalizedException(
-                new Phrase($e->getMessage())
-            );
-        }
-
-        $statusList = ["COMPLETED", "PAID", "SUCCESS_COMPLETED"]; //OVO, DANA, LINKAJA
-        if (in_array($response['status'], $statusList)) {
-            return "COMPLETED";
-        }
-
-        return $response['status'];
     }
 
     /**

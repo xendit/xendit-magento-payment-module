@@ -63,7 +63,28 @@ class Invoice extends AbstractAction
         $orderId = $order->getRealOrderId();
         $preferredMethod = $this->getRequest()->getParam('preferred_method');
 
-        $billingaddress = $order->getBillingAddress();
+        $shippingAddress = $order->getShippingAddress();
+        $address = [
+            'street_line1'  => $shippingAddress->getData('street') ?: 'N/A',
+            'city'          => $shippingAddress->getData('city') ?: 'N/A',
+            'state'         => $shippingAddress->getData('region') ?: 'N/A',
+            'postal_code'   => $shippingAddress->getData('postcode') ?: 'N/A',
+            'country'       => $shippingAddress->getData('country_id') ?: 'ID'
+        ];
+
+        $orderItems = $order->getAllItems();
+        $items = [];
+        foreach ($orderItems as $orderItem) {
+            $item = [];
+            $product = $orderItem->getProduct();
+            $item['reference_id'] = $product->getId();
+            $item['name'] = $product->getName();
+            $item['price'] = $product->getPrice();
+            $item['type'] = 'PRODUCT';
+            $item['url'] = $product->getProductUrl();
+            $item['quantity'] = (int) $orderItem->getQtyOrdered();
+            $items[] = (object) $item;
+        }
 
         $requestData = [
             'external_id'           => $this->getDataHelper()->getExternalId($orderId),
@@ -78,10 +99,13 @@ class Invoice extends AbstractAction
             'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(),
             'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderId),
             'customer'              => (object) [
-                'given_names'   => $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname(),
-                'email'         => $order->getCustomerEmail(),
-                'mobile_number' => $billingaddress->getTelephone()
-            ]
+                'given_names'       => $order->getCustomerFirstname() ?: 'N/A',
+                'surname'           => $order->getCustomerLastname() ?: 'N/A',
+                'email'             => $order->getCustomerEmail() ?: 'noreply@mail.com' ,
+                'mobile_number'     => $shippingAddress->getTelephone() ?: 'N/A',
+                'addresses'         => [(object) $address]
+            ],
+            'items'                 => $items
         ];
 
         return $requestData;

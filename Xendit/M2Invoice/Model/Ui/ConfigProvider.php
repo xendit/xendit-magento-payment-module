@@ -103,10 +103,10 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getAlfamartDescription()
                 ],
                 'indomaret' => [
-                    'title' => $this->xenditHelper->getIndomaratTitle(),
-                    'min_order_amount' => $this->xenditHelper->getIndomaratMinOrderAmount(),
-                    'max_order_amount' => $this->xenditHelper->getIndomaratMaxOrderAmount(),
-                    'description' => $this->xenditHelper->getIndomaratDescription()
+                    'title' => $this->xenditHelper->getIndomaretTitle(),
+                    'min_order_amount' => $this->xenditHelper->getIndomaretMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getIndomaretMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getIndomaretDescription()
                 ],
                 'bcava' => [
                     'title' => $this->xenditHelper->getBcaVaTitle(),
