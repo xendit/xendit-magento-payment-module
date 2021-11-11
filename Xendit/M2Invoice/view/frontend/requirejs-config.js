@@ -1,8 +1,7 @@
 var config = {
     map: {
         '*': {
-            utility: 'Xendit_M2Invoice/js/utility/utility',
-            checkQrcodeStatus: 'Xendit_M2Invoice/js/api/qrcode/check-status',
+            utility: 'Xendit_M2Invoice/js/utility/utility'
         }
     },
     config : {

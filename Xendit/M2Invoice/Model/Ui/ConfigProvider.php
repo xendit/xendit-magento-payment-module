@@ -126,11 +126,11 @@ class ConfigProvider implements ConfigProviderInterface
                     'max_order_amount' => $this->xenditHelper->getBniVaMaxOrderAmount(),
                     'description' => $this->xenditHelper->getBniVaDescription()
                 ],
-                'qr_codes' => [
-                    'title' => $this->xenditHelper->getQrCodesTitle(),
-                    'min_order_amount' => $this->xenditHelper->getQrCodesMinOrderAmount(),
-                    'max_order_amount' => $this->xenditHelper->getQrCodesMaxOrderAmount(),
-                    'description' => $this->xenditHelper->getQrCodesDescription()
+                'qris' => [
+                    'title' => $this->xenditHelper->getQrisTitle(),
+                    'min_order_amount' => $this->xenditHelper->getQrisMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getQrisMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getQrisDescription()
                 ],
                 'dd_bri' => [
                     'title' => $this->xenditHelper->getDdBriTitle(),

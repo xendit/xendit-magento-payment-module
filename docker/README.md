@@ -117,20 +117,6 @@ Install sample data:
 php bin/magento sampledata:deploy
 ```
 
-## Install Bacon QR Code in Magento (Optional)
-
-If you encounter this kind of error when running `php bin/magento setup:di:compile` after Magento has been installed
-
-![Error Qr Code](assets/composer_qr.jpeg "Error Qr Code")
-
-Please add `bacon/bacon-qr-code` as a dependencies in magento root folder with command
-
-```
-composer require bacon/bacon-qr-code
-```
-
-Then try to run `php bin/magento setup:di:compile` again
-
 ## Installation Troubleshoot
 ### Magento 2.3
 If you encounter this problem when trying to install Magento inside docker

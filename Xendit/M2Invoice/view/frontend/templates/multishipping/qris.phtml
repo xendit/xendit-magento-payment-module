@@ -11,12 +11,12 @@
     ], function (layout, $) {
         $(function () {
             var paymentMethodData = {
-                method: 'qr_codes'
+                method: 'qris'
             };
             layout([
                 {
-                    component: 'Xendit_M2Invoice/js/view/payment/method-renderer/multishipping/qr_codes',
-                    name: 'payment_method_qr_codes',
+                    component: 'Xendit_M2Invoice/js/view/payment/method-renderer/multishipping/qris',
+                    name: 'payment_method_qris',
                     method: paymentMethodData.method,
                     item: paymentMethodData
                 }
