@@ -15,6 +15,8 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Category;
+use Magento\Catalog\Model\CategoryFactory;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Store\Model\StoreManagerInterface;
@@ -43,6 +45,11 @@ abstract class AbstractAction extends Action
      * @var Context
      */
     private $context;
+
+    /**
+     * @var CategoryFactory
+     */
+    private $categoryFactory;
 
     /**
      * @var OrderFactory
@@ -143,6 +150,7 @@ abstract class AbstractAction extends Action
      * AbstractAction constructor.
      * @param Session $checkoutSession
      * @param Context $context
+     * @param CategoryFactory $categoryFactory
      * @param OrderFactory $orderFactory
      * @param LoggerInterface $logger
      * @param Data $dataHelper
@@ -164,6 +172,7 @@ abstract class AbstractAction extends Action
     public function __construct(
         Session $checkoutSession,
         Context $context,
+        CategoryFactory $categoryFactory,
         OrderFactory $orderFactory,
         LoggerInterface $logger,
         Data $dataHelper,
@@ -187,6 +196,7 @@ abstract class AbstractAction extends Action
 
         $this->checkoutSession = $checkoutSession;
         $this->context = $context;
+        $this->categoryFactory = $categoryFactory;
         $this->orderFactory = $orderFactory;
         $this->logger = $logger;
         $this->dataHelper = $dataHelper;
@@ -222,6 +232,14 @@ abstract class AbstractAction extends Action
     protected function getCheckoutSession()
     {
         return $this->checkoutSession;
+    }
+
+    /**
+     * @return CategoryFactory
+     */
+    protected function getCategoryFactory()
+    {
+        return $this->categoryFactory;
     }
 
     /**
@@ -276,6 +294,21 @@ abstract class AbstractAction extends Action
         }
 
         return $this->getOrderById($orderId);
+    }
+
+    /**
+     * @param $categoryId
+     * @return Category|null
+     */
+    protected function getCategoryById($categoryId)
+    {
+        $category = $this->categoryFactory->create()->loadByIncrementId($categoryId);
+
+        if (!$category->getId()) {
+            return null;
+        }
+
+        return $category;
     }
 
     /**

@@ -77,8 +77,17 @@ class Invoice extends AbstractAction
         foreach ($orderItems as $orderItem) {
             $item = [];
             $product = $orderItem->getProduct();
+            $categoryIds = $product->getCategoryIds();
+            $categories = [];
+            foreach ($categoryIds as $categoryId) {
+                $category = $this->getCategoryFactory()->create();
+                $category->load($categoryId);
+                $categories[] = (string) $category->getName();
+            }
+            $categoryName = implode(', ', $categories);
             $item['reference_id'] = $product->getId();
             $item['name'] = $product->getName();
+            $item['category'] = $categoryName ? $categoryName : 'Uncategorized';
             $item['price'] = $product->getPrice();
             $item['type'] = 'PRODUCT';
             $item['url'] = $product->getProductUrl();
