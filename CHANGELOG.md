@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.3.0 (2021-11-11)
+Improvements:
+- Migrate QRIS (QR Codes) to XenInvoice
+- Add category on create invoice
+
 ## 3.2.0 (2021-11-02)
 Improvements:
 - Migrate Kredivo to XenInvoice

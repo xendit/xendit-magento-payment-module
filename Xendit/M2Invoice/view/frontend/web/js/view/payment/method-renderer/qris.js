@@ -25,11 +25,11 @@ define(
             },
 
             getCode: function() {
-                return 'qr_codes';
+                return 'qris';
             },
 
             getMethod: function() {
-                return 'QRCODES';
+                return 'QRIS';
             },
 
             getTest: function() {
@@ -37,7 +37,7 @@ define(
             },
 
             getDescription: function() {
-                return window.checkoutConfig.payment.qr_codes.description;
+                return window.checkoutConfig.payment.qris.description;
             },
 
             getTestDescription: function () {
@@ -54,7 +54,7 @@ define(
             },
 
             afterPlaceOrder: function () {
-                window.location.replace(url.build('xendit/checkout/redirect?preferred_method=QRCODES'));
+                window.location.replace(url.build('xendit/checkout/invoice?preferred_method=QRIS'));
             },
 
             validate: function() {

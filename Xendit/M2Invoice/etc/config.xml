@@ -204,21 +204,19 @@
                 <can_use_checkout>1</can_use_checkout>
                 <sort_order>14</sort_order>
             </ovo>
-            <qr_codes>
-                <active>0</active>
+            <qris>
+                <active>1</active>
                 <payment_action>authorize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\QRCODES</model>
-                <title>QR Codes</title>
-                <description>Bayar pesanan dengan membayar di QR Codes melalui Xendit</description>
+                <model>Xendit\M2Invoice\Model\Payment\QRIS</model>
+                <title>QRIS</title>
+                <description>Bayar pesanan dengan QRIS melalui Xendit</description>
                 <min_order_total>1500</min_order_total>
-                <max_order_total>2000000</max_order_total>
-                <image_width>500</image_width>
-                <image_height>500</image_height>
+                <max_order_total>5000000</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
                 <sort_order>15</sort_order>
-            </qr_codes>
+            </qris>
             <shopeepay>
                 <active>1</active>
                 <payment_action>initialize</payment_action>

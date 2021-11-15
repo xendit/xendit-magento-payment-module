@@ -1,39 +1,29 @@
 <?xml version="1.0"?>
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-    <group id="qr_codes" translate="label" type="text" sortOrder="96" showInDefault="1" showInWebsite="1" showInStore="1">
-        <label>QR Codes</label>
+    <group id="qris" translate="label" type="text" sortOrder="180" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>QRIS</label>
         <field id="active" translate="label comment" sortOrder="1" type="select" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Enable</label>
-            <comment>Bacon QR code: https://packagist.org/packages/bacon/bacon-qr-code</comment>
-            <tooltip>In order to fully activate this payment feature, please add 'Bacon QR Code' dependency into your magento root folder</tooltip>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-            <config_path>payment/qr_codes/active</config_path>
+            <config_path>payment/qris/active</config_path>
         </field>
         <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Title</label>
-            <config_path>payment/qr_codes/title</config_path>
+            <config_path>payment/qris/title</config_path>
         </field>
         <field id="description" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Description</label>
-            <config_path>payment/qr_codes/description</config_path>
+            <config_path>payment/qris/description</config_path>
         </field>
         <field id="min_order_total" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Minimum Order Total</label>
             <frontend_class>validate-zero-or-greater</frontend_class>
-            <config_path>payment/qr_codes/min_order_total</config_path>
+            <config_path>payment/qris/min_order_total</config_path>
         </field>
         <field id="max_order_total" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Maximum Order Total</label>
             <frontend_class>validate-zero-or-greater</frontend_class>
-            <config_path>payment/qr_codes/max_order_total</config_path>
-        </field>
-        <field id="image_width" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-            <label>QR Code Image Width</label>
-            <config_path>payment/qr_codes/image_width</config_path>
-        </field>
-        <field id="image_height" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-            <label>QR Code Image Height</label>
-            <config_path>payment/qr_codes/image_height</config_path>
+            <config_path>payment/qris/max_order_total</config_path>
         </field>
     </group>
 </include>

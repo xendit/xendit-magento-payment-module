@@ -1,6 +1,6 @@
 define(
     [
-        'Xendit_M2Invoice/js/view/payment/method-renderer/qr_codes'
+        'Xendit_M2Invoice/js/view/payment/method-renderer/qris'
     ],
     function (
         Component

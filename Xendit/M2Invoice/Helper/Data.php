@@ -159,15 +159,13 @@ class Data extends AbstractHelper
     const XML_PATH_PERMATAVA_DESCRIPTION    = 'payment/permatava/description';
 
     /*
-     *  QR Codes
+     *  QRIS
      */
-    const XML_PATH_QRCODES_ACTIVE           = 'payment/qr_codes/active';
-    const XML_PATH_QRCODES_TITLE            = 'payment/qr_codes/title';
-    const XML_PATH_QRCODES_MIN_AMOUNT       = 'payment/qr_codes/min_order_total';
-    const XML_PATH_QRCODES_MAX_AMOUNT       = 'payment/qr_codes/max_order_total';
-    const XML_PATH_QRCODES_DESCRIPTION      = 'payment/qr_codes/description';
-    const XML_PATH_QRCODES_IMAGE_WIDTH      = 'payment/qr_codes/image_width';
-    const XML_PATH_QRCODES_IMAGE_HEIGHT     = 'payment/qr_codes/image_height';
+    const XML_PATH_QRIS_ACTIVE           = 'payment/qris/active';
+    const XML_PATH_QRIS_TITLE            = 'payment/qris/title';
+    const XML_PATH_QRIS_MIN_AMOUNT       = 'payment/qris/min_order_total';
+    const XML_PATH_QRIS_MAX_AMOUNT       = 'payment/qris/max_order_total';
+    const XML_PATH_QRIS_DESCRIPTION      = 'payment/qris/description';
 
     /*
      *  ShopeePay
@@ -592,7 +590,7 @@ class Data extends AbstractHelper
             "linkaja"           => "linkaja",
             "shopeepay"         => "shopeepay",
             "indomaret"         => "indomaret",
-            "qr_codes"          => "qr_codes",
+            "qris"              => "qris",
             "dd_bri"            => "dd_bri",
             "kredivo"           => "kredivo"
         ];
@@ -1381,56 +1379,40 @@ class Data extends AbstractHelper
     /**
      * @return mixed
      */
-    public function getQrCodesActive()
+    public function getQrisActive()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_ACTIVE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_QRIS_ACTIVE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getQrCodesTitle()
+    public function getQrisTitle()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_TITLE, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_QRIS_TITLE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getQrCodesDescription()
+    public function getQrisDescription()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_QRIS_DESCRIPTION, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getQrCodesMinOrderAmount()
+    public function getQrisMinOrderAmount()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_QRIS_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
     /**
      * @return mixed
      */
-    public function getQrCodesMaxOrderAmount()
+    public function getQrisMaxOrderAmount()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getQrCodesImageWidth()
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_IMAGE_WIDTH, ScopeInterface::SCOPE_STORE);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getQrCodesImageHeight()
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_QRCODES_IMAGE_HEIGHT, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_QRIS_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 }

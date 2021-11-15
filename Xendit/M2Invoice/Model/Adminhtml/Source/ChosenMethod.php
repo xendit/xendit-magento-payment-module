@@ -33,7 +33,7 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'ovo', 'label' => __('OVO')],
             ['value' => 'shopeepay', 'label' => __('ShopeePay')],
             ['value' => 'linkaja', 'label' => __('LinkAja')],
-            ['value' => 'qr_codes', 'label' => __('QR Codes')],
+            ['value' => 'qris', 'label' => __('QRIS')],
             ['value' => 'dd_bri', 'label' => __('Direct Debit (BRI)')],
             ['value' => 'kredivo', 'label' => __('Kredivo')],
         ];
