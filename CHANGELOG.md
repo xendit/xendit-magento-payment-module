@@ -1,15 +1,10 @@
 # CHANGELOG
 
-## 3.2.1 (2021-11-12)
-
-Bugfix:
-
-- Add category on create invoice
-
 ## 3.2.0 (2021-11-02)
 Improvements:
 - Migrate Kredivo to XenInvoice
 - Data housekeeping
+- Add category on create invoice
 
 ## 3.1.0 (2021-10-03)
 Improvements:
