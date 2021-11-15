@@ -87,7 +87,7 @@ class Invoice extends AbstractAction
             $categoryName = implode(', ', $categories);
             $item['reference_id'] = $product->getId();
             $item['name'] = $product->getName();
-            $categoryName ?: 'Uncategorized';
+            $item['category'] = $categoryName ?: 'Uncategorized';
             $item['price'] = $product->getPrice();
             $item['type'] = 'PRODUCT';
             $item['url'] = $product->getProductUrl();
