@@ -43,25 +43,4 @@ class ErrorHandler
                 return "Failed to pay with Invoice. Error code: $errorCode";
         }
     }
-
-    /**
-     * @param $errorCode
-     * @return string
-     */
-    public function mapQrcodeErrorCode($errorCode)
-    {
-        switch ( $errorCode ) {
-            case 'DUPLICATE_ERROR':
-                return 'The payment with the same external_id has already been made before.';
-            case 'DATA_NOT_FOUND':
-                return 'QRIS merchant not found, please contact our customer success team for activation.';
-            case 'REQUEST_FORBIDDEN_ERROR':
-                return 'API key in use does not have necessary permissions to perform the request. 
-                        Please assign proper permissions for the key';
-            case 'API_VALIDATION_ERROR':
-                return 'There is invalid input in one of the required request fields.';
-            default:
-                return "Failed to pay with QRIS. Error code: $errorCode";
-        }
-    }
 }

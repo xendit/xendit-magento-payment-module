@@ -63,8 +63,8 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cc_subscription'
             },
             {
-                type: 'qr_codes',
-                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/qr_codes'
+                type: 'qris',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/qris'
             },
             {
                 type: 'dd_bri',

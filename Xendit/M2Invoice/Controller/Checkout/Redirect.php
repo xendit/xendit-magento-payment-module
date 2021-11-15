@@ -41,26 +41,6 @@ class Redirect extends AbstractAction
                 $resultRedirect->setUrl($redirectUrl);
                 return $resultRedirect;
             }
-            // Qrcode
-            if ($payment->getAdditionalInformation('xendit_qrcode_external_id') !== null) {
-                $args  = [
-                    '_secure'=> true,
-                    'xendit_qrcode_external_id'     => $payment->getAdditionalInformation('xendit_qrcode_external_id'),
-                    'xendit_qr_string'              => $payment->getAdditionalInformation('xendit_qr_string'),
-                    'xendit_qrcode_type'            => $payment->getAdditionalInformation('xendit_qrcode_type'),
-                    'xendit_qrcode_status'          => $payment->getAdditionalInformation('xendit_qrcode_status'),
-                    'xendit_qrcode_amount'          => $payment->getAdditionalInformation('xendit_qrcode_amount'),
-                    'xendit_qrcode_is_multishipping'=> $payment->getAdditionalInformation('xendit_qrcode_is_multishipping')
-                ];
-
-                $urlData = [
-                    'data' => base64_encode(json_encode($args))
-                ];
-
-                $resultRedirect = $this->getRedirectFactory()->create();
-                $resultRedirect->setPath('xendit/checkout/qrcode', $urlData);
-                return $resultRedirect;
-            }
 
             $this->cancelOrder($order, 'No payment recorded');
 
