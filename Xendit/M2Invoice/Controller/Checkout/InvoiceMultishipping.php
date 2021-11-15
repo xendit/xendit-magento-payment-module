@@ -5,6 +5,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
+use Magento\Catalog\Model\Category;
 use Magento\Framework\Exception\LocalizedException;
 use Zend\Http\Request;
 
@@ -17,6 +18,7 @@ class InvoiceMultishipping extends AbstractAction
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface
      */
+
     public function execute()
     {
         try {
@@ -67,13 +69,21 @@ class InvoiceMultishipping extends AbstractAction
                     'country'       => $shippingAddress->getData('country_id') ?: 'ID'
                 ];
                 $addresses[] = (object) $address;
-
                 $orderItems = $order->getAllItems();
                 foreach ($orderItems as $orderItem) {
                     $item = [];
                     $product = $orderItem->getProduct();
+                    $categoryIds = $product->getCategoryIds();
+                    $categories = [];
+                    foreach ($categoryIds as $categoryId) {
+                        $category = $this->getCategoryFactory()->create();
+                        $category->load($categoryId);
+                        $categories[] = (string) $category->getName();
+                    }
+                    $categoryName = implode(', ', $categories);
                     $item['reference_id'] = $product->getId();
                     $item['name'] = $product->getName();
+                    $item['category'] = $categoryName ?: 'Uncategorized';
                     $item['price'] = $product->getPrice();
                     $item['type'] = 'PRODUCT';
                     $item['url'] = $product->getProductUrl();
