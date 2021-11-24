@@ -103,7 +103,7 @@ class InvoiceMultishipping extends AbstractAction
                 $preferredMethod = 'CREDIT_CARD';
             }
 
-            $transactionAmount  = $order->getBaseCurrencyCode() == 'IDR' ? (int)ceil($transactionAmount): (int)$transactionAmount;
+            $transactionAmount  = $order->getBaseCurrencyCode() == 'IDR' ? (int)ceil($transactionAmount): $transactionAmount;
             $requestData = [
                 'external_id'           => $this->getDataHelper()->getExternalId($rawOrderIds),
                 'payer_email'           => $billingEmail,
