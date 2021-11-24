@@ -49,6 +49,10 @@ class KREDIVO extends AbstractInvoice
             return false;
         }
 
+        if(!$this->dataHelper->getIsActive()){
+            return false;
+        }
+
         return true;
     }
 }
