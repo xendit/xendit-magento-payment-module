@@ -227,7 +227,7 @@ class AbstractInvoice extends AbstractMethod
         if ($quote === null) {
             return false;
         }
-
+        // This is not work in multishipping
         if ($this->dataHelper->getIsActive() === '0') {
             return false;
         }
