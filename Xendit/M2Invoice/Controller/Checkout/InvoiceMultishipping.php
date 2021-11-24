@@ -56,7 +56,7 @@ class InvoiceMultishipping extends AbstractAction
                 
                 $order->save();
     
-                $transactionAmount  += (int)$order->getTotalDue();
+                $transactionAmount  += $order->getTotalDue();
                 $billingEmail = $order->getCustomerEmail() ?: 'noreply@mail.com';
                 $shippingAddress = $order->getShippingAddress();
                 $currency = $order->getBaseCurrencyCode();
@@ -103,6 +103,7 @@ class InvoiceMultishipping extends AbstractAction
                 $preferredMethod = 'CREDIT_CARD';
             }
 
+            $transactionAmount  = $order->getBaseCurrencyCode() == 'IDR' ? (int)ceil($transactionAmount): (int)$transactionAmount;
             $requestData = [
                 'external_id'           => $this->getDataHelper()->getExternalId($rawOrderIds),
                 'payer_email'           => $billingEmail,
