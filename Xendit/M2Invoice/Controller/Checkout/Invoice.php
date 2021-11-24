@@ -99,7 +99,7 @@ class Invoice extends AbstractAction
             'external_id'           => $this->getDataHelper()->getExternalId($orderId),
             'payer_email'           => $order->getCustomerEmail(),
             'description'           => $orderId,
-            'amount'                => $order->getTotalDue(),
+            'amount'                => ceil($order->getTotalDue()),
             'currency'              => $order->getBaseCurrencyCode(),
             'preferred_method'      => $preferredMethod,
             'client_type'           => 'INTEGRATION',
