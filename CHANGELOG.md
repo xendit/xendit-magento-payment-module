@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.3.1 (2021-11-25)
+Improvements:
+- Fix rounding amount on create invoice
+- Hide payment if Xendit setting disabled
+
 ## 3.3.0 (2021-11-11)
 Improvements:
 - Migrate QRIS (QR Codes) to XenInvoice
