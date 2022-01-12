@@ -20,7 +20,7 @@
         - '/:/usr/deploy'
       variables:
         - key: OWNER
-          value: tpi
+          value: store-channels
     - action: "Send notification to channel"
       type: "SLACK"
       trigger_time: "ON_FAILURE"
