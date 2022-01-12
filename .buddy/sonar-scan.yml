@@ -28,4 +28,4 @@
       blocks: "[{\"type\":\"section\",\"fields\":[{\"type\":\"mrkdwn\",\"text\":\"*Failed execution:* <$BUDDY_EXECUTION_URL|Execution #$BUDDY_EXECUTION_ID $BUDDY_EXECUTION_COMMENT>\"},{\"type\":\"mrkdwn\",\"text\":\"*Pipeline:* <$BUDDY_PIPELINE_URL|$BUDDY_PIPELINE_NAME>\"},{\"type\":\"mrkdwn\",\"text\":\"*Sonar Link:* <https://sonar.tidnex.com/project/issues?id=$BUDDY_PROJECT_NAME&resolved=false&types=VULNERABILITY&severities=BLOCKER|$BUDDY_PROJECT_NAME>\"},{\"type\":\"mrkdwn\",\"text\":\"*Project:* <$BUDDY_PROJECT_URL|$BUDDY_PROJECT_NAME>\"}]}]"
       channel: "C01G4EK29QR"
       trigger_condition: "ALWAYS"
-      integration_hash: "5ea6524a42eba4000eb35fbb" 
+      integration_hash: "5ea6524a42eba4000eb35fbb"
