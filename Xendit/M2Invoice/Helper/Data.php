@@ -176,6 +176,15 @@ class Data extends AbstractHelper
     const XML_PATH_SHOPEEPAY_MAX_AMOUNT           = 'payment/shopeepay/max_order_total';
     const XML_PATH_SHOPEEPAY_DESCRIPTION          = 'payment/shopeepay/description';
 
+    /*
+     *  PayMaya
+     */
+    const XML_PATH_PAYMAYA_ACTIVE               = 'payment/paymaya/active';
+    const XML_PATH_PAYMAYA_TITLE                = 'payment/paymaya/title';
+    const XML_PATH_PAYMAYA_MIN_AMOUNT           = 'payment/paymaya/min_order_total';
+    const XML_PATH_PAYMAYA_MAX_AMOUNT           = 'payment/paymaya/max_order_total';
+    const XML_PATH_PAYMAYA_DESCRIPTION          = 'payment/paymaya/description';
+
     /**
      * @var StoreManagerInterface
      */
@@ -464,10 +473,10 @@ class Data extends AbstractHelper
     {
         $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);
         $methods = $this->_request->getServer('REQUEST_METHOD');
-        
+
         if (empty($inputs) === true && $methods === 'POST') {
             $post = $this->_request->getPostValue();
-                       
+
             if (array_key_exists('payment', $post)) {
                 $inputs['paymentMethod']['additional_data'] = $post['payment'];
             }
@@ -502,7 +511,7 @@ class Data extends AbstractHelper
         if ($isMultishipping) {
             $baseUrl .= '?type=multishipping';
         }
-        
+
         return $baseUrl;
     }
 
@@ -574,7 +583,7 @@ class Data extends AbstractHelper
      * @return bool|mixed
      */
     public function xenditPaymentMethod( $payment ){
-        
+
         //method name => frontend routing
         $listPayment = [
             "cc"                => "cc",
@@ -592,7 +601,8 @@ class Data extends AbstractHelper
             "indomaret"         => "indomaret",
             "qris"              => "qris",
             "dd_bri"            => "dd_bri",
-            "kredivo"           => "kredivo"
+            "kredivo"           => "kredivo",
+            "paymaya"           => "paymaya"
         ];
 
         $response = FALSE;
@@ -600,7 +610,7 @@ class Data extends AbstractHelper
             $response = $listPayment[$payment];
         }
 
-        return $response; 
+        return $response;
     }
 
     /**
@@ -618,25 +628,25 @@ class Data extends AbstractHelper
         $customer = $this->customerFactory->create();
         $customer->setWebsiteId($websiteId);
         $customer->loadByEmail($orderData['email']); //load customer by email address
-        
+
         if (!$customer->getEntityId()) {
-            //if not available then create this customer 
+            //if not available then create this customer
             $customer->setWebsiteId($websiteId)
                      ->setStore($store)
                      ->setFirstname($orderData['shipping_address']['firstname'])
                      ->setLastname($orderData['shipping_address']['lastname'])
-                     ->setEmail($orderData['email']) 
+                     ->setEmail($orderData['email'])
                      ->setPassword($orderData['email']);
             $customer->save();
         }
 
         $quote = $this->quote->create(); //create object of quote
         $quote->setStore($store);
-        
+
         $customer= $this->customerRepository->getById($customer->getEntityId());
         $quote->setCurrency();
         $quote->assignCustomer($customer); //assign quote to customer
- 
+
         //add items in quote
         foreach ($orderData['items'] as $item) {
             $product = $this->product->load($item['product_id']);
@@ -651,11 +661,11 @@ class Data extends AbstractHelper
                 new DataObject($normalizedProductRequest)
             );
         }
- 
+
         //set address
         $quote->getBillingAddress()->addData($orderData['billing_address']);
         $quote->getShippingAddress()->addData($orderData['shipping_address']);
- 
+
         //collect rates, set shipping & payment method
         $billingAddress = $quote->getBillingAddress();
         $shippingAddress = $quote->getShippingAddress();
@@ -663,7 +673,7 @@ class Data extends AbstractHelper
         $shippingAddress->setShippingMethod($orderData['shipping_method'])
                         ->setCollectShippingRates(true)
                         ->collectShippingRates();
-       
+
         $billingAddress->setShouldIgnoreValidation(true);
         $shippingAddress->setShouldIgnoreValidation(true);
 
@@ -679,7 +689,7 @@ class Data extends AbstractHelper
         $quote->setPaymentMethod($orderData['payment']['method']);
         $quote->setInventoryProcessed(true); //update inventory
         $quote->save();
-        
+
         //set required payment data
         $orderData['payment']['cc_number'] = str_replace('X', '0', $orderData['masked_card_number']);
         $quote->getPayment()->importData($orderData['payment']);
@@ -691,7 +701,7 @@ class Data extends AbstractHelper
 
         //collect totals & save quote
         $quote->collectTotals()->save();
- 
+
         //create order from quote
         $order = $this->quoteManagement->submit($quote);
 
@@ -713,7 +723,7 @@ class Data extends AbstractHelper
         //create invoice
         if ($order->canInvoice()) {
             $invoice = $this->invoiceService->prepareInvoice($order);
-            
+
             if ($invoice->getTotalQty()) {
                 if (isset($orderData['transaction_id'])) {
                     $invoice->setTransactionId($orderData['transaction_id']);
@@ -1295,7 +1305,7 @@ class Data extends AbstractHelper
     {
         return $this->scopeConfig->getValue(self::XML_PATH_OVO_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
-    
+
     /**
      * @return mixed
      */
@@ -1414,5 +1424,45 @@ class Data extends AbstractHelper
     public function getQrisMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_QRIS_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPayMayaActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PAYMAYA_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPayMayaTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PAYMAYA_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPayMayaDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PAYMAYA_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPayMayaMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PAYMAYA_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPayMayaMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_PAYMAYA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 }

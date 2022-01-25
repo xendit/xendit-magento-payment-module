@@ -1,4 +1,4 @@
-	
+
 define(
     [
         'uiComponent',
@@ -73,6 +73,10 @@ define(
             {
                 type: 'kredivo',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/kredivo'
+            },
+            {
+                type: 'paymaya',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/paymaya'
             }
         );
         return Component.extend({});
