@@ -5,10 +5,10 @@ namespace Xendit\M2Invoice\Model\Payment;
 use Magento\Quote\Api\Data\CartInterface;
 
 /**
- * Class Paymaya
+ * Class Gcash
  * @package Xendit\M2Invoice\Model\Payment
  */
-class Paymaya extends AbstractInvoice
+class Gcash extends AbstractInvoice
 {
     /**
      * Payment Method feature
@@ -22,8 +22,8 @@ class Paymaya extends AbstractInvoice
      *
      * @var string
      */
-    protected $_code = 'paymaya';
-    protected $methodCode = 'PAYMAYA';
+    protected $_code = 'gcash';
+    protected $methodCode = 'GCASH';
 
     /**
      * @param CartInterface|null $quote
@@ -41,11 +41,11 @@ class Paymaya extends AbstractInvoice
 
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
 
-        if ($amount < $this->dataHelper->getPayMayaMinOrderAmount() || $amount > $this->dataHelper->getPayMayaMaxOrderAmount()) {
+        if ($amount < $this->dataHelper->getGCashMinOrderAmount() || $amount > $this->dataHelper->getGCashMaxOrderAmount()) {
             return false;
         }
 
-        if(!$this->dataHelper->getPayMayaActive()){
+        if(!$this->dataHelper->getGCashActive()){
             return false;
         }
 

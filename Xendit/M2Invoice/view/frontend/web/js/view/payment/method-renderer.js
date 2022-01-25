@@ -77,6 +77,10 @@ define(
             {
                 type: 'paymaya',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/paymaya'
+            },
+            {
+                type: 'gcash',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/gcash'
             }
         );
         return Component.extend({});
