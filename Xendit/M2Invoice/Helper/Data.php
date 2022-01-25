@@ -185,6 +185,15 @@ class Data extends AbstractHelper
     const XML_PATH_PAYMAYA_MAX_AMOUNT           = 'payment/paymaya/max_order_total';
     const XML_PATH_PAYMAYA_DESCRIPTION          = 'payment/paymaya/description';
 
+    /*
+     *  GCash
+     */
+    const XML_PATH_GCASH_ACTIVE               = 'payment/gcash/active';
+    const XML_PATH_GCASH_TITLE                = 'payment/gcash/title';
+    const XML_PATH_GCASH_MIN_AMOUNT           = 'payment/gcash/min_order_total';
+    const XML_PATH_GCASH_MAX_AMOUNT           = 'payment/gcash/max_order_total';
+    const XML_PATH_GCASH_DESCRIPTION          = 'payment/gcash/description';
+
     /**
      * @var StoreManagerInterface
      */
@@ -602,7 +611,8 @@ class Data extends AbstractHelper
             "qris"              => "qris",
             "dd_bri"            => "dd_bri",
             "kredivo"           => "kredivo",
-            "paymaya"           => "paymaya"
+            "paymaya"           => "paymaya",
+            "gcash"             => "gcash"
         ];
 
         $response = FALSE;
@@ -1464,5 +1474,45 @@ class Data extends AbstractHelper
     public function getPayMayaMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_PAYMAYA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGCashActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GCASH_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGCashTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GCASH_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGCashDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GCASH_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGCashMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GCASH_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGCashMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GCASH_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 }

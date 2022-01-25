@@ -208,6 +208,7 @@
                         <include path="Xendit_M2Invoice::ewallets/shopeepay.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/qris.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/paymaya.xml"/>
+                        <include path="Xendit_M2Invoice::ewallets/gcash.xml"/>
                     </group>
 
                     <group id="direct_debit" translate="label" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="1">

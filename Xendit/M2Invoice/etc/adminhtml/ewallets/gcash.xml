@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="gcash" translate="label" type="text" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>GCash</label>
+        <field id="active" translate="label comment" sortOrder="1" type="select" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Enable</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/gcash/active</config_path>
+        </field>
+        <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Title</label>
+            <config_path>payment/gcash/title</config_path>
+        </field>
+        <field id="description" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Description</label>
+            <config_path>payment/gcash/description</config_path>
+        </field>
+        <field id="min_order_total" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Minimum Order Total</label>
+            <frontend_class>validate-zero-or-greater</frontend_class>
+            <config_path>payment/gcash/min_order_total</config_path>
+        </field>
+        <field id="max_order_total" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Maximum Order Total</label>
+            <frontend_class>validate-zero-or-greater</frontend_class>
+            <config_path>payment/gcash/max_order_total</config_path>
+        </field>
+    </group>
+</include>

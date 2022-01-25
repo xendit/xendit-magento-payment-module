@@ -176,6 +176,12 @@ class ConfigProvider implements ConfigProviderInterface
                     'max_order_amount' => $this->xenditHelper->getPayMayaMaxOrderAmount(),
                     'description' => $this->xenditHelper->getPayMayaDescription()
                 ],
+                'gcash' => [
+                    'title' => $this->xenditHelper->getGCashTitle(),
+                    'min_order_amount' => $this->xenditHelper->getGCashMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getGCashMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getGCashDescription()
+                ],
             ]
         ];
 
