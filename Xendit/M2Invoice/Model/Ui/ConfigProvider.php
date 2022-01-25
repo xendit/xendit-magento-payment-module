@@ -169,7 +169,13 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getCcSubscriptionDescription(),
                     'interval' => $this->xenditHelper->getCcSubscriptionInterval(),
                     'interval_count' => $this->xenditHelper->getCcSubscriptionIntervalCount()
-                ]
+                ],
+                'paymaya' => [
+                    'title' => $this->xenditHelper->getPayMayaTitle(),
+                    'min_order_amount' => $this->xenditHelper->getPayMayaMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getPayMayaMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getPayMayaDescription()
+                ],
             ]
         ];
 

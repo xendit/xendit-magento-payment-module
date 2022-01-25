@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <payment>
@@ -230,6 +230,21 @@
                 <can_use_checkout>1</can_use_checkout>
                 <sort_order>16</sort_order>
             </shopeepay>
+
+            <!-- PH Channels -->
+            <paymaya>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Paymaya</model>
+                <title>PAYMAYA</title>
+                <description>Bayar pesanan dengan akun Paymaya anda melalui Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>10000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>17</sort_order>
+            </paymaya>
         </payment>
     </default>
 </config>
