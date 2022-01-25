@@ -237,7 +237,7 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Paymaya</model>
                 <title>PAYMAYA</title>
-                <description>Bayar pesanan dengan akun Paymaya anda melalui Xendit</description>
+                <description>Pay for orders using PayMaya via Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>10000000</max_order_total>
                 <is_gateway>1</is_gateway>
