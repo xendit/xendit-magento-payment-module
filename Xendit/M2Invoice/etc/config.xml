@@ -236,7 +236,7 @@
                 <active>1</active>
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Gcash</model>
-                <title>GCASH</title>
+                <title>GCash</title>
                 <description>Pay for orders using GCash via Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>10000000</max_order_total>
@@ -249,7 +249,7 @@
                 <active>1</active>
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Grabpay</model>
-                <title>GRABPAY</title>
+                <title>GrabPay</title>
                 <description>Pay for orders using GrabPay via Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>10000000</max_order_total>
@@ -262,7 +262,7 @@
                 <active>1</active>
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Paymaya</model>
-                <title>PAYMAYA</title>
+                <title>PayMaya</title>
                 <description>Pay for orders using PayMaya via Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>10000000</max_order_total>
