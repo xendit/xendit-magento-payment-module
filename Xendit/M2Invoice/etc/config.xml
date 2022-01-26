@@ -239,7 +239,7 @@
                 <title>GCash</title>
                 <description>Pay for orders using GCash via Xendit</description>
                 <min_order_total>1</min_order_total>
-                <max_order_total>10000000</max_order_total>
+                <max_order_total>100000</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -252,7 +252,7 @@
                 <title>GrabPay</title>
                 <description>Pay for orders using GrabPay via Xendit</description>
                 <min_order_total>1</min_order_total>
-                <max_order_total>10000000</max_order_total>
+                <max_order_total>100000</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -265,7 +265,7 @@
                 <title>PayMaya</title>
                 <description>Pay for orders using PayMaya via Xendit</description>
                 <min_order_total>1</min_order_total>
-                <max_order_total>10000000</max_order_total>
+                <max_order_total>100000</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
