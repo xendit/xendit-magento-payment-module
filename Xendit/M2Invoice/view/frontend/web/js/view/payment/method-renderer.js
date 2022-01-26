@@ -75,12 +75,16 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/kredivo'
             },
             {
-                type: 'paymaya',
-                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/paymaya'
-            },
-            {
                 type: 'gcash',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/gcash'
+            },
+            {
+                type: 'grabpay',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/grabpay'
+            },
+            {
+                type: 'paymaya',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/paymaya'
             }
         );
         return Component.extend({});

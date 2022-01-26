@@ -232,19 +232,6 @@
             </shopeepay>
 
             <!-- PH Channels -->
-            <paymaya>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\Paymaya</model>
-                <title>PAYMAYA</title>
-                <description>Pay for orders using PayMaya via Xendit</description>
-                <min_order_total>1</min_order_total>
-                <max_order_total>10000000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>17</sort_order>
-            </paymaya>
             <gcash>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -258,6 +245,32 @@
                 <can_use_checkout>1</can_use_checkout>
                 <sort_order>17</sort_order>
             </gcash>
+            <grabpay>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Grabpay</model>
+                <title>GRABPAY</title>
+                <description>Pay for orders using GrabPay via Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>10000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>18</sort_order>
+            </grabpay>
+            <paymaya>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Paymaya</model>
+                <title>PAYMAYA</title>
+                <description>Pay for orders using PayMaya via Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>10000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>19</sort_order>
+            </paymaya>
         </payment>
     </default>
 </config>
