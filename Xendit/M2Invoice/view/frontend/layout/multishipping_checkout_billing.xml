@@ -21,8 +21,9 @@
                     <item name="qris" xsi:type="string">Xendit_M2Invoice::multishipping/qris.phtml</item>
                     <item name="dd_bri" xsi:type="string">Xendit_M2Invoice::multishipping/dd_bri.phtml</item>
                     <item name="kredivo" xsi:type="string">Xendit_M2Invoice::multishipping/kredivo.phtml</item>
-                    <item name="paymaya" xsi:type="string">Xendit_M2Invoice::multishipping/paymaya.phtml</item>
                     <item name="gcash" xsi:type="string">Xendit_M2Invoice::multishipping/gcash.phtml</item>
+                    <item name="grabpay" xsi:type="string">Xendit_M2Invoice::multishipping/grabpay.phtml</item>
+                    <item name="paymaya" xsi:type="string">Xendit_M2Invoice::multishipping/paymaya.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>

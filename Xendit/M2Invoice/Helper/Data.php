@@ -194,6 +194,15 @@ class Data extends AbstractHelper
     const XML_PATH_GCASH_MAX_AMOUNT           = 'payment/gcash/max_order_total';
     const XML_PATH_GCASH_DESCRIPTION          = 'payment/gcash/description';
 
+    /*
+     *  GrabPay
+     */
+    const XML_PATH_GRABPAY_ACTIVE               = 'payment/grabpay/active';
+    const XML_PATH_GRABPAY_TITLE                = 'payment/grabpay/title';
+    const XML_PATH_GRABPAY_MIN_AMOUNT           = 'payment/grabpay/min_order_total';
+    const XML_PATH_GRABPAY_MAX_AMOUNT           = 'payment/grabpay/max_order_total';
+    const XML_PATH_GRABPAY_DESCRIPTION          = 'payment/grabpay/description';
+
     /**
      * @var StoreManagerInterface
      */
@@ -611,8 +620,9 @@ class Data extends AbstractHelper
             "qris"              => "qris",
             "dd_bri"            => "dd_bri",
             "kredivo"           => "kredivo",
-            "paymaya"           => "paymaya",
-            "gcash"             => "gcash"
+            "gcash"             => "gcash",
+            "grabpay"           => "grabpay",
+            "paymaya"           => "paymaya"
         ];
 
         $response = FALSE;
@@ -1514,5 +1524,45 @@ class Data extends AbstractHelper
     public function getGCashMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_GCASH_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGrabPayActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GRABPAY_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGrabPayTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GRABPAY_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGrabPayDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GRABPAY_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGrabPayMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GRABPAY_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGrabPayMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_GRABPAY_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 }
