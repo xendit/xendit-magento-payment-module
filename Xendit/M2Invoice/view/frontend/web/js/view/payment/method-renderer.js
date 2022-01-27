@@ -85,6 +85,10 @@ define(
             {
                 type: 'paymaya',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/paymaya'
+            },
+            {
+                type: 'dd_bpi',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_bpi'
             }
         );
         return Component.extend({});

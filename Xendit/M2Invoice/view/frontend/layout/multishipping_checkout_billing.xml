@@ -24,6 +24,7 @@
                     <item name="gcash" xsi:type="string">Xendit_M2Invoice::multishipping/gcash.phtml</item>
                     <item name="grabpay" xsi:type="string">Xendit_M2Invoice::multishipping/grabpay.phtml</item>
                     <item name="paymaya" xsi:type="string">Xendit_M2Invoice::multishipping/paymaya.phtml</item>
+                    <item name="dd_bpi" xsi:type="string">Xendit_M2Invoice::multishipping/dd_bpi.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>
