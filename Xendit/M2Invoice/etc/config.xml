@@ -271,6 +271,19 @@
                 <can_use_checkout>1</can_use_checkout>
                 <sort_order>19</sort_order>
             </paymaya>
+            <dd_bpi>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\DDBPI</model>
+                <title>Direct Debit (BPI)</title>
+                <description>Pay for orders using Direct Debit (BPI) via Xendit</description>
+                <min_order_total>0.01</min_order_total>
+                <max_order_total>50000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>10</sort_order>
+            </dd_bpi>
         </payment>
     </default>
 </config>
