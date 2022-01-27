@@ -188,6 +188,12 @@ class ConfigProvider implements ConfigProviderInterface
                     'max_order_amount' => $this->xenditHelper->getGrabPayMaxOrderAmount(),
                     'description' => $this->xenditHelper->getGrabPayDescription()
                 ],
+                'dd_bpi' => [
+                    'title' => $this->xenditHelper->getDdBpiTitle(),
+                    'min_order_amount' => $this->xenditHelper->getDdBpiMinOrderAmount(),
+                    'max_order_amount' => $this->xenditHelper->getDdBpiMaxOrderAmount(),
+                    'description' => $this->xenditHelper->getDdBpiDescription()
+                ],
             ]
         ];
 

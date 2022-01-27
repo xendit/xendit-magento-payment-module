@@ -203,6 +203,15 @@ class Data extends AbstractHelper
     const XML_PATH_GRABPAY_MAX_AMOUNT           = 'payment/grabpay/max_order_total';
     const XML_PATH_GRABPAY_DESCRIPTION          = 'payment/grabpay/description';
 
+    /*
+     *  DD DPI
+     */
+    const XML_PATH_DDBPI_ACTIVE               = 'payment/dd_bpi/active';
+    const XML_PATH_DDBPI_TITLE                = 'payment/dd_bpi/title';
+    const XML_PATH_DDBPI_MIN_AMOUNT           = 'payment/dd_bpi/min_order_total';
+    const XML_PATH_DDBPI_MAX_AMOUNT           = 'payment/dd_bpi/max_order_total';
+    const XML_PATH_DDBPI_DESCRIPTION          = 'payment/dd_bpi/description';
+
     /**
      * @var StoreManagerInterface
      */
@@ -622,7 +631,8 @@ class Data extends AbstractHelper
             "kredivo"           => "kredivo",
             "gcash"             => "gcash",
             "grabpay"           => "grabpay",
-            "paymaya"           => "paymaya"
+            "paymaya"           => "paymaya",
+            "dd_bpi"            => "dd_bpi"
         ];
 
         $response = FALSE;
@@ -1564,5 +1574,46 @@ class Data extends AbstractHelper
     public function getGrabPayMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_GRABPAY_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getDdBpiActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBPI_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBpiTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBPI_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBpiDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBPI_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBpiMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBPI_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdBpiMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDBPI_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 }
