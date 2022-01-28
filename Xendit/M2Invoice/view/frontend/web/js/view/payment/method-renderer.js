@@ -89,6 +89,10 @@ define(
             {
                 type: 'dd_bpi',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_bpi'
+            },
+            {
+                type: 'seven_eleven',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/seven_eleven'
             }
         );
         return Component.extend({});

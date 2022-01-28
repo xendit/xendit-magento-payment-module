@@ -204,13 +204,22 @@ class Data extends AbstractHelper
     const XML_PATH_GRABPAY_DESCRIPTION          = 'payment/grabpay/description';
 
     /*
-     *  DD DPI
+     *  DD BPI
      */
     const XML_PATH_DDBPI_ACTIVE               = 'payment/dd_bpi/active';
     const XML_PATH_DDBPI_TITLE                = 'payment/dd_bpi/title';
     const XML_PATH_DDBPI_MIN_AMOUNT           = 'payment/dd_bpi/min_order_total';
     const XML_PATH_DDBPI_MAX_AMOUNT           = 'payment/dd_bpi/max_order_total';
     const XML_PATH_DDBPI_DESCRIPTION          = 'payment/dd_bpi/description';
+
+    /*
+     *  7ELEVEN
+     */
+    const XML_PATH_SEVEN_ELEVEN_ACTIVE               = 'payment/seven_eleven/active';
+    const XML_PATH_SEVEN_ELEVEN_TITLE                = 'payment/seven_eleven/title';
+    const XML_PATH_SEVEN_ELEVEN_MIN_AMOUNT           = 'payment/seven_eleven/min_order_total';
+    const XML_PATH_SEVEN_ELEVEN_MAX_AMOUNT           = 'payment/seven_eleven/max_order_total';
+    const XML_PATH_SEVEN_ELEVEN_DESCRIPTION          = 'payment/seven_eleven/description';
 
     /**
      * @var StoreManagerInterface
@@ -632,7 +641,8 @@ class Data extends AbstractHelper
             "gcash"             => "gcash",
             "grabpay"           => "grabpay",
             "paymaya"           => "paymaya",
-            "dd_bpi"            => "dd_bpi"
+            "dd_bpi"            => "dd_bpi",
+            "seven_eleven"      => "7eleven"
         ];
 
         $response = FALSE;
@@ -1615,5 +1625,45 @@ class Data extends AbstractHelper
     public function getDdBpiMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_DDBPI_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSevenElevenActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SEVEN_ELEVEN_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSevenElevenTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SEVEN_ELEVEN_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSevenElevenDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SEVEN_ELEVEN_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSevenElevenMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SEVEN_ELEVEN_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSevenElevenMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SEVEN_ELEVEN_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 }
