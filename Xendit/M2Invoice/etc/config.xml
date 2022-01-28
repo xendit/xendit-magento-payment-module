@@ -237,7 +237,7 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\SevenEleven</model>
                 <title>7-Eleven</title>
-                <description>Pay for orders using 7 Eleven via Xendit</description>
+                <description>Pay for orders using 7-Eleven via Xendit</description>
                 <min_order_total>50</min_order_total>
                 <max_order_total>10000</max_order_total>
                 <is_gateway>1</is_gateway>

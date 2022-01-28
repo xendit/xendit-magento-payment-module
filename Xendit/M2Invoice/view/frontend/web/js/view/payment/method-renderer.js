@@ -93,6 +93,10 @@ define(
             {
                 type: 'seven_eleven',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/seven_eleven'
+            },
+            {
+                type: 'dd_ubp',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_ubp'
             }
         );
         return Component.extend({});

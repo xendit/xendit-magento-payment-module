@@ -221,6 +221,15 @@ class Data extends AbstractHelper
     const XML_PATH_SEVEN_ELEVEN_MAX_AMOUNT           = 'payment/seven_eleven/max_order_total';
     const XML_PATH_SEVEN_ELEVEN_DESCRIPTION          = 'payment/seven_eleven/description';
 
+    /*
+     *  DD UBP
+     */
+    const XML_PATH_DDUBP_ACTIVE               = 'payment/dd_ubp/active';
+    const XML_PATH_DDUBP_TITLE                = 'payment/dd_ubp/title';
+    const XML_PATH_DDUBP_MIN_AMOUNT           = 'payment/dd_ubp/min_order_total';
+    const XML_PATH_DDUBP_MAX_AMOUNT           = 'payment/dd_ubp/max_order_total';
+    const XML_PATH_DDUBP_DESCRIPTION          = 'payment/dd_ubp/description';
+
     /**
      * @var StoreManagerInterface
      */
@@ -642,7 +651,8 @@ class Data extends AbstractHelper
             "grabpay"           => "grabpay",
             "paymaya"           => "paymaya",
             "dd_bpi"            => "dd_bpi",
-            "seven_eleven"      => "7eleven"
+            "seven_eleven"      => "7eleven",
+            "dd_ubp"            => "dd_ubp",
         ];
 
         $response = FALSE;
@@ -1665,5 +1675,45 @@ class Data extends AbstractHelper
     public function getSevenElevenMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_SEVEN_ELEVEN_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdUbpActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDUBP_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdUbpTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDUBP_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdUbpDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDUBP_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdUbpMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDUBP_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDdUbpMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_DDUBP_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 }
