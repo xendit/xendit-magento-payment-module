@@ -219,6 +219,7 @@
                         <attribute type="expanded">0</attribute>
                         <include path="Xendit_M2Invoice::direct_debit/dd_bri.xml"/>
                         <include path="Xendit_M2Invoice::direct_debit/dd_bpi.xml"/>
+                        <include path="Xendit_M2Invoice::direct_debit/dd_ubp.xml"/>
                     </group>
 
                     <group id="paylater" translate="label" sortOrder="98" showInDefault="1" showInWebsite="1" showInStore="1">
