@@ -40,7 +40,8 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'grabpay', 'label' => __('GrabPay')],
             ['value' => 'paymaya', 'label' => __('PayMaya')],
             ['value' => 'dd_bpi', 'label' => __('Direct Debit (BPI)')],
-            ['value' => 'seven_eleven', 'label' => __('7-Eleven')]
+            ['value' => 'seven_eleven', 'label' => __('7-Eleven')],
+            ['value' => 'dd_ubp', 'label' => __('Direct Debit (UBP)')],
         ];
 
         if (!$isMultiselect) {
