@@ -642,7 +642,7 @@ class Data extends AbstractHelper
             "grabpay"           => "grabpay",
             "paymaya"           => "paymaya",
             "dd_bpi"            => "dd_bpi",
-            "seven_eleven"      => "seven_eleven"
+            "seven_eleven"      => "7eleven"
         ];
 
         $response = FALSE;

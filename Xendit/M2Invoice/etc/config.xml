@@ -232,6 +232,32 @@
             </shopeepay>
 
             <!-- PH Channels -->
+            <seven_eleven>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\SevenEleven</model>
+                <title>7 Eleven</title>
+                <description>Pay for orders using 7 Eleven via Xendit</description>
+                <min_order_total>50</min_order_total>
+                <max_order_total>10000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>17</sort_order>
+            </seven_eleven>
+            <dd_bpi>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\DDBPI</model>
+                <title>Direct Debit (BPI)</title>
+                <description>Pay for orders using Direct Debit (BPI) via Xendit</description>
+                <min_order_total>0.01</min_order_total>
+                <max_order_total>50000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>18</sort_order>
+            </dd_bpi>
             <gcash>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -243,7 +269,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>17</sort_order>
+                <sort_order>19</sort_order>
             </gcash>
             <grabpay>
                 <active>1</active>
@@ -256,7 +282,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>18</sort_order>
+                <sort_order>20</sort_order>
             </grabpay>
             <paymaya>
                 <active>1</active>
@@ -269,34 +295,8 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>19</sort_order>
+                <sort_order>21</sort_order>
             </paymaya>
-            <dd_bpi>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\DDBPI</model>
-                <title>Direct Debit (BPI)</title>
-                <description>Pay for orders using Direct Debit (BPI) via Xendit</description>
-                <min_order_total>0.01</min_order_total>
-                <max_order_total>50000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>10</sort_order>
-            </dd_bpi>
-            <seven_eleven>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\SevenEleven</model>
-                <title>7 Eleven</title>
-                <description>Pay for orders using 7 Eleven via Xendit</description>
-                <min_order_total>50</min_order_total>
-                <max_order_total>10000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>10</sort_order>
-            </seven_eleven>
         </payment>
     </default>
 </config>
