@@ -284,6 +284,19 @@
                 <can_use_checkout>1</can_use_checkout>
                 <sort_order>10</sort_order>
             </dd_bpi>
+            <seven_eleven>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\SevenEleven</model>
+                <title>7 Eleven</title>
+                <description>Pay for orders using 7 Eleven via Xendit</description>
+                <min_order_total>50</min_order_total>
+                <max_order_total>10000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>10</sort_order>
+            </seven_eleven>
         </payment>
     </default>
 </config>

@@ -196,6 +196,7 @@
                         <attribute type="expanded">0</attribute>
                         <include path="Xendit_M2Invoice::retail_outlets/alfamart.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/indomaret.xml"/>
+                        <include path="Xendit_M2Invoice::retail_outlets/seven_eleven.xml"/>
                     </group>
 
                     <group id="ewallets" translate="label" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="1">
