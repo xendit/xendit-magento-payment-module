@@ -230,6 +230,15 @@ class Data extends AbstractHelper
     const XML_PATH_DDUBP_MAX_AMOUNT           = 'payment/dd_ubp/max_order_total';
     const XML_PATH_DDUBP_DESCRIPTION          = 'payment/dd_ubp/description';
 
+    /*
+     *  BILLEASE
+     */
+    const XML_PATH_BILLEASE_ACTIVE               = 'payment/billease/active';
+    const XML_PATH_BILLEASE_TITLE                = 'payment/billease/title';
+    const XML_PATH_BILLEASE_MIN_AMOUNT           = 'payment/billease/min_order_total';
+    const XML_PATH_BILLEASE_MAX_AMOUNT           = 'payment/billease/max_order_total';
+    const XML_PATH_BILLEASE_DESCRIPTION          = 'payment/billease/description';
+
     /**
      * @var StoreManagerInterface
      */
@@ -653,6 +662,7 @@ class Data extends AbstractHelper
             "dd_bpi"            => "dd_bpi",
             "seven_eleven"      => "7eleven",
             "dd_ubp"            => "dd_ubp",
+            "billease"          => "billease",
         ];
 
         $response = FALSE;
@@ -1715,5 +1725,45 @@ class Data extends AbstractHelper
     public function getDdUbpMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_DDUBP_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBillEaseActive()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BILLEASE_ACTIVE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBillEaseTitle()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BILLEASE_TITLE, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBillEaseDescription()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BILLEASE_DESCRIPTION, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBillEaseMinOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BILLEASE_MIN_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBillEaseMaxOrderAmount()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_BILLEASE_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 }
