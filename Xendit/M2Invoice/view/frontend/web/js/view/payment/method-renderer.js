@@ -97,6 +97,10 @@ define(
             {
                 type: 'dd_ubp',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_ubp'
+            },
+            {
+                type: 'billease',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/billease'
             }
         );
         return Component.extend({});
