@@ -1,122 +1,133 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-  <preference for="Magento\Multishipping\Controller\Checkout\OverviewPost" type="Xendit\M2Invoice\Controller\Payment\OverviewPost" />
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Multishipping\Controller\Checkout\OverviewPost"
+                type="Xendit\M2Invoice\Controller\Payment\OverviewPost"/>
 
-  <!-- Facade configuration -->
-  <virtualType name="XenditFacade" type="Magento\Payment\Model\Method\Adapter">
-    <arguments>
-      <argument name="code" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
-      <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
-      <argument name="infoBlockType" xsi:type="string">Xendit\M2Invoice\Block\Info</argument>
-      <argument name="valueHandlerPool" xsi:type="object">XenditValueHandlerPool</argument>
-      <argument name="commandPool" xsi:type="object">XenditCommandPool</argument>
-    </arguments>
-  </virtualType>
+    <!-- Facade configuration -->
+    <virtualType name="XenditFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Xendit\M2Invoice\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">XenditValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">XenditCommandPool</argument>
+        </arguments>
+    </virtualType>
 
-  <!-- Config reader -->
-  <type name="Xendit\M2Invoice\Gateway\Config\Config">
-    <arguments>
-      <argument name="methodCode" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
-    </arguments>
-  </type>
+    <!-- Config reader -->
+    <type name="Xendit\M2Invoice\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Xendit\M2Invoice\Gateway\Config\Config::CODE</argument>
+        </arguments>
+    </type>
 
-  <!-- Command pool -->
-  <virtualType name="XenditCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
-    <arguments>
-      <argument name="commands" xsi:type="array">
-        <item name="initialize" xsi:type="string">XenditInitializeCommand</item>
-        <item name="refund" xsi:type="string">XenditRefundCommand</item>
-      </argument>
-    </arguments>
-  </virtualType>
+    <!-- Command pool -->
+    <virtualType name="XenditCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">XenditInitializeCommand</item>
+                <item name="refund" xsi:type="string">XenditRefundCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
 
-  <!-- Initialize command -->
-  <virtualType name="XenditInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
-    <arguments>
-      <argument name="requestBuilder" xsi:type="object">XenditInitializeRequest</argument>
-      <argument name="transferFactory" xsi:type="object">Xendit\M2Invoice\Gateway\Http\XenditTransferFactoryInterface</argument>
-      <argument name="client" xsi:type="object">Xendit\M2Invoice\Gateway\Http\Client\InitializeClient</argument>
-    </arguments>
-  </virtualType>
+    <!-- Initialize command -->
+    <virtualType name="XenditInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">XenditInitializeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">
+                Xendit\M2Invoice\Gateway\Http\XenditTransferFactoryInterface
+            </argument>
+            <argument name="client" xsi:type="object">Xendit\M2Invoice\Gateway\Http\Client\InitializeClient</argument>
+        </arguments>
+    </virtualType>
 
-  <!-- Refund command -->
-  <virtualType name="XenditRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
-    <arguments>
-      <argument name="requestBuilder" xsi:type="object">XenditRefundRequest</argument>
-      <argument name="transferFactory" xsi:type="object">Xendit\M2Invoice\Gateway\Http\XenditTransferFactoryInterface</argument>
-      <argument name="handler" xsi:type="object">Xendit\M2Invoice\Model\Handler\RefundHandler</argument>
-      <argument name="client" xsi:type="object">Xendit\M2Invoice\Gateway\Http\Client\RefundClient</argument>
-    </arguments>
-  </virtualType>
+    <!-- Refund command -->
+    <virtualType name="XenditRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">XenditRefundRequest</argument>
+            <argument name="transferFactory" xsi:type="object">
+                Xendit\M2Invoice\Gateway\Http\XenditTransferFactoryInterface
+            </argument>
+            <argument name="handler" xsi:type="object">Xendit\M2Invoice\Model\Handler\RefundHandler</argument>
+            <argument name="client" xsi:type="object">Xendit\M2Invoice\Gateway\Http\Client\RefundClient</argument>
+        </arguments>
+    </virtualType>
 
-  <!-- Initialization Request -->
-  <virtualType name="XenditInitializeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
-    <arguments>
-      <argument name="builders" xsi:type="array">
-        <item name="transaction" xsi:type="string">Xendit\M2Invoice\Gateway\Request\InitializationRequest</item>
-      </argument>
-    </arguments>
-  </virtualType>
+    <!-- Initialization Request -->
+    <virtualType name="XenditInitializeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transaction" xsi:type="string">Xendit\M2Invoice\Gateway\Request\InitializationRequest</item>
+            </argument>
+        </arguments>
+    </virtualType>
 
-  <!-- Refund Request -->
-  <virtualType name="XenditRefundRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
-    <arguments>
-      <argument name="builders" xsi:type="array">
-        <item name="transaction" xsi:type="string">Xendit\M2Invoice\Gateway\Request\RefundRequest</item>
-      </argument>
-    </arguments>
-  </virtualType>
+    <!-- Refund Request -->
+    <virtualType name="XenditRefundRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transaction" xsi:type="string">Xendit\M2Invoice\Gateway\Request\RefundRequest</item>
+            </argument>
+        </arguments>
+    </virtualType>
 
-  <type name="Xendit\M2Invoice\Gateway\Request\InitializationRequest">
-    <arguments>
-      <argument name="config" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
-    </arguments>
-  </type>
+    <type name="Xendit\M2Invoice\Gateway\Request\InitializationRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
 
-  <type name="Magento\Framework\Model\Entity\RepositoryFactory">
-    <arguments>
-      <argument name="entities" xsi:type="array">
-        <item name="Xendit\M2Invoice\Api\Data\PostInterface" xsi:type="string">Xendit\M2Invoice\Api\Data\PostRepositoryInterface
-        </item>
-      </argument>
-    </arguments>
-  </type>
+    <type name="Magento\Framework\Model\Entity\RepositoryFactory">
+        <arguments>
+            <argument name="entities" xsi:type="array">
+                <item name="Xendit\M2Invoice\Api\Data\PostInterface" xsi:type="string">
+                    Xendit\M2Invoice\Api\Data\PostRepositoryInterface
+                </item>
+            </argument>
+        </arguments>
+    </type>
 
-  <!-- Value handlers infrastructure -->
-  <virtualType name="XenditValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
-    <arguments>
-      <argument name="handlers" xsi:type="array">
-        <item name="default" xsi:type="string">XenditConfigValueHandler</item>
-      </argument>
-    </arguments>
-  </virtualType>
-  <virtualType name="XenditConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
-    <arguments>
-      <argument name="configInterface" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
-    </arguments>
-  </virtualType>
+    <!-- Value handlers infrastructure -->
+    <virtualType name="XenditValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">XenditConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="XenditConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
+        </arguments>
+    </virtualType>
 
-  <type name="Xendit\M2Invoice\Block\Info">
-    <arguments>
-      <argument name="config" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
-    </arguments>
-  </type>
+    <type name="Xendit\M2Invoice\Block\Info">
+        <arguments>
+            <argument name="config" xsi:type="object">Xendit\M2Invoice\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
 
-  <type name="Magento\Quote\Model\Quote\Payment">
-    <plugin name="xenditXenditQuotePayment" type="Xendit\M2Invoice\Plugin\QuotePaymentPlugin"/>
-  </type>
+    <type name="Magento\Quote\Model\Quote\Payment">
+        <plugin name="xenditXenditQuotePayment" type="Xendit\M2Invoice\Plugin\QuotePaymentPlugin"/>
+    </type>
 
-  <type name="Xendit\M2Invoice\Logger\Handler">
-    <arguments>
-      <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
-    </arguments>
-  </type>
-  <type name="Xendit\M2Invoice\Logger\Logger">
-    <arguments>
-      <argument name="name" xsi:type="string">Logger</argument>
-      <argument name="handlers" xsi:type="array">
-        <item name="system" xsi:type="object">Xendit\M2Invoice\Logger\Handler</item>
-      </argument>
-    </arguments>
-  </type>
+    <type name="Magento\Config\Model\Config\Structure\Element\Group">
+        <plugin name="xenditConfigElementGroup" type="Xendit\M2Invoice\Plugin\ConfigElementGroupPlugin"/>
+    </type>
+
+    <type name="Xendit\M2Invoice\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Xendit\M2Invoice\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">Logger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Xendit\M2Invoice\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
