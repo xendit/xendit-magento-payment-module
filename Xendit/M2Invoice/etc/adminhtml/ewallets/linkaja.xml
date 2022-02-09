@@ -25,10 +25,5 @@
             <frontend_class>validate-zero-or-greater</frontend_class>
             <config_path>payment/linkaja/max_order_total</config_path>
         </field>
-        <field id="currency" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-            <label>Used for currencies</label>
-            <config_path>payment/linkaja/currency</config_path>
-            <comment>Separate by comma (,) - Empty is used for all currencies</comment>
-        </field>
     </group>
 </include>
