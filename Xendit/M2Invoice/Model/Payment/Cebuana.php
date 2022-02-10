@@ -36,11 +36,11 @@ class Cebuana extends AbstractInvoice
         }
 
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-        if ($amount < $this->dataHelper->getPaymentMinOrderAmount($_code) || $amount > $this->dataHelper->getPaymentMaxOrderAmount($_code)) {
+        if ($amount < $this->dataHelper->getPaymentMinOrderAmount($this->_code) || $amount > $this->dataHelper->getPaymentMaxOrderAmount($this->_code)) {
             return false;
         }
 
-        if (!$this->dataHelper->getIsPaymentActive($_code) || !$this->dataHelper->getIsActive()) {
+        if (!$this->dataHelper->getIsPaymentActive($this->_code) || !$this->dataHelper->getIsActive()) {
             return false;
         }
 
