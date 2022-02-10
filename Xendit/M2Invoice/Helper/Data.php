@@ -5,24 +5,24 @@ namespace Xendit\M2Invoice\Helper;
 use Magento\Catalog\Model\Product;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\CustomerFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\DataObject;
+use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Filesystem\Driver\File;
+use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Invoice;
+use Magento\Sales\Model\Order\Payment\Transaction;
+use Magento\Sales\Model\OrderNotifier;
+use Magento\Sales\Model\Service\InvoiceService;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Xendit\M2Invoice\Model\Payment\Xendit;
-use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Store\Model\ScopeInterface;
-use Magento\Sales\Model\Service\InvoiceService;
-use Magento\Framework\DB\Transaction as DbTransaction;
-use Magento\Sales\Model\OrderNotifier;
-use Magento\Sales\Model\Order\Invoice;
-use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Payment\Transaction;
 
 /**
  * Class Data
@@ -238,6 +238,9 @@ class Data extends AbstractHelper
     const XML_PATH_BILLEASE_MIN_AMOUNT           = 'payment/billease/min_order_total';
     const XML_PATH_BILLEASE_MAX_AMOUNT           = 'payment/billease/max_order_total';
     const XML_PATH_BILLEASE_DESCRIPTION          = 'payment/billease/description';
+
+
+    const XML_PATH_PAYMENT_CURRENCY              = 'payment/%s/currency';
 
     /**
      * @var StoreManagerInterface
@@ -544,7 +547,8 @@ class Data extends AbstractHelper
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getXenditSubscriptionCallbackUrl($isMultishipping = false) {
+    public function getXenditSubscriptionCallbackUrl($isMultishipping = false)
+    {
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
 
         if ($isMultishipping) {
@@ -559,7 +563,8 @@ class Data extends AbstractHelper
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getCCCallbackUrl($isMultishipping = false) {
+    public function getCCCallbackUrl($isMultishipping = false)
+    {
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/cccallback';
 
         if ($isMultishipping) {
@@ -636,7 +641,8 @@ class Data extends AbstractHelper
      * @param $payment
      * @return bool|mixed
      */
-    public function xenditPaymentMethod( $payment ){
+    public function xenditPaymentMethod($payment)
+    {
 
         //method name => frontend routing
         $listPayment = [
@@ -665,7 +671,7 @@ class Data extends AbstractHelper
             "billease"          => "billease",
         ];
 
-        $response = FALSE;
+        $response = false;
         if (!!array_key_exists($payment, $listPayment)) {
             $response = $listPayment[$payment];
         }
@@ -681,7 +687,8 @@ class Data extends AbstractHelper
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function createMageOrder($orderData) {
+    public function createMageOrder($orderData)
+    {
         $store = $this->getStoreManager()->getStore();
         $websiteId = $this->getStoreManager()->getStore()->getWebsiteId();
 
@@ -714,7 +721,7 @@ class Data extends AbstractHelper
 
             $normalizedProductRequest = array_merge(
                 ['qty' => intval($item['qty'])],
-                array()
+                []
             );
             $quote->addProduct(
                 $product,
@@ -754,7 +761,7 @@ class Data extends AbstractHelper
         $orderData['payment']['cc_number'] = str_replace('X', '0', $orderData['masked_card_number']);
         $quote->getPayment()->importData($orderData['payment']);
 
-        foreach ($orderData['payment']['additional_information'] AS $key => $value) {
+        foreach ($orderData['payment']['additional_information'] as $key => $value) {
             $quote->getPayment()->setAdditionalInformation($key, $value);
         }
         $quote->getPayment()->setAdditionalInformation('xendit_is_subscription', true);
@@ -805,7 +812,7 @@ class Data extends AbstractHelper
         if ($order->getEntityId()) {
             $result['order_id'] = $order->getRealOrderId();
         } else {
-            $result = array('error' => 1, 'msg' => 'Error creating order');
+            $result = ['error' => 1, 'msg' => 'Error creating order'];
         }
 
         return $result;
@@ -881,7 +888,7 @@ class Data extends AbstractHelper
      */
     public function getBcaVaTitle()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_BCAVA_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(self::XML_PATH_BCAVA_TITLE, ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -1606,7 +1613,6 @@ class Data extends AbstractHelper
         return $this->scopeConfig->getValue(self::XML_PATH_GRABPAY_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
     }
 
-
     /**
      * @return mixed
      */
@@ -1765,5 +1771,19 @@ class Data extends AbstractHelper
     public function getBillEaseMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_BILLEASE_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @param string $payment
+     * @param string $currency
+     * @return bool
+     */
+    public function isAvailableOnCurrency(string $payment, string $currency): bool
+    {
+        $paymentCurrencies = $this->scopeConfig->getValue(sprintf(self::XML_PATH_PAYMENT_CURRENCY, $payment), ScopeInterface::SCOPE_STORE);
+        if(is_null($paymentCurrencies) || in_array($currency, array_map("trim", explode(',', $paymentCurrencies) ?? []))){
+            return true;
+        }
+        return false;
     }
 }

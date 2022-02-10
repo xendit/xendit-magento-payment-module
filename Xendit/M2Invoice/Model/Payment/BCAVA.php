@@ -35,7 +35,7 @@ class BCAVA extends AbstractInvoice
             return false;
         }
 
-        if ($this->getCurrency() != "IDR") {
+        if (!$this->isAvailableOnCurrency()) {
             return false;
         }
 
