@@ -101,7 +101,11 @@ define(
             {
                 type: 'billease',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/billease'
-            }
+            },
+            {
+                type: 'cebuana',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cebuana'
+            },
         );
         return Component.extend({});
     }

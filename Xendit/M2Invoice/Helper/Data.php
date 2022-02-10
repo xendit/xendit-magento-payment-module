@@ -669,6 +669,7 @@ class Data extends AbstractHelper
             "seven_eleven"      => "7eleven",
             "dd_ubp"            => "dd_ubp",
             "billease"          => "billease",
+            "cebuana"           => "cebuana",
         ];
 
         $response = false;
@@ -1771,6 +1772,34 @@ class Data extends AbstractHelper
     public function getBillEaseMaxOrderAmount()
     {
         return $this->scopeConfig->getValue(self::XML_PATH_BILLEASE_MAX_AMOUNT, ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * Refactored function calls
+     */
+    public function getIsPaymentActive($code)
+    {
+        return $this->scopeConfig->getValue("payment/$code/active", ScopeInterface::SCOPE_STORE);
+    }
+
+    public function getPaymentTitle($code)
+    {
+        return $this->scopeConfig->getValue("payment/$code/title", ScopeInterface::SCOPE_STORE);
+    }
+
+    public function getPaymentDescription($code)
+    {
+        return $this->scopeConfig->getValue("payment/$code/description", ScopeInterface::SCOPE_STORE);
+    }
+
+    public function getPaymentMinOrderAmount($code)
+    {
+        return $this->scopeConfig->getValue("payment/$code/min_order_total", ScopeInterface::SCOPE_STORE);
+    }
+
+    public function getPaymentMaxOrderAmount($code)
+    {
+        return $this->scopeConfig->getValue("payment/$code/max_order_total", ScopeInterface::SCOPE_STORE);
     }
 
     /**
