@@ -18,7 +18,6 @@
                 <private_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <test_validation_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <validation_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
-                <card_payment_type>popup</card_payment_type>
                 <allowed_method>all</allowed_method>
                 <external_id_prefix>magento-xendit</external_id_prefix>
             </xendit>

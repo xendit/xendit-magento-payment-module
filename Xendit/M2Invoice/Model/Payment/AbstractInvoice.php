@@ -224,22 +224,16 @@ class AbstractInvoice extends AbstractMethod
      */
     public function isAvailable(CartInterface $quote = null)
     {
-        if ($quote === null) {
-            return false;
-        }
-        // This is not work in multishipping
-        if ($this->dataHelper->getIsActive() === '0') {
+        if ($quote === null || !$this->dataHelper->getIsActive()) {
             return false;
         }
 
         $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
         if ($amount < $this->_minAmount || $amount > $this->_maxAmount) {
             return false;
         }
 
         $allowedMethod = $this->dataHelper->getAllowedMethod();
-
         if ($allowedMethod === 'specific') {
             $chosenMethods = $this->dataHelper->getChosenMethods();
             $currentCode = $this->_code;
@@ -248,8 +242,6 @@ class AbstractInvoice extends AbstractMethod
                 return false;
             }
         }
-
-        $cardPaymentType = $this->dataHelper->getCardPaymentType();
 
         if ($this->methodCode === 'CC_SUBSCRIPTION') {
             return true;

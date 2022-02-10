@@ -485,14 +485,6 @@ class Data extends AbstractHelper
     /**
      * @return mixed
      */
-    public function getCardPaymentType()
-    {
-        return $this->xendit->getCardPaymentType();
-    }
-
-    /**
-     * @return mixed
-     */
     public function getAllowedMethod()
     {
         return $this->xendit->getAllowedMethod();

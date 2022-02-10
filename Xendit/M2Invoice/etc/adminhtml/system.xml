@@ -53,7 +53,6 @@
                                 } else {
                                     paymentSelectionDescription.innerHTML = allPaymentMethodDescription;
                                     specificSelectionDescription.innerHTML = allPaymentMethodDescription;
-                                    shouldEnableCardForm(true);
                                     specificSelection.prop('disabled', true);
                                 }
                             }
@@ -81,22 +80,8 @@
                                     specificSelection.siblings('.note').children()[0].innerHTML = defaultText;
                                 }
                             }
-                            function shouldEnableCardForm(forceEnable) {
-                                var currentValue = specificSelection.val();
-                                var cardForm = jQuery("select[id*='xendit_card_payment_type']");
-
-                                if (
-                                    (currentValue !== null && currentValue.includes('cc')) ||
-                                    forceEnable
-                                ) {
-                                    cardForm.prop('disabled', false);
-                                } else {
-                                    cardForm.prop('disabled', true);
-                                }
-                            }
                             specificSelection.change(function () {
                                 shouldDisplayAdditionalKYCWarningMethod();
-                                shouldEnableCardForm();
                             });
 
                             dynamicShow();
