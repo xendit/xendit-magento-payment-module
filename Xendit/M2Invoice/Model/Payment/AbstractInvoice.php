@@ -352,4 +352,12 @@ class AbstractInvoice extends AbstractMethod
     {
         return $this->storeManager->getStore()->getCurrentCurrencyCode();
     }
+
+    /**
+     * @return bool
+     */
+    public function isAvailableOnCurrency()
+    {
+        return $this->dataHelper->isAvailableOnCurrency($this->_code, $this->getCurrency());
+    }
 }

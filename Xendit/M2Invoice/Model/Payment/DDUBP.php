@@ -35,7 +35,7 @@ class DDUBP extends AbstractInvoice
             return false;
         }
 
-        if ($this->getCurrency() != "PHP") {
+        if (!$this->isAvailableOnCurrency()) {
             return false;
         }
 
