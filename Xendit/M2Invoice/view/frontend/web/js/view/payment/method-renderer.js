@@ -106,6 +106,10 @@ define(
                 type: 'cebuana',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cebuana'
             },
+            {
+                type: 'dp_mlhuillier',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dp_mlhuillier'
+            },
         );
         return Component.extend({});
     }
