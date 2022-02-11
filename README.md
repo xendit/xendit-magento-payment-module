@@ -54,21 +54,35 @@ To activate this feature, you need to follow this additional steps:
 
 ## Supported Payment Method
 - Credit and Debit Card 
--- Installment
--- Subscription
-- BCA VA
-- BNI VA
-- BRI VA
-- Mandiri VA
-- Permata VA
-- Alfamart
-- OVO
-- DANA
-- LinkAja
-- Indomaret
-- Kredivo
-- QRIS
-- Direct Debit BRI
+  - Installment
+  - Subscription
+- Virtual Accounts
+  - BCA
+  - BNI
+  - BRI
+  - Mandiri
+  - Permata
+- Retail Outlets
+  - Alfamart
+  - Indomaret
+  - 7-Eleven (PH)
+  - Cebuana (PH)
+- eWallets
+  - OVO
+  - DANA
+  - LinkAja
+  - QRIS
+  - ShopeePay
+  - GrabPay (PH)
+  - GCash (PH)
+  - PayMaya (PH)
+- PayLater
+  - Kredivo
+  - BillEase (PH)
+- Direct Debit
+  - BRI
+  - BPI (PH)
+  - UBP (PH)
 
 ## Refund Support
 Since v1.3.0, online refund (full and partial) is supported for payment through credit and debit card channel.

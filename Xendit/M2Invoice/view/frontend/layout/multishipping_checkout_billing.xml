@@ -28,6 +28,7 @@
                     <item name="seven_eleven" xsi:type="string">Xendit_M2Invoice::multishipping/seven_eleven.phtml</item>
                     <item name="dd_ubp" xsi:type="string">Xendit_M2Invoice::multishipping/dd_ubp.phtml</item>
                     <item name="billease" xsi:type="string">Xendit_M2Invoice::multishipping/billease.phtml</item>
+                    <item name="cebuana" xsi:type="string">Xendit_M2Invoice::multishipping/cebuana.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>

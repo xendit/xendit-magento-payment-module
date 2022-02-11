@@ -82,14 +82,6 @@ class Xendit extends AbstractMethod
     /**
      * @return mixed
      */
-    public function getCardPaymentType()
-    {
-        return $this->getConfigData('card_payment_type');
-    }
-
-    /**
-     * @return mixed
-     */
     public function getAllowedMethod()
     {
         return $this->getConfigData('allowed_method');
