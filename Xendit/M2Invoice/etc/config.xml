@@ -347,8 +347,8 @@
                 <active>1</active>
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Palawan</model>
-                <title>Palawan</title>
-                <description>Pay for orders using Palawan via Xendit</description>
+                <title>Palawan Express Pera Padala</title>
+                <description>Pay for orders using Palawan Express Pera Padala via Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>20000</max_order_total>
                 <is_gateway>1</is_gateway>

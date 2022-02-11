@@ -67,7 +67,7 @@ To activate this feature, you need to follow this additional steps:
   - Indomaret
   - 7-Eleven (PH)
   - Cebuana (PH)
-  - Palawan (PH)
+  - Palawan Express Pera Padala (PH)
 - eWallets
   - OVO
   - DANA
