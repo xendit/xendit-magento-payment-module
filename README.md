@@ -58,6 +58,7 @@ To activate this feature, you need to follow this additional steps:
   - Subscription
 - Virtual Accounts
   - BCA
+  - BJB
   - BNI
   - BRI
   - Mandiri
