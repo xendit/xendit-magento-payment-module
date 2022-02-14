@@ -22,6 +22,7 @@ class ChosenMethod implements ArrayInterface
         $options = [
             ['value' => 'alfamart', 'label' => __('Alfamart')],
             ['value' => 'bcava', 'label' => __('Bank Transfer BCA')],
+            ['value' => 'bjbva', 'label' => __('Bank Transfer BJB')],
             ['value' => 'bniva', 'label' => __('Bank Transfer BNI')],
             ['value' => 'briva', 'label' => __('Bank Transfer BRI')],
             ['value' => 'mandiriva', 'label' => __('Bank Transfer Mandiri')],

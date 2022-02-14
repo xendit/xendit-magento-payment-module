@@ -49,6 +49,20 @@
                 <sort_order>2</sort_order>
                 <currency>IDR</currency>
             </bcava>
+            <bjbva>
+                <active>1</active>
+                <payment_action>initialize</payment_action><!-- You can use another method like capture -->
+                <model>Xendit\M2Invoice\Model\Payment\BJBVA</model>
+                <title>Bank Transfer - BJB</title>
+                <description>Bayar pesanan dengan transfer bank BJB dengan virtual account melalui Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>50000000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>3</sort_order>
+                <currency>IDR</currency>
+            </bjbva>
             <bniva>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -60,7 +74,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>3</sort_order>
+                <sort_order>4</sort_order>
                 <currency>IDR</currency>
             </bniva>
             <briva>
@@ -74,7 +88,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>4</sort_order>
+                <sort_order>5</sort_order>
                 <currency>IDR</currency>
             </briva>
             <mandiriva>
@@ -88,7 +102,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>5</sort_order>
+                <sort_order>6</sort_order>
                 <currency>IDR</currency>
             </mandiriva>
             <permatava>
@@ -102,7 +116,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>6</sort_order>
+                <sort_order>7</sort_order>
                 <currency>IDR</currency>
             </permatava>
             <cc>
@@ -115,7 +129,7 @@
                 <max_order_total>50000000000</max_order_total>
                 <order_status>pending_payment</order_status><!-- set default order -->
                 <cctypes>VI,MC,AE,JCB</cctypes>
-                <sort_order>7</sort_order>
+                <sort_order>8</sort_order>
             </cc>
             <cc_subscription>
                 <active>0</active>
@@ -129,7 +143,7 @@
                 <interval_count>1</interval_count>
                 <order_status>pending_payment</order_status><!-- set default order -->
                 <cctypes>VI,MC,AE,JCB</cctypes>
-                <sort_order>8</sort_order>
+                <sort_order>9</sort_order>
             </cc_subscription>
             <dana>
                 <active>1</active>
@@ -142,7 +156,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>9</sort_order>
+                <sort_order>10</sort_order>
                 <currency>IDR</currency>
             </dana>
             <dd_bri>
@@ -156,7 +170,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>10</sort_order>
+                <sort_order>11</sort_order>
                 <currency>IDR</currency>
             </dd_bri>
             <indomaret>
@@ -170,7 +184,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>11</sort_order>
+                <sort_order>12</sort_order>
                 <currency>IDR</currency>
             </indomaret>
             <kredivo>
@@ -184,7 +198,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>12</sort_order>
+                <sort_order>13</sort_order>
                 <currency>IDR</currency>
             </kredivo>
             <linkaja>
@@ -198,7 +212,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>13</sort_order>
+                <sort_order>14</sort_order>
                 <currency>IDR</currency>
             </linkaja>
             <ovo>
@@ -212,7 +226,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>14</sort_order>
+                <sort_order>15</sort_order>
                 <currency>IDR</currency>
             </ovo>
             <qris>
@@ -226,7 +240,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>15</sort_order>
+                <sort_order>16</sort_order>
                 <currency>IDR</currency>
             </qris>
             <shopeepay>
@@ -240,7 +254,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>16</sort_order>
+                <sort_order>17</sort_order>
                 <currency>IDR</currency>
             </shopeepay>
 
@@ -256,7 +270,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>17</sort_order>
+                <sort_order>18</sort_order>
                 <currency>PHP</currency>
             </seven_eleven>
             <billease>
@@ -270,7 +284,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>18</sort_order>
+                <sort_order>19</sort_order>
                 <currency>PHP</currency>
             </billease>
             <cebuana>
@@ -284,7 +298,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>19</sort_order>
+                <sort_order>20</sort_order>
                 <currency>PHP</currency>
             </cebuana>
             <dd_bpi>
@@ -298,7 +312,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>20</sort_order>
+                <sort_order>21</sort_order>
                 <currency>PHP</currency>
             </dd_bpi>
             <dd_ubp>
@@ -312,7 +326,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>21</sort_order>
+                <sort_order>22</sort_order>
                 <currency>PHP</currency>
             </dd_ubp>
             <dp_ecpay_loan>
@@ -326,7 +340,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>22</sort_order>
+                <sort_order>23</sort_order>
                 <currency>PHP</currency>
             </dp_ecpay_loan>
             <gcash>
@@ -340,7 +354,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>23</sort_order>
+                <sort_order>24</sort_order>
                 <currency>PHP</currency>
             </gcash>
             <grabpay>
@@ -354,7 +368,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>23</sort_order>
+                <sort_order>25</sort_order>
                 <currency>PHP</currency>
             </grabpay>
             <dp_mlhuillier>
@@ -368,7 +382,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>24</sort_order>
+                <sort_order>26</sort_order>
                 <currency>PHP</currency>
             </dp_mlhuillier>
             <dp_palawan>
@@ -382,7 +396,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>25</sort_order>
+                <sort_order>27</sort_order>
                 <currency>PHP</currency>
             </dp_palawan>
             <paymaya>
@@ -396,7 +410,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>26</sort_order>
+                <sort_order>28</sort_order>
                 <currency>PHP</currency>
             </paymaya>
         </payment>

@@ -642,6 +642,7 @@ class Data extends AbstractHelper
             "cc_subscription"   => "cc_subscription",
             "bcava"             => "bca",
             "bniva"             => "bni",
+            "bjbva"             => "bjb",
             "briva"             => "bri",
             "mandiriva"         => "mandiri",
             "permatava"         => "permata",
