@@ -81,5 +81,8 @@ https://github.com/magento/magento2/blob/2.2.0-rc2.1/app/code/Magento/Multishipp
         <method name='cebuana'>
             <allow_multiple_address>1</allow_multiple_address>
         </method>
+        <method name='palawan'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
     </methods>
 </payment>
