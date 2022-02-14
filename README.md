@@ -66,7 +66,9 @@ To activate this feature, you need to follow this additional steps:
   - Alfamart
   - Indomaret
   - 7-Eleven (PH)
+  - ECPay Loan (PH)
   - Cebuana (PH)
+  - M Lhuillier (PH)
   - Palawan Express Pera Padala (PH)
 - eWallets
   - OVO

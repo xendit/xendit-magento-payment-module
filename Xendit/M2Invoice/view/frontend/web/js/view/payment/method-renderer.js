@@ -114,6 +114,10 @@ define(
                 type: 'dp_mlhuillier',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dp_mlhuillier'
             },
+            {
+                type: 'dp_ecpay_loan',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dp_ecpay_loan'
+            },
         );
         return Component.extend({});
     }

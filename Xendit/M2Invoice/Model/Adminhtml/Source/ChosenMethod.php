@@ -46,6 +46,7 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'cebuana', 'label' => __('Cebuana')],
             ['value' => 'dp_palawan', 'label' => __('Palawan Express Pera Padala')],
             ['value' => 'dp_mlhuillier', 'label' => __('M Lhuillier')],
+            ['value' => 'dp_ecpay_loan', 'label' => __('ECPay Loans')],
         ];
 
         if (!$isMultiselect) {
