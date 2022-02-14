@@ -29,6 +29,7 @@
                     <item name="dd_ubp" xsi:type="string">Xendit_M2Invoice::multishipping/dd_ubp.phtml</item>
                     <item name="billease" xsi:type="string">Xendit_M2Invoice::multishipping/billease.phtml</item>
                     <item name="cebuana" xsi:type="string">Xendit_M2Invoice::multishipping/cebuana.phtml</item>
+                    <item name="palawan" xsi:type="string">Xendit_M2Invoice::multishipping/palawan.phtml</item>
                     <item name="dp_mlhuillier" xsi:type="string">Xendit_M2Invoice::multishipping/mlhuillier.phtml</item>
                 </argument>
             </arguments>

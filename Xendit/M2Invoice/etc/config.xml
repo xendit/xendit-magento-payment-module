@@ -259,20 +259,6 @@
                 <sort_order>17</sort_order>
                 <currency>PHP</currency>
             </seven_eleven>
-            <cebuana>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\Cebuana</model>
-                <title>Cebuana</title>
-                <description>Pay for orders using Cebuana via Xendit</description>
-                <min_order_total>1</min_order_total>
-                <max_order_total>30000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>18</sort_order>
-                <currency>PHP</currency>
-            </cebuana>
             <billease>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -284,9 +270,23 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>19</sort_order>
+                <sort_order>18</sort_order>
                 <currency>PHP</currency>
             </billease>
+            <cebuana>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Cebuana</model>
+                <title>Cebuana</title>
+                <description>Pay for orders using Cebuana via Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>30000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>19</sort_order>
+                <currency>PHP</currency>
+            </cebuana>
             <dd_bpi>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -357,6 +357,20 @@
                 <sort_order>24</sort_order>
                 <currency>PHP</currency>
             </dp_mlhuillier>
+            <palawan>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Palawan</model>
+                <title>Palawan Express Pera Padala</title>
+                <description>Pay for orders using Palawan Express Pera Padala via Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>20000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>25</sort_order>
+                <currency>PHP</currency>
+            </palawan>
             <paymaya>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -368,7 +382,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>25</sort_order>
+                <sort_order>26</sort_order>
                 <currency>PHP</currency>
             </paymaya>
         </payment>
