@@ -110,6 +110,10 @@ define(
                 type: 'palawan',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/palawan'
             },
+            {
+                type: 'dp_mlhuillier',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dp_mlhuillier'
+            },
         );
         return Component.extend({});
     }

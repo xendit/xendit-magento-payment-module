@@ -225,6 +225,12 @@ class ConfigProvider implements ConfigProviderInterface
                     'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount('palawan'),
                     'description' => $this->xenditHelper->getPaymentDescription('palawan')
                 ],
+                'dp_mlhuillier' => [
+                    'title' => $this->xenditHelper->getPaymentTitle('dp_mlhuillier'),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount('dp_mlhuillier'),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount('dp_mlhuillier'),
+                    'description' => $this->xenditHelper->getPaymentDescription('dp_mlhuillier')
+                ],
             ]
         ];
 

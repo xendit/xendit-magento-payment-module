@@ -84,5 +84,8 @@ https://github.com/magento/magento2/blob/2.2.0-rc2.1/app/code/Magento/Multishipp
         <method name='palawan'>
             <allow_multiple_address>1</allow_multiple_address>
         </method>
+        <method name='dp_mlhuillier'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
     </methods>
 </payment>
