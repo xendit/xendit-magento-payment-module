@@ -1,29 +1,29 @@
 <?xml version="1.0"?>
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-    <group id="palawan" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+    <group id="dp_palawan" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
         <label>Palawan Express Pera Padala</label>
         <field id="active" translate="label comment" sortOrder="1" type="select" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Enable</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-            <config_path>payment/palawan/active</config_path>
+            <config_path>payment/dp_palawan/active</config_path>
         </field>
         <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Title</label>
-            <config_path>payment/palawan/title</config_path>
+            <config_path>payment/dp_palawan/title</config_path>
         </field>
         <field id="description" translate="label" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Description</label>
-            <config_path>payment/palawan/description</config_path>
+            <config_path>payment/dp_palawan/description</config_path>
         </field>
         <field id="min_order_total" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Minimum Order Total</label>
             <frontend_class>validate-zero-or-greater</frontend_class>
-            <config_path>payment/palawan/min_order_total</config_path>
+            <config_path>payment/dp_palawan/min_order_total</config_path>
         </field>
         <field id="max_order_total" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <label>Maximum Order Total</label>
             <frontend_class>validate-zero-or-greater</frontend_class>
-            <config_path>payment/palawan/max_order_total</config_path>
+            <config_path>payment/dp_palawan/max_order_total</config_path>
         </field>
     </group>
 </include>

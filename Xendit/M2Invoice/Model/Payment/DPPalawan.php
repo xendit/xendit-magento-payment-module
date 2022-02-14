@@ -5,10 +5,10 @@ namespace Xendit\M2Invoice\Model\Payment;
 use Magento\Quote\Api\Data\CartInterface;
 
 /**
- * Class Palawan
+ * Class DPPalawan
  * @package Xendit\M2Invoice\Model\Payment
  */
-class Palawan extends AbstractInvoice
+class DPPalawan extends AbstractInvoice
 {
     /**
      * Payment Method feature
@@ -22,8 +22,8 @@ class Palawan extends AbstractInvoice
      *
      * @var string
      */
-    protected $_code = 'palawan';
-    protected $methodCode = 'Palawan';
+    protected $_code = 'dp_palawan';
+    protected $methodCode = 'DP_PALAWAN';
 
     /**
      * @param CartInterface|null $quote

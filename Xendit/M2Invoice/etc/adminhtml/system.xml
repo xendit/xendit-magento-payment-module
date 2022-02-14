@@ -183,7 +183,7 @@
                         <include path="Xendit_M2Invoice::retail_outlets/indomaret.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/seven_eleven.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/cebuana.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/palawan.xml"/>
+                        <include path="Xendit_M2Invoice::retail_outlets/dp_palawan.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/dp_mlhuillier.xml"/>
                     </group>
 

@@ -11,12 +11,12 @@
     ], function (layout, $) {
         $(function () {
             var paymentMethodData = {
-                method: 'palawan'
+                method: 'dp_palawan'
             };
             layout([
                 {
-                    component: 'Xendit_M2Invoice/js/view/payment/method-renderer/multishipping/palawan',
-                    name: 'payment_method_palawan',
+                    component: 'Xendit_M2Invoice/js/view/payment/method-renderer/multishipping/dp_palawan',
+                    name: 'payment_method_dp_palawan',
                     method: paymentMethodData.method,
                     item: paymentMethodData
                 }

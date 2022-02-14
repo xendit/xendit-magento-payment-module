@@ -357,10 +357,10 @@
                 <sort_order>24</sort_order>
                 <currency>PHP</currency>
             </dp_mlhuillier>
-            <palawan>
+            <dp_palawan>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\Palawan</model>
+                <model>Xendit\M2Invoice\Model\Payment\DPPalawan</model>
                 <title>Palawan Express Pera Padala</title>
                 <description>Pay for orders using Palawan Express Pera Padala via Xendit</description>
                 <min_order_total>1</min_order_total>
@@ -370,7 +370,7 @@
                 <can_use_checkout>1</can_use_checkout>
                 <sort_order>25</sort_order>
                 <currency>PHP</currency>
-            </palawan>
+            </dp_palawan>
             <paymaya>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
