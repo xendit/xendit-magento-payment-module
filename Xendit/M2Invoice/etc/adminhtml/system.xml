@@ -164,6 +164,7 @@
                         <include path="Xendit_M2Invoice::virtual_account/bjbva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/bniva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/briva.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/bsiva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/mandiriva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/permatava.xml"/>
                     </group>

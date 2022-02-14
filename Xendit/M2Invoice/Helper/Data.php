@@ -644,6 +644,7 @@ class Data extends AbstractHelper
             "bniva"             => "bni",
             "bjbva"             => "bjb",
             "briva"             => "bri",
+            "bsiva"             => "bsi",
             "mandiriva"         => "mandiri",
             "permatava"         => "permata",
             "alfamart"          => "alfamart",

@@ -11,12 +11,12 @@
     ], function (layout, $) {
         $(function () {
             var paymentMethodData = {
-                method: 'dp_mlhuillier'
+                method: 'bsiva'
             };
             layout([
                 {
-                    component: 'Xendit_M2Invoice/js/view/payment/method-renderer/multishipping/dp_mlhuillier',
-                    name: 'payment_method_dp_mlhuillier',
+                    component: 'Xendit_M2Invoice/js/view/payment/method-renderer/multishipping/bsiva',
+                    name: 'payment_method_bsiva',
                     method: paymentMethodData.method,
                     item: paymentMethodData
                 }

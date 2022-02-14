@@ -27,6 +27,9 @@ https://github.com/magento/magento2/blob/2.2.0-rc2.1/app/code/Magento/Multishipp
         <method name='briva'>
             <allow_multiple_address>1</allow_multiple_address>
         </method>
+        <method name='bsiva'>
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
         <method name='permatava'>
             <allow_multiple_address>1</allow_multiple_address>
         </method>

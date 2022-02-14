@@ -122,6 +122,10 @@ define(
                 type: 'bjbva',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bjbva'
             },
+            {
+                type: 'bsiva',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bsiva'
+            },
         );
         return Component.extend({});
     }
