@@ -107,8 +107,8 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cebuana'
             },
             {
-                type: 'palawan',
-                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/palawan'
+                type: 'dp_palawan',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dp_palawan'
             },
             {
                 type: 'dp_mlhuillier',

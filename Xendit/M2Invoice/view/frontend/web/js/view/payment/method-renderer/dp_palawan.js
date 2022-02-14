@@ -25,11 +25,11 @@ define(
             },
 
             getCode: function() {
-                return 'palawan';
+                return 'dp_palawan';
             },
 
             getMethod: function() {
-                return 'PALAWAN';
+                return 'DP_PALAWAN';
             },
 
             getTest: function() {
@@ -37,7 +37,7 @@ define(
             },
 
             getDescription: function() {
-                return window.checkoutConfig.payment.palawan.description;
+                return window.checkoutConfig.payment.dp_palawan.description;
             },
 
             getTestDescription: function () {

@@ -1,6 +1,6 @@
 define(
     [
-        'Xendit_M2Invoice/js/view/payment/method-renderer/palawan'
+        'Xendit_M2Invoice/js/view/payment/method-renderer/dp_palawan'
     ],
     function (
         Component

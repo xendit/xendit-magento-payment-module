@@ -662,7 +662,7 @@ class Data extends AbstractHelper
             "dd_ubp"            => "dd_ubp",
             "billease"          => "billease",
             "cebuana"           => "cebuana",
-            "palawan"           => "palawan",
+            "dp_palawan"        => "dp_palawan",
             "dp_mlhuillier"     => "dp_mlhuillier",
         ];
 
