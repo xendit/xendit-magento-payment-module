@@ -118,6 +118,10 @@ define(
                 type: 'dp_ecpay_loan',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dp_ecpay_loan'
             },
+            {
+                type: 'bjbva',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bjbva'
+            },
         );
         return Component.extend({});
     }
