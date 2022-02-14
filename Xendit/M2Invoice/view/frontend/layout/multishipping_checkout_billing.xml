@@ -30,7 +30,8 @@
                     <item name="billease" xsi:type="string">Xendit_M2Invoice::multishipping/billease.phtml</item>
                     <item name="cebuana" xsi:type="string">Xendit_M2Invoice::multishipping/cebuana.phtml</item>
                     <item name="dp_palawan" xsi:type="string">Xendit_M2Invoice::multishipping/dp_palawan.phtml</item>
-                    <item name="dp_mlhuillier" xsi:type="string">Xendit_M2Invoice::multishipping/mlhuillier.phtml</item>
+                    <item name="dp_mlhuillier" xsi:type="string">Xendit_M2Invoice::multishipping/dp_mlhuillier.phtml</item>
+                    <item name="dp_ecpay_loan" xsi:type="string">Xendit_M2Invoice::multishipping/dp_ecpay_loan.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>
