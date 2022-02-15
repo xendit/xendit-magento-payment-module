@@ -33,6 +33,7 @@
                     <item name="dp_mlhuillier" xsi:type="string">Xendit_M2Invoice::multishipping/dp_mlhuillier.phtml</item>
                     <item name="dp_ecpay_loan" xsi:type="string">Xendit_M2Invoice::multishipping/dp_ecpay_loan.phtml</item>
                     <item name="bjbva" xsi:type="string">Xendit_M2Invoice::multishipping/bjbva.phtml</item>
+                    <item name="bsiva" xsi:type="string">Xendit_M2Invoice::multishipping/bsiva.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>

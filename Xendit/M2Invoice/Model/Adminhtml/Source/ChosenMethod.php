@@ -25,6 +25,7 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'bjbva', 'label' => __('Bank Transfer BJB')],
             ['value' => 'bniva', 'label' => __('Bank Transfer BNI')],
             ['value' => 'briva', 'label' => __('Bank Transfer BRI')],
+            ['value' => 'bsiva', 'label' => __('Bank Transfer BSI')],
             ['value' => 'mandiriva', 'label' => __('Bank Transfer Mandiri')],
             ['value' => 'permatava', 'label' => __('Bank Transfer Permata')],
             ['value' => 'cc', 'label' => __('Credit Card')],
