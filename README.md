@@ -61,6 +61,7 @@ To activate this feature, you need to follow this additional steps:
   - BJB
   - BNI
   - BRI
+  - BSI
   - Mandiri
   - Permata
 - Retail Outlets
