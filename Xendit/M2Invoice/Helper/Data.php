@@ -1812,4 +1812,13 @@ class Data extends AbstractHelper
         }
         return false;
     }
+
+    /**
+     * @param $amount
+     * @return false|float
+     */
+    public function truncateDecimal($amount)
+    {
+        return floor((float)$amount);
+    }
 }

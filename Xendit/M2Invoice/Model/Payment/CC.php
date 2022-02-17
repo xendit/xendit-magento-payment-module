@@ -66,7 +66,7 @@ class CC extends AbstractInvoice
 
 
             $refundData = [
-                'amount' => $this->getCurrency() == 'IDR' ? ceil($amount) : $amount,
+                'amount' => $this->getCurrency() == 'IDR' ? $this->dataHelper->truncateDecimal($amount) : $amount,
                 'external_id' => $this->dataHelper->getExternalId($orderId, true)
             ];
             $refund = $this->requestRefund($chargeId, $refundData);
