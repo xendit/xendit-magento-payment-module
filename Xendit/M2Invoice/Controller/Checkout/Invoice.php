@@ -65,10 +65,10 @@ class Invoice extends AbstractAction
 
         $shippingAddress = $order->getShippingAddress();
         $address = [
-            'street_line1'  => $shippingAddress->getData('street') ?: 'N/A',
-            'city'          => $shippingAddress->getData('city') ?: 'N/A',
-            'state'         => $shippingAddress->getData('region') ?: 'N/A',
-            'postal_code'   => $shippingAddress->getData('postcode') ?: 'N/A',
+            'street_line1'  => $shippingAddress->getData('street') ?: 'n/a',
+            'city'          => $shippingAddress->getData('city') ?: 'n/a',
+            'state'         => $shippingAddress->getData('region') ?: 'n/a',
+            'postal_code'   => $shippingAddress->getData('postcode') ?: 'n/a',
             'country'       => $shippingAddress->getData('country_id') ?: 'ID'
         ];
 
@@ -87,10 +87,10 @@ class Invoice extends AbstractAction
             $categoryName = implode(', ', $categories);
             $item['reference_id'] = $product->getId();
             $item['name'] = $product->getName();
-            $item['category'] = $categoryName ?: 'Uncategorized';
+            $item['category'] = $categoryName ?: 'n/a';
             $item['price'] = $product->getPrice();
             $item['type'] = 'PRODUCT';
-            $item['url'] = $product->getProductUrl();
+            $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
             $item['quantity'] = (int) $orderItem->getQtyOrdered();
             $items[] = (object) $item;
         }
@@ -109,10 +109,10 @@ class Invoice extends AbstractAction
             'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(),
             'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderId),
             'customer'              => (object) [
-                'given_names'       => $order->getCustomerFirstname() ?: 'N/A',
-                'surname'           => $order->getCustomerLastname() ?: 'N/A',
+                'given_names'       => $order->getCustomerFirstname() ?: 'n/a',
+                'surname'           => $order->getCustomerLastname() ?: 'n/a',
                 'email'             => $order->getCustomerEmail() ?: 'noreply@mail.com' ,
-                'mobile_number'     => $shippingAddress->getTelephone() ?: 'N/A',
+                'mobile_number'     => $shippingAddress->getTelephone() ?: 'n/a',
                 'addresses'         => [(object) $address]
             ],
             'items'                 => $items
