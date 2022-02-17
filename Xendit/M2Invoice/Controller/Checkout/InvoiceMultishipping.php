@@ -62,10 +62,10 @@ class InvoiceMultishipping extends AbstractAction
                 $currency = $order->getBaseCurrencyCode();
 
                 $address = [
-                    'street_line1'  => $shippingAddress->getData('street') ?: 'N/A',
-                    'city'          => $shippingAddress->getData('city') ?: 'N/A',
-                    'state'         => $shippingAddress->getData('region') ?: 'N/A',
-                    'postal_code'   => $shippingAddress->getData('postcode') ?: 'N/A',
+                    'street_line1'  => $shippingAddress->getData('street') ?: 'n/a',
+                    'city'          => $shippingAddress->getData('city') ?: 'n/a',
+                    'state'         => $shippingAddress->getData('region') ?: 'n/a',
+                    'postal_code'   => $shippingAddress->getData('postcode') ?: 'n/a',
                     'country'       => $shippingAddress->getData('country_id') ?: 'ID'
                 ];
                 $addresses[] = (object) $address;
@@ -83,7 +83,7 @@ class InvoiceMultishipping extends AbstractAction
                     $categoryName = implode(', ', $categories);
                     $item['reference_id'] = $product->getId();
                     $item['name'] = $product->getName();
-                    $item['category'] = $categoryName ?: 'N/A';
+                    $item['category'] = $categoryName ?: 'n/a';
                     $item['price'] = $product->getPrice();
                     $item['type'] = 'PRODUCT';
                     $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
@@ -117,10 +117,10 @@ class InvoiceMultishipping extends AbstractAction
                 'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(true),
                 'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true),
                 'customer'              => (object) [
-                    'given_names'       => $order->getCustomerFirstname() ?: 'N/A',
-                    'surname'           => $order->getCustomerLastname() ?: 'N/A',
+                    'given_names'       => $order->getCustomerFirstname() ?: 'n/a',
+                    'surname'           => $order->getCustomerLastname() ?: 'n/a',
                     'email'             => $billingEmail,
-                    'mobile_number'     => $shippingAddress->getTelephone() ?: 'N/A',
+                    'mobile_number'     => $shippingAddress->getTelephone() ?: 'n/a',
                     'addresses'         => $addresses
                 ],
                 'items'                 => $items
