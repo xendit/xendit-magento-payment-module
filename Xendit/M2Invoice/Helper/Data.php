@@ -1819,6 +1819,6 @@ class Data extends AbstractHelper
      */
     public function truncateDecimal($amount)
     {
-        return floor((float)$amount);
+        return floor((double)$amount);
     }
 }
