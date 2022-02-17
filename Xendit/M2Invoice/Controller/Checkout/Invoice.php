@@ -87,10 +87,10 @@ class Invoice extends AbstractAction
             $categoryName = implode(', ', $categories);
             $item['reference_id'] = $product->getId();
             $item['name'] = $product->getName();
-            $item['category'] = $categoryName ?: 'Uncategorized';
+            $item['category'] = $categoryName ?: 'N/A';
             $item['price'] = $product->getPrice();
             $item['type'] = 'PRODUCT';
-            $item['url'] = $product->getProductUrl();
+            $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
             $item['quantity'] = (int) $orderItem->getQtyOrdered();
             $items[] = (object) $item;
         }

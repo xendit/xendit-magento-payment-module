@@ -51,11 +51,11 @@ class InvoiceMultishipping extends AbstractAction
                 $order->setState(Order::STATE_PENDING_PAYMENT)
                       ->setStatus(Order::STATE_PENDING_PAYMENT)
                       ->addStatusHistoryComment("Pending Xendit payment.");
-                    
+
                 array_push($orders, $order);
-                
+
                 $order->save();
-    
+
                 $transactionAmount  += $order->getTotalDue();
                 $billingEmail = $order->getCustomerEmail() ?: 'noreply@mail.com';
                 $shippingAddress = $order->getShippingAddress();
@@ -83,10 +83,10 @@ class InvoiceMultishipping extends AbstractAction
                     $categoryName = implode(', ', $categories);
                     $item['reference_id'] = $product->getId();
                     $item['name'] = $product->getName();
-                    $item['category'] = $categoryName ?: 'Uncategorized';
+                    $item['category'] = $categoryName ?: 'N/A';
                     $item['price'] = $product->getPrice();
                     $item['type'] = 'PRODUCT';
-                    $item['url'] = $product->getProductUrl();
+                    $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
                     $item['quantity'] = (int) $orderItem->getQtyOrdered();
                     $items[] = (object) $item;
                 }
@@ -199,7 +199,7 @@ class InvoiceMultishipping extends AbstractAction
             if (isset($invoice['expiry_date'])) {
                 $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
             }
-            
+
             $order->save();
         }
     }
