@@ -186,9 +186,9 @@ class CCSubscription extends AbstractInvoice
             $isFullRefund = !$canRefundMore &&
                 0 == (double)$order->getBaseTotalOnlineRefunded() + (double)$order->getBaseTotalOfflineRefunded();
 
-            
+
             $refundData = [
-                'amount' => $amount,
+                'amount' => $this->getCurrency() == 'IDR' ? $this->dataHelper->truncateDecimal($amount) : $amount,
                 'external_id' => $this->dataHelper->getExternalId($orderId, true)
             ];
             $refund = $this->requestRefund($chargeId, $refundData);
