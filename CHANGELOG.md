@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## 3.4.0 (2022-02-18)
+Features:
+
+- Add new PH payment methods:
+  - 7Eleven
+  - BillEase
+  - Cebuana
+  - Direct Debit (BPI)
+  - Direct Debit (UBP)
+  - ECPay Loans
+  - GCash
+  - GrabPay
+  - M Lhuillier
+  - Palawan
+  - Paymaya
+
+- Add new ID payment methods:
+  - Bank Transfer - BJB
+  - Bank Transfer - BSI
+
+Improvements:
+- Fix truncate decimal amount on refunding for Credit card
+- Hide/Show the payment setting based on the currency
+
 ## 3.3.1 (2021-11-25)
 Improvements:
 - Fix rounding amount on create invoice

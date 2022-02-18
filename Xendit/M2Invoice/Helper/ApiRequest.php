@@ -69,7 +69,7 @@ class ApiRequest
             $this->magentoCurl->setHeaders($headers);
 
             $this->magentoCurl->setTimeout(30);
-            
+
             if ($method == Request::METHOD_GET) {
                 // GET request
                 $this->magentoCurl->get($url);
@@ -110,7 +110,7 @@ class ApiRequest
             'Content-Type' => 'application/json',
             'x-plugin-name' => 'MAGENTO2',
             'user-agent' => 'Magento 2 Module',
-            'x-plugin-version' => '3.3.1'
+            'x-plugin-version' => '3.4.0'
         ];
 
         if ($preferredMethod !== null) {
