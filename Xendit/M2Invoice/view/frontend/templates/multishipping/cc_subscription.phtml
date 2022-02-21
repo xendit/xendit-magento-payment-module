@@ -23,7 +23,7 @@
             ]);
 
             if(window.checkoutConfig.payment[paymentMethodData.method].image.length > 0) {
-                $(window.checkoutConfig.payment[paymentMethodData.method].image).each(function(key, value){
+                $(window.checkoutConfig.payment[paymentMethodData.method].image.reverse()).each(function(key, value){
                     $("label[for=p_method_"+paymentMethodData.method+"]")
                         .prepend("<img class='xendit-payment-icon' src="+value+">");
                 });
