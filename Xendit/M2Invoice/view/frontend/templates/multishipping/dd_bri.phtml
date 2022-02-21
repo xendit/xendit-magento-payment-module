@@ -22,6 +22,11 @@
                 }
             ]);
 
+            if(window.checkoutConfig.payment[paymentMethodData.method].image != ""){
+                $("label[for=p_method_"+paymentMethodData.method+"]")
+                    .prepend("<img class='xendit-payment-icon' src="+window.checkoutConfig.payment[paymentMethodData.method].image+">");
+            }
+
             $('body').trigger('contentUpdated');
         })
     })

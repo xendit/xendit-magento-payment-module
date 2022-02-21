@@ -14,7 +14,7 @@ define(
             },
 
             getMethodImage: function () {
-                return window.checkoutConfig.payment.gcash.image;
+                return window.checkoutConfig.payment[this.item.method].image;
             }
         });
     }

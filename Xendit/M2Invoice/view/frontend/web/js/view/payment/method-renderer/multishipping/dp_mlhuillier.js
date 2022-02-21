@@ -14,7 +14,7 @@ define(
             },
 
             getMethodImage: function () {
-                return window.checkoutConfig.payment.dp_mlhuillier.image;
+                return window.checkoutConfig.payment[this.item.method].image;
             }
         });
     }

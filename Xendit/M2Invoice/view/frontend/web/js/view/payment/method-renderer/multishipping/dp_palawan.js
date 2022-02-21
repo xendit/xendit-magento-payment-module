@@ -14,7 +14,7 @@ define(
             },
 
             getMethodImage: function () {
-                return window.checkoutConfig.payment.dp_palawan.image;
+                return window.checkoutConfig.payment[this.item.method].image;
             }
         });
     }

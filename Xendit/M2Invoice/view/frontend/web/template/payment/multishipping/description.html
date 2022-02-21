@@ -1,9 +1,6 @@
 <div class="payment-method" css="'_active': (getCode() === isChecked())">
     <div class="payment-method-content">
         <div class="payment-method-note">
-            <!-- ko if: getMethodImage() -->
-            <img data-bind="attr: {src: getMethodImage()}" class="xendit-payment-icon"/>
-            <!--/ko-->
             <span data-bind="text: getTitle()"></span>
         </div>
         <div data-bind="style: {color: 'red'}">
