@@ -142,7 +142,7 @@
                 <min_order_total>1</min_order_total>
                 <max_order_total>50000000000</max_order_total>
                 <order_status>pending_payment</order_status><!-- set default order -->
-                <cctypes>VI,MC,AE,JCB</cctypes>
+                <images>VI,MC,AE,JCB</images>
                 <sort_order>9</sort_order>
             </cc>
             <cc_subscription>
@@ -156,7 +156,7 @@
                 <interval>MONTH</interval>
                 <interval_count>1</interval_count>
                 <order_status>pending_payment</order_status><!-- set default order -->
-                <cctypes>VI,MC,AE,JCB</cctypes>
+                <images>VI,MC,AE,JCB</images>
                 <sort_order>10</sort_order>
             </cc_subscription>
             <dana>
