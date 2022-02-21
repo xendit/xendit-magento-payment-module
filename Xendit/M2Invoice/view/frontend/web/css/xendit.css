@@ -26,3 +26,9 @@
     vertical-align: middle;
     line-height: normal;
 }
+.xendit-payment-icon-list{
+    display: inline-block;
+}
+.xendit-payment-icon{
+    vertical-align: middle;
+}

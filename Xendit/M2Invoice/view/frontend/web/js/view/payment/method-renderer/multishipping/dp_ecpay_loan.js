@@ -11,6 +11,10 @@ define(
             defaults: {
                 template: 'Xendit_M2Invoice/payment/multishipping/description',
                 redirectAfterPlaceOrder: false
+            },
+
+            getMethodImage: function () {
+                return window.checkoutConfig.payment.dp_ecpay_loan.image;
             }
         });
     }

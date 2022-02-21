@@ -6,7 +6,9 @@
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
         <label data-bind="attr: {'for': getCode()}" class="label">
             <!-- ko if: getMethodImage() -->
-            <img data-bind="attr: {src: getMethodImage()}" class="xendit-payment-icon"/>
+            <div class="xendit-payment-icon-list" data-bind="foreach: getMethodImage()">
+                <img data-bind="attr: {src: $data}" class="xendit-payment-icon"/>
+            </div>
             <!--/ko-->
             <span data-bind="text: getTitle()"></span>
         </label>
