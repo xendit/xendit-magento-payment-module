@@ -28,8 +28,18 @@
 }
 .xendit-payment-icon-list{
     display: inline-block;
+    float: right;
 }
 .xendit-payment-icon{
     vertical-align: middle;
     margin: 0 3px;
+    float: right;
+}
+.multicheckout #payment-methods dt.item-title,
+.payment-method .payment-method-title{
+    display: inline-block;
+    width: 100%
+}
+.multicheckout #payment-methods dt.item-title{
+    padding: 5px 0;
 }
