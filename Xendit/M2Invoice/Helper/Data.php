@@ -1817,7 +1817,7 @@ class Data extends AbstractHelper
     public function getPaymentImage(string $code)
     {
         try{
-            $paymentIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/' . $code . '.png');
+            $paymentIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/' . $code . '.svg');
             if($paymentIcon && $paymentIcon->getSourceFile()){
                 return $paymentIcon->geturl();
             }
@@ -1839,14 +1839,14 @@ class Data extends AbstractHelper
             return array_filter(
                 array_map(function($cardImage){
                     try {
-                        $cardIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/cards/' . $cardImage . '.png');
+                        $cardIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/cards/' . $cardImage . '.svg');
                         if ($cardIcon && $cardIcon->getSourceFile()) {
                             return $cardIcon->geturl();
                         }
                     }catch(\Exception $e){
                         return false;
                     }
-                }, explode(",", $cardImages)) , function($item){
+                }, explode(",", $cardImages) ?? []) , function($item){
                     return !!$item;
             });
         }
