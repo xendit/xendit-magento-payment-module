@@ -22,6 +22,7 @@ use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Xendit\M2Invoice\Model\Payment\Xendit;
 
 /**
@@ -308,6 +309,11 @@ class Data extends AbstractHelper
     protected $orderNotifier;
 
     /**
+     * @var AssetRepository
+     */
+    protected $assetRepository;
+
+    /**
      * Data constructor.
      * @param Context $context
      * @param StoreManagerInterface $storeManager
@@ -323,6 +329,7 @@ class Data extends AbstractHelper
      * @param InvoiceService $invoiceService
      * @param DbTransaction $dbTransaction
      * @param OrderNotifier $orderNotifier
+     * @param AssetRepository $assetRepository
      */
     public function __construct(
         Context $context,
@@ -338,7 +345,8 @@ class Data extends AbstractHelper
         ScopeConfigInterface $scopeConfig,
         InvoiceService $invoiceService,
         DbTransaction $dbTransaction,
-        OrderNotifier $orderNotifier
+        OrderNotifier $orderNotifier,
+        AssetRepository $assetRepository
     ) {
         $this->storeManager = $storeManager;
         $this->xendit = $xendit;
@@ -353,6 +361,7 @@ class Data extends AbstractHelper
         $this->invoiceService = $invoiceService;
         $this->dbTransaction = $dbTransaction;
         $this->orderNotifier = $orderNotifier;
+        $this->assetRepository = $assetRepository;
 
         parent::__construct($context);
     }
@@ -1797,6 +1806,50 @@ class Data extends AbstractHelper
     public function getPaymentMaxOrderAmount($code)
     {
         return $this->scopeConfig->getValue("payment/$code/max_order_total", ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * Get payment image
+     *
+     * @param string $code
+     * @return false|string|void
+     */
+    public function getPaymentImage(string $code)
+    {
+        try{
+            $paymentIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/' . $code . '.svg');
+            if($paymentIcon && $paymentIcon->getSourceFile()){
+                return $paymentIcon->geturl();
+            }
+        }catch(\Exception $e){
+            return false;
+        }
+    }
+
+    /**
+     * Get Credit & debit images
+     *
+     * @param string $code
+     * @return array|false[]|string[]|void|void[]
+     */
+    public function getCreditCardImages(string $code)
+    {
+        $cardImages = $this->scopeConfig->getValue("payment/$code/images", ScopeInterface::SCOPE_STORE);
+        if(!empty($cardImages)){
+            return array_filter(
+                array_map(function($cardImage){
+                    try {
+                        $cardIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/cards/' . $cardImage . '.svg');
+                        if ($cardIcon && $cardIcon->getSourceFile()) {
+                            return $cardIcon->geturl();
+                        }
+                    }catch(\Exception $e){
+                        return false;
+                    }
+                }, explode(",", $cardImages) ?? []) , function($item){
+                    return !!$item;
+            });
+        }
     }
 
     /**

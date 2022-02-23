@@ -32,6 +32,10 @@ define(
                 return 'GCASH';
             },
 
+            getMethodImage: function () {
+                return window.checkoutConfig.payment[this.item.method].image;
+            },
+
             getTest: function() {
                 return '1';
             },

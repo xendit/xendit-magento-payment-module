@@ -20,6 +20,8 @@ Features:
   - Bank Transfer - BJB
   - Bank Transfer - BSI
 
+- Add payment icons
+
 Improvements:
 - Fix truncate decimal amount on refunding for Credit card
 - Hide/Show the payment setting based on the currency

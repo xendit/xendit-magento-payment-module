@@ -85,7 +85,7 @@
                             });
 
                             dynamicShow();
-                            shouldEnableSpecificMethod();
+<!--                            shouldEnableSpecificMethod();-->
                             specificSelection.prop('size', 6);
 
                             var externalIdPrefix = jQuery("input[id*='xendit_external_id_prefix']");

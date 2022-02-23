@@ -15,7 +15,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Xendit_M2Invoice/payment/invoiceva',
+                template: 'Xendit_M2Invoice/payment/cc',
                 redirectAfterPlaceOrder: false
             },
 
@@ -30,6 +30,10 @@ define(
 
             getMethod: function() {
                 return 'CREDIT_CARD';
+            },
+
+            getMethodImage: function () {
+                return window.checkoutConfig.payment[this.item.method].image;
             },
 
             getTest: function() {

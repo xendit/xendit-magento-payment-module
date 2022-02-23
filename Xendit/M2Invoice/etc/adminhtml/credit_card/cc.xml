@@ -25,5 +25,11 @@
             <frontend_class>validate-zero-or-greater</frontend_class>
             <config_path>payment/cc/max_order_total</config_path>
         </field>
+        <field id="images" translate="label" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Images</label>
+            <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\CardImages</source_model>
+            <config_path>payment/cc/images</config_path>
+            <can_be_empty>0</can_be_empty>
+        </field>
     </group>
 </include>

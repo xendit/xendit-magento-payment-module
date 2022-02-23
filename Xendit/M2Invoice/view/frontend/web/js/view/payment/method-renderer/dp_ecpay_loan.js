@@ -32,6 +32,10 @@ define(
                 return 'DP_ECPAY_LOAN';
             },
 
+            getMethodImage: function () {
+                return window.checkoutConfig.payment[this.item.method].image;
+            },
+
             getTest: function() {
                 return '1';
             },
