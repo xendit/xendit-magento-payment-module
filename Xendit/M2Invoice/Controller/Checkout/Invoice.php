@@ -95,7 +95,7 @@ class Invoice extends AbstractAction
             $items[] = (object) $item;
         }
 
-        $amount = $order->getBaseCurrencyCode() == 'IDR' ? ceil($order->getTotalDue()): $order->getTotalDue();
+        $amount = $order->getTotalDue();
         $requestData = [
             'external_id'           => $this->getDataHelper()->getExternalId($orderId),
             'payer_email'           => $order->getCustomerEmail(),
