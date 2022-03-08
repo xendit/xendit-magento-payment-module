@@ -24,35 +24,4 @@ class BCAVA extends AbstractInvoice
      */
     protected $_code = 'bcava';
     protected $methodCode = 'BCA';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getBcaVaMinOrderAmount() || $amount > $this->dataHelper->getBcaVaMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getBcaVaActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

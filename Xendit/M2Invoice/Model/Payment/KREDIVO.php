@@ -24,35 +24,4 @@ class KREDIVO extends AbstractInvoice
      */
     protected $_code = 'kredivo';
     protected $methodCode = 'KREDIVO';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getKredivoMinOrderAmount() || $amount > $this->dataHelper->getKredivoMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getKredivoActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

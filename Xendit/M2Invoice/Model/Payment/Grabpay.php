@@ -24,35 +24,4 @@ class Grabpay extends AbstractInvoice
      */
     protected $_code = 'grabpay';
     protected $methodCode = 'GRABPAY';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getGrabPayMinOrderAmount() || $amount > $this->dataHelper->getGrabPayMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getGrabPayActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

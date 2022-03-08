@@ -24,35 +24,4 @@ class BNIVA extends AbstractInvoice
      */
     protected $_code = 'bniva';
     protected $methodCode = 'BNI';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getBniVaMinOrderAmount() || $amount > $this->dataHelper->getBniVaMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getBniVaActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

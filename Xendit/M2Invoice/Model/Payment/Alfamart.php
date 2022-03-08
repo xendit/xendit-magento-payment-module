@@ -23,35 +23,4 @@ class Alfamart extends AbstractInvoice
      */
     protected $_code = 'alfamart';
     protected $methodCode = 'ALFAMART';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getAlfamartMinOrderAmount() || $amount > $this->dataHelper->getAlfamartMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getAlfamartActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

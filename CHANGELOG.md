@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.5.0 (2022-03-08)
+Improvements:
+- Code refactoring
+- Update extension compatible with Magento 2.4.3
+
 ## 3.4.0 (2022-02-18)
 Features:
 

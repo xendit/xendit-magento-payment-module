@@ -67,7 +67,7 @@ class CCMultishipping extends AbstractAction
                     $tokenId        = $additionalInfo['token_id'];
                     $cvn            = $additionalInfo['cc_cid'];
                 }
-    
+
                 $transactionAmount  += $order->getTotalDue();
                 $currency = $order->getBaseCurrencyCode();
                 $c++;
@@ -79,8 +79,6 @@ class CCMultishipping extends AbstractAction
 
             if ($method === 'cc_subscription') {
                 $billingAddress     = $orders[0]->getBillingAddress(); // billing address of 1st order
-
-                $transactionAmount  = $currency == 'IDR' ? ceil($transactionAmount): $transactionAmount;
                 $requestData = [
                     'payer_email'               => $billingAddress->getEmail(),
                     'currency'                  => $currency,
@@ -101,7 +99,7 @@ class CCMultishipping extends AbstractAction
                         ], JSON_FORCE_OBJECT
                     )
                 ];
-                
+
                 $hostedPayment = $this->requestHostedPayment($requestData);
 
                 if (isset($hostedPayment['error_code'])) {

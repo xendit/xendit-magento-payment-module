@@ -24,35 +24,4 @@ class DDUBP extends AbstractInvoice
      */
     protected $_code = 'dd_ubp';
     protected $methodCode = 'DD_UBP';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getDdUbpMinOrderAmount() || $amount > $this->dataHelper->getDdUbpMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getDdUbpActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

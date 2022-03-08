@@ -24,35 +24,4 @@ class Indomaret extends AbstractInvoice
      */
     protected $_code = 'indomaret';
     protected $methodCode = 'Indomaret';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getIndomaretMinOrderAmount() || $amount > $this->dataHelper->getIndomaretMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getIndomaretActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }
