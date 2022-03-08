@@ -24,35 +24,4 @@ class PermataVA extends AbstractInvoice
      */
     protected $_code = 'permatava';
     protected $methodCode = 'PERMATA';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getPermataVaMinOrderAmount() || $amount > $this->dataHelper->getPermataVaMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getPermataVaActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

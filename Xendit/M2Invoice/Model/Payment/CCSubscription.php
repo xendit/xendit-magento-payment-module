@@ -142,33 +142,6 @@ class CCSubscription extends AbstractInvoice
     }
 
     /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getCcSubscriptionMinOrderAmount() || $amount > $this->dataHelper->getCcSubscriptionMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getCcSubscriptionActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * @param InfoInterface $payment
      * @param float $amount
      * @return $this|AbstractInvoice

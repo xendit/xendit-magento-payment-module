@@ -26,33 +26,6 @@ class CC extends AbstractInvoice
     protected $methodCode = 'CREDIT_CARD';
     protected $_canRefund = true;
 
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getCcMinOrderAmount() || $amount > $this->dataHelper->getCcMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getCcActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
-
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $chargeId = $payment->getAdditionalInformation('xendit_charge_id');

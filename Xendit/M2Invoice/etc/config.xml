@@ -8,7 +8,7 @@
                 <xendit_url>https://tpi.xendit.co</xendit_url>
                 <ui_url>https://tpi-ui.xendit.co</ui_url>
                 <active>1</active>
-                <model>Xendit\M2Invoice\Model\Payment\Xendit</model>
+                <model>XenditFacade</model>
                 <title>Xendit</title>
                 <checkout_test_prefix>TEST MODE -</checkout_test_prefix>
                 <checkout_test_content>Real payment will not be detected</checkout_test_content>

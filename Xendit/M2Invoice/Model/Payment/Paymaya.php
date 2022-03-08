@@ -24,35 +24,4 @@ class Paymaya extends AbstractInvoice
      */
     protected $_code = 'paymaya';
     protected $methodCode = 'PAYMAYA';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getPayMayaMinOrderAmount() || $amount > $this->dataHelper->getPayMayaMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getPayMayaActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

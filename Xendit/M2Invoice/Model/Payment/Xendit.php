@@ -2,13 +2,11 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
-use Magento\Payment\Model\Method\AbstractMethod;
-
 /**
  * Class Xendit
  * @package Xendit\M2Invoice\Model\Payment
  */
-class Xendit extends AbstractMethod
+class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
 {
     /**
      * Payment code

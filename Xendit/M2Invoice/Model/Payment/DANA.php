@@ -24,35 +24,4 @@ class DANA extends AbstractInvoice
      */
     protected $_code = 'dana';
     protected $methodCode = 'DANA';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getDanaMinOrderAmount() || $amount > $this->dataHelper->getDanaMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getDanaActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }

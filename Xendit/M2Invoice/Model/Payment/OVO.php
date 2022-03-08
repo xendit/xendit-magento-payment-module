@@ -24,35 +24,4 @@ class OVO extends AbstractInvoice
      */
     protected $_code = 'ovo';
     protected $methodCode = 'OVO';
-
-    /**
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        if ($quote === null) {
-            return false;
-        }
-
-        if (!$this->isAvailableOnCurrency()) {
-            return false;
-        }
-
-        $amount = ceil($quote->getSubtotal() + $quote->getShippingAddress()->getShippingAmount());
-
-        if ($amount < $this->dataHelper->getOvoMinOrderAmount() || $amount > $this->dataHelper->getOvoMaxOrderAmount()) {
-            return false;
-        }
-
-        if(!$this->dataHelper->getOvoActive()){
-            return false;
-        }
-
-        if(!$this->dataHelper->getIsActive()){
-            return false;
-        }
-
-        return true;
-    }
 }
