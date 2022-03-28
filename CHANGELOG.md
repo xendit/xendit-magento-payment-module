@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 3.5.1 (2022-03-22)
+## 3.6.0 (2022-03-22)
 Features:
 - Add new PH payment: Cashalo
 
