@@ -105,7 +105,7 @@
                     <label>Enable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="xendit_env" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="xendit_env" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Payment Mode</label>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\EnvRadioBtn</source_model>
                     <comment>
@@ -113,7 +113,7 @@
                     </comment>
                     <attribute type="shared">1</attribute>
                 </field>
-                <field id="test_public_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="test_public_key" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Test - Public Key</label>
                     <comment>
                         Public API key provided by Xendit Dashboard
@@ -121,7 +121,7 @@
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="test_private_key" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="test_private_key" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Test - Private Key</label>
                     <comment>
                         Secret API key provided by Xendit Dashboard
@@ -129,7 +129,7 @@
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="public_key" translate="label" type="obscure" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="public_key" translate="label" type="obscure" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Public Key</label>
                     <comment>
                         Public API key provided by Xendit Dashboard
@@ -137,7 +137,7 @@
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="private_key" translate="label" type="obscure" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="private_key" translate="label" type="obscure" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Private Key</label>
                     <comment>
                         Secret API key provided by Xendit Dashboard
@@ -219,6 +219,7 @@
                         <attribute type="expanded">0</attribute>
                         <include path="Xendit_M2Invoice::paylater/kredivo.xml"/>
                         <include path="Xendit_M2Invoice::paylater/billease.xml"/>
+                        <include path="Xendit_M2Invoice::paylater/cashalo.xml"/>
                     </group>
                 </group>
 

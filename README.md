@@ -84,6 +84,7 @@ To activate this feature, you need to follow this additional steps:
 - PayLater
   - Kredivo
   - BillEase (PH)
+  - Cashalo (PH)
 - Direct Debit
   - BRI
   - BPI (PH)

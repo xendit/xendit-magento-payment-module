@@ -470,6 +470,7 @@ class Data extends AbstractHelper
             "dp_palawan"        => "dp_palawan",
             "dp_mlhuillier"     => "dp_mlhuillier",
             "dp_ecpay_loan"     => "dp_ecpay_loan",
+            "cashalo"           => "cashalo",
         ];
 
         $response = false;
