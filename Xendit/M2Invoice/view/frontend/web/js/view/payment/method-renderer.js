@@ -43,6 +43,10 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/shopeepay'
             },
             {
+                type: 'shopeepayph',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/shopeepayph'
+            },
+            {
                 type: 'dana',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dana'
             },

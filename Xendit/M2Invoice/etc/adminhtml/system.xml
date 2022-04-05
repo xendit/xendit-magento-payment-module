@@ -202,6 +202,7 @@
                         <include path="Xendit_M2Invoice::ewallets/gcash.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/grabpay.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/paymaya.xml"/>
+                        <include path="Xendit_M2Invoice::ewallets/shopeepayph.xml"/>
                     </group>
 
                     <group id="direct_debit" translate="label" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="1">
