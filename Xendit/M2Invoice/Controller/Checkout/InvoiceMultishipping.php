@@ -103,6 +103,10 @@ class InvoiceMultishipping extends AbstractAction
                 $preferredMethod = 'CREDIT_CARD';
             }
 
+            if ($prefferedMethod == 'shopeepayph') {
+                $prefferedMethod == 'SHOPEEPAY';
+            }
+
             $requestData = [
                 'external_id'           => $this->getDataHelper()->getExternalId($rawOrderIds),
                 'payer_email'           => $billingEmail,
