@@ -103,8 +103,8 @@ class InvoiceMultishipping extends AbstractAction
                 $preferredMethod = 'CREDIT_CARD';
             }
 
-            if ($prefferedMethod == 'shopeepayph') {
-                $prefferedMethod = 'SHOPEEPAY';
+            if ($preferredMethod == 'shopeepayph') {
+                $preferredMethod = 'SHOPEEPAY';
             }
 
             $requestData = [
