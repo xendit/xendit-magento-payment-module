@@ -22,6 +22,6 @@ class SHOPEEPAYPH extends AbstractInvoice
      *
      * @var string
      */
-    protected $_code = 'shopeepayph';
+    protected $_code = 'shopeepay';
     protected $methodCode = 'SHOPEEPAY';
 }
