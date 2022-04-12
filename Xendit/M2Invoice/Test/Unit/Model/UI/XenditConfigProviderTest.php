@@ -34,6 +34,7 @@ class XenditConfigProviderTest extends UnitTestCase
         $this->assertArrayHasKey('dana', $result['payment']);
         $this->assertArrayHasKey('linkaja', $result['payment']);
         $this->assertArrayHasKey('shopeepay', $result['payment']);
+        $this->assertArrayHasKey('shopeepayph', $result['payment']);
         $this->assertArrayHasKey('indomaret', $result['payment']);
         $this->assertArrayHasKey('dd_bri', $result['payment']);
         $this->assertArrayHasKey('kredivo', $result['payment']);

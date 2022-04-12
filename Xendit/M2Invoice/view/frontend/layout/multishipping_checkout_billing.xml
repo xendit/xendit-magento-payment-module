@@ -38,6 +38,7 @@
                     <item name="bjbva" xsi:type="string">Xendit_M2Invoice::multishipping/bjbva.phtml</item>
                     <item name="bsiva" xsi:type="string">Xendit_M2Invoice::multishipping/bsiva.phtml</item>
                     <item name="cashalo" xsi:type="string">Xendit_M2Invoice::multishipping/cashalo.phtml</item>
+                    <item name="shopeepayph" xsi:type="string">Xendit_M2Invoice::multishipping/shopeepayph.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>
