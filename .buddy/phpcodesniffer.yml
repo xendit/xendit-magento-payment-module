@@ -1,0 +1,43 @@
+- pipeline: "PHP CodeSniffer"
+  on: "EVENT"
+  events:
+    - type: "PUSH"
+      refs:
+        - "refs/heads/*"
+        - "refs/heads/master"
+    - type: "CREATE_REF"
+      refs:
+        - "refs/pull/*"
+  priority: "NORMAL"
+  no_skip_to_most_recent: true
+  auto_clear_cache: true
+  fetch_all_refs: true
+  fail_on_prepare_env_warning: true
+  tags: []
+  worker_assignment: "FIXED"
+  actions:
+    - action: "Execute: # phpcs -n --standard=PSR2 ."
+      type: "BUILD"
+      working_directory: "/buddy/xendit-magento-payment-module"
+      docker_image_name: "library/php"
+      docker_image_tag: "7.4"
+      execute_commands:
+        - "# Fix violations of coding standards in PHP, JS and CSS files"
+        - "# Available coding standards: MySource, PEAR, PHPCS, PSR1, PSR2, Squiz and Zend"
+        - "# More options https://github.com/squizlabs/PHP_CodeSniffer/wiki/Usage"
+        - "phpcbf --standard=PSR2 --ignore=*/vendor/* --extensions=php ."
+        - "# Detect without auto correction"
+        - "phpcs -n --standard=PSR2 --ignore=*/vendor/* --extensions=php . "
+      setup_commands:
+        - "apt-get update && apt-get install -y git zip"
+        - "curl -L https://phar.phpunit.de/phpunit.phar -o /usr/local/bin/phpunit"
+        - "curl -L https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -o /usr/local/bin/phpcs"
+        - "curl -L https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -o /usr/local/bin/phpcbf"
+        - "chmod +x /usr/local/bin/phpunit"
+        - "chmod +x /usr/local/bin/phpcs"
+        - "chmod +x /usr/local/bin/phpcbf"
+        - "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
+      volume_mappings:
+        - "/:/buddy/xendit-magento-payment-module"
+      cache_base_image: true
+      shell: "BASH"
