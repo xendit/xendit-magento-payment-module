@@ -14,7 +14,7 @@ class ErrorHandler
      */
     public function mapInvoiceErrorCode($errorCode)
     {
-        switch ( $errorCode ) {
+        switch ($errorCode) {
             case 'API_VALIDATION_ERROR':
                 return 'Inputs are failing validation. The errors field contains details about which fields are violating validation.';
             case 'INVALID_JSON_FORMAT':

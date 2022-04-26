@@ -6,7 +6,8 @@ namespace Xendit\M2Invoice\Controller\Checkout;
  * Class Failure
  * @package Xendit\M2Invoice\Controller\Checkout
  */
-class Failure extends AbstractAction {
+class Failure extends AbstractAction
+{
 
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void

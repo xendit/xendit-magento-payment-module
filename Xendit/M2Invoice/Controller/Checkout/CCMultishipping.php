@@ -96,7 +96,8 @@ class CCMultishipping extends AbstractAction
                         [
                             'interval' => $this->getDataHelper()->getCcSubscriptionInterval(),
                             'interval_count' => $this->getDataHelper()->getCcSubscriptionIntervalCount()
-                        ], JSON_FORCE_OBJECT
+                        ],
+                        JSON_FORCE_OBJECT
                     )
                 ];
 

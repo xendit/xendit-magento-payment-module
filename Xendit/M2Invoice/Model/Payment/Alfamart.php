@@ -3,6 +3,7 @@
 namespace Xendit\M2Invoice\Model\Payment;
 
 use Magento\Quote\Api\Data\CartInterface;
+
 /**
  * Class Alfamart
  * @package Xendit\M2Invoice\Model\Payment

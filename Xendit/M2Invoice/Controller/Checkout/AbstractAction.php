@@ -190,7 +190,6 @@ abstract class AbstractAction extends Action
         ErrorHandler $errorHandler,
         State $state,
         Multishipping $multishipping
-
     ) {
         parent::__construct($context);
 

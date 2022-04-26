@@ -379,17 +379,23 @@ class Data extends AbstractHelper
     {
         switch ($failureReason) {
             case 'CARD_DECLINED':
-            case 'STOLEN_CARD': return 'The bank that issued this card declined the payment but didn\'t tell us why.
+            case 'STOLEN_CARD':
+                return 'The bank that issued this card declined the payment but didn\'t tell us why.
                 Try another card, or try calling your bank to ask why the card was declined.';
-            case 'INSUFFICIENT_BALANCE': return "Your bank declined this payment due to insufficient balance. Ensure
+            case 'INSUFFICIENT_BALANCE':
+                return "Your bank declined this payment due to insufficient balance. Ensure
                 that sufficient balance is available, or try another card";
-            case 'INVALID_CVN': return "Your bank declined the payment due to incorrect card details entered. Try to
+            case 'INVALID_CVN':
+                return "Your bank declined the payment due to incorrect card details entered. Try to
                 enter your card details again, including expiration date and CVV";
-            case 'INACTIVE_CARD': return "This card number does not seem to be enabled for eCommerce payments. Try
+            case 'INACTIVE_CARD':
+                return "This card number does not seem to be enabled for eCommerce payments. Try
                 another card that is enabled for eCommerce, or ask your bank to enable eCommerce payments for your card.";
-            case 'EXPIRED_CARD': return "Your bank declined the payment due to the card being expired. Please try
+            case 'EXPIRED_CARD':
+                return "Your bank declined the payment due to the card being expired. Please try
                 another card that has not expired.";
-            case 'PROCESSOR_ERROR': return 'We encountered issue in processing your card. Please try again with another card';
+            case 'PROCESSOR_ERROR':
+                return 'We encountered issue in processing your card. Please try again with another card';
             case 'USER_DID_NOT_AUTHORIZE_THE_PAYMENT':
                 return 'Please complete the payment request within 60 seconds.';
             case 'USER_DECLINED_THE_TRANSACTION':
@@ -408,7 +414,8 @@ class Data extends AbstractHelper
             case 'DEVELOPMENT_MODE_PAYMENT_ACKNOWLEDGED':
                 return 'Development mode detected. Please refer to our documentations for successful payment
                     simulation';
-            default: return $failureReason;
+            default:
+                return $failureReason;
         }
     }
 
@@ -708,12 +715,12 @@ class Data extends AbstractHelper
      */
     public function getPaymentImage(string $code)
     {
-        try{
+        try {
             $paymentIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/' . $code . '.svg');
-            if($paymentIcon && $paymentIcon->getSourceFile()){
+            if ($paymentIcon && $paymentIcon->getSourceFile()) {
                 return $paymentIcon->geturl();
             }
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -727,20 +734,22 @@ class Data extends AbstractHelper
     public function getCreditCardImages(string $code)
     {
         $cardImages = $this->scopeConfig->getValue("payment/$code/images", ScopeInterface::SCOPE_STORE);
-        if(!empty($cardImages)){
+        if (!empty($cardImages)) {
             return array_filter(
-                array_map(function($cardImage){
+                array_map(function ($cardImage) {
                     try {
                         $cardIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/cards/' . $cardImage . '.svg');
                         if ($cardIcon && $cardIcon->getSourceFile()) {
                             return $cardIcon->geturl();
                         }
-                    }catch(\Exception $e){
+                    } catch (\Exception $e) {
                         return false;
                     }
-                }, explode(",", $cardImages) ?? []) , function($item){
+                }, explode(",", $cardImages) ?? []),
+                function ($item) {
                     return !!$item;
-            });
+                }
+            );
         }
     }
 
@@ -751,8 +760,8 @@ class Data extends AbstractHelper
      */
     public function isAvailableOnCurrency(string $payment, string $currency): bool
     {
-        $paymentCurrencies = $this->scopeConfig->getValue( 'payment/'.$payment.'/currency', ScopeInterface::SCOPE_STORE);
-        if(is_null($paymentCurrencies) || in_array($currency, array_map("trim", explode(',', $paymentCurrencies) ?? []))){
+        $paymentCurrencies = $this->scopeConfig->getValue('payment/'.$payment.'/currency', ScopeInterface::SCOPE_STORE);
+        if (is_null($paymentCurrencies) || in_array($currency, array_map("trim", explode(',', $paymentCurrencies) ?? []))) {
             return true;
         }
         return false;

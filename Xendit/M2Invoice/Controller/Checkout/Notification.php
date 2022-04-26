@@ -136,7 +136,6 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             // Invoice: Regular CC, Ewallet, Retail Outlet, PayLater
             return $this->handleInvoiceCallback($callbackPayload);
-
         } catch (\Exception $e) {
             $message = "Error invoice callback: " . $e->getMessage();
             $this->logger->info($message);
@@ -402,7 +401,7 @@ class Notification extends Action implements CsrfAwareActionInterface
     protected function getOrderById($orderId)
     {
         $order = $this->orderFactory->create()->load($orderId);
-        if (!$order->getId() || $orderId !== $order->getId()){
+        if (!$order->getId() || $orderId !== $order->getId()) {
             $order = $this->orderFactory->create()->loadByIncrementId($orderId);
             if (!$order->getId()) {
                 return null;

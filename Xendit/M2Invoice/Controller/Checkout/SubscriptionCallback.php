@@ -19,7 +19,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
             $invoiceId = $payload['id'];
             $chargeId = $payload['credit_card_charge_id'];
 
-            // verify callback to ensure payment exist in xendit side 
+            // verify callback to ensure payment exist in xendit side
             $callback = $this->getCallbackByInvoiceId($invoiceId);
             if (isset($callback['error_code']) || !isset($callback['status'])) {
                 $result->setData([
@@ -82,8 +82,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                     $parentTokenId = $payment->getAdditionalInformation('token_id');
                     if ($parentTokenId == $childTokenId) {
                         $isTokenMatched = true;
-                    }
-                    else {
+                    } else {
                         $result->setData([
                             'status' => __('ERROR'),
                             'message' => 'Token mismatched. Parent token ID:' . $parentTokenId . '. Child token ID:' .$childTokenId
@@ -171,7 +170,8 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
 
         try {
             $response = $this->getApiHelper()->request(
-                $url, $method
+                $url,
+                $method
             );
 
             return $response;
@@ -189,7 +189,13 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
 
         try {
             $response = $this->getApiHelper()->request(
-                $url, $method, null, false, null, array(), array('recurring-payment-id' => $recurringPaymentId)
+                $url,
+                $method,
+                null,
+                false,
+                null,
+                array(),
+                array('recurring-payment-id' => $recurringPaymentId)
             );
 
             return $response;

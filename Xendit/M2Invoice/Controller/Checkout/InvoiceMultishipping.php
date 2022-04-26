@@ -143,7 +143,6 @@ class InvoiceMultishipping extends AbstractAction
             $resultRedirect = $this->getRedirectFactory()->create();
             $resultRedirect->setUrl($redirectUrl);
             return $resultRedirect;
-
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogger()->info($message);
@@ -164,7 +163,11 @@ class InvoiceMultishipping extends AbstractAction
         try {
             if (isset($requestData['preferred_method'])) {
                 $invoice = $this->getApiHelper()->request(
-                    $invoiceUrl, $invoiceMethod, $requestData, false, $requestData['preferred_method']
+                    $invoiceUrl,
+                    $invoiceMethod,
+                    $requestData,
+                    false,
+                    $requestData['preferred_method']
                 );
             }
         } catch (LocalizedException $e) {
