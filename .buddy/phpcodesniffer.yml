@@ -3,6 +3,7 @@
   events:
     - type: "PUSH"
       refs:
+        - "refs/heads/*"
         - "refs/heads/master"
     - type: "CREATE_REF"
       refs:
