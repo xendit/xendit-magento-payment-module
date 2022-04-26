@@ -28,7 +28,7 @@ class SubscriptionCallback extends AbstractAction implements CsrfAwareActionInte
                 ]);
     
                 return $result;
-            } else if ($callback['status'] == 'COMPLETED') {
+            } elseif ($callback['status'] == 'COMPLETED') {
                 $result->setData([
                     'status' => __('ERROR'),
                     'message' => 'Callback already processed'

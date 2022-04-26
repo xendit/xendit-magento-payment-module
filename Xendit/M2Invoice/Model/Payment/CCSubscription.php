@@ -115,7 +115,7 @@ class CCSubscription extends AbstractInvoice
                 throw new LocalizedException(
                     new Phrase($message)
                 );
-            } else if (isset($hostedPayment['id'])) {
+            } elseif (isset($hostedPayment['id'])) {
                 $hostedPaymentId = $hostedPayment['id'];
                 $hostedPaymentToken = $hostedPayment['hp_token'];
 
