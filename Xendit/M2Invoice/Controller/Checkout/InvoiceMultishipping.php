@@ -3,10 +3,9 @@
 namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Sales\Model\Order;
-use Magento\Catalog\Model\Category;
-use Magento\Framework\Exception\LocalizedException;
 use Zend\Http\Request;
 
 /**
@@ -123,7 +122,7 @@ class InvoiceMultishipping extends AbstractAction
                     'given_names'       => $order->getCustomerFirstname() ?: 'n/a',
                     'surname'           => $order->getCustomerLastname() ?: 'n/a',
                     'email'             => $billingEmail,
-                    'mobile_number'     => $shippingAddress->getTelephone() ?: 'n/a',
+                    'mobile_number'     => $shippingAddress->getTelephone() ?: '',
                     'addresses'         => $addresses
                 ],
                 'items'                 => $items
@@ -143,7 +142,6 @@ class InvoiceMultishipping extends AbstractAction
             $resultRedirect = $this->getRedirectFactory()->create();
             $resultRedirect->setUrl($redirectUrl);
             return $resultRedirect;
-
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogger()->info($message);
@@ -164,7 +162,11 @@ class InvoiceMultishipping extends AbstractAction
         try {
             if (isset($requestData['preferred_method'])) {
                 $invoice = $this->getApiHelper()->request(
-                    $invoiceUrl, $invoiceMethod, $requestData, false, $requestData['preferred_method']
+                    $invoiceUrl,
+                    $invoiceMethod,
+                    $requestData,
+                    false,
+                    $requestData['preferred_method']
                 );
             }
         } catch (LocalizedException $e) {
@@ -183,7 +185,7 @@ class InvoiceMultishipping extends AbstractAction
      */
     private function getXenditRedirectUrl($invoice, $preferredMethod)
     {
-        $url = (isset($invoice['invoice_url']))? $invoice['invoice_url'] . "#$preferredMethod" : '';
+        $url = (isset($invoice['invoice_url'])) ? $invoice['invoice_url'] . "#$preferredMethod" : '';
         return $url;
     }
 
