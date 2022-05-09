@@ -1,8 +1,13 @@
 # CHANGELOG
 
+## 3.8.0 (2022-05-09)
+Features:
+- Add new IDR payment: Uangme
+
 ## 3.7.0 (2022-04-06)
 Features:
 - Add new PH payment: ShopeePay
+
 ## 3.6.0 (2022-03-22)
 Features:
 - Add new PH payment: Cashalo
