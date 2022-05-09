@@ -77,7 +77,7 @@ class CartRule implements \Magento\Framework\Option\ArrayInterface
             return $cachedData;
         }
 
-        $shoppingCartRules = $this->ruleCollectionFactory->create()->addFieldToSelect("rule_id")->addFieldToSelect("name")->addFieldToFilter("is_active",1);
+        $shoppingCartRules = $this->ruleCollectionFactory->create()->addFieldToSelect("rule_id")->addFieldToSelect("name")->addFieldToFilter("is_active", 1);
         $options = array([
             'value' => '',
             'label' => __('Choose Cart Rule')

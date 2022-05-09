@@ -95,8 +95,7 @@ class CCCallback extends Action implements CsrfAwareActionInterface
             $this->logger->info("callbackPayload");
             $this->logger->info($post);
 
-            if (
-                !isset($callbackPayload['id']) ||
+            if (!isset($callbackPayload['id']) ||
                 !isset($callbackPayload['hp_token']) ||
                 !isset($callbackPayload['order_number'])
             ) {
@@ -225,7 +224,6 @@ class CCCallback extends Action implements CsrfAwareActionInterface
                 ]);
             }
             return $result;
-            
         } catch (\Exception $e) {
             $result = $this->jsonResultFactory->create();
             $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);
@@ -248,7 +246,8 @@ class CCCallback extends Action implements CsrfAwareActionInterface
 
         try {
             $hostedPayment = $this->apiHelper->request(
-                $url, $method
+                $url,
+                $method
             );
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             throw new LocalizedException(

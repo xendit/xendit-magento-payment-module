@@ -67,7 +67,7 @@ class ThreeDSResult extends AbstractAction
             $charge = $this->createCharge($hosted3DS, $orderId);
 
             $chargeError = isset($charge['error_code']) ? $charge['error_code'] : null;
-            if ( $chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR' ) {
+            if ($chargeError == 'EXTERNAL_ID_ALREADY_USED_ERROR') {
                 $charge = $this->createCharge($hosted3DS, $orderId, true);
             }
 

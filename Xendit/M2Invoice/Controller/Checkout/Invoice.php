@@ -135,7 +135,11 @@ class Invoice extends AbstractAction
         try {
             if (isset($requestData['preferred_method'])) {
                 $invoice = $this->getApiHelper()->request(
-                    $invoiceUrl, $invoiceMethod, $requestData, false, $requestData['preferred_method']
+                    $invoiceUrl,
+                    $invoiceMethod,
+                    $requestData,
+                    false,
+                    $requestData['preferred_method']
                 );
             }
             if (isset($invoice['error_code'])) {
@@ -144,7 +148,6 @@ class Invoice extends AbstractAction
                     new Phrase($message)
                 );
             }
-
         } catch (LocalizedException $e) {
             throw new LocalizedException(
                 new Phrase($e->getMessage())
