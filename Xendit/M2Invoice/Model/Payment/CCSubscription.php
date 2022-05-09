@@ -39,8 +39,7 @@ class CCSubscription extends AbstractInvoice
         $quoteId = $order->getQuoteId();
         $quote = $this->quoteRepository->get($quoteId);
 
-        if (
-            $quote->getIsMultiShipping() ||
+        if ($quote->getIsMultiShipping() ||
             $quote->getPayment()->getAdditionalInformation('xendit_is_subscription')
         ) {
             return $this;
@@ -116,7 +115,7 @@ class CCSubscription extends AbstractInvoice
                 throw new LocalizedException(
                     new Phrase($message)
                 );
-            } else if (isset($hostedPayment['id'])) {
+            } elseif (isset($hostedPayment['id'])) {
                 $hostedPaymentId = $hostedPayment['id'];
                 $hostedPaymentToken = $hostedPayment['hp_token'];
 

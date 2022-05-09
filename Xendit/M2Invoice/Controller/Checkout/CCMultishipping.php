@@ -96,7 +96,8 @@ class CCMultishipping extends AbstractAction
                         [
                             'interval' => $this->getDataHelper()->getCcSubscriptionInterval(),
                             'interval_count' => $this->getDataHelper()->getCcSubscriptionIntervalCount()
-                        ], JSON_FORCE_OBJECT
+                        ],
+                        JSON_FORCE_OBJECT
                     )
                 ];
 
@@ -106,7 +107,7 @@ class CCMultishipping extends AbstractAction
                     $message = isset($hostedPayment['message']) ? $hostedPayment['message'] : $hostedPayment['error_code'];
                     // cancel order and redirect to cart
                     return $this->processFailedPayment($orderIds, $message);
-                } else if (isset($hostedPayment['id'])) {
+                } elseif (isset($hostedPayment['id'])) {
                     $this->addCCHostedData($orders, $hostedPayment);
 
                     // redirect to hosted payment page
