@@ -455,6 +455,20 @@
                 <sort_order>31</sort_order>
                 <currency>PHP</currency>
             </shopeepayph>
+            <uangme>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Uangme</model>
+                <title>Uangme</title>
+                <description>Bayar pesanan dengan Uangme melalui Xendit</description>
+                <min_order_total>20000</min_order_total>
+                <max_order_total>20000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>32</sort_order>
+                <currency>IDR</currency>
+            </uangme>
         </payment>
     </default>
 </config>

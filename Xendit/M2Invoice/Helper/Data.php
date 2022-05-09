@@ -13,6 +13,7 @@ use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\UrlInterface;
+use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Model\Order;
@@ -22,7 +23,6 @@ use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Xendit\M2Invoice\Model\Payment\Xendit;
 
 /**
@@ -472,6 +472,7 @@ class Data extends AbstractHelper
             "dp_ecpay_loan"     => "dp_ecpay_loan",
             "cashalo"           => "cashalo",
             "shopeepayph"       => "shopeepayph",
+            "uangme"            => "uangme",
         ];
 
         $response = false;
@@ -708,12 +709,12 @@ class Data extends AbstractHelper
      */
     public function getPaymentImage(string $code)
     {
-        try{
+        try {
             $paymentIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/' . $code . '.svg');
-            if($paymentIcon && $paymentIcon->getSourceFile()){
+            if ($paymentIcon && $paymentIcon->getSourceFile()) {
                 return $paymentIcon->geturl();
             }
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -727,20 +728,22 @@ class Data extends AbstractHelper
     public function getCreditCardImages(string $code)
     {
         $cardImages = $this->scopeConfig->getValue("payment/$code/images", ScopeInterface::SCOPE_STORE);
-        if(!empty($cardImages)){
+        if (!empty($cardImages)) {
             return array_filter(
-                array_map(function($cardImage){
+                array_map(function ($cardImage) {
                     try {
                         $cardIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/cards/' . $cardImage . '.svg');
                         if ($cardIcon && $cardIcon->getSourceFile()) {
                             return $cardIcon->geturl();
                         }
-                    }catch(\Exception $e){
+                    } catch (\Exception $e) {
                         return false;
                     }
-                }, explode(",", $cardImages) ?? []) , function($item){
+                }, explode(",", $cardImages) ?? []),
+                function ($item) {
                     return !!$item;
-            });
+                }
+            );
         }
     }
 
@@ -751,8 +754,8 @@ class Data extends AbstractHelper
      */
     public function isAvailableOnCurrency(string $payment, string $currency): bool
     {
-        $paymentCurrencies = $this->scopeConfig->getValue( 'payment/'.$payment.'/currency', ScopeInterface::SCOPE_STORE);
-        if(is_null($paymentCurrencies) || in_array($currency, array_map("trim", explode(',', $paymentCurrencies) ?? []))){
+        $paymentCurrencies = $this->scopeConfig->getValue('payment/' . $payment . '/currency', ScopeInterface::SCOPE_STORE);
+        if (is_null($paymentCurrencies) || in_array($currency, array_map("trim", explode(',', $paymentCurrencies) ?? []))) {
             return true;
         }
         return false;

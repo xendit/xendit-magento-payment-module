@@ -292,6 +292,13 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getPaymentDescription("shopeepayph"),
                     'image' => $this->xenditHelper->getPaymentImage('shopeepay')
                 ],
+                'uangme' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("uangme"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("uangme"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("uangme"),
+                    'description' => $this->xenditHelper->getPaymentDescription("uangme"),
+                    'image' => $this->xenditHelper->getPaymentImage('uangme')
+                ],
             ]
         ];
 
