@@ -134,6 +134,10 @@ define(
                 type: 'cashalo',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cashalo'
             },
+            {
+                type: 'uangme',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/uangme'
+            },
         );
         return Component.extend({});
     }
