@@ -89,9 +89,9 @@ class CancelOrderCC
         // }
 
         return $this;
-	}
+    }
 
-	private function trackCancellation($data)
+    private function trackCancellation($data)
     {
         $bulkCancelUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/invoice/bulk-cancel";
         $bulkCancelMethod = \Zend\Http\Request::METHOD_POST;
