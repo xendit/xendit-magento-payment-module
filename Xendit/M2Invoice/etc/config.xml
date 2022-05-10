@@ -459,7 +459,7 @@
                 <active>1</active>
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Uangme</model>
-                <title>Uangme</title>
+                <title>UangMe</title>
                 <description>Bayar pesanan dengan Uangme melalui Xendit</description>
                 <min_order_total>20000</min_order_total>
                 <max_order_total>20000000</max_order_total>
