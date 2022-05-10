@@ -85,6 +85,7 @@ To activate this feature, you need to follow this additional steps:
   - Kredivo
   - BillEase (PH)
   - Cashalo (PH)
+  - Uangme
 - Direct Debit
   - BRI
   - BPI (PH)

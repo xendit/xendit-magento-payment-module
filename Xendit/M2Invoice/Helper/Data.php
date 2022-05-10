@@ -13,6 +13,7 @@ use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\UrlInterface;
+use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Model\Order;
@@ -22,7 +23,6 @@ use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Xendit\M2Invoice\Model\Payment\Xendit;
 
 /**
@@ -479,6 +479,7 @@ class Data extends AbstractHelper
             "dp_ecpay_loan"     => "dp_ecpay_loan",
             "cashalo"           => "cashalo",
             "shopeepayph"       => "shopeepayph",
+            "uangme"            => "uangme",
         ];
 
         $response = false;
