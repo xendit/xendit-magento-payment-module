@@ -2,10 +2,10 @@
 
 namespace Xendit\M2Invoice\Controller\Checkout;
 
-use Magento\Sales\Model\Order;
-use Magento\Framework\Phrase;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Phrase;
+use Magento\Sales\Model\Order;
 use Zend\Http\Request;
 
 /**
@@ -112,7 +112,7 @@ class Invoice extends AbstractAction
                 'given_names'       => $order->getCustomerFirstname() ?: 'n/a',
                 'surname'           => $order->getCustomerLastname() ?: 'n/a',
                 'email'             => $order->getCustomerEmail() ?: 'noreply@mail.com' ,
-                'mobile_number'     => $shippingAddress->getTelephone() ?: 'n/a',
+                'mobile_number'     => $shippingAddress->getTelephone() ?: '',
                 'addresses'         => [(object) $address]
             ],
             'items'                 => $items
