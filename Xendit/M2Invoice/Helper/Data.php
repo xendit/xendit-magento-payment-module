@@ -31,12 +31,6 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    /*
-     *  CC Subscription
-     */
-    const XML_PATH_CC_SUBSCRIPTION_INTERVAL         = 'payment/cc_subscription/interval';
-    const XML_PATH_CC_SUBSCRIPTION_INTERVAL_COUNT   = 'payment/cc_subscription/interval_count';
-
     /**
      * @var StoreManagerInterface
      */
@@ -449,7 +443,6 @@ class Data extends AbstractHelper
         //method name => frontend routing
         $listPayment = [
             "cc"                => "cc",
-            "cc_subscription"   => "cc_subscription",
             "bcava"             => "bca",
             "bniva"             => "bni",
             "bjbva"             => "bjb",
@@ -644,24 +637,6 @@ class Data extends AbstractHelper
     protected function convertDateTime($date)
     {
         return gmdate(DATE_W3C, $date);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCcSubscriptionInterval()
-    {
-        $value = $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_INTERVAL, ScopeInterface::SCOPE_STORE);
-        return $value ?: 'MONTH';
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCcSubscriptionIntervalCount()
-    {
-        $value = $this->scopeConfig->getValue(self::XML_PATH_CC_SUBSCRIPTION_INTERVAL_COUNT, ScopeInterface::SCOPE_STORE);
-        return $value ?: 1;
     }
 
     /**

@@ -164,7 +164,7 @@ class AbstractInvoice extends AbstractMethod
             return false;
         }
 
-        if (!in_array($this->_code, ['cc', 'cc_subscription']) && !$this->isAvailableOnCurrency()) {
+        if (!in_array($this->_code, ['cc']) && !$this->isAvailableOnCurrency()) {
             return false;
         }
 

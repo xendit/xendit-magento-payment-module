@@ -145,20 +145,6 @@
                 <images>VI,MC,AE,JCB</images>
                 <sort_order>9</sort_order>
             </cc>
-            <cc_subscription>
-                <active>0</active>
-                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
-                <model>Xendit\M2Invoice\Model\Payment\CCSubscription</model>
-                <title>Credit Card Subscription</title>
-                <description>Bayar pesanan dan berlangganan menggunakan kartu kredit anda melalui Xendit</description>
-                <min_order_total>5000</min_order_total>
-                <max_order_total>200000000</max_order_total>
-                <interval>MONTH</interval>
-                <interval_count>1</interval_count>
-                <order_status>pending_payment</order_status><!-- set default order -->
-                <images>VI,MC,AE,JCB</images>
-                <sort_order>10</sort_order>
-            </cc_subscription>
             <dana>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
