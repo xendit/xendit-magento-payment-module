@@ -8,7 +8,6 @@ use Magento\Customer\Model\CustomerFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\DataObject;
 use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
@@ -16,9 +15,6 @@ use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
-use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Invoice;
-use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
@@ -332,38 +328,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param bool $isMultishipping
-     * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getXenditSubscriptionCallbackUrl($isMultishipping = false)
-    {
-        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/subscriptioncallback';
-
-        if ($isMultishipping) {
-            $baseUrl .= '?type=multishipping';
-        }
-
-        return $baseUrl;
-    }
-
-    /**
-     * @param bool $isMultishipping
-     * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getCCCallbackUrl($isMultishipping = false)
-    {
-        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK) . 'xendit/checkout/cccallback';
-
-        if ($isMultishipping) {
-            $baseUrl .= '?type=multishipping';
-        }
-
-        return $baseUrl;
-    }
-
-    /**
      * Map card's failure reason to more detailed explanation based on current insight.
      *
      * @param $failureReason
@@ -484,145 +448,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Create Order Programatically
-     *
-     * @param array $orderData
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function createMageOrder($orderData)
-    {
-        $store = $this->getStoreManager()->getStore();
-        $websiteId = $this->getStoreManager()->getStore()->getWebsiteId();
-
-        $customer = $this->customerFactory->create();
-        $customer->setWebsiteId($websiteId);
-        $customer->loadByEmail($orderData['email']); //load customer by email address
-
-        if (!$customer->getEntityId()) {
-            //if not available then create this customer
-            $customer->setWebsiteId($websiteId)
-                     ->setStore($store)
-                     ->setFirstname($orderData['shipping_address']['firstname'])
-                     ->setLastname($orderData['shipping_address']['lastname'])
-                     ->setEmail($orderData['email'])
-                     ->setPassword($orderData['email']);
-            $customer->save();
-        }
-
-        $quote = $this->quote->create(); //create object of quote
-        $quote->setStore($store);
-
-        $customer= $this->customerRepository->getById($customer->getEntityId());
-        $quote->setCurrency();
-        $quote->assignCustomer($customer); //assign quote to customer
-
-        //add items in quote
-        foreach ($orderData['items'] as $item) {
-            $product = $this->product->load($item['product_id']);
-            $product->setPrice($item['price']);
-
-            $normalizedProductRequest = array_merge(
-                ['qty' => intval($item['qty'])],
-                []
-            );
-            $quote->addProduct(
-                $product,
-                new DataObject($normalizedProductRequest)
-            );
-        }
-
-        //set address
-        $quote->getBillingAddress()->addData($orderData['billing_address']);
-        $quote->getShippingAddress()->addData($orderData['shipping_address']);
-
-        //collect rates, set shipping & payment method
-        $billingAddress = $quote->getBillingAddress();
-        $shippingAddress = $quote->getShippingAddress();
-
-        $shippingAddress->setShippingMethod($orderData['shipping_method'])
-                        ->setCollectShippingRates(true)
-                        ->collectShippingRates();
-
-        $billingAddress->setShouldIgnoreValidation(true);
-        $shippingAddress->setShouldIgnoreValidation(true);
-
-        $quote->collectTotals();
-        $quote->setIsMultiShipping($orderData['is_multishipping']);
-
-        if (!$quote->getIsVirtual()) {
-            if (!$billingAddress->getEmail()) {
-                $billingAddress->setSameAsBilling(1);
-            }
-        }
-
-        $quote->setPaymentMethod($orderData['payment']['method']);
-        $quote->setInventoryProcessed(true); //update inventory
-        $quote->save();
-
-        //set required payment data
-        $orderData['payment']['cc_number'] = str_replace('X', '0', $orderData['masked_card_number']);
-        $quote->getPayment()->importData($orderData['payment']);
-
-        foreach ($orderData['payment']['additional_information'] as $key => $value) {
-            $quote->getPayment()->setAdditionalInformation($key, $value);
-        }
-        $quote->getPayment()->setAdditionalInformation('xendit_is_subscription', true);
-
-        //collect totals & save quote
-        $quote->collectTotals()->save();
-
-        //create order from quote
-        $order = $this->quoteManagement->submit($quote);
-
-        //update order status
-        $orderState = Order::STATE_PROCESSING;
-        $message = "Xendit subscription payment completed. Transaction ID: " . $orderData['transaction_id'] . ". ";
-        $message .= "Original Order: #" . $orderData['parent_order_id'] . ".";
-        $order->setState($orderState)
-              ->setStatus($orderState)
-              ->addStatusHistoryComment($message);
-
-        $order->save();
-
-        //save order payment details
-        $payment = $order->getPayment();
-        $payment->setTransactionId($orderData['transaction_id']);
-        $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
-
-        //create invoice
-        if ($order->canInvoice()) {
-            $invoice = $this->invoiceService->prepareInvoice($order);
-
-            if ($invoice->getTotalQty()) {
-                if (isset($orderData['transaction_id'])) {
-                    $invoice->setTransactionId($orderData['transaction_id']);
-                }
-                $invoice->setRequestedCaptureCase(Invoice::CAPTURE_OFFLINE);
-                $invoice->register();
-                $invoice->setState(Invoice::STATE_PAID)->save();
-
-                $transaction = $this->dbTransaction->addObject($invoice)->addObject($invoice->getOrder());
-                $transaction->save();
-            }
-        }
-
-        //notify customer
-        $this->orderNotifier->notify($order);
-        $order->setEmailSent(1);
-        $order->save();
-
-        if ($order->getEntityId()) {
-            $result['order_id'] = $order->getRealOrderId();
-        } else {
-            $result = ['error' => 1, 'msg' => 'Error creating order'];
-        }
-
-        return $result;
-    }
-
-    /**
      * @return bool
      */
     public function isEnabled()
@@ -736,7 +561,7 @@ class Data extends AbstractHelper
      */
     public function isAvailableOnCurrency(string $payment, string $currency): bool
     {
-        $paymentCurrencies = $this->scopeConfig->getValue('payment/'.$payment.'/currency', ScopeInterface::SCOPE_STORE);
+        $paymentCurrencies = $this->scopeConfig->getValue('payment/' . $payment . '/currency', ScopeInterface::SCOPE_STORE);
         if (is_null($paymentCurrencies) || in_array($currency, array_map("trim", explode(',', $paymentCurrencies) ?? []))) {
             return true;
         }

@@ -26,6 +26,14 @@ class CC extends AbstractInvoice
     protected $methodCode = 'CREDIT_CARD';
     protected $_canRefund = true;
 
+    /**
+     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @param $amount
+     * @return $this|CC
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Magento\Payment\Gateway\Http\ClientException
+     */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $chargeId = $payment->getAdditionalInformation('xendit_charge_id');
@@ -34,9 +42,6 @@ class CC extends AbstractInvoice
             $order = $payment->getOrder();
             $orderId = $order->getRealOrderId();
             $canRefundMore = $payment->getCreditmemo()->getInvoice()->canRefund();
-            $isFullRefund = !$canRefundMore &&
-                0 == (double)$order->getBaseTotalOnlineRefunded() + (double)$order->getBaseTotalOfflineRefunded();
-
 
             $refundData = [
                 'amount' => $this->getCurrency() == 'IDR' ? $this->dataHelper->truncateDecimal($amount) : $amount,
@@ -54,6 +59,13 @@ class CC extends AbstractInvoice
         }
     }
 
+    /**
+     * @param $payment
+     * @param $refund
+     * @param $canRefundMore
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     private function handleRefundResult($payment, $refund, $canRefundMore)
     {
         if (isset($refund['error_code'])) {
@@ -77,6 +89,13 @@ class CC extends AbstractInvoice
         );
     }
 
+    /**
+     * @param $chargeId
+     * @param $requestData
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Payment\Gateway\Http\ClientException
+     */
     private function requestRefund($chargeId, $requestData)
     {
         $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";

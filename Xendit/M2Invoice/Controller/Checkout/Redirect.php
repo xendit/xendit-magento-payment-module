@@ -4,7 +4,6 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Payment\Transaction;
 
 /**
  * Class Redirect
@@ -33,6 +32,7 @@ class Redirect extends AbstractAction
                 $this->cancelOrder($order, $failureReason);
                 return $this->redirectToCart($failureReason);
             }
+
             // CC Subscription
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
