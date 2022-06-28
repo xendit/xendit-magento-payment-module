@@ -177,15 +177,6 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getPaymentDescription("cc"),
                     'image' => $this->xenditHelper->getCreditCardImages('cc')
                 ],
-                'cc_subscription' => [
-                    'title' => $this->xenditHelper->getPaymentTitle("cc_subscription"),
-                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("cc_subscription"),
-                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("cc_subscription"),
-                    'description' => $this->xenditHelper->getPaymentDescription("cc_subscription"),
-                    'interval' => $this->xenditHelper->getCcSubscriptionInterval(),
-                    'interval_count' => $this->xenditHelper->getCcSubscriptionIntervalCount(),
-                    'image' => $this->xenditHelper->getCreditCardImages('cc_subscription')
-                ],
                 'paymaya' => [
                     'title' => $this->xenditHelper->getPaymentTitle("paymaya"),
                     'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("paymaya"),

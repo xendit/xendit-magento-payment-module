@@ -61,18 +61,6 @@ class CustomView extends Template
     }
 
     /**
-     * @return array
-     */
-    public function getSubscriptionConfig()
-    {
-        $data = array();
-        $data['interval'] = $this->dataHelper->getCcSubscriptionInterval();
-        $data['interval_count'] = $this->dataHelper->getCcSubscriptionIntervalCount();
-
-        return $data;
-    }
-
-    /**
      * @return string
      */
     public function getInstallmentData()

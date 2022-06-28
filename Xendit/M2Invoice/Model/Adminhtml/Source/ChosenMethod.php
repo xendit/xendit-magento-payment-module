@@ -29,7 +29,6 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'mandiriva', 'label' => __('Bank Transfer Mandiri')],
             ['value' => 'permatava', 'label' => __('Bank Transfer Permata')],
             ['value' => 'cc', 'label' => __('Credit Card')],
-            ['value' => 'cc_subscription', 'label' => __('Credit Card Subscription')],
             ['value' => 'dana', 'label' => __('DANA')],
             ['value' => 'indomaret', 'label' => __('Indomaret')],
             ['value' => 'ovo', 'label' => __('OVO')],
