@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.9.0 (2022-06-28)
+Improvements:
+- Remove the CC subscription
+
 ## 3.8.0 (2022-05-09)
 Features:
 - Add new IDR payment: Uangme
