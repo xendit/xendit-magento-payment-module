@@ -75,6 +75,9 @@ class Notification extends Action implements CsrfAwareActionInterface
      */
     private $xenditModel;
 
+    /**
+     * @var OrderRepository
+     */
     private $orderRepository;
 
     /**
