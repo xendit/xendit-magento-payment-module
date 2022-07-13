@@ -142,9 +142,7 @@ class OverviewPost extends Checkout
                     );
                     $this->_redirect('*/*/billing');
                 }
-                $params  = implode("-", $orderIds);
-
-                $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping?order_ids=' . $params . '&preferred_method=' . $xenditPaymentMethod;
+                $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping?preferred_method=' . $xenditPaymentMethod;
                 $this->_redirect($redirect);
             } else {
                 //OTHERS
