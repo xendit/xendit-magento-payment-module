@@ -2,6 +2,12 @@
 
 namespace Xendit\M2Invoice\Model\Payment;
 
+use Magento\Directory\Helper\Data as DirectoryHelper;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Model\OrderRepository;
+use Xendit\M2Invoice\Logger\Logger as XenditLogger;
+
 /**
  * Class Xendit
  * @package Xendit\M2Invoice\Model\Payment
@@ -14,6 +20,59 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
      * @var string
      */
     protected $_code = 'xendit';
+
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
+
+    /**
+     * @var OrderRepository
+     */
+    private $orderRepository;
+
+    /**
+     * @var XenditLogger
+     */
+    private $xenditLogger;
+
+    /**
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger $logger
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
+     * @param DirectoryHelper|null $directory
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param OrderRepository $orderRepository
+     * @param XenditLogger $xenditLogger
+     */
+    public function __construct(
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = [],
+        DirectoryHelper $directory = null,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        OrderRepository $orderRepository,
+        XenditLogger $xenditLogger
+    ) {
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->orderRepository = $orderRepository;
+        $this->xenditLogger = $xenditLogger;
+        parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);
+    }
 
     /**
      * @return mixed
@@ -142,5 +201,26 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
         }
 
         return $promo;
+    }
+
+    /**
+     * Get order(s) by TransactionId
+     *
+     * @param string $transactionId
+     * @return array
+     */
+    public function getOrderIdsByTransactionId(string $transactionId): array
+    {
+        $this->searchCriteriaBuilder->addFilter('xendit_transaction_id', $transactionId);
+        $orders = $this->orderRepository->getList($this->searchCriteriaBuilder->create());
+
+        if (!$orders->getTotalCount()) {
+            $this->xenditLogger->log('error', __('No order(s) found for transaction id %1', $transactionId));
+            return [];
+        }
+
+        return array_map(function (OrderInterface $order) {
+            return $order->getId();
+        }, $orders->getItems());
     }
 }

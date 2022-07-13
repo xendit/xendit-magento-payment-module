@@ -14,6 +14,10 @@ use Zend\Http\Request;
  */
 class Invoice extends AbstractAction
 {
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface|void
+     * @throws LocalizedException
+     */
     public function execute()
     {
         try {
@@ -55,7 +59,7 @@ class Invoice extends AbstractAction
     {
         if ($order == null) {
             $this->getLogger()->debug('Unable to get last order data from database');
-            $this->_redirect('checkout/onepage/error', [ '_secure' => false ]);
+            $this->_redirect('checkout/onepage/error', ['_secure' => false]);
 
             return;
         }
@@ -65,11 +69,11 @@ class Invoice extends AbstractAction
 
         $shippingAddress = $order->getShippingAddress();
         $address = [
-            'street_line1'  => $shippingAddress->getData('street') ?: 'n/a',
-            'city'          => $shippingAddress->getData('city') ?: 'n/a',
-            'state'         => $shippingAddress->getData('region') ?: 'n/a',
-            'postal_code'   => $shippingAddress->getData('postcode') ?: 'n/a',
-            'country'       => $shippingAddress->getData('country_id') ?: 'ID'
+            'street_line1' => $shippingAddress->getData('street') ?: 'n/a',
+            'city' => $shippingAddress->getData('city') ?: 'n/a',
+            'state' => $shippingAddress->getData('region') ?: 'n/a',
+            'postal_code' => $shippingAddress->getData('postcode') ?: 'n/a',
+            'country' => $shippingAddress->getData('country_id') ?: 'ID'
         ];
 
         $orderItems = $order->getAllItems();
@@ -82,7 +86,7 @@ class Invoice extends AbstractAction
             foreach ($categoryIds as $categoryId) {
                 $category = $this->getCategoryFactory()->create();
                 $category->load($categoryId);
-                $categories[] = (string) $category->getName();
+                $categories[] = (string)$category->getName();
             }
             $categoryName = implode(', ', $categories);
             $item['reference_id'] = $product->getId();
@@ -91,34 +95,32 @@ class Invoice extends AbstractAction
             $item['price'] = $product->getPrice();
             $item['type'] = 'PRODUCT';
             $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
-            $item['quantity'] = (int) $orderItem->getQtyOrdered();
-            $items[] = (object) $item;
+            $item['quantity'] = (int)$orderItem->getQtyOrdered();
+            $items[] = (object)$item;
         }
 
         $amount = $order->getTotalDue();
-        $requestData = [
-            'external_id'           => $this->getDataHelper()->getExternalId($orderId),
-            'payer_email'           => $order->getCustomerEmail(),
-            'description'           => $orderId,
-            'amount'                => $amount,
-            'currency'              => $order->getBaseCurrencyCode(),
-            'preferred_method'      => $preferredMethod,
-            'client_type'           => 'INTEGRATION',
-            'payment_methods'       => json_encode([strtoupper($preferredMethod)]),
+        return [
+            'external_id' => $this->getDataHelper()->getExternalId($orderId),
+            'payer_email' => $order->getCustomerEmail(),
+            'description' => $orderId,
+            'amount' => $amount,
+            'currency' => $order->getBaseCurrencyCode(),
+            'preferred_method' => $preferredMethod,
+            'client_type' => 'INTEGRATION',
+            'payment_methods' => json_encode([strtoupper($preferredMethod)]),
             'platform_callback_url' => $this->getXenditCallbackUrl(),
-            'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(),
-            'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderId),
-            'customer'              => (object) [
-                'given_names'       => $order->getCustomerFirstname() ?: 'n/a',
-                'surname'           => $order->getCustomerLastname() ?: 'n/a',
-                'email'             => $order->getCustomerEmail() ?: 'noreply@mail.com' ,
-                'mobile_number'     => $shippingAddress->getTelephone() ?: '',
-                'addresses'         => [(object) $address]
+            'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(),
+            'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderId),
+            'customer' => (object)[
+                'given_names' => $order->getCustomerFirstname() ?: 'n/a',
+                'surname' => $order->getCustomerLastname() ?: 'n/a',
+                'email' => $order->getCustomerEmail() ?: 'noreply@mail.com',
+                'mobile_number' => $shippingAddress->getTelephone() ?: '',
+                'addresses' => [(object)$address]
             ],
-            'items'                 => $items
+            'items' => $items
         ];
-
-        return $requestData;
     }
 
     /**
@@ -164,8 +166,7 @@ class Invoice extends AbstractAction
      */
     private function getXenditRedirectUrl($invoice, $preferredMethod)
     {
-        $url = $invoice['invoice_url'] . "#$preferredMethod";
-        return $url;
+        return $invoice['invoice_url'] . "#$preferredMethod";
     }
 
     /**
@@ -175,7 +176,7 @@ class Invoice extends AbstractAction
     {
         $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
         $order->addStatusHistoryComment("Pending Xendit payment.");
-        $order->save();
+        $this->getOrderRepo()->save($order);
     }
 
     /**
@@ -188,11 +189,13 @@ class Invoice extends AbstractAction
         $payment->setAdditionalInformation('payment_gateway', 'xendit');
         if (isset($invoice['id'])) {
             $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
+            $order->setXenditTransactionId($invoice['id']);
         }
         if (isset($invoice['expiry_date'])) {
             $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
         }
-        $order->save();
+
+        $this->getOrderRepo()->save($order);
     }
 
     /**
@@ -206,7 +209,7 @@ class Invoice extends AbstractAction
             $failureReasonInsight
         ));
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), ['_secure' => false]);
         return $resultRedirect;
     }
 }
