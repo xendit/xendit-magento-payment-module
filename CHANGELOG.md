@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.9.1 (2022-07-12)
+Improvements:
+- Multishipping checkout with Xendit payment improvements
+
 ## 3.9.0 (2022-06-28)
 Improvements:
 - Remove the CC subscription
