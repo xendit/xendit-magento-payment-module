@@ -40,8 +40,8 @@ class Failure extends AbstractAction
 
         // Add error message if order canceled
         if ($orderCanceled && !empty($restoreQuote)) {
-            $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. Please click on 'Update Shopping Cart'."));
             $this->getCheckoutHelper()->restoreQuote($restoreQuote);
+            $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. Please click on 'Update Shopping Cart'."));
         }
         return $this->_redirect('checkout/cart');
     }
