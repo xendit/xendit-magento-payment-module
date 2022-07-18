@@ -11,7 +11,6 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
-use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
@@ -189,33 +188,15 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $orderId
-     * @param bool $isMultishipping
+     * @param array $orderIds
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getFailureUrl($orderId, $isMultishipping = false)
+    public function getFailureUrl(array $orderIds)
     {
-        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/failure?order_id=$orderId";
-        if ($isMultishipping) {
-            $baseUrl .= '&type=multishipping';
-        }
-        return $baseUrl;
-    }
-
-    /**
-     * @param $orderId
-     * @param bool $isMultishipping
-     * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getThreeDSResultUrl($orderId, $isMultishipping = false)
-    {
-        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl() . "xendit/checkout/threedsresult?order_id=$orderId";
-        if ($isMultishipping) {
-            $baseUrl .= "&type=multishipping";
-        }
-        return $baseUrl;
+        $parameters = http_build_query([
+            'order_ids' => $orderIds
+        ]);
+        return $this->_getUrl('xendit/checkout/failure', ['_query' => $parameters]);
     }
 
     /**

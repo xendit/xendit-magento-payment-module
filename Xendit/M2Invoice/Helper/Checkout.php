@@ -4,6 +4,7 @@ namespace Xendit\M2Invoice\Helper;
 
 use Magento\Checkout\Model\Session;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderFactory;
 
@@ -29,19 +30,27 @@ class Checkout
     private $quoteRepository;
 
     /**
+     * @var OrderRepositoryInterface
+     */
+    private $orderRepository;
+
+    /**
      * Checkout constructor.
      * @param Session $session
      * @param OrderFactory $order
      * @param CartRepositoryInterface $quoteRepository
+     * @param OrderRepositoryInterface $orderRepository
      */
     public function __construct(
         Session $session,
         OrderFactory $order,
-        CartRepositoryInterface $quoteRepository
+        CartRepositoryInterface $quoteRepository,
+        OrderRepositoryInterface $orderRepository
     ) {
         $this->session = $session;
         $this->orderFactory = $order;
         $this->quoteRepository = $quoteRepository;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
@@ -56,8 +65,8 @@ class Checkout
         $order = $this->session->getLastRealOrder();
 
         if ($order->getId() && $order->getState() != Order::STATE_CANCELED) {
-            $order->registerCancellation($comment)->save();
-            return true;
+            $order->registerCancellation($comment);
+            return $this->orderRepository->save($order);
         }
         return false;
     }
@@ -88,8 +97,23 @@ class Checkout
         $order = $this->orderFactory->create()->loadByIncrementId($orderId);
 
         if ($order->getId() && $order->getState() != Order::STATE_CANCELED) {
-            $order->registerCancellation($comment)->save();
-            return true;
+            $order->registerCancellation($comment);
+            return $this->orderRepository->save($order);
+        }
+        return false;
+    }
+
+    /**
+     * @param Order $order
+     * @param string $comment
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function cancelOrder(Order $order, string $comment = "")
+    {
+        if ($order->getState() != Order::STATE_CANCELED) {
+            $order->registerCancellation($comment);
+            return $this->orderRepository->save($order);
         }
         return false;
     }
@@ -104,15 +128,13 @@ class Checkout
     public function processOrdersFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
     {
         foreach ($orderIds as $key => $value) {
-            $order = $this->orderFactory->create();
-            $order  ->load($value);
-
+            $order = $this->orderRepository->get($value);
             $orderState = Order::STATE_CANCELED;
-            $order  ->setState($orderState)
+            $order->setState($orderState)
                     ->setStatus($orderState)
                     ->addStatusHistoryComment("Order #" . $value . " was rejected by Xendit because " . $failureReason);
-            $order  ->save();
 
+            $order = $this->orderRepository->save($order);
             $quoteId = $order->getQuoteId();
             $quote = $this->quoteRepository->get($quoteId);
             $this->restoreQuote($quote);

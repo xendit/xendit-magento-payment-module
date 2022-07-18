@@ -2,13 +2,14 @@
 
 namespace Xendit\M2Invoice\Controller\Checkout;
 
+use Magento\Sales\Model\Order;
+
 /**
  * Class Failure
  * @package Xendit\M2Invoice\Controller\Checkout
  */
 class Failure extends AbstractAction
 {
-
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -16,39 +17,27 @@ class Failure extends AbstractAction
      */
     public function execute()
     {
-        $orderIds = explode('-', $this->getRequest()->get('order_id'));
-        $type = $this->getRequest()->get('type');
-
-        if ($type == 'multishipping') {
+        $orderCanceled = false;
+        $orderIds = $this->getRequest()->get('order_ids') ?? [];
+        $restoreQuote = null;
+        try {
             foreach ($orderIds as $orderId) {
-                $order = $this->getOrderFactory()->create();
-                $order ->load($orderId);
-    
-                if ($order) {
-                    $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
-                    $this->cancelOrder($order, "customer cancelled the payment.");
-    
-                    $quoteId    = $order->getQuoteId();
-                    $quote      = $this->getQuoteRepository()->get($quoteId);
-    
-                    $this->getCheckoutHelper()->restoreQuote($quote); //restore cart
+                $order = $this->getOrderRepo()->get($orderId);
+                if ($order && $order->getState() == Order::STATE_CANCELED) {
+                    $orderCanceled = true;
+                    $restoreQuote = $this->getQuoteRepository()->get($order->getQuoteId());
                 }
             }
-        } else { //onepage
-            $order = $this->getOrderById($this->getRequest()->get('order_id'));
-    
-            if ($order) {
-                $this->getLogger()->debug('Requested order cancelled by customer. OrderId: ' . $order->getIncrementId());
-                $this->cancelOrder($order, "customer cancelled the payment.");
-
-                $quoteId    = $order->getQuoteId();
-                $quote      = $this->getQuoteRepository()->get($quoteId);
-
-                $this->getCheckoutHelper()->restoreQuote($quote); //restore cart
-            }
+        } catch (\Exception $e) {
+            $this->getMessageManager()->addErrorMessage($e->getMessage());
+            return $this->_redirect('checkout/cart');
         }
 
-        $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. Please click on 'Update Shopping Cart'."));
-        $this->_redirect('checkout/cart');
+        // Add error message if order canceled
+        if ($orderCanceled && !empty($restoreQuote)) {
+            $this->getMessageManager()->addWarningMessage(__("Xendit payment failed. Please click on 'Update Shopping Cart'."));
+            $this->getCheckoutHelper()->restoreQuote($restoreQuote);
+        }
+        return $this->_redirect('checkout/cart');
     }
 }
