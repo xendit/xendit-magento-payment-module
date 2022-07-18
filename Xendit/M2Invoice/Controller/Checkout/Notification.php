@@ -311,15 +311,15 @@ class Notification extends Action implements CsrfAwareActionInterface
         } else { //FAILED or EXPIRED
             $orderState = Order::STATE_CANCELED;
             if ($order->getStatus() != $orderState) {
-                $this->getCheckoutHelper()->cancelCurrentOrder(
-                    "Order #" . ($order->getId()) . " was rejected by Xendit. Transaction #$transactionId."
-                );
+                $this->getCheckoutHelper()
+                    ->cancelOrder($order, __("Order #%1 was rejected by Xendit. Transaction #%2.", $order->getId(), $transactionId));
                 $this->getCheckoutHelper()->restoreQuote(); //restore cart
             }
+
             $order->addStatusHistoryComment(
                 "Xendit payment " . strtolower($paymentStatus) . ". Transaction ID: $transactionId"
-            )->save();
-
+            );
+            $this->orderRepository->save($order);
             return $this->responseError(__('Transaction not paid'), __('FAILED'));
         }
     }
@@ -390,21 +390,5 @@ class Notification extends Action implements CsrfAwareActionInterface
     protected function getCheckoutHelper()
     {
         return $this->checkoutHelper;
-    }
-
-    /**
-     * @param $orderId
-     * @return Order|null
-     */
-    protected function getOrderById($orderId)
-    {
-        $order = $this->orderFactory->create()->load($orderId);
-        if (!$order->getId() || $orderId !== $order->getId()) {
-            $order = $this->orderFactory->create()->loadByIncrementId($orderId);
-            if (!$order->getId()) {
-                return null;
-            }
-        }
-        return $order;
     }
 }
