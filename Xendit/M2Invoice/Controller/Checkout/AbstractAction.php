@@ -496,4 +496,40 @@ abstract class AbstractAction extends Action
     {
         return $this->multishipping;
     }
+
+    /**
+     * @return array|mixed
+     */
+    protected function getMultiShippingOrderIds()
+    {
+        return $this->multishipping->getOrderIds();
+    }
+
+    /**
+     * @param Order $order
+     * @return bool
+     */
+    protected function orderValidToCreateXenditInvoice(Order $order): bool
+    {
+        if (!empty($order) && empty($order->getXenditTransactionId())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    protected function getPreferredMethod()
+    {
+        $preferredMethod = $this->getRequest()->getParam('preferred_method');
+        if ($preferredMethod == 'cc') {
+            $preferredMethod = 'CREDIT_CARD';
+        }
+
+        if ($preferredMethod == 'shopeepayph') {
+            $preferredMethod = 'SHOPEEPAY';
+        }
+        return $preferredMethod;
+    }
 }

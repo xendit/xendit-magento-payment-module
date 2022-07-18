@@ -20,8 +20,7 @@ class InvoiceMultishipping extends AbstractAction
     public function execute()
     {
         try {
-            $rawOrderIds = $this->getRequest()->getParam('order_ids');
-            $orderIds = explode("-", $rawOrderIds);
+            $orderIds = $this->getMultiShippingOrderIds();
 
             $transactionAmount = 0;
             $orderProcessed = false;
@@ -29,15 +28,19 @@ class InvoiceMultishipping extends AbstractAction
             $addresses = [];
             $items = [];
 
-            $orderIncrementIds = '';
+            $orderIncrementIds = [];
+            $preferredMethod = $this->getPreferredMethod();
 
             $c = 0;
             foreach ($orderIds as $key => $value) {
                 $order = $this->getOrderRepo()->get($value);
-                if ($c > 0) {
-                    $orderIncrementIds .= "-";
+                if (!$this->orderValidToCreateXenditInvoice($order)) {
+                    $message = __('Order processed');
+                    $this->getLogger()->info($message);
+                    return $this->redirectToCart($message);
                 }
-                $orderIncrementIds .= $order->getRealOrderId();
+
+                $orderIncrementIds[] = $order->getRealOrderId();
 
                 $orderState = $order->getState();
                 if ($orderState === Order::STATE_PROCESSING && !$order->canInvoice()) {
@@ -94,15 +97,7 @@ class InvoiceMultishipping extends AbstractAction
                 return $this->_redirect('multishipping/checkout/success');
             }
 
-            $preferredMethod = $this->getRequest()->getParam('preferred_method');
-            if ($preferredMethod == 'cc') {
-                $preferredMethod = 'CREDIT_CARD';
-            }
-
-            if ($preferredMethod == 'shopeepayph') {
-                $preferredMethod = 'SHOPEEPAY';
-            }
-
+            $rawOrderIds = implode('-', $orderIds);
             $requestData = [
                 'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds),
                 'payer_email' => $billingEmail,
@@ -114,7 +109,7 @@ class InvoiceMultishipping extends AbstractAction
                 'payment_methods' => json_encode([strtoupper($preferredMethod)]),
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
                 'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
-                'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true),
+                'failure_redirect_url' => $this->getDataHelper()->getFailureUrl(implode('-', $orderIncrementIds), true),
                 'customer' => (object)[
                     'given_names' => $order->getCustomerFirstname() ?: 'n/a',
                     'surname' => $order->getCustomerLastname() ?: 'n/a',
