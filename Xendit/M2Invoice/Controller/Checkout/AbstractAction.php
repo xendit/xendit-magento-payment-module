@@ -532,4 +532,14 @@ abstract class AbstractAction extends Action
         }
         return $preferredMethod;
     }
+
+    /**
+     * @param string $orderByIncrementId
+     * @return Order
+     */
+    public function getOrderByIncrementId(string $orderByIncrementId): Order
+    {
+        $order = $this->orderFactory->create();
+        return $order->loadByIncrementId($orderByIncrementId);
+    }
 }

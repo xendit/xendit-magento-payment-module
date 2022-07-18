@@ -109,7 +109,7 @@ class InvoiceMultishipping extends AbstractAction
                 'payment_methods' => json_encode([strtoupper($preferredMethod)]),
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
                 'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
-                'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderIds),
+                'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderIncrementIds),
                 'customer' => (object)[
                     'given_names' => $order->getCustomerFirstname() ?: 'n/a',
                     'surname' => $order->getCustomerLastname() ?: 'n/a',

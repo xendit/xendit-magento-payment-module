@@ -22,8 +22,8 @@ class Failure extends AbstractAction
         $restoreQuote = null;
         try {
             foreach ($orderIds as $orderId) {
-                $order = $this->getOrderRepo()->get($orderId);
-                if ($order && $order->getState() == Order::STATE_CANCELED) {
+                $order = $this->getOrderByIncrementId($orderId);
+                if ($order->getState() == Order::STATE_CANCELED) {
                     $orderCanceled = true;
                     $restoreQuote = $this->getQuoteRepository()->get($order->getQuoteId());
                 }
