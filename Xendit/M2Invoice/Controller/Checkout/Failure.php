@@ -19,6 +19,11 @@ class Failure extends AbstractAction
     {
         $orderCanceled = false;
         $orderIds = $this->getRequest()->get('order_ids') ?? [];
+        if (!is_array($orderIds)) {
+            $this->getMessageManager()->addErrorMessage(__('Invalid parameters'));
+            return $this->_redirect('checkout/cart');
+        }
+
         $restoreQuote = null;
         try {
             foreach ($orderIds as $orderId) {
