@@ -17,29 +17,30 @@ class InvoiceMultishipping extends AbstractAction
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface
      */
-
     public function execute()
     {
         try {
-            $rawOrderIds        = $this->getRequest()->getParam('order_ids');
-            $orderIds           = explode("-", $rawOrderIds);
+            $orderIds = $this->getMultiShippingOrderIds();
 
-            $transactionAmount  = 0;
-            $orderProcessed     = false;
-            $orders             = [];
-            $addresses          = [];
-            $items              = [];
+            $transactionAmount = 0;
+            $orderProcessed = false;
+            $orders = [];
+            $addresses = [];
+            $items = [];
 
-            $orderIncrementIds  = '';
+            $orderIncrementIds = [];
+            $preferredMethod = $this->getPreferredMethod();
 
             $c = 0;
             foreach ($orderIds as $key => $value) {
-                $order = $this->getOrderFactory()->create();
-                $order->load($value);
-                if ($c>0) {
-                    $orderIncrementIds .= "-";
+                $order = $this->getOrderRepo()->get($value);
+                if (!$this->orderValidToCreateXenditInvoice($order)) {
+                    $message = __('Order processed');
+                    $this->getLogger()->info($message);
+                    return $this->redirectToCart($message);
                 }
-                $orderIncrementIds .= $order->getRealOrderId();
+
+                $orderIncrementIds[] = $order->getRealOrderId();
 
                 $orderState = $order->getState();
                 if ($orderState === Order::STATE_PROCESSING && !$order->canInvoice()) {
@@ -48,26 +49,25 @@ class InvoiceMultishipping extends AbstractAction
                 }
 
                 $order->setState(Order::STATE_PENDING_PAYMENT)
-                      ->setStatus(Order::STATE_PENDING_PAYMENT)
-                      ->addStatusHistoryComment("Pending Xendit payment.");
+                    ->setStatus(Order::STATE_PENDING_PAYMENT)
+                    ->addStatusHistoryComment("Pending Xendit payment.");
 
-                array_push($orders, $order);
+                $orders[] = $order;
+                $this->getOrderRepo()->save($order);
 
-                $order->save();
-
-                $transactionAmount  += $order->getTotalDue();
+                $transactionAmount += $order->getTotalDue();
                 $billingEmail = $order->getCustomerEmail() ?: 'noreply@mail.com';
                 $shippingAddress = $order->getShippingAddress();
                 $currency = $order->getBaseCurrencyCode();
 
                 $address = [
-                    'street_line1'  => $shippingAddress->getData('street') ?: 'n/a',
-                    'city'          => $shippingAddress->getData('city') ?: 'n/a',
-                    'state'         => $shippingAddress->getData('region') ?: 'n/a',
-                    'postal_code'   => $shippingAddress->getData('postcode') ?: 'n/a',
-                    'country'       => $shippingAddress->getData('country_id') ?: 'ID'
+                    'street_line1' => $shippingAddress->getData('street') ?: 'n/a',
+                    'city' => $shippingAddress->getData('city') ?: 'n/a',
+                    'state' => $shippingAddress->getData('region') ?: 'n/a',
+                    'postal_code' => $shippingAddress->getData('postcode') ?: 'n/a',
+                    'country' => $shippingAddress->getData('country_id') ?: 'ID'
                 ];
-                $addresses[] = (object) $address;
+                $addresses[] = (object)$address;
                 $orderItems = $order->getAllItems();
                 foreach ($orderItems as $orderItem) {
                     $item = [];
@@ -77,7 +77,7 @@ class InvoiceMultishipping extends AbstractAction
                     foreach ($categoryIds as $categoryId) {
                         $category = $this->getCategoryFactory()->create();
                         $category->load($categoryId);
-                        $categories[] = (string) $category->getName();
+                        $categories[] = (string)$category->getName();
                     }
                     $categoryName = implode(', ', $categories);
                     $item['reference_id'] = $product->getId();
@@ -86,8 +86,8 @@ class InvoiceMultishipping extends AbstractAction
                     $item['price'] = $product->getPrice();
                     $item['type'] = 'PRODUCT';
                     $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
-                    $item['quantity'] = (int) $orderItem->getQtyOrdered();
-                    $items[] = (object) $item;
+                    $item['quantity'] = (int)$orderItem->getQtyOrdered();
+                    $items[] = (object)$item;
                 }
 
                 $c++;
@@ -97,40 +97,32 @@ class InvoiceMultishipping extends AbstractAction
                 return $this->_redirect('multishipping/checkout/success');
             }
 
-            $preferredMethod = $this->getRequest()->getParam('preferred_method');
-            if ($preferredMethod == 'cc') {
-                $preferredMethod = 'CREDIT_CARD';
-            }
-
-            if ($preferredMethod == 'shopeepayph') {
-                $preferredMethod = 'SHOPEEPAY';
-            }
-
+            $rawOrderIds = implode('-', $orderIds);
             $requestData = [
-                'external_id'           => $this->getDataHelper()->getExternalId($rawOrderIds),
-                'payer_email'           => $billingEmail,
-                'description'           => $rawOrderIds,
-                'amount'                => $transactionAmount,
-                'currency'              => $currency,
-                'preferred_method'      => $preferredMethod,
-                'client_type'           => 'INTEGRATION',
-                'payment_methods'       => json_encode([strtoupper($preferredMethod)]),
+                'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds),
+                'payer_email' => $billingEmail,
+                'description' => $rawOrderIds,
+                'amount' => $transactionAmount,
+                'currency' => $currency,
+                'preferred_method' => $preferredMethod,
+                'client_type' => 'INTEGRATION',
+                'payment_methods' => json_encode([strtoupper($preferredMethod)]),
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
-                'success_redirect_url'  => $this->getDataHelper()->getSuccessUrl(true),
-                'failure_redirect_url'  => $this->getDataHelper()->getFailureUrl($orderIncrementIds, true),
-                'customer'              => (object) [
-                    'given_names'       => $order->getCustomerFirstname() ?: 'n/a',
-                    'surname'           => $order->getCustomerLastname() ?: 'n/a',
-                    'email'             => $billingEmail,
-                    'mobile_number'     => $shippingAddress->getTelephone() ?: '',
-                    'addresses'         => $addresses
+                'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
+                'failure_redirect_url' => $this->getDataHelper()->getFailureUrl(implode('-', $orderIncrementIds), true),
+                'customer' => (object)[
+                    'given_names' => $order->getCustomerFirstname() ?: 'n/a',
+                    'surname' => $order->getCustomerLastname() ?: 'n/a',
+                    'email' => $billingEmail,
+                    'mobile_number' => $shippingAddress->getTelephone() ?: '',
+                    'addresses' => $addresses
                 ],
-                'items'                 => $items
+                'items' => $items
             ];
 
             $invoice = $this->createInvoice($requestData);
 
-            if (isset($invoice['error_code'])) {
+            if (!empty($invoice) && isset($invoice['error_code'])) {
                 $message = $this->getErrorHandler()->mapInvoiceErrorCode($invoice['error_code']);
                 // cancel order and redirect to cart
                 return $this->processFailedPayment($orderIds, $message);
@@ -161,7 +153,7 @@ class InvoiceMultishipping extends AbstractAction
 
         try {
             if (isset($requestData['preferred_method'])) {
-                $invoice = $this->getApiHelper()->request(
+                return $this->getApiHelper()->request(
                     $invoiceUrl,
                     $invoiceMethod,
                     $requestData,
@@ -174,8 +166,6 @@ class InvoiceMultishipping extends AbstractAction
                 new Phrase($e->getMessage())
             );
         }
-
-        return $invoice;
     }
 
     /**
@@ -185,8 +175,7 @@ class InvoiceMultishipping extends AbstractAction
      */
     private function getXenditRedirectUrl($invoice, $preferredMethod)
     {
-        $url = (isset($invoice['invoice_url'])) ? $invoice['invoice_url'] . "#$preferredMethod" : '';
-        return $url;
+        return (isset($invoice['invoice_url'])) ? $invoice['invoice_url'] . "#$preferredMethod" : '';
     }
 
     /**
@@ -200,12 +189,12 @@ class InvoiceMultishipping extends AbstractAction
             $payment->setAdditionalInformation('payment_gateway', 'xendit');
             if (isset($invoice['id'])) {
                 $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
+                $order->setXenditTransactionId($invoice['id']);
             }
             if (isset($invoice['expiry_date'])) {
                 $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
             }
-
-            $order->save();
+            $this->getOrderRepo()->save($order);
         }
     }
 
@@ -220,7 +209,7 @@ class InvoiceMultishipping extends AbstractAction
             $failureReasonInsight
         ));
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), ['_secure' => false]);
         return $resultRedirect;
     }
 
@@ -237,6 +226,6 @@ class InvoiceMultishipping extends AbstractAction
         $this->getMessageManager()->addErrorMessage(__(
             $failureReasonInsight
         ));
-        $this->_redirect('checkout/cart', ['_secure'=> false]);
+        $this->_redirect('checkout/cart', ['_secure' => false]);
     }
 }

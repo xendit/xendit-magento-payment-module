@@ -2,31 +2,31 @@
 
 namespace Xendit\M2Invoice\Controller\Checkout;
 
-use Xendit\M2Invoice\Helper\ApiRequest;
-use Xendit\M2Invoice\Helper\ErrorHandler;
-use Xendit\M2Invoice\Helper\Checkout;
-use Xendit\M2Invoice\Helper\Crypto;
-use Xendit\M2Invoice\Helper\Data;
+use Magento\Catalog\Model\CategoryFactory;
 use Magento\Checkout\Model\Session;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Category;
-use Magento\Catalog\Model\CategoryFactory;
-use Magento\Sales\Model\Order;
-use Magento\Sales\Model\OrderFactory;
-use Magento\Store\Model\StoreManagerInterface;
-use Psr\Log\LoggerInterface;
-use Magento\Quote\Api\CartRepositoryInterface;
-use Magento\Sales\Model\Service\InvoiceService;
-use Magento\Framework\DB\Transaction as DbTransaction;
-use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Multishipping\Model\Checkout\Type\Multishipping;
 use Magento\Multishipping\Model\Checkout\Type\Multishipping\State;
+use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Category;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\Service\InvoiceService;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
+use Xendit\M2Invoice\Helper\ApiRequest;
+use Xendit\M2Invoice\Helper\Checkout;
+use Xendit\M2Invoice\Helper\Crypto;
+use Xendit\M2Invoice\Helper\Data;
+use Xendit\M2Invoice\Helper\ErrorHandler;
 
 /**
  * Class AbstractAction
@@ -495,5 +495,41 @@ abstract class AbstractAction extends Action
     protected function getMultishippingType()
     {
         return $this->multishipping;
+    }
+
+    /**
+     * @return array|mixed
+     */
+    protected function getMultiShippingOrderIds()
+    {
+        return $this->multishipping->getOrderIds();
+    }
+
+    /**
+     * @param Order $order
+     * @return bool
+     */
+    protected function orderValidToCreateXenditInvoice(Order $order): bool
+    {
+        if (!empty($order) && empty($order->getXenditTransactionId())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    protected function getPreferredMethod()
+    {
+        $preferredMethod = $this->getRequest()->getParam('preferred_method');
+        if ($preferredMethod == 'cc') {
+            $preferredMethod = 'CREDIT_CARD';
+        }
+
+        if ($preferredMethod == 'shopeepayph') {
+            $preferredMethod = 'SHOPEEPAY';
+        }
+        return $preferredMethod;
     }
 }
