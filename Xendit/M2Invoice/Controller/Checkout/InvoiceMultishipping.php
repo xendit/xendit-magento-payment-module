@@ -21,6 +21,11 @@ class InvoiceMultishipping extends AbstractAction
     {
         try {
             $orderIds = $this->getMultiShippingOrderIds();
+            if (empty($orderIds)) {
+                $message = __('The order not exist');
+                $this->getLogger()->info($message);
+                return $this->redirectToCart($message);
+            }
 
             $transactionAmount = 0;
             $orderProcessed = false;
