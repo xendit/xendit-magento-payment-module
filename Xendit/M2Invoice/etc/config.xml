@@ -294,7 +294,7 @@
                 <title>Cashalo</title>
                 <description>Pay for orders using Cashalo via Xendit</description>
                 <min_order_total>1500</min_order_total>
-                <max_order_total>4500</max_order_total>
+                <max_order_total>8000</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
