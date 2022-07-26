@@ -39,6 +39,7 @@
                     <item name="cashalo" xsi:type="string">Xendit_M2Invoice::multishipping/cashalo.phtml</item>
                     <item name="shopeepayph" xsi:type="string">Xendit_M2Invoice::multishipping/shopeepayph.phtml</item>
                     <item name="uangme" xsi:type="string">Xendit_M2Invoice::multishipping/uangme.phtml</item>
+                    <item name="astrapay" xsi:type="string">Xendit_M2Invoice::multishipping/astrapay.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>
