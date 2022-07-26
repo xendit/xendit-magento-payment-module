@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.9.2 (2022-07-26)
+Improvements:
+- Add new IDR payment: AstraPay
+- Published repo to Packagist
+
 ## 3.9.1 (2022-07-12)
 Improvements:
 - Multishipping checkout with Xendit payment improvements

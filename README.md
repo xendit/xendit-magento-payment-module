@@ -86,6 +86,7 @@ To activate this feature, you need to follow this additional steps:
   - BillEase (PH)
   - Cashalo (PH)
   - Uangme
+  - AstraPay
 - Direct Debit
   - BRI
   - BPI (PH)
