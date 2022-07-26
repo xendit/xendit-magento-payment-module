@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 3.9.2 (2022-07-26)
+## 4.0.0 (2022-07-26)
 Improvements:
 - Add new IDR payment: AstraPay
 - Published repo to Packagist
