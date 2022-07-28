@@ -134,6 +134,10 @@ define(
                 type: 'uangme',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/uangme'
             },
+            {
+                type: 'astrapay',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/astrapay'
+            },
         );
         return Component.extend({});
     }
