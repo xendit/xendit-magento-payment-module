@@ -1,0 +1,10 @@
+{
+    "sales_order": {
+        "column": {
+            "xendit_transaction_id": true
+        },
+        "index": {
+            "SALES_ORDER_XENDIT_TRANSACTION_ID": true
+        }
+    }
+}
