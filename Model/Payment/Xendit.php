@@ -44,13 +44,10 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
      * @param \Magento\Payment\Helper\Data $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger $logger
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
-     * @param array $data
-     * @param DirectoryHelper|null $directory
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param OrderRepository $orderRepository
+     * @param DirectoryHelper $directory
      * @param XenditLogger $xenditLogger
+     * @param OrderRepository $orderRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -60,18 +57,28 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = [],
-        DirectoryHelper $directory = null,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
+        DirectoryHelper $directory,
+        XenditLogger $xenditLogger,
         OrderRepository $orderRepository,
-        XenditLogger $xenditLogger
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
+        $this->xenditLogger = $xenditLogger;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->orderRepository = $orderRepository;
-        $this->xenditLogger = $xenditLogger;
-        parent::__construct($context, $registry, $extensionFactory, $customAttributeFactory, $paymentData, $scopeConfig, $logger, $resource, $resourceCollection, $data, $directory);
+
+        parent::__construct(
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $paymentData,
+            $scopeConfig,
+            $logger,
+            null,
+            null,
+            [],
+            $directory
+        );
     }
 
     /**
