@@ -13,7 +13,7 @@ This module has been tested against the following tech stacks:
 | 2.1.18 | Debian GNU/Linux 9 | MariaDB 10.3 | 7.0.33 | Apache 2.4 |
 
 ### How to
-A. Installation using Composer
+## A. Installation using Composer
 
 Magento® 2 use the Composer to manage the module package and the library. Composer is a dependency manager for PHP. Composer declare the libraries your project depends on and it will manage (install/update) them for you.
 
@@ -60,7 +60,7 @@ After the installation. Go to your Magento® admin portal, to `Stores > Configur
 
 `php bin/magento setup:static-content:deploy`
 
-B. Install via CLI
+## B. Install via CLI
 
 To install this plugin, you can either manually copy plugin files into your store's webserver and enable it:
 1. Download and unzip plugin source code
@@ -84,7 +84,7 @@ After the code is inside the `MAGENTO_DIR`, proceed to run these commands:
 2. You can see Xendit's setting page by navigating to **Stores -> Configuration -> Sales -> Payment Method**
 3. Once you enable Xendit on the setting page, you should see Xendit's payment methods (credit card and bank transfer) on payment section during checkout flow.
 
-C. Install via marketplace
+## C. Install via marketplace
 
 ### Automatic Order Cancellation
 We provide a cron to help automatically cancel the pending order. This cron triggers when:
