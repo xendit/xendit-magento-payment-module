@@ -1,6 +1,7 @@
 <?php
 
 namespace Xendit\M2Invoice\Setup\Patch\Data;
+
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Sales\Setup\SalesSetupFactory;
 
