@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.0.1 (2022-08-01)
+Improvements:
+- Compatible with PHP 8.1.0
+
 ## 4.0.0 (2022-07-26)
 Improvements:
 - Add new IDR payment: AstraPay

@@ -34,7 +34,7 @@ If your server doesn’t have the composer install, you can easily install it. h
 `composer require xendit/m2invoice`
 
 When it’s finished you can activate the extension, clean the caches and deploy the content in your Magento® environment using the following command line;
-- `php bin/magento module:enable Mollie_Payment`
+- `php bin/magento module:enable Xendit_M2Invoice`
 - `php bin/magento setup:upgrade`
 - `php bin/magento cache:clean`
 
