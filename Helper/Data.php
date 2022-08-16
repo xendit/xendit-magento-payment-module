@@ -577,22 +577,21 @@ class Data extends AbstractHelper
 
         $customerObject = array_filter($customerObject);
         $customerObject['addresses'] = [
-            $this->extractXenditInvoiceCustomerAddress($order)
+            $this->extractXenditInvoiceCustomerAddress($shippingAddress)
         ];
         return $customerObject;
     }
 
     /**
-     * @param Order $order
+     * @param $shippingAddress
      * @return array
      */
-    public function extractXenditInvoiceCustomerAddress(Order $order): array
+    public function extractXenditInvoiceCustomerAddress($shippingAddress): array
     {
-        if (empty($order)) {
+        if (empty($shippingAddress)) {
             return [];
         }
 
-        $shippingAddress = $order->getShippingAddress();
         $address = [
             'street_line1' => $shippingAddress->getData('street'),
             'city' => $shippingAddress->getData('city'),
