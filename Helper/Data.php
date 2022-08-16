@@ -14,6 +14,7 @@ use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
@@ -558,5 +559,48 @@ class Data extends AbstractHelper
     public function truncateDecimal($amount)
     {
         return floor((double)$amount);
+    }
+
+    /**
+     * @param Order $order
+     * @return array
+     */
+    public function extractXenditInvoiceCustomerFromOrder(Order $order): array
+    {
+        $shippingAddress = $order->getShippingAddress();
+        $customerObject = [
+            'given_names' => $order->getCustomerFirstname(),
+            'surname' => $order->getCustomerLastname(),
+            'email' => $order->getCustomerEmail(),
+            'mobile_number' => $shippingAddress->getTelephone()
+        ];
+
+        $customerObject = array_filter($customerObject);
+        $customerObject['addresses'] = [
+            $this->extractXenditInvoiceCustomerAddress($order)
+        ];
+        return $customerObject;
+    }
+
+    /**
+     * @param Order $order
+     * @return array
+     */
+    public function extractXenditInvoiceCustomerAddress(Order $order): array
+    {
+        if (empty($order)) {
+            return [];
+        }
+
+        $shippingAddress = $order->getShippingAddress();
+        $address = [
+            'street_line1' => $shippingAddress->getData('street'),
+            'city' => $shippingAddress->getData('city'),
+            'state' => $shippingAddress->getData('region'),
+            'postal_code' => $shippingAddress->getData('postcode'),
+            'country' => $shippingAddress->getData('country_id')
+        ];
+
+        return array_filter($address);
     }
 }
