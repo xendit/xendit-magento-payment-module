@@ -21,6 +21,20 @@
                 <allowed_method>all</allowed_method>
                 <external_id_prefix>magento-xendit</external_id_prefix>
             </xendit>
+            <akulaku>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Akulaku</model>
+                <title>Akulaku</title>
+                <description>Bayar pesanan dengan Akulaku melalui Xendit</description>
+                <min_order_total>0.01</min_order_total>
+                <max_order_total>9999999999</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>1</sort_order>
+                <currency>IDR</currency>
+            </akulaku>
             <alfamart>
                 <active>1</active>
                 <payment_action>initialize</payment_action><!-- You can use another method like capture  -->

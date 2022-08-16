@@ -419,6 +419,7 @@ class Data extends AbstractHelper
             "shopeepayph"       => "shopeepayph",
             "uangme"            => "uangme",
             "astrapay"          => "astrapay",
+            "akulaku"          => "akulaku",
         ];
 
         $response = false;
