@@ -91,19 +91,20 @@ class Notification extends Action implements CsrfAwareActionInterface
      * @param DbTransaction $dbTransaction
      * @param InvoiceService $invoiceService
      * @param Xendit $xenditModel
+     * @param OrderRepository $orderRepository
      */
     public function __construct(
-        Context         $context,
-        JsonFactory     $jsonResultFactory,
-        Checkout        $checkoutHelper,
-        OrderFactory    $orderFactory,
-        Data            $dataHelper,
-        ApiRequest      $apiHelper,
-        XenditLogger    $logger,
-        DbTransaction   $dbTransaction,
-        InvoiceService  $invoiceService,
-        Xendit          $xenditModel,
-        OrderRepository $orderRepository
+        Context             $context,
+        JsonFactory         $jsonResultFactory,
+        Checkout            $checkoutHelper,
+        OrderFactory        $orderFactory,
+        Data                $dataHelper,
+        ApiRequest          $apiHelper,
+        XenditLogger        $logger,
+        DbTransaction       $dbTransaction,
+        InvoiceService      $invoiceService,
+        Xendit              $xenditModel,
+        OrderRepository     $orderRepository
     ) {
         parent::__construct($context);
         $this->jsonResultFactory = $jsonResultFactory;
@@ -165,6 +166,15 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             return $result;
         }
+    }
+
+    /**
+     * @param string $status
+     * @return bool
+     */
+    protected function isXenditInvoicePaid(string $status): bool
+    {
+        return in_array($status, ['PAID', 'SETTLED']);
     }
 
     /**
@@ -237,30 +247,38 @@ class Notification extends Action implements CsrfAwareActionInterface
     }
 
     /**
-     * @param $order
+     * @param Order $order
      * @param $callbackPayload
      * @param $invoice
      * @param $callbackDescription
-     * @return \Magento\Framework\Controller\Result\Json
+     * @return \Magento\Framework\Controller\Result\Json|null
      * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function checkOrder($order, $callbackPayload, $invoice, $callbackDescription)
+    private function checkOrder(Order $order, $callbackPayload, $invoice, $callbackDescription)
     {
         // Check if order exists in Magento
-        if (!$order) {
+        if (empty($order)) {
             return $this->responseError(__('Order not found'));
+        }
+
+        // Start check order
+        $this->logger->info("checkOrder");
+        $transactionId = $callbackPayload['id'];
+        $paymentStatus = $invoice['status'];
+
+        // Check if order is canceled
+        if ($this->checkoutHelper->canRevertOrderStatusToPending($order)
+            && $this->isXenditInvoicePaid($paymentStatus)) {
+            $this->checkoutHelper->revertCancelledOrderToPending($order);
         }
 
         // Check if order already created invoice
         if (!$order->canInvoice()) {
             return $this->responseSuccess(__('Order is already processed'));
         }
-
-        // Start check order
-        $this->logger->info("checkOrder");
-
-        $transactionId = $callbackPayload['id'];
-        $paymentStatus = $invoice['status'];
 
         // Check if the Xendit invoice not belong to the order
         if (isset($invoice['description']) && $invoice['description'] !== $callbackDescription) {
@@ -269,26 +287,10 @@ class Notification extends Action implements CsrfAwareActionInterface
 
         // Start update the order status
         $this->logger->info($paymentStatus);
-        $statusList = [
-            'PAID',
-            'SETTLED',
-            'COMPLETED',
-            'SUCCESS_COMPLETED',
-            'settlement'
-        ];
-
-        if (in_array($paymentStatus, $statusList)) {
-            $orderState = Order::STATE_PROCESSING;
-
-            if ($transactionId) {
-                $order->setState($orderState)
-                    ->setStatus($orderState)
-                    ->addStatusHistoryComment("Xendit payment completed. Transaction ID: $transactionId");
-            } else {
-                $order->setState($orderState)
-                    ->setStatus($orderState)
-                    ->addStatusHistoryComment("Xendit payment completed.");
-            }
+        if ($this->isXenditInvoicePaid($paymentStatus)) {
+            $order->setState(Order::STATE_PROCESSING)
+                ->setStatus(Order::STATE_PROCESSING)
+                ->addCommentToStatusHistory("Xendit payment completed. Transaction ID: $transactionId");
 
             $payment = $order->getPayment();
             $payment->setTransactionId($transactionId);
@@ -303,20 +305,19 @@ class Notification extends Action implements CsrfAwareActionInterface
                 $payment->setAdditionalInformation('xendit_installment', $callbackPayload['installment']);
                 $payment->save();
             }
-            $order->save();
+            $this->orderRepository->save($order);
 
             // Create invoice for order
             $this->invoiceOrder($order, $transactionId);
             return $this->responseSuccess(__('Transaction paid'));
         } else { //FAILED or EXPIRED
-            $orderState = Order::STATE_CANCELED;
-            if ($order->getStatus() != $orderState) {
+            if ($order->getStatus() != Order::STATE_CANCELED) {
                 $this->getCheckoutHelper()
                     ->cancelOrder($order, __("Order #%1 was rejected by Xendit. Transaction #%2.", $order->getId(), $transactionId));
                 $this->getCheckoutHelper()->restoreQuote(); //restore cart
             }
 
-            $order->addStatusHistoryComment(
+            $order->addCommentToStatusHistory(
                 "Xendit payment " . strtolower($paymentStatus) . ". Transaction ID: $transactionId"
             );
             $this->orderRepository->save($order);

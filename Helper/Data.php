@@ -379,14 +379,11 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $payment
-     * @return bool|mixed
+     * @return string[]
      */
-    public function xenditPaymentMethod($payment)
+    public function getXenditPaymentList(): array
     {
-
-        //method name => frontend routing
-        $listPayment = [
+        return [
             "cc"                => "cc",
             "bcava"             => "bca",
             "bniva"             => "bni",
@@ -419,9 +416,18 @@ class Data extends AbstractHelper
             "shopeepayph"       => "shopeepayph",
             "uangme"            => "uangme",
             "astrapay"          => "astrapay",
-            "akulaku"          => "akulaku",
+            "akulaku"           => "akulaku",
         ];
+    }
 
+    /**
+     * @param $payment
+     * @return false|string
+     */
+    public function xenditPaymentMethod($payment)
+    {
+        // method name => frontend routing
+        $listPayment = $this->getXenditPaymentList();
         $response = false;
         if (!!array_key_exists($payment, $listPayment)) {
             $response = $listPayment[$payment];
