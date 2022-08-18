@@ -576,9 +576,10 @@ class Data extends AbstractHelper
         ];
 
         $customerObject = array_filter($customerObject);
-        $customerObject['addresses'] = [
-            $this->extractXenditInvoiceCustomerAddress($shippingAddress)
-        ];
+        $addressObject = $this->extractXenditInvoiceCustomerAddress($shippingAddress);
+        if (!empty($addressObject)) {
+            $customerObject['addresses'] = [$addressObject];
+        }
         return $customerObject;
     }
 

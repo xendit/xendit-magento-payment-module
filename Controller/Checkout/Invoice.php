@@ -92,7 +92,9 @@ class Invoice extends AbstractAction
         }
 
         $amount = $order->getTotalDue();
-        return [
+        $customerObject = $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order);
+
+        $payload = [
             'external_id' => $this->getDataHelper()->getExternalId($orderId),
             'payer_email' => $order->getCustomerEmail(),
             'description' => $orderId,
@@ -104,9 +106,14 @@ class Invoice extends AbstractAction
             'platform_callback_url' => $this->getXenditCallbackUrl(),
             'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(),
             'failure_redirect_url' => $this->getDataHelper()->getFailureUrl([$orderId]),
-            'customer' => $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order),
             'items' => $items
         ];
+
+        if (!empty($customerObject)) {
+            $payload['customer'] = $customerObject;
+        }
+
+        return $payload;
     }
 
     /**
