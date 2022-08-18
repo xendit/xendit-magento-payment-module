@@ -134,6 +134,7 @@ To activate this feature, you need to follow this additional steps:
   - Cashalo (PH)
   - Uangme
   - AstraPay
+  - Akulaku
 - Direct Debit
   - BRI
   - BPI (PH)
