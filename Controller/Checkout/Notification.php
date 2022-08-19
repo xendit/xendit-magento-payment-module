@@ -270,9 +270,13 @@ class Notification extends Action implements CsrfAwareActionInterface
         $paymentStatus = $invoice['status'];
 
         // Check if order is canceled
-        if ($this->checkoutHelper->canRevertOrderStatusToPending($order)
-            && $this->isXenditInvoicePaid($paymentStatus)) {
-            $this->checkoutHelper->revertCancelledOrderToPending($order);
+        try {
+            if ($this->checkoutHelper->canRevertOrderStatusToPending($order)
+                && $this->isXenditInvoicePaid($paymentStatus)) {
+                $this->checkoutHelper->revertCancelledOrderToPending($order);
+            }
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage(), __('FAILED'));
         }
 
         // Check if order already created invoice
