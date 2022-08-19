@@ -87,17 +87,7 @@ After the code is inside the `MAGENTO_DIR`, proceed to run these commands:
 ## C. Install via marketplace
 
 ### Automatic Order Cancellation
-We provide a cron to help automatically cancel the pending order. This cron triggers when:
-1. The invoice linked to the order already expired
-2. Credit card payment stuck in pending for more than 1 day (meaning your end customer abandon the authentication attempt)
-
-To activate this feature, you need to follow this additional steps:
-- Ensure that cron daemon is already running. In ubuntu server, simply use `cron status` command
-  - If cron is not active yet, start it by using `cron start`
-  - [More info](http://www.dba-oracle.com/t_linux_cron.htm)
-- Initiate/install magento cron. `php bin/magento cron:install`
-  - [More info](https://devdocs.magento.com/guides/v2.3/config-guide/cli/config-cli-subcommands-cron.html)
-- Done! The cron should already scheduling and running in the background.
+If the Xendit payment links expired, it will auto cancel the order via the webhook.
 
 ## Supported Payment Method
 - Credit and Debit Card 

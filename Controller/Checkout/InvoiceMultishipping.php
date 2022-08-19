@@ -219,11 +219,12 @@ class InvoiceMultishipping extends AbstractAction
     }
 
     /**
-     * @param $orderIds
+     * @param array $orderIds
      * @param string $failureReason
+     * @return void
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function processFailedPayment($orderIds, $failureReason = 'Unexpected Error with empty charge')
+    private function processFailedPayment(array $orderIds, string $failureReason = 'Unexpected Error with empty charge')
     {
         $this->getCheckoutHelper()->processOrdersFailedPayment($orderIds, $failureReason);
 
