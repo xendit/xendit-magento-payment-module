@@ -14,6 +14,7 @@ use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
@@ -379,14 +380,11 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $payment
-     * @return bool|mixed
+     * @return string[]
      */
-    public function xenditPaymentMethod($payment)
+    public function getXenditPaymentList(): array
     {
-
-        //method name => frontend routing
-        $listPayment = [
+        return [
             "cc"                => "cc",
             "bcava"             => "bca",
             "bniva"             => "bni",
@@ -419,8 +417,18 @@ class Data extends AbstractHelper
             "shopeepayph"       => "shopeepayph",
             "uangme"            => "uangme",
             "astrapay"          => "astrapay",
+            "akulaku"           => "akulaku",
         ];
+    }
 
+    /**
+     * @param $payment
+     * @return false|string
+     */
+    public function xenditPaymentMethod($payment)
+    {
+        // method name => frontend routing
+        $listPayment = $this->getXenditPaymentList();
         $response = false;
         if (!!array_key_exists($payment, $listPayment)) {
             $response = $listPayment[$payment];
@@ -557,5 +565,48 @@ class Data extends AbstractHelper
     public function truncateDecimal($amount)
     {
         return floor((double)$amount);
+    }
+
+    /**
+     * @param Order $order
+     * @return array
+     */
+    public function extractXenditInvoiceCustomerFromOrder(Order $order): array
+    {
+        $shippingAddress = $order->getShippingAddress();
+        $customerObject = [
+            'given_names' => $order->getCustomerFirstname(),
+            'surname' => $order->getCustomerLastname(),
+            'email' => $order->getCustomerEmail(),
+            'mobile_number' => $shippingAddress->getTelephone()
+        ];
+
+        $customerObject = array_filter($customerObject);
+        $addressObject = $this->extractXenditInvoiceCustomerAddress($shippingAddress);
+        if (!empty($addressObject)) {
+            $customerObject['addresses'] = [$addressObject];
+        }
+        return $customerObject;
+    }
+
+    /**
+     * @param $shippingAddress
+     * @return array
+     */
+    public function extractXenditInvoiceCustomerAddress($shippingAddress): array
+    {
+        if (empty($shippingAddress)) {
+            return [];
+        }
+
+        $address = [
+            'street_line1' => $shippingAddress->getData('street'),
+            'city' => $shippingAddress->getData('city'),
+            'state' => $shippingAddress->getData('region'),
+            'postal_code' => $shippingAddress->getData('postcode'),
+            'country' => $shippingAddress->getData('country_id')
+        ];
+
+        return array_filter($address);
     }
 }

@@ -68,14 +68,6 @@ class Invoice extends AbstractAction
         $preferredMethod = $this->getRequest()->getParam('preferred_method');
 
         $shippingAddress = $order->getShippingAddress();
-        $address = [
-            'street_line1' => $shippingAddress->getData('street') ?: 'n/a',
-            'city' => $shippingAddress->getData('city') ?: 'n/a',
-            'state' => $shippingAddress->getData('region') ?: 'n/a',
-            'postal_code' => $shippingAddress->getData('postcode') ?: 'n/a',
-            'country' => $shippingAddress->getData('country_id') ?: 'ID'
-        ];
-
         $orderItems = $order->getAllItems();
         $items = [];
         foreach ($orderItems as $orderItem) {
@@ -100,7 +92,9 @@ class Invoice extends AbstractAction
         }
 
         $amount = $order->getTotalDue();
-        return [
+        $customerObject = $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order);
+
+        $payload = [
             'external_id' => $this->getDataHelper()->getExternalId($orderId),
             'payer_email' => $order->getCustomerEmail(),
             'description' => $orderId,
@@ -112,15 +106,14 @@ class Invoice extends AbstractAction
             'platform_callback_url' => $this->getXenditCallbackUrl(),
             'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(),
             'failure_redirect_url' => $this->getDataHelper()->getFailureUrl([$orderId]),
-            'customer' => (object)[
-                'given_names' => $order->getCustomerFirstname() ?: 'n/a',
-                'surname' => $order->getCustomerLastname() ?: 'n/a',
-                'email' => $order->getCustomerEmail() ?: 'noreply@mail.com',
-                'mobile_number' => $shippingAddress->getTelephone() ?: '',
-                'addresses' => [(object)$address]
-            ],
             'items' => $items
         ];
+
+        if (!empty($customerObject)) {
+            $payload['customer'] = $customerObject;
+        }
+
+        return $payload;
     }
 
     /**

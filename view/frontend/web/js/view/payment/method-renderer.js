@@ -138,6 +138,10 @@ define(
                 type: 'astrapay',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/astrapay'
             },
+            {
+                type: 'akulaku',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/akulaku'
+            },
         );
         return Component.extend({});
     }
