@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 5.0.0 (2022-08-19)
+Features:
+- Add new IDR payment Akulaku
+
+Improvements:
+- Webhook update order status improvements 
+
 ## 4.0.1 (2022-08-01)
 Improvements:
 - Compatible with PHP 8.1.0
