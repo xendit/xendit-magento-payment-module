@@ -27,7 +27,7 @@
                 <model>Xendit\M2Invoice\Model\Payment\Akulaku</model>
                 <title>Akulaku</title>
                 <description>Bayar pesanan dengan Akulaku melalui Xendit</description>
-                <min_order_total>0.01</min_order_total>
+                <min_order_total>1</min_order_total>
                 <max_order_total>9999999999</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
