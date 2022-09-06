@@ -53,6 +53,7 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'uangme', 'label' => __('Uangme')],
             ['value' => 'astrapay', 'label' => __('AstraPay')],
             ['value' => 'akulaku', 'label' => __('Akulaku')],
+            ['value' => 'dd_rcbc', 'label' => __('Direct Debit (RCBC)')],
         ];
 
         if (!$isMultiselect) {
