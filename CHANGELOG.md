@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 6.0.0 (2022-09-06)
+Features:
+- Add new PH payment: Direct debit RCBC
+
 ## 5.0.0 (2022-08-19)
 Features:
 - Add new IDR payment Akulaku
