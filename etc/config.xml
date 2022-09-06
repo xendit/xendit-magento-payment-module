@@ -263,7 +263,7 @@
                 <model>Xendit\M2Invoice\Model\Payment\QRIS</model>
                 <title>QRIS</title>
                 <description>Bayar pesanan dengan QRIS melalui Xendit</description>
-                <min_order_total>1500</min_order_total>
+                <min_order_total>1</min_order_total>
                 <max_order_total>5000000</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
