@@ -3,6 +3,8 @@
 ## 6.0.0 (2022-09-06)
 Features:
 - Add new PH payment: Direct debit RCBC
+- Change payment icon for PayMaya
+- Reduce QRIS limit to 1 IDR
 
 ## 5.0.0 (2022-08-19)
 Features:
