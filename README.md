@@ -7,6 +7,7 @@ This module has been tested against the following tech stacks:
 
 | Magento Version | OS | Database | PHP | Web Server |
 | --- | --- | --- | --- | --- |
+| 2.4.x| Ubuntu 18.04.2 LTS | MariaDB 10.1.39 | 8.x | Apache 2.4.37 |
 | 2.4.0 | Ubuntu 18.04.2 LTS | MariaDB 10.1.39 | 7.4.1 | Apache 2.4.37 |
 | 2.3.2 | Ubuntu 18.04.2 LTS | MariaDB 10.1.39 | 7.2.12 | Apache 2.4.37 |
 | 2.2.5 | Debian GNU/Linux 9 | MariaDB 10.3 | 7.0.33 | Apache 2.2 |
