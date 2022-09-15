@@ -142,6 +142,10 @@ define(
                 type: 'akulaku',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/akulaku'
             },
+            {
+                type: 'dd_rcbc',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_rcbc'
+            },
         );
         return Component.extend({});
     }
