@@ -263,7 +263,7 @@
                 <model>Xendit\M2Invoice\Model\Payment\QRIS</model>
                 <title>QRIS</title>
                 <description>Bayar pesanan dengan QRIS melalui Xendit</description>
-                <min_order_total>1500</min_order_total>
+                <min_order_total>1</min_order_total>
                 <max_order_total>5000000</max_order_total>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
@@ -357,6 +357,20 @@
                 <sort_order>23</sort_order>
                 <currency>PHP</currency>
             </dd_bpi>
+            <dd_rcbc>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\DDRCBC</model>
+                <title>Direct Debit (RCBC)</title>
+                <description>Pay for orders using Direct Debit (RCBC) via Xendit</description>
+                <min_order_total>0.01</min_order_total>
+                <max_order_total>50000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>24</sort_order>
+                <currency>PHP</currency>
+            </dd_rcbc>
             <dd_ubp>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -368,7 +382,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>24</sort_order>
+                <sort_order>25</sort_order>
                 <currency>PHP</currency>
             </dd_ubp>
             <dp_ecpay_loan>
@@ -382,7 +396,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>25</sort_order>
+                <sort_order>26</sort_order>
                 <currency>PHP</currency>
             </dp_ecpay_loan>
             <gcash>
@@ -396,7 +410,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>26</sort_order>
+                <sort_order>27</sort_order>
                 <currency>PHP</currency>
             </gcash>
             <grabpay>
@@ -410,7 +424,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>27</sort_order>
+                <sort_order>28</sort_order>
                 <currency>PHP</currency>
             </grabpay>
             <dp_mlhuillier>
@@ -424,7 +438,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>28</sort_order>
+                <sort_order>29</sort_order>
                 <currency>PHP</currency>
             </dp_mlhuillier>
             <dp_palawan>
@@ -438,7 +452,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>29</sort_order>
+                <sort_order>30</sort_order>
                 <currency>PHP</currency>
             </dp_palawan>
             <paymaya>
@@ -452,7 +466,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>30</sort_order>
+                <sort_order>31</sort_order>
                 <currency>PHP</currency>
             </paymaya>
             <shopeepayph>
@@ -466,7 +480,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>31</sort_order>
+                <sort_order>32</sort_order>
                 <currency>PHP</currency>
             </shopeepayph>
             <uangme>
@@ -480,7 +494,7 @@
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
-                <sort_order>32</sort_order>
+                <sort_order>33</sort_order>
                 <currency>IDR</currency>
             </uangme>
         </payment>
