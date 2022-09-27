@@ -1,0 +1,11 @@
+openapi: 3.0.1
+info:
+  title: xendit-magento-payment-module
+  description: xendit-magento-payment-module
+  x-cortex-git:
+    github:
+      repository: xendit/xendit-magento-payment-module
+  x-cortex-tag: xendit-magento-payment-module
+  x-cortex-owners:
+  - type: GROUP
+    name: xendit/tpi-dev
