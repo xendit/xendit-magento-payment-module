@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.0.0 (2022-10-11)
+Features:
+- Add new IDR payment: BSS VA
+- Add new PHP payment: ECPay School, LBC Retail Outlet
+
 ## 6.0.0 (2022-09-06)
 Features:
 - Add new PH payment: Direct debit RCBC
@@ -11,7 +16,7 @@ Features:
 - Add new IDR payment Akulaku
 
 Improvements:
-- Webhook update order status improvements 
+- Webhook update order status improvements
 
 ## 4.0.1 (2022-08-01)
 Improvements:
