@@ -133,6 +133,20 @@
                 <sort_order>7</sort_order>
                 <currency>IDR</currency>
             </bsiva>
+            <bssva>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\BSSVA</model>
+                <title>Bank Transfer - BSS</title>
+                <description>Bayar pesanan dengan transfer bank BSS dengan virtual account melalui Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>50000000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>7</sort_order>
+                <currency>IDR</currency>
+            </bssva>
             <mandiriva>
                 <active>1</active>
                 <payment_action>initialize</payment_action>

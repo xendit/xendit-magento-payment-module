@@ -13,6 +13,7 @@
                     <item name="bcava" xsi:type="string">Xendit_M2Invoice::multishipping/bcava.phtml</item>
                     <item name="bniva" xsi:type="string">Xendit_M2Invoice::multishipping/bniva.phtml</item>
                     <item name="briva" xsi:type="string">Xendit_M2Invoice::multishipping/briva.phtml</item>
+                    <item name="bssva" xsi:type="string">Xendit_M2Invoice::multishipping/bssva.phtml</item>
                     <item name="mandiriva" xsi:type="string">Xendit_M2Invoice::multishipping/mandiriva.phtml</item>
                     <item name="permatava" xsi:type="string">Xendit_M2Invoice::multishipping/permatava.phtml</item>
                     <item name="ovo" xsi:type="string">Xendit_M2Invoice::multishipping/ovo.phtml</item>

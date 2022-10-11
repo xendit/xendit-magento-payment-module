@@ -167,6 +167,7 @@
                         <include path="Xendit_M2Invoice::virtual_account/bsiva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/mandiriva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/permatava.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/bssva.xml"/>
                     </group>
 
                     <group id="credit_cards" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">

@@ -53,6 +53,7 @@ class Invoice extends AbstractAction
     /**
      * @param $order
      * @return array|void
+     * @throws LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getApiRequestData($order)
@@ -65,9 +66,8 @@ class Invoice extends AbstractAction
         }
 
         $orderId = $order->getRealOrderId();
-        $preferredMethod = $this->getRequest()->getParam('preferred_method');
+        $preferredMethod = $this->getPreferredMethod();
 
-        $shippingAddress = $order->getShippingAddress();
         $orderItems = $order->getAllItems();
         $items = [];
         foreach ($orderItems as $orderItem) {

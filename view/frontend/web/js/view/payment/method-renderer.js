@@ -127,6 +127,10 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bsiva'
             },
             {
+                type: 'bssva',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bssva'
+            },
+            {
                 type: 'cashalo',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cashalo'
             },

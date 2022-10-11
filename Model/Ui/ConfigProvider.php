@@ -135,6 +135,13 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getPaymentDescription("bniva"),
                     'image' => $this->xenditHelper->getPaymentImage('bniva')
                 ],
+                'bssva' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("bssva"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("bssva"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("bssva"),
+                    'description' => $this->xenditHelper->getPaymentDescription("bssva"),
+                    'image' => $this->xenditHelper->getPaymentImage('bssva')
+                ],
                 'qris' => [
                     'title' => $this->xenditHelper->getPaymentTitle("qris"),
                     'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("qris"),
