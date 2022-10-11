@@ -420,6 +420,7 @@ class Data extends AbstractHelper
             "astrapay"          => "astrapay",
             "akulaku"           => "akulaku",
             "dd_rcbc"           => "dd_rcbc",
+            "lbc"               => "lbc"
         ];
     }
 

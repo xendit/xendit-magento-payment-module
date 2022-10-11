@@ -43,6 +43,7 @@
                     <item name="astrapay" xsi:type="string">Xendit_M2Invoice::multishipping/astrapay.phtml</item>
                     <item name="akulaku" xsi:type="string">Xendit_M2Invoice::multishipping/akulaku.phtml</item>
                     <item name="dd_rcbc" xsi:type="string">Xendit_M2Invoice::multishipping/dd_rcbc.phtml</item>
+                    <item name="lbc" xsi:type="string">Xendit_M2Invoice::multishipping/lbc.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>
