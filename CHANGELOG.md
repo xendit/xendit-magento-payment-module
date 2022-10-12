@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.0.0 (2022-10-12)
+Features:
+- Add new PH payment: ECPay School
+
 ## 6.0.0 (2022-09-06)
 Features:
 - Add new PH payment: Direct debit RCBC
