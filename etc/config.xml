@@ -413,6 +413,20 @@
                 <sort_order>26</sort_order>
                 <currency>PHP</currency>
             </dp_ecpay_loan>
+            <dp_ecpay_school>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\DPECPaySchool</model>
+                <title>ECPay School</title>
+                <description>Pay for orders using ECPay School via Xendit</description>
+                <min_order_total>15</min_order_total>
+                <max_order_total>50000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>26</sort_order>
+                <currency>PHP</currency>
+            </dp_ecpay_school>
             <gcash>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
