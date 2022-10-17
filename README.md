@@ -102,6 +102,7 @@ If the Xendit payment links expired, it will auto cancel the order via the webho
   - BSI
   - Mandiri
   - Permata
+  - BSS
 - Retail Outlets
   - Alfamart
   - Indomaret
@@ -110,6 +111,8 @@ If the Xendit payment links expired, it will auto cancel the order via the webho
   - Cebuana (PH)
   - M Lhuillier (PH)
   - Palawan Express Pera Padala (PH)
+  - ECPay School (PH)
+  - LBC Retail Outlet (PH)
 - eWallets
   - OVO
   - DANA

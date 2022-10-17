@@ -48,6 +48,7 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'dp_palawan', 'label' => __('Palawan Express Pera Padala')],
             ['value' => 'dp_mlhuillier', 'label' => __('M Lhuillier')],
             ['value' => 'dp_ecpay_loan', 'label' => __('ECPay Loans')],
+            ['value' => 'dp_ecpay_school', 'label' => __('ECPay School')],
             ['value' => 'cashalo', 'label' => __('Cashalo')],
             ['value' => 'shopeepayph', 'label' => __('ShopeePay')],
             ['value' => 'uangme', 'label' => __('Uangme')],
