@@ -318,6 +318,13 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getPaymentDescription("dd_rcbc"),
                     'image' => $this->xenditHelper->getPaymentImage('dd_rcbc')
                 ],
+                'lbc' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("lbc"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("lbc"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("lbc"),
+                    'description' => $this->xenditHelper->getPaymentDescription("lbc"),
+                    'image' => $this->xenditHelper->getPaymentImage('lbc')
+                ],
             ]
         ];
 
