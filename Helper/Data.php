@@ -385,12 +385,13 @@ class Data extends AbstractHelper
     public function getXenditPaymentList(): array
     {
         return [
-            "cc"                => "cc",
+            "cc"                => "credit_card",
             "bcava"             => "bca",
             "bniva"             => "bni",
             "bjbva"             => "bjb",
             "briva"             => "bri",
             "bsiva"             => "bsi",
+            "bssva"             => "SAHABAT_SAMPOERNA",
             "mandiriva"         => "mandiri",
             "permatava"         => "permata",
             "alfamart"          => "alfamart",
@@ -415,11 +416,12 @@ class Data extends AbstractHelper
             "dp_ecpay_loan"     => "dp_ecpay_loan",
             "dp_ecpay_school"   => "dp_ecpay_school",
             "cashalo"           => "cashalo",
-            "shopeepayph"       => "shopeepayph",
+            "shopeepayph"       => "shopeepay",
             "uangme"            => "uangme",
             "astrapay"          => "astrapay",
             "akulaku"           => "akulaku",
             "dd_rcbc"           => "dd_rcbc",
+            "lbc"               => "lbc"
         ];
     }
 

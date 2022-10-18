@@ -131,6 +131,10 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bsiva'
             },
             {
+                type: 'bssva',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bssva'
+            },
+            {
                 type: 'cashalo',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cashalo'
             },
@@ -149,6 +153,10 @@ define(
             {
                 type: 'dd_rcbc',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_rcbc'
+            },
+            {
+                type: 'lbc',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/lbc'
             },
         );
         return Component.extend({});

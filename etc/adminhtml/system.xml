@@ -167,6 +167,7 @@
                         <include path="Xendit_M2Invoice::virtual_account/bsiva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/mandiriva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/permatava.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/bssva.xml"/>
                     </group>
 
                     <group id="credit_cards" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -187,6 +188,7 @@
                         <include path="Xendit_M2Invoice::retail_outlets/dp_palawan.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/dp_mlhuillier.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/dp_ecpay_loan.xml"/>
+                        <include path="Xendit_M2Invoice::retail_outlets/lbc.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/dp_ecpay_school.xml"/>
                     </group>
 

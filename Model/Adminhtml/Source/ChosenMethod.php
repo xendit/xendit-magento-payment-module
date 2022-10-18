@@ -26,6 +26,7 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'bniva', 'label' => __('Bank Transfer BNI')],
             ['value' => 'briva', 'label' => __('Bank Transfer BRI')],
             ['value' => 'bsiva', 'label' => __('Bank Transfer BSI')],
+            ['value' => 'bssva', 'label' => __('Bank Transfer BSS')],
             ['value' => 'mandiriva', 'label' => __('Bank Transfer Mandiri')],
             ['value' => 'permatava', 'label' => __('Bank Transfer Permata')],
             ['value' => 'cc', 'label' => __('Credit Card')],
@@ -55,6 +56,7 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'astrapay', 'label' => __('AstraPay')],
             ['value' => 'akulaku', 'label' => __('Akulaku')],
             ['value' => 'dd_rcbc', 'label' => __('Direct Debit (RCBC)')],
+            ['value' => 'lbc', 'label' => __('LBC')],
         ];
 
         if (!$isMultiselect) {

@@ -518,17 +518,16 @@ abstract class AbstractAction extends Action
     }
 
     /**
-     * @return mixed|string
+     * @return mixed
+     * @throws LocalizedException
      */
     protected function getPreferredMethod()
     {
         $preferredMethod = $this->getRequest()->getParam('preferred_method');
-        if ($preferredMethod == 'cc') {
-            $preferredMethod = 'CREDIT_CARD';
-        }
-
-        if ($preferredMethod == 'shopeepayph') {
-            $preferredMethod = 'SHOPEEPAY';
+        if (empty($preferredMethod)) {
+            throw new LocalizedException(
+                __('The payment method should not be empty.')
+            );
         }
         return $preferredMethod;
     }

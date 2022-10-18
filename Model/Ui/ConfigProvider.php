@@ -135,6 +135,13 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getPaymentDescription("bniva"),
                     'image' => $this->xenditHelper->getPaymentImage('bniva')
                 ],
+                'bssva' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("bssva"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("bssva"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("bssva"),
+                    'description' => $this->xenditHelper->getPaymentDescription("bssva"),
+                    'image' => $this->xenditHelper->getPaymentImage('bssva')
+                ],
                 'qris' => [
                     'title' => $this->xenditHelper->getPaymentTitle("qris"),
                     'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("qris"),
@@ -317,6 +324,13 @@ class ConfigProvider implements ConfigProviderInterface
                     'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("dd_rcbc"),
                     'description' => $this->xenditHelper->getPaymentDescription("dd_rcbc"),
                     'image' => $this->xenditHelper->getPaymentImage('dd_rcbc')
+                ],
+                'lbc' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("lbc"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("lbc"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("lbc"),
+                    'description' => $this->xenditHelper->getPaymentDescription("lbc"),
+                    'image' => $this->xenditHelper->getPaymentImage('lbc')
                 ],
             ]
         ];
