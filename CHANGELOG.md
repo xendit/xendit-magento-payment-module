@@ -1,9 +1,13 @@
 # CHANGELOG
 
-## 7.0.0 (2022-10-11)
+# 8.0.0 (2022-10-17)
 Features:
 - Add new IDR payment: BSS VA
-- Add new PHP payment: ECPay School, LBC Retail Outlet
+- Add new PHP payment: LBC Retail Outlet
+
+## 7.0.0 (2022-10-12)
+Features:
+- Add new PH payment: ECPay School
 
 ## 6.0.0 (2022-09-06)
 Features:

@@ -119,6 +119,10 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dp_ecpay_loan'
             },
             {
+                type: 'dp_ecpay_school',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dp_ecpay_school'
+            },
+            {
                 type: 'bjbva',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bjbva'
             },
