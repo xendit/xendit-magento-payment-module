@@ -73,17 +73,9 @@ class Invoice extends AbstractAction
         foreach ($orderItems as $orderItem) {
             $item = [];
             $product = $orderItem->getProduct();
-            $categoryIds = $product->getCategoryIds();
-            $categories = [];
-            foreach ($categoryIds as $categoryId) {
-                $category = $this->getCategoryFactory()->create();
-                $category->load($categoryId);
-                $categories[] = (string)$category->getName();
-            }
-            $categoryName = implode(', ', $categories);
             $item['reference_id'] = $product->getId();
             $item['name'] = $product->getName();
-            $item['category'] = $categoryName ?: 'n/a';
+            $item['category'] = $this->getDataHelper()->extractProductCategoryName($product);
             $item['price'] = $product->getPrice();
             $item['type'] = 'PRODUCT';
             $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
@@ -163,20 +155,22 @@ class Invoice extends AbstractAction
     }
 
     /**
-     * @param $order
+     * @param Order $order
+     * @return void
      */
-    private function changePendingPaymentStatus($order)
+    private function changePendingPaymentStatus(Order $order)
     {
         $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
-        $order->addStatusHistoryComment("Pending Xendit payment.");
+        $order->addCommentToStatusHistory("Pending Xendit payment.");
         $this->getOrderRepo()->save($order);
     }
 
     /**
-     * @param $order
-     * @param $invoice
+     * @param Order $order
+     * @param array $invoice
+     * @return void
      */
-    private function addInvoiceData($order, $invoice)
+    private function addInvoiceData(Order $order, array $invoice)
     {
         $payment = $order->getPayment();
         $payment->setAdditionalInformation('payment_gateway', 'xendit');
