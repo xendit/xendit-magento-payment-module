@@ -2,6 +2,7 @@
 
 namespace Xendit\M2Invoice\Helper;
 
+use Magento\Catalog\Model\CategoryRepository;
 use Magento\Catalog\Model\Product;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\CustomerFactory;
@@ -9,6 +10,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\DB\Transaction as DbTransaction;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
@@ -19,6 +21,7 @@ use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+
 use Xendit\M2Invoice\Model\Payment\Xendit;
 
 /**
@@ -98,7 +101,13 @@ class Data extends AbstractHelper
     protected $assetRepository;
 
     /**
+     * @var CategoryRepository $categoryRepository
+     */
+    protected $categoryRepository;
+
+    /**
      * Data constructor.
+     *
      * @param Context $context
      * @param StoreManagerInterface $storeManager
      * @param Xendit $xendit
@@ -114,6 +123,7 @@ class Data extends AbstractHelper
      * @param DbTransaction $dbTransaction
      * @param OrderNotifier $orderNotifier
      * @param AssetRepository $assetRepository
+     * @param CategoryRepository $categoryRepository
      */
     public function __construct(
         Context $context,
@@ -130,7 +140,8 @@ class Data extends AbstractHelper
         InvoiceService $invoiceService,
         DbTransaction $dbTransaction,
         OrderNotifier $orderNotifier,
-        AssetRepository $assetRepository
+        AssetRepository $assetRepository,
+        CategoryRepository $categoryRepository
     ) {
         $this->storeManager = $storeManager;
         $this->xendit = $xendit;
@@ -146,6 +157,7 @@ class Data extends AbstractHelper
         $this->dbTransaction = $dbTransaction;
         $this->orderNotifier = $orderNotifier;
         $this->assetRepository = $assetRepository;
+        $this->categoryRepository = $categoryRepository;
 
         parent::__construct($context);
     }
@@ -612,5 +624,24 @@ class Data extends AbstractHelper
         ];
 
         return array_filter($address);
+    }
+
+    /**
+     * @param Product $product
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function extractProductCategoryName(Product $product): string
+    {
+        $categories = $product->getCategoryIds();
+        $categoryNames = [];
+        foreach ($categories as $categoryId) {
+            try {
+                $category = $this->categoryRepository->get($categoryId);
+                $categoryNames[] = $category->getName();
+            } catch (NoSuchEntityException $exception) {
+            }
+        }
+        return !empty($categoryNames) ? implode(', ', $categoryNames) : 'n/a';
     }
 }
