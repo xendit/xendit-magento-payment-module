@@ -107,6 +107,7 @@ If the Xendit payment links expired, it will auto cancel the order via the webho
   - Indomaret
   - 7-Eleven (PH)
   - ECPay Loan (PH)
+  - ECPay School (PH)
   - Cebuana (PH)
   - M Lhuillier (PH)
   - Palawan Express Pera Padala (PH)
