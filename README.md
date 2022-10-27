@@ -110,6 +110,7 @@ If the Xendit payment links expired, it will auto cancel the order via the webho
   - Cebuana (PH)
   - M Lhuillier (PH)
   - Palawan Express Pera Padala (PH)
+  - LBC (PH)
 - eWallets
   - OVO
   - DANA

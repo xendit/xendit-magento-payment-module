@@ -188,6 +188,7 @@
                         <include path="Xendit_M2Invoice::retail_outlets/dp_mlhuillier.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/dp_ecpay_loan.xml"/>
                         <include path="Xendit_M2Invoice::retail_outlets/dp_ecpay_school.xml"/>
+                        <include path="Xendit_M2Invoice::retail_outlets/lbc.xml"/>
                     </group>
 
                     <group id="ewallets" translate="label" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="1">

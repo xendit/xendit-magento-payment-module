@@ -30,15 +30,16 @@ class InvoiceMultishipping extends AbstractAction
             $transactionAmount = 0;
             $orderProcessed = false;
             $orders = [];
-            $addresses = [];
             $items = [];
+            $currency = '';
+            $billingEmail = '';
+            $customerObject = [];
 
             $orderIncrementIds = [];
             $preferredMethod = $this->getPreferredMethod();
 
-            $c = 0;
-            foreach ($orderIds as $key => $value) {
-                $order = $this->getOrderRepo()->get($value);
+            foreach ($orderIds as $orderId) {
+                $order = $this->getOrderRepo()->get($orderId);
                 if (!$this->orderValidToCreateXenditInvoice($order)) {
                     $message = __('Order processed');
                     $this->getLogger()->info($message);
@@ -53,41 +54,25 @@ class InvoiceMultishipping extends AbstractAction
                     continue;
                 }
 
+                // Set order status to PENDING_PAYMENT
                 $order->setState(Order::STATE_PENDING_PAYMENT)
-                    ->setStatus(Order::STATE_PENDING_PAYMENT)
-                    ->addStatusHistoryComment("Pending Xendit payment.");
+                    ->setStatus(Order::STATE_PENDING_PAYMENT);
+                $order->addCommentToStatusHistory("Pending Xendit payment.");
 
                 $orders[] = $order;
                 $this->getOrderRepo()->save($order);
 
                 $transactionAmount += $order->getTotalDue();
-                $billingEmail = $order->getCustomerEmail() ?: 'noreply@mail.com';
-                $shippingAddress = $order->getShippingAddress();
+                $billingEmail = empty($billingEmail) ? ($order->getCustomerEmail() ?: 'noreply@mail.com') : $billingEmail;
                 $currency = $order->getBaseCurrencyCode();
 
-                $address = [
-                    'street_line1' => $shippingAddress->getData('street') ?: 'n/a',
-                    'city' => $shippingAddress->getData('city') ?: 'n/a',
-                    'state' => $shippingAddress->getData('region') ?: 'n/a',
-                    'postal_code' => $shippingAddress->getData('postcode') ?: 'n/a',
-                    'country' => $shippingAddress->getData('country_id') ?: 'ID'
-                ];
-                $addresses[] = (object)$address;
                 $orderItems = $order->getAllItems();
                 foreach ($orderItems as $orderItem) {
                     $item = [];
                     $product = $orderItem->getProduct();
-                    $categoryIds = $product->getCategoryIds();
-                    $categories = [];
-                    foreach ($categoryIds as $categoryId) {
-                        $category = $this->getCategoryFactory()->create();
-                        $category->load($categoryId);
-                        $categories[] = (string)$category->getName();
-                    }
-                    $categoryName = implode(', ', $categories);
                     $item['reference_id'] = $product->getId();
                     $item['name'] = $product->getName();
-                    $item['category'] = $categoryName ?: 'n/a';
+                    $item['category'] = $this->getDataHelper()->extractProductCategoryName($product);
                     $item['price'] = $product->getPrice();
                     $item['type'] = 'PRODUCT';
                     $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
@@ -95,7 +80,9 @@ class InvoiceMultishipping extends AbstractAction
                     $items[] = (object)$item;
                 }
 
-                $c++;
+                if (empty($customerObject)) {
+                    $customerObject = $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order);
+                }
             }
 
             if ($orderProcessed) {
@@ -115,15 +102,11 @@ class InvoiceMultishipping extends AbstractAction
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
                 'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
                 'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderIncrementIds),
-                'customer' => (object)[
-                    'given_names' => $order->getCustomerFirstname() ?: 'n/a',
-                    'surname' => $order->getCustomerLastname() ?: 'n/a',
-                    'email' => $billingEmail,
-                    'mobile_number' => $shippingAddress->getTelephone() ?: '',
-                    'addresses' => $addresses
-                ],
                 'items' => $items
             ];
+            if (!empty($customerObject)) {
+                $requestData['customer'] = $customerObject;
+            }
 
             $invoice = $this->createInvoice($requestData);
 
@@ -184,12 +167,13 @@ class InvoiceMultishipping extends AbstractAction
     }
 
     /**
-     * @param $orders
-     * @param $invoice
+     * @param array $orders
+     * @param array $invoice
+     * @return void
      */
-    private function addInvoiceData($orders, $invoice)
+    private function addInvoiceData(array $orders, array $invoice)
     {
-        foreach ($orders as $key => $order) {
+        foreach ($orders as $order) {
             $payment = $order->getPayment();
             $payment->setAdditionalInformation('payment_gateway', 'xendit');
             if (isset($invoice['id'])) {
