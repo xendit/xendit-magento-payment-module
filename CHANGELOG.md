@@ -2,7 +2,7 @@
 
 ## 8.0.0 (2022-10-26)
 Features:
-- Add new IDR payment: LBC
+- Add new PH payment: LBC
 
 ## 7.0.0 (2022-10-12)
 Features:
