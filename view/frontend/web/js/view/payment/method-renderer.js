@@ -147,6 +147,10 @@ define(
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/akulaku'
             },
             {
+                type: 'atome',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/atome'
+            },
+            {
                 type: 'dd_rcbc',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_rcbc'
             },

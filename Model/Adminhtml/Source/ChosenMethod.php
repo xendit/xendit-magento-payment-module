@@ -54,6 +54,7 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'uangme', 'label' => __('Uangme')],
             ['value' => 'astrapay', 'label' => __('AstraPay')],
             ['value' => 'akulaku', 'label' => __('Akulaku')],
+            ['value' => 'atome', 'label' => __('Atome')],
             ['value' => 'dd_rcbc', 'label' => __('Direct Debit (RCBC)')],
             ['value' => 'lbc', 'label' => __('LBC')],
         ];

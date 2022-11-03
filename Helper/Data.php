@@ -431,6 +431,7 @@ class Data extends AbstractHelper
             "uangme"            => "uangme",
             "astrapay"          => "astrapay",
             "akulaku"           => "akulaku",
+            "atome"             => "atome",
             "dd_rcbc"           => "dd_rcbc",
             "lbc"               => "lbc"
         ];
