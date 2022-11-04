@@ -63,6 +63,20 @@
                 <sort_order>2</sort_order>
                 <currency>IDR</currency>
             </astrapay>
+            <atome>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Atome</model>
+                <title>Atome</title>
+                <description>Bayar pesanan dengan Atome melalui Xendit</description>
+                <min_order_total>50000</min_order_total>
+                <max_order_total>6000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>3</sort_order>
+                <currency>IDR</currency>
+            </atome>
             <bcava>
                 <active>1</active>
                 <payment_action>initialize</payment_action><!-- You can use another method like capture  -->

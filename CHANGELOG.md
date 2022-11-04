@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.0.0 (2022-10-26)
+Features:
+- Add new IDR payment: Atome
+
 ## 8.0.0 (2022-10-26)
 Features:
 - Add new PH payment: LBC

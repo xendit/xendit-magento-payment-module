@@ -226,6 +226,7 @@
                         <include path="Xendit_M2Invoice::paylater/uangme.xml"/>
                         <include path="Xendit_M2Invoice::paylater/astrapay.xml"/>
                         <include path="Xendit_M2Invoice::paylater/akulaku.xml"/>
+                        <include path="Xendit_M2Invoice::paylater/atome.xml"/>
                     </group>
                 </group>
 
