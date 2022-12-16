@@ -30,6 +30,8 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
+    const XENDIT_M2INVOICE_VERSION = '9.0.1';
+
     /**
      * @var StoreManagerInterface
      */
@@ -173,7 +175,7 @@ class Data extends AbstractHelper
     /**
      * @return mixed
      */
-    public function getCheckoutUrl()
+    public function getXenditApiUrl()
     {
         return $this->xendit->getConfigData('xendit_url');
     }

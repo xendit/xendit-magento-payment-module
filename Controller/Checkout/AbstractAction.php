@@ -27,6 +27,7 @@ use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Helper\ErrorHandler;
+use Xendit\M2Invoice\Helper\Metric;
 
 /**
  * Class AbstractAction
@@ -147,7 +148,13 @@ abstract class AbstractAction extends Action
     private $multishipping;
 
     /**
+     * @var Metric
+     */
+    protected $metricHelper;
+
+    /**
      * AbstractAction constructor.
+     *
      * @param Session $checkoutSession
      * @param Context $context
      * @param CategoryFactory $categoryFactory
@@ -168,6 +175,7 @@ abstract class AbstractAction extends Action
      * @param ErrorHandler $errorHandler
      * @param State $state
      * @param Multishipping $multishipping
+     * @param Metric $metricHelper
      */
     public function __construct(
         Session $checkoutSession,
@@ -189,7 +197,8 @@ abstract class AbstractAction extends Action
         CustomerSession $customerSession,
         ErrorHandler $errorHandler,
         State $state,
-        Multishipping $multishipping
+        Multishipping $multishipping,
+        Metric $metricHelper
     ) {
         parent::__construct($context);
 
@@ -215,6 +224,7 @@ abstract class AbstractAction extends Action
         $this->errorHandler = $errorHandler;
         $this->state = $state;
         $this->multishipping = $multishipping;
+        $this->metricHelper = $metricHelper;
     }
 
     /**

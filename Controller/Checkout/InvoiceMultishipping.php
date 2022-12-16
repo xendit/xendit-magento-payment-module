@@ -15,7 +15,8 @@ use Zend\Http\Request;
 class InvoiceMultishipping extends AbstractAction
 {
     /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface|null
+     * @throws LocalizedException
      */
     public function execute()
     {
@@ -125,6 +126,16 @@ class InvoiceMultishipping extends AbstractAction
         } catch (\Exception $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogger()->info($message);
+
+            // log metric error
+            $this->metricHelper->sendMetric(
+                'magento2_checkout',
+                [
+                    'type' => 'error',
+                    'payment_method' => $this->getPreferredMethod()
+                ]
+            );
+
             return $this->redirectToCart($message);
         }
     }
@@ -136,7 +147,7 @@ class InvoiceMultishipping extends AbstractAction
      */
     private function createInvoice($requestData)
     {
-        $invoiceUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/invoice";
+        $invoiceUrl = $this->getDataHelper()->getXenditApiUrl() . "/payment/xendit/invoice";
         $invoiceMethod = Request::METHOD_POST;
 
         try {

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.0.1 (2022-12-16)
+Features:
+- Implement Xendit metric
+
 ## 9.0.0 (2022-10-26)
 Features:
 - Add new IDR payment: Atome

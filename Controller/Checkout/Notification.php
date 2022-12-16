@@ -336,7 +336,7 @@ class Notification extends Action implements CsrfAwareActionInterface
      */
     private function getXenditInvoice($invoiceId)
     {
-        $invoiceUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/invoice/$invoiceId";
+        $invoiceUrl = $this->dataHelper->getXenditApiUrl() . "/payment/xendit/invoice/$invoiceId";
 
         $this->logger->info("getXenditInvoice");
         $this->logger->info($invoiceUrl);

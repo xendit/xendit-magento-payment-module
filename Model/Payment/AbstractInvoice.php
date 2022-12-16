@@ -19,6 +19,7 @@ use Magento\Framework\Serialize\Serializer\Json as MagentoSerializerJson;
 use Xendit\M2Invoice\External\Serialize\Serializer\Json  as XenditSerializerJson;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Customer\Model\Session as CustomerSession;
+use Xendit\M2Invoice\Helper\Metric;
 
 /**
  * Class AbstractInvoice
@@ -91,6 +92,8 @@ class AbstractInvoice extends AbstractMethod
      */
     protected $customerSession;
 
+    protected $metricHelper;
+
     /**
      * AbstractInvoice constructor.
      * @param Context $context
@@ -124,7 +127,8 @@ class AbstractInvoice extends AbstractMethod
         CartRepositoryInterface $quoteRepository,
         MagentoSerializerJson $magentoSerializerJson,
         XenditSerializerJson $xenditSerializerJson,
-        CustomerSession $customerSession
+        CustomerSession $customerSession,
+        Metric $metricHelper
     ) {
         parent::__construct(
             $context,
@@ -145,6 +149,7 @@ class AbstractInvoice extends AbstractMethod
         $this->magentoSerializerJson    = $magentoSerializerJson;
         $this->xenditSerializerJson     = $xenditSerializerJson;
         $this->customerSession          = $customerSession;
+        $this->metricHelper             = $metricHelper;
 
         if (interface_exists("Magento\Framework\Serialize\Serializer\Json")) {
             $this->serializer = $this->magentoSerializerJson;

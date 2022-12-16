@@ -29,29 +29,36 @@ class CC extends AbstractInvoice
     /**
      * @param \Magento\Payment\Model\InfoInterface $payment
      * @param $amount
-     * @return $this|CC
+     * @return $this|void|CC
      * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Magento\Payment\Gateway\Http\ClientException
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         $chargeId = $payment->getAdditionalInformation('xendit_charge_id');
-
         if ($chargeId) {
-            $order = $payment->getOrder();
-            $orderId = $order->getRealOrderId();
-            $canRefundMore = $payment->getCreditmemo()->getInvoice()->canRefund();
+            try {
+                $order = $payment->getOrder();
+                $orderId = $order->getRealOrderId();
+                $canRefundMore = $payment->getCreditmemo()->getInvoice()->canRefund();
 
-            $refundData = [
-                'amount' => $this->getCurrency() == 'IDR' ? $this->dataHelper->truncateDecimal($amount) : $amount,
-                'external_id' => $this->dataHelper->getExternalId($orderId, true)
-            ];
-            $refund = $this->requestRefund($chargeId, $refundData);
+                $refundData = [
+                    'amount' => $this->getCurrency() == 'IDR' ? $this->dataHelper->truncateDecimal($amount) : $amount,
+                    'external_id' => $this->dataHelper->getExternalId($orderId, true)
+                ];
+                $refund = $this->requestRefund($chargeId, $refundData);
 
-            $this->handleRefundResult($payment, $refund, $canRefundMore);
-
-            return $this;
+                $this->handleRefundResult($payment, $refund, $canRefundMore);
+                return $this;
+            } catch (\Exception $e) {
+                // log metric error
+                $this->metricHelper->sendMetric(
+                    'magento2_refund',
+                    [
+                        'type' => 'error',
+                        'payment_method' => $this->methodCode
+                    ]
+                );
+            }
         } else {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __("Refund not available because there is no capture")
@@ -98,7 +105,7 @@ class CC extends AbstractInvoice
      */
     private function requestRefund($chargeId, $requestData)
     {
-        $refundUrl = $this->dataHelper->getCheckoutUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";
+        $refundUrl = $this->dataHelper->getXenditApiUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";
         $refundMethod = \Zend\Http\Request::METHOD_POST;
 
         try {

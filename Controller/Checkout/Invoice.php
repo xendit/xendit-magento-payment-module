@@ -20,8 +20,8 @@ class Invoice extends AbstractAction
      */
     public function execute()
     {
+        $order = $this->getOrder();
         try {
-            $order = $this->getOrder();
             $apiData = $this->getApiRequestData($order);
 
             if ($order->getState() === Order::STATE_NEW) {
@@ -46,6 +46,16 @@ class Invoice extends AbstractAction
             $this->getLogger()->debug($e->getTraceAsString());
 
             $this->cancelOrder($order, $e->getMessage());
+
+            // log metric error
+            $this->metricHelper->sendMetric(
+                'magento2_checkout',
+                [
+                    'type' => 'error',
+                    'payment_method' => $this->getPreferredMethod()
+                ]
+            );
+
             return $this->redirectToCart($message);
         }
     }
@@ -66,8 +76,6 @@ class Invoice extends AbstractAction
 
         $orderId = $order->getRealOrderId();
         $preferredMethod = $this->getRequest()->getParam('preferred_method');
-
-        $shippingAddress = $order->getShippingAddress();
         $orderItems = $order->getAllItems();
         $items = [];
         foreach ($orderItems as $orderItem) {
@@ -115,7 +123,7 @@ class Invoice extends AbstractAction
      */
     private function createInvoice($requestData)
     {
-        $invoiceUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/invoice";
+        $invoiceUrl = $this->getDataHelper()->getXenditApiUrl() . "/payment/xendit/invoice";
         $invoiceMethod = Request::METHOD_POST;
         $invoice = '';
 
