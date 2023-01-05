@@ -52,7 +52,7 @@ class Invoice extends AbstractAction
                 'magento2_checkout',
                 [
                     'type' => 'error',
-                    'payment_method' => $this->getPreferredMethod(),
+                    'payment_method' => $this->getPreferredMethod($order),
                     'error_message' => $e->getMessage()
                 ]
             );
@@ -65,6 +65,7 @@ class Invoice extends AbstractAction
      * @param $order
      * @return array|void
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
      */
     private function getApiRequestData($order)
     {
@@ -76,7 +77,7 @@ class Invoice extends AbstractAction
         }
 
         $orderId = $order->getRealOrderId();
-        $preferredMethod = $this->getRequest()->getParam('preferred_method');
+        $preferredMethod = $this->getPreferredMethod($order);
         $orderItems = $order->getAllItems();
         $items = [];
         foreach ($orderItems as $orderItem) {

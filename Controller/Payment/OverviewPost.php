@@ -142,7 +142,7 @@ class OverviewPost extends Checkout
                     );
                     $this->_redirect('*/*/billing');
                 }
-                $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping?preferred_method=' . $xenditPaymentMethod;
+                $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping';
                 $this->_redirect($redirect);
             } else {
                 //OTHERS
