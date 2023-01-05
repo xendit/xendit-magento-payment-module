@@ -49,13 +49,14 @@ class CC extends AbstractInvoice
 
                 $this->handleRefundResult($payment, $refund, $canRefundMore);
                 return $this;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // log metric error
                 $this->metricHelper->sendMetric(
                     'magento2_refund',
                     [
                         'type' => 'error',
-                        'payment_method' => $this->methodCode
+                        'payment_method' => $this->methodCode,
+                        'error_message' => $e->getMessage()
                     ]
                 );
             }

@@ -123,7 +123,7 @@ class InvoiceMultishipping extends AbstractAction
             $resultRedirect = $this->getRedirectFactory()->create();
             $resultRedirect->setUrl($redirectUrl);
             return $resultRedirect;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogger()->info($message);
 
@@ -132,7 +132,8 @@ class InvoiceMultishipping extends AbstractAction
                 'magento2_checkout',
                 [
                     'type' => 'error',
-                    'payment_method' => $this->getPreferredMethod()
+                    'payment_method' => $this->getPreferredMethod(),
+                    'error_message' => $e->getMessage()
                 ]
             );
 

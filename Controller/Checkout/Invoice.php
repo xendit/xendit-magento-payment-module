@@ -39,7 +39,7 @@ class Invoice extends AbstractAction
                 $this->getLogger()->debug('Order in unrecognized state: ' . $order->getState());
                 $this->_redirect('checkout/cart');
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $message = 'Exception caught on xendit/checkout/invoice: ' . $e->getMessage();
 
             $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $message);
@@ -52,7 +52,8 @@ class Invoice extends AbstractAction
                 'magento2_checkout',
                 [
                     'type' => 'error',
-                    'payment_method' => $this->getPreferredMethod()
+                    'payment_method' => $this->getPreferredMethod(),
+                    'error_message' => $e->getMessage()
                 ]
             );
 
@@ -87,7 +88,7 @@ class Invoice extends AbstractAction
             $item['price'] = $product->getPrice();
             $item['type'] = 'PRODUCT';
             $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
-            $item['quantity'] = (int)$orderItem->getQtyOrdered();
+            $item['quantity'] = 1000000;
             $items[] = (object)$item;
         }
 
