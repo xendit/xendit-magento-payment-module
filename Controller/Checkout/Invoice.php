@@ -88,7 +88,7 @@ class Invoice extends AbstractAction
             $item['price'] = $product->getPrice();
             $item['type'] = 'PRODUCT';
             $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
-            $item['quantity'] = 1000000;
+            $item['quantity'] = (int)$orderItem->getQtyOrdered();
             $items[] = (object)$item;
         }
 
