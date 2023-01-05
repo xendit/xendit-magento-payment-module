@@ -244,22 +244,6 @@ abstract class AbstractAction extends Action
     }
 
     /**
-     * @return CategoryFactory
-     */
-    protected function getCategoryFactory()
-    {
-        return $this->categoryFactory;
-    }
-
-    /**
-     * @return OrderFactory
-     */
-    protected function getOrderFactory()
-    {
-        return $this->orderFactory;
-    }
-
-    /**
      * @return LoggerInterface
      */
     protected function getLogger()
@@ -489,14 +473,6 @@ abstract class AbstractAction extends Action
         return $baseUrl . 'xendit/checkout/notification';
     }
 
-    /**
-     * @return CookieManagerInterface
-     */
-    protected function getCookieManager()
-    {
-        return $this->cookieManager;
-    }
-
     protected function getStateMultishipping()
     {
         return $this->state;
@@ -528,19 +504,26 @@ abstract class AbstractAction extends Action
     }
 
     /**
-     * @return mixed|string
+     * Get preferred payment from order
+     *
+     * @param Order $order
+     * @return false|string
      */
-    protected function getPreferredMethod()
+    protected function getPreferredMethod(Order $order)
     {
-        $preferredMethod = $this->getRequest()->getParam('preferred_method');
-        if ($preferredMethod == 'cc') {
-            $preferredMethod = 'CREDIT_CARD';
-        }
+        $payment = $order->getPayment();
+        $preferredMethod = $this->getDataHelper()->xenditPaymentMethod(
+            $payment->getMethod()
+        );
 
-        if ($preferredMethod == 'shopeepayph') {
-            $preferredMethod = 'SHOPEEPAY';
+        switch ($preferredMethod) {
+            case 'cc':
+                return 'CREDIT_CARD';
+            case 'shopeepayph':
+                return 'SHOPEEPAY';
+            default:
+                return $preferredMethod;
         }
-        return $preferredMethod;
     }
 
     /**

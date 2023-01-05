@@ -20,6 +20,17 @@ class InvoiceMultishipping extends AbstractAction
      */
     public function execute()
     {
+        $transactionAmount = 0;
+        $orderProcessed = false;
+        $orders = [];
+        $items = [];
+        $currency = '';
+        $billingEmail = '';
+        $customerObject = [];
+
+        $orderIncrementIds = [];
+        $preferredMethod = '';
+
         try {
             $orderIds = $this->getMultiShippingOrderIds();
             if (empty($orderIds)) {
@@ -27,17 +38,6 @@ class InvoiceMultishipping extends AbstractAction
                 $this->getLogger()->info($message);
                 return $this->redirectToCart($message);
             }
-
-            $transactionAmount = 0;
-            $orderProcessed = false;
-            $orders = [];
-            $items = [];
-            $currency = '';
-            $billingEmail = '';
-            $customerObject = [];
-
-            $orderIncrementIds = [];
-            $preferredMethod = $this->getPreferredMethod();
 
             foreach ($orderIds as $orderId) {
                 $order = $this->getOrderRepo()->get($orderId);
@@ -47,6 +47,9 @@ class InvoiceMultishipping extends AbstractAction
                     return $this->redirectToCart($message);
                 }
 
+                if (empty($preferredMethod)) {
+                    $preferredMethod = $this->getPreferredMethod($order);
+                }
                 $orderIncrementIds[] = $order->getRealOrderId();
 
                 $orderState = $order->getState();
@@ -132,7 +135,7 @@ class InvoiceMultishipping extends AbstractAction
                 'magento2_checkout',
                 [
                     'type' => 'error',
-                    'payment_method' => $this->getPreferredMethod(),
+                    'payment_method' => $preferredMethod,
                     'error_message' => $e->getMessage()
                 ]
             );
