@@ -58,7 +58,7 @@ define(
             },
 
             afterPlaceOrder: function () {
-                window.location.replace(url.build('xendit/checkout/invoice?preferred_method=BNI'));
+                window.location.replace(url.build('xendit/checkout/invoice'));
             },
 
             validate: function() {
