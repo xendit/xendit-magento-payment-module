@@ -20,8 +20,8 @@ class Invoice extends AbstractAction
      */
     public function execute()
     {
+        $order = $this->getOrder();
         try {
-            $order = $this->getOrder();
             $apiData = $this->getApiRequestData($order);
 
             if ($order->getState() === Order::STATE_NEW) {
@@ -39,13 +39,24 @@ class Invoice extends AbstractAction
                 $this->getLogger()->debug('Order in unrecognized state: ' . $order->getState());
                 $this->_redirect('checkout/cart');
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $message = 'Exception caught on xendit/checkout/invoice: ' . $e->getMessage();
 
             $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $message);
             $this->getLogger()->debug($e->getTraceAsString());
 
             $this->cancelOrder($order, $e->getMessage());
+
+            // log metric error
+            $this->metricHelper->sendMetric(
+                'magento2_checkout',
+                [
+                    'type' => 'error',
+                    'payment_method' => $this->getPreferredMethod($order),
+                    'error_message' => $e->getMessage()
+                ]
+            );
+
             return $this->redirectToCart($message);
         }
     }
@@ -54,6 +65,7 @@ class Invoice extends AbstractAction
      * @param $order
      * @return array|void
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
      */
     private function getApiRequestData($order)
     {
@@ -65,9 +77,7 @@ class Invoice extends AbstractAction
         }
 
         $orderId = $order->getRealOrderId();
-        $preferredMethod = $this->getRequest()->getParam('preferred_method');
-
-        $shippingAddress = $order->getShippingAddress();
+        $preferredMethod = $this->getPreferredMethod($order);
         $orderItems = $order->getAllItems();
         $items = [];
         foreach ($orderItems as $orderItem) {
@@ -115,7 +125,7 @@ class Invoice extends AbstractAction
      */
     private function createInvoice($requestData)
     {
-        $invoiceUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/invoice";
+        $invoiceUrl = $this->getDataHelper()->getXenditApiUrl() . "/payment/xendit/invoice";
         $invoiceMethod = Request::METHOD_POST;
         $invoice = '';
 

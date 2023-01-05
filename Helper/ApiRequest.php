@@ -110,7 +110,7 @@ class ApiRequest
             'Content-Type' => 'application/json',
             'x-plugin-name' => 'MAGENTO2',
             'user-agent' => 'Magento 2 Module',
-            'x-plugin-version' => '9.0.0'
+            'x-plugin-version' => \Xendit\M2Invoice\Helper\Data::XENDIT_M2INVOICE_VERSION
         ];
 
         if ($preferredMethod !== null) {

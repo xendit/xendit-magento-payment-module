@@ -27,6 +27,7 @@ use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Helper\ErrorHandler;
+use Xendit\M2Invoice\Helper\Metric;
 
 /**
  * Class AbstractAction
@@ -147,7 +148,13 @@ abstract class AbstractAction extends Action
     private $multishipping;
 
     /**
+     * @var Metric
+     */
+    protected $metricHelper;
+
+    /**
      * AbstractAction constructor.
+     *
      * @param Session $checkoutSession
      * @param Context $context
      * @param CategoryFactory $categoryFactory
@@ -168,6 +175,7 @@ abstract class AbstractAction extends Action
      * @param ErrorHandler $errorHandler
      * @param State $state
      * @param Multishipping $multishipping
+     * @param Metric $metricHelper
      */
     public function __construct(
         Session $checkoutSession,
@@ -189,7 +197,8 @@ abstract class AbstractAction extends Action
         CustomerSession $customerSession,
         ErrorHandler $errorHandler,
         State $state,
-        Multishipping $multishipping
+        Multishipping $multishipping,
+        Metric $metricHelper
     ) {
         parent::__construct($context);
 
@@ -215,6 +224,7 @@ abstract class AbstractAction extends Action
         $this->errorHandler = $errorHandler;
         $this->state = $state;
         $this->multishipping = $multishipping;
+        $this->metricHelper = $metricHelper;
     }
 
     /**
@@ -231,22 +241,6 @@ abstract class AbstractAction extends Action
     protected function getCheckoutSession()
     {
         return $this->checkoutSession;
-    }
-
-    /**
-     * @return CategoryFactory
-     */
-    protected function getCategoryFactory()
-    {
-        return $this->categoryFactory;
-    }
-
-    /**
-     * @return OrderFactory
-     */
-    protected function getOrderFactory()
-    {
-        return $this->orderFactory;
     }
 
     /**
@@ -479,14 +473,6 @@ abstract class AbstractAction extends Action
         return $baseUrl . 'xendit/checkout/notification';
     }
 
-    /**
-     * @return CookieManagerInterface
-     */
-    protected function getCookieManager()
-    {
-        return $this->cookieManager;
-    }
-
     protected function getStateMultishipping()
     {
         return $this->state;
@@ -518,19 +504,26 @@ abstract class AbstractAction extends Action
     }
 
     /**
-     * @return mixed|string
+     * Get preferred payment from order
+     *
+     * @param Order $order
+     * @return false|string
      */
-    protected function getPreferredMethod()
+    protected function getPreferredMethod(Order $order)
     {
-        $preferredMethod = $this->getRequest()->getParam('preferred_method');
-        if ($preferredMethod == 'cc') {
-            $preferredMethod = 'CREDIT_CARD';
-        }
+        $payment = $order->getPayment();
+        $preferredMethod = $this->getDataHelper()->xenditPaymentMethod(
+            $payment->getMethod()
+        );
 
-        if ($preferredMethod == 'shopeepayph') {
-            $preferredMethod = 'SHOPEEPAY';
+        switch ($preferredMethod) {
+            case 'cc':
+                return 'CREDIT_CARD';
+            case 'shopeepayph':
+                return 'SHOPEEPAY';
+            default:
+                return $preferredMethod;
         }
-        return $preferredMethod;
     }
 
     /**

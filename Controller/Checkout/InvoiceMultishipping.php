@@ -15,10 +15,22 @@ use Zend\Http\Request;
 class InvoiceMultishipping extends AbstractAction
 {
     /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Redirect|\Magento\Framework\Controller\ResultInterface|null
+     * @throws LocalizedException
      */
     public function execute()
     {
+        $transactionAmount = 0;
+        $orderProcessed = false;
+        $orders = [];
+        $items = [];
+        $currency = '';
+        $billingEmail = '';
+        $customerObject = [];
+
+        $orderIncrementIds = [];
+        $preferredMethod = '';
+
         try {
             $orderIds = $this->getMultiShippingOrderIds();
             if (empty($orderIds)) {
@@ -26,17 +38,6 @@ class InvoiceMultishipping extends AbstractAction
                 $this->getLogger()->info($message);
                 return $this->redirectToCart($message);
             }
-
-            $transactionAmount = 0;
-            $orderProcessed = false;
-            $orders = [];
-            $items = [];
-            $currency = '';
-            $billingEmail = '';
-            $customerObject = [];
-
-            $orderIncrementIds = [];
-            $preferredMethod = $this->getPreferredMethod();
 
             foreach ($orderIds as $orderId) {
                 $order = $this->getOrderRepo()->get($orderId);
@@ -46,6 +47,9 @@ class InvoiceMultishipping extends AbstractAction
                     return $this->redirectToCart($message);
                 }
 
+                if (empty($preferredMethod)) {
+                    $preferredMethod = $this->getPreferredMethod($order);
+                }
                 $orderIncrementIds[] = $order->getRealOrderId();
 
                 $orderState = $order->getState();
@@ -122,9 +126,20 @@ class InvoiceMultishipping extends AbstractAction
             $resultRedirect = $this->getRedirectFactory()->create();
             $resultRedirect->setUrl($redirectUrl);
             return $resultRedirect;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
             $this->getLogger()->info($message);
+
+            // log metric error
+            $this->metricHelper->sendMetric(
+                'magento2_checkout',
+                [
+                    'type' => 'error',
+                    'payment_method' => $preferredMethod,
+                    'error_message' => $e->getMessage()
+                ]
+            );
+
             return $this->redirectToCart($message);
         }
     }
@@ -136,7 +151,7 @@ class InvoiceMultishipping extends AbstractAction
      */
     private function createInvoice($requestData)
     {
-        $invoiceUrl = $this->getDataHelper()->getCheckoutUrl() . "/payment/xendit/invoice";
+        $invoiceUrl = $this->getDataHelper()->getXenditApiUrl() . "/payment/xendit/invoice";
         $invoiceMethod = Request::METHOD_POST;
 
         try {
