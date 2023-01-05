@@ -3,6 +3,7 @@
 ## 9.0.1 (2022-12-16)
 Features:
 - Implement Xendit metric
+- Fix get payment_method from URL query
 
 ## 9.0.0 (2022-10-26)
 Features:
