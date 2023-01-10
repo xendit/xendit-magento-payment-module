@@ -30,7 +30,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '9.0.1';
+    const XENDIT_M2INVOICE_VERSION = '10.0.0';
 
     /**
      * @var StoreManagerInterface
@@ -399,12 +399,13 @@ class Data extends AbstractHelper
     public function getXenditPaymentList(): array
     {
         return [
-            "cc"                => "cc",
+            "cc"                => "credit_card",
             "bcava"             => "bca",
             "bniva"             => "bni",
             "bjbva"             => "bjb",
             "briva"             => "bri",
             "bsiva"             => "bsi",
+            "bssva"             => "sahabat_sampoerna",
             "mandiriva"         => "mandiri",
             "permatava"         => "permata",
             "alfamart"          => "alfamart",
@@ -429,7 +430,7 @@ class Data extends AbstractHelper
             "dp_ecpay_loan"     => "dp_ecpay_loan",
             "dp_ecpay_school"   => "dp_ecpay_school",
             "cashalo"           => "cashalo",
-            "shopeepayph"       => "shopeepayph",
+            "shopeepayph"       => "shopeepay",
             "uangme"            => "uangme",
             "astrapay"          => "astrapay",
             "akulaku"           => "akulaku",

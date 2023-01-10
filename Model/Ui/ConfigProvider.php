@@ -59,7 +59,7 @@ class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $config = [
+        return [
             'payment' => [
                 Config::CODE => [
                     'xendit_env' => $this->xendit->getConfigData('xendit_env'),
@@ -332,9 +332,14 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getPaymentDescription("lbc"),
                     'image' => $this->xenditHelper->getPaymentImage('lbc')
                 ],
+                'bssva' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("bssva"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("bssva"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("bssva"),
+                    'description' => $this->xenditHelper->getPaymentDescription("bssva"),
+                    'image' => $this->xenditHelper->getPaymentImage('bssva')
+                ],
             ]
         ];
-
-        return $config;
     }
 }

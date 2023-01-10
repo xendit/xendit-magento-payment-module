@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 10.0.0 (2022-01-10)
+Features:
+- Add new IDR payment: BSS VA
+
 ## 9.0.1 (2022-12-16)
 Features:
 - Implement Xendit metric
