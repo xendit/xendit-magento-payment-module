@@ -115,7 +115,10 @@ class InvoiceMultishipping extends AbstractAction
             $invoice = $this->createInvoice($requestData);
 
             if (!empty($invoice) && isset($invoice['error_code'])) {
-                $message = $this->getErrorHandler()->mapInvoiceErrorCode($invoice['error_code']);
+                $message = $this->getErrorHandler()->mapInvoiceErrorCode(
+                    $invoice['error_code'],
+                    str_replace('{{currency}}', $currency, $invoice['message'] ?? '')
+                );
                 // cancel order and redirect to cart
                 return $this->processFailedPayment($orderIds, $message);
             }
@@ -127,8 +130,7 @@ class InvoiceMultishipping extends AbstractAction
             $resultRedirect->setUrl($redirectUrl);
             return $resultRedirect;
         } catch (\Throwable $e) {
-            $message = 'Exception caught on xendit/checkout/redirect: ' . $e->getMessage();
-            $this->getLogger()->info($message);
+            $this->getLogger()->info('Exception caught on xendit/checkout/redirect: ' . $e->getMessage());
 
             // log metric error
             $this->metricHelper->sendMetric(
@@ -140,7 +142,7 @@ class InvoiceMultishipping extends AbstractAction
                 ]
             );
 
-            return $this->redirectToCart($message);
+            return $this->redirectToCart($e->getMessage());
         }
     }
 
