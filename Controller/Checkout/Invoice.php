@@ -40,9 +40,7 @@ class Invoice extends AbstractAction
                 $this->_redirect('checkout/cart');
             }
         } catch (\Throwable $e) {
-            $message = 'Exception caught on xendit/checkout/invoice: ' . $e->getMessage();
-
-            $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $message);
+            $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $e->getMessage());
             $this->getLogger()->debug($e->getTraceAsString());
 
             $this->cancelOrder($order, $e->getMessage());
@@ -57,7 +55,7 @@ class Invoice extends AbstractAction
                 ]
             );
 
-            return $this->redirectToCart($message);
+            return $this->redirectToCart($e->getMessage());
         }
     }
 
@@ -140,7 +138,10 @@ class Invoice extends AbstractAction
                 );
             }
             if (isset($invoice['error_code'])) {
-                $message = $this->getErrorHandler()->mapInvoiceErrorCode($invoice['error_code']);
+                $message = $this->getErrorHandler()->mapInvoiceErrorCode(
+                    $invoice['error_code'],
+                    str_replace('{{currency}}', $requestData['currency'], $invoice['message'] ?? '')
+                );
                 throw new LocalizedException(
                     new Phrase($message)
                 );

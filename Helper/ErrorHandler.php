@@ -10,13 +10,18 @@ class ErrorHandler
 {
     /**
      * @param $errorCode
-     * @return string
+     * @param string $message
+     * @return array|string|string[]
      */
-    public function mapInvoiceErrorCode($errorCode)
-    {
+    public function mapInvoiceErrorCode(
+        $errorCode,
+        string $message = ''
+    ) {
+        $defaultMessage = "Failed to pay with Invoice. Error code: $errorCode";
         switch ($errorCode) {
+            case 'UNSUPPORTED_CURRENCY':
             case 'API_VALIDATION_ERROR':
-                return 'Inputs are failing validation. The errors field contains details about which fields are violating validation.';
+                return !empty($message) ? $message : $defaultMessage;
             case 'INVALID_JSON_FORMAT':
                 return 'The request body is not a valid JSON format.';
             case 'MINIMAL_TRANSFER_AMOUNT_ERROR':
@@ -40,7 +45,7 @@ class ErrorHandler
             case 'MERCHANT_NOT_FOUND':
                 return 'You are not registered yet to use this payment method.';
             default:
-                return "Failed to pay with Invoice. Error code: $errorCode";
+                return $defaultMessage;
         }
     }
 }

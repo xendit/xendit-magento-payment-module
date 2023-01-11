@@ -158,6 +158,10 @@ define(
                 type: 'lbc',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/lbc'
             },
+            {
+                type: 'bssva',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bssva'
+            }
         );
         return Component.extend({});
     }

@@ -512,18 +512,9 @@ abstract class AbstractAction extends Action
     protected function getPreferredMethod(Order $order)
     {
         $payment = $order->getPayment();
-        $preferredMethod = $this->getDataHelper()->xenditPaymentMethod(
+        return $this->getDataHelper()->xenditPaymentMethod(
             $payment->getMethod()
         );
-
-        switch ($preferredMethod) {
-            case 'cc':
-                return 'CREDIT_CARD';
-            case 'shopeepayph':
-                return 'SHOPEEPAY';
-            default:
-                return $preferredMethod;
-        }
     }
 
     /**

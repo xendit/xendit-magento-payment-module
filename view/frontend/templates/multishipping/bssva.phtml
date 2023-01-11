@@ -1,0 +1,34 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<script>
+    require([
+        'uiLayout',
+        'jquery'
+    ], function (layout, $) {
+        $(function () {
+            var paymentMethodData = {
+                method: 'bssva'
+            };
+            layout([
+                {
+                    component: 'Xendit_M2Invoice/js/view/payment/method-renderer/multishipping/bssva',
+                    name: 'payment_method_bssva',
+                    method: paymentMethodData.method,
+                    item: paymentMethodData
+                }
+            ]);
+
+            if(window.checkoutConfig.payment[paymentMethodData.method].image != ""){
+                $("label[for=p_method_"+paymentMethodData.method+"]")
+                    .prepend('<img class="xendit-payment-icon" src="'+window.checkoutConfig.payment[paymentMethodData.method].image+'" />');
+            }
+
+            $('body').trigger('contentUpdated');
+        })
+    })
+</script>
+<!-- ko template: getTemplate() --><!-- /ko -->
