@@ -16,7 +16,6 @@ use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
-use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
