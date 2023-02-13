@@ -16,6 +16,7 @@ use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\QuoteManagement;
+use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderNotifier;
 use Magento\Sales\Model\Service\InvoiceService;
@@ -30,7 +31,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '10.0.0';
+    const XENDIT_M2INVOICE_VERSION = '10.0.1';
 
     /**
      * @var StoreManagerInterface

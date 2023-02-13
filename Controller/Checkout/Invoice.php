@@ -5,6 +5,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
+use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order;
 use Zend\Http\Request;
 
@@ -60,34 +61,28 @@ class Invoice extends AbstractAction
     }
 
     /**
-     * @param $order
-     * @return array|void
+     * @param Order $order
+     * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws LocalizedException
      */
-    private function getApiRequestData($order)
+    private function getApiRequestData(Order $order)
     {
-        if ($order == null) {
-            $this->getLogger()->debug('Unable to get last order data from database');
-            $this->_redirect('checkout/onepage/error', ['_secure' => false]);
-
-            return;
-        }
-
         $orderId = $order->getRealOrderId();
         $preferredMethod = $this->getPreferredMethod($order);
         $orderItems = $order->getAllItems();
         $items = [];
+        /** @var OrderItemInterface $orderItem */
         foreach ($orderItems as $orderItem) {
-            $item = [];
             $product = $orderItem->getProduct();
-            $item['reference_id'] = $product->getId();
-            $item['name'] = $product->getName();
-            $item['category'] = $this->getDataHelper()->extractProductCategoryName($product);
-            $item['price'] = $product->getPrice();
-            $item['type'] = 'PRODUCT';
-            $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
-            $item['quantity'] = (int)$orderItem->getQtyOrdered();
+            $item = [
+                'reference_id' => $product->getId(),
+                'name' => $orderItem->getName(),
+                'category' => $this->getDataHelper()->extractProductCategoryName($product),
+                'price' => $orderItem->getPrice(),
+                'type' => 'PRODUCT',
+                'url' => $product->getProductUrl() ?: 'https://xendit.co/',
+                'quantity' => (int)$orderItem->getQtyOrdered()
+            ];
             $items[] = (object)$item;
         }
 

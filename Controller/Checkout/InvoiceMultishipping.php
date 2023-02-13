@@ -5,6 +5,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
+use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order;
 use Zend\Http\Request;
 
@@ -71,16 +72,18 @@ class InvoiceMultishipping extends AbstractAction
                 $currency = $order->getBaseCurrencyCode();
 
                 $orderItems = $order->getAllItems();
+                /** @var OrderItemInterface $orderItem */
                 foreach ($orderItems as $orderItem) {
-                    $item = [];
                     $product = $orderItem->getProduct();
-                    $item['reference_id'] = $product->getId();
-                    $item['name'] = $product->getName();
-                    $item['category'] = $this->getDataHelper()->extractProductCategoryName($product);
-                    $item['price'] = $product->getPrice();
-                    $item['type'] = 'PRODUCT';
-                    $item['url'] = $product->getProductUrl() ?: 'https://xendit.co/';
-                    $item['quantity'] = (int)$orderItem->getQtyOrdered();
+                    $item = [
+                        'reference_id' => $product->getId(),
+                        'name' => $orderItem->getName(),
+                        'category' => $this->getDataHelper()->extractProductCategoryName($product),
+                        'price' => $orderItem->getPrice(),
+                        'type' => 'PRODUCT',
+                        'url' => $product->getProductUrl() ?: 'https://xendit.co/',
+                        'quantity' => (int)$orderItem->getQtyOrdered()
+                    ];
                     $items[] = (object)$item;
                 }
 
