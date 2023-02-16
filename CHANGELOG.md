@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## 10.0.0 (2022-01-10)
+## 10.0.1 (2023-02-13)
+Improvements:
+- Fix the order item price
+
+## 10.0.0 (2023-01-10)
 Features:
 - Add new IDR payment: BSS VA
 
