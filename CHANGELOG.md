@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 10.0.2 (2023-03-21)
+Improvements:
+- Update min/max total of Akulaku
+
 ## 10.0.1 (2023-02-13)
 Improvements:
 - Fix the order item price
