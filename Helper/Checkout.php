@@ -169,12 +169,12 @@ class Checkout
      */
     public function processOrdersFailedPayment(array $orderIds, string $failureReason = 'Unexpected Error with empty charge')
     {
-        foreach ($orderIds as $key => $value) {
-            $order = $this->orderRepository->get($value);
+        foreach ($orderIds as $orderId) {
+            $order = $this->orderRepository->get($orderId);
             $orderState = Order::STATE_CANCELED;
             $order->setState($orderState)
                     ->setStatus($orderState)
-                    ->addCommentToStatusHistory("Order #" . $value . " was rejected by Xendit because " . $failureReason);
+                    ->addCommentToStatusHistory("Order #" . $orderId . " was rejected by Xendit because " . $failureReason);
 
             $order = $this->orderRepository->save($order);
             $quoteId = $order->getQuoteId();

@@ -31,12 +31,13 @@ class InvoiceMultishipping extends AbstractAction
 
         $orderIncrementIds = [];
         $preferredMethod = '';
+        $orderIds = $this->getMultiShippingOrderIds();
+        $rawOrderIds = implode('-', $orderIds);
 
         try {
-            $orderIds = $this->getMultiShippingOrderIds();
             if (empty($orderIds)) {
                 $message = __('The order not exist');
-                $this->getLogger()->info($message);
+                $this->getLogger()->info($message, ['order_ids' => $orderIds]);
                 return $this->redirectToCart($message);
             }
 
@@ -44,7 +45,7 @@ class InvoiceMultishipping extends AbstractAction
                 $order = $this->getOrderRepo()->get($orderId);
                 if (!$this->orderValidToCreateXenditInvoice($order)) {
                     $message = __('Order processed');
-                    $this->getLogger()->info($message);
+                    $this->getLogger()->info($message, ['order_id' => $orderId]);
                     return $this->redirectToCart($message);
                 }
 
@@ -96,7 +97,6 @@ class InvoiceMultishipping extends AbstractAction
                 return $this->_redirect('multishipping/checkout/success');
             }
 
-            $rawOrderIds = implode('-', $orderIds);
             $requestData = [
                 'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds),
                 'payer_email' => $billingEmail,
@@ -116,34 +116,41 @@ class InvoiceMultishipping extends AbstractAction
             }
 
             $invoice = $this->createInvoice($requestData);
-
-            if (!empty($invoice) && isset($invoice['error_code'])) {
-                $message = $this->getErrorHandler()->mapInvoiceErrorCode(
-                    $invoice['error_code'],
-                    str_replace('{{currency}}', $currency, $invoice['message'] ?? '')
-                );
-                // cancel order and redirect to cart
-                return $this->processFailedPayment($orderIds, $message);
-            }
-
             $this->addInvoiceData($orders, $invoice);
 
             $redirectUrl = $this->getXenditRedirectUrl($invoice, $preferredMethod);
+            $this->getLogger()->info(
+                'Redirect customer to Xendit',
+                array_merge($this->getLogContext($orders, $invoice), ['redirect_url' => $redirectUrl])
+            );
+
             $resultRedirect = $this->getRedirectFactory()->create();
             $resultRedirect->setUrl($redirectUrl);
             return $resultRedirect;
         } catch (\Throwable $e) {
-            $this->getLogger()->info('Exception caught on xendit/checkout/redirect: ' . $e->getMessage());
-
-            // log metric error
-            $this->metricHelper->sendMetric(
-                'magento2_checkout',
-                [
-                    'type' => 'error',
-                    'payment_method' => $preferredMethod,
-                    'error_message' => $e->getMessage()
-                ]
+            $logContext = $this->getLogContext($orders);
+            $message = sprintf(
+                'Exception caught on xendit/checkout/invoicemultishipping: Order_ids %s - %s',
+                implode(', ', $logContext['order_ids'] ?? []),
+                $e->getMessage()
             );
+            $this->getLogger()->error($message, $logContext);
+
+            try {
+                // cancel orders
+                $this->processFailedPayment($orderIds, $message);
+
+                // log metric error
+                $this->metricHelper->sendMetric(
+                    'magento2_checkout',
+                    [
+                        'type' => 'error',
+                        'payment_method' => $preferredMethod,
+                        'error_message' => $message
+                    ]
+                );
+            } catch (\Exception $ex) {
+            }
 
             return $this->redirectToCart($e->getMessage());
         }
@@ -161,13 +168,27 @@ class InvoiceMultishipping extends AbstractAction
 
         try {
             if (isset($requestData['preferred_method'])) {
-                return $this->getApiHelper()->request(
+                $this->getLogger()->info('createInvoice start', ['data' => $requestData]);
+
+                $invoice = $this->getApiHelper()->request(
                     $invoiceUrl,
                     $invoiceMethod,
                     $requestData,
                     false,
                     $requestData['preferred_method']
                 );
+                if (isset($invoice['error_code'])) {
+                    $message = $this->getErrorHandler()->mapInvoiceErrorCode(
+                        $invoice['error_code'],
+                        str_replace('{{currency}}', $requestData['currency'], $invoice['message'] ?? '')
+                    );
+                    throw new LocalizedException(
+                        new Phrase($message)
+                    );
+                }
+
+                $this->getLogger()->info('createInvoice success', ['xendit_invoice' => $invoice]);
+                return $invoice;
             }
         } catch (LocalizedException $e) {
             throw new LocalizedException(
@@ -190,20 +211,34 @@ class InvoiceMultishipping extends AbstractAction
      * @param array $orders
      * @param array $invoice
      * @return void
+     * @throws LocalizedException
      */
     private function addInvoiceData(array $orders, array $invoice)
     {
-        foreach ($orders as $order) {
-            $payment = $order->getPayment();
-            $payment->setAdditionalInformation('payment_gateway', 'xendit');
-            if (isset($invoice['id'])) {
-                $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
-                $order->setXenditTransactionId($invoice['id']);
+        try {
+            foreach ($orders as $order) {
+                $payment = $order->getPayment();
+                $payment->setAdditionalInformation('payment_gateway', 'xendit');
+                if (isset($invoice['id'])) {
+                    $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
+                    $order->setXenditTransactionId($invoice['id']);
+                }
+                if (isset($invoice['expiry_date'])) {
+                    $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
+                }
+                $this->getOrderRepo()->save($order);
             }
-            if (isset($invoice['expiry_date'])) {
-                $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
-            }
-            $this->getOrderRepo()->save($order);
+
+            $this->getLogger()->info('addInvoiceData success', $this->getLogContext($orders, $invoice));
+        } catch (\Exception $e) {
+            $this->getLogger()->error(
+                sprintf('addInvoiceData failed: %s', $e->getMessage()),
+                $this->getLogContext($orders, $invoice)
+            );
+
+            throw new LocalizedException(
+                new Phrase($e->getMessage())
+            );
         }
     }
 
@@ -237,5 +272,21 @@ class InvoiceMultishipping extends AbstractAction
             $failureReasonInsight
         ));
         $this->_redirect('checkout/cart', ['_secure' => false]);
+    }
+
+    /**
+     * @param array $orders
+     * @param array $invoice
+     * @return array
+     */
+    protected function getLogContext(array $orders, array $invoice = []): array
+    {
+        $context['order_ids'] = array_map(function (Order $order) {
+            return $order->getIncrementId();
+        }, $orders);
+        if (!empty($invoice) && !empty($invoice['id'])) {
+            $context['xendit_transaction_id'] = $invoice['id'];
+        }
+        return $context;
     }
 }

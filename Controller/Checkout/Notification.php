@@ -143,18 +143,16 @@ class Notification extends Action implements CsrfAwareActionInterface
      */
     public function execute()
     {
+        $post = $this->getRequest()->getContent();
+        $callbackPayload = json_decode($post, true);
+        $this->logger->info("callbackPayload", $callbackPayload);
+
         try {
-            $post = $this->getRequest()->getContent();
-            $callbackPayload = json_decode($post, true);
-
-            $this->logger->info("callbackPayload");
-            $this->logger->info($post);
-
             // Invoice: Regular CC, Ewallet, Retail Outlet, PayLater
             return $this->handleInvoiceCallback($callbackPayload);
         } catch (\Exception $e) {
             $message = "Error invoice callback: " . $e->getMessage();
-            $this->logger->info($message);
+            $this->logger->error($message, $callbackPayload);
 
             $result = $this->jsonResultFactory->create();
             /** You may introduce your own constants for this custom REST API */
@@ -179,11 +177,12 @@ class Notification extends Action implements CsrfAwareActionInterface
 
     /**
      * @param string $message
-     * @return void
+     * @param array $context
+     * @return \Magento\Framework\Controller\Result\Json
      */
-    protected function responseSuccess(string $message)
+    protected function responseSuccess(string $message, array $context = [])
     {
-        $this->logger->info($message);
+        $this->logger->info($message, $context);
         $result = $this->jsonResultFactory->create();
         $result->setData([
             'status' => __('SUCCESS'),
@@ -195,11 +194,12 @@ class Notification extends Action implements CsrfAwareActionInterface
     /**
      * @param string $message
      * @param string $status
+     * @param array $context
      * @return \Magento\Framework\Controller\Result\Json
      */
-    protected function responseError(string $message, string $status = 'ERROR')
+    protected function responseError(string $message, string $status = 'ERROR', array $context = [])
     {
-        $this->logger->error($message);
+        $this->logger->error($message, $context);
         $result = $this->jsonResultFactory->create();
         /** You may introduce your own constants for this custom REST API */
         $result->setHttpResponseCode(Exception::HTTP_BAD_REQUEST);
@@ -209,6 +209,52 @@ class Notification extends Action implements CsrfAwareActionInterface
         ]);
 
         return $result;
+    }
+
+    /**
+     * @param string $incrementId
+     * @return \Magento\Framework\Controller\Result\Json|\Magento\Sales\Api\Data\OrderInterface
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    protected function getOrderByIncrementId(string $incrementId)
+    {
+        $order = $this->orderRepository->get($incrementId);
+        if (empty($order)) {
+            return $this->responseError(__('No order(s) found for order_id %1', $incrementId));
+        }
+        return $order->getEntityId();
+    }
+
+    /**
+     * @param string $successUrl
+     * @return bool
+     */
+    protected function isMultiShippingOrder(string $successUrl): bool
+    {
+        parse_str(parse_url($successUrl)['query'], $params);
+        return !empty($params['type']) && $params['type'] === 'multishipping';
+    }
+
+    /**
+     * @param array $invoice
+     * @return array
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    protected function extractOrderIdsFromXenditInvoice(array $invoice): array
+    {
+        $orderIds = $this->xenditModel->getOrderIdsByTransactionId($invoice['id']);
+        if (empty($orderIds)) {
+            // Give the second chance to get order from callback description (order_id)
+            if (!empty($invoice['success_redirect_url']) &&
+                $this->isMultiShippingOrder($invoice['success_redirect_url'])) {
+                $orderIds = array_map('trim', explode('-', $invoice['description']));
+            } else {
+                $orderIds[] = $this->getOrderByIncrementId($invoice['description']);
+            }
+        }
+        return $orderIds;
     }
 
     /**
@@ -227,15 +273,16 @@ class Notification extends Action implements CsrfAwareActionInterface
 
         $description = $callbackPayload['description'];
         $transactionId = $callbackPayload['id'];
-        $orderIds = $this->xenditModel->getOrderIdsByTransactionId($transactionId);
-        if (empty($orderIds)) {
-            return $this->responseError(__('No order(s) found for transaction id %1', $transactionId));
-        }
 
         // Check if Xendit invoice exists on Xendit
         $invoice = $this->getXenditInvoice($transactionId);
         if (empty($invoice)) {
             return $this->responseError(__('The transaction id does not exist'));
+        }
+
+        $orderIds = $this->extractOrderIdsFromXenditInvoice($invoice);
+        if (empty($orderIds)) {
+            return $this->responseError(__('No order(s) found for transaction id %1', $transactionId));
         }
 
         $result = null;
@@ -259,15 +306,13 @@ class Notification extends Action implements CsrfAwareActionInterface
      */
     private function checkOrder(Order $order, $callbackPayload, $invoice, $callbackDescription)
     {
-        // Check if order exists in Magento
-        if (empty($order)) {
-            return $this->responseError(__('Order not found'));
-        }
-
         // Start check order
-        $this->logger->info("checkOrder");
         $transactionId = $callbackPayload['id'];
         $paymentStatus = $invoice['status'];
+        $this->logger->info(
+            "checkOrder",
+            ['order_id' => $order->getIncrementId(), 'xendit_transaction_id' => $transactionId, 'status' => $paymentStatus]
+        );
 
         // Check if order is canceled
         try {
@@ -281,7 +326,10 @@ class Notification extends Action implements CsrfAwareActionInterface
 
         // Check if order already created invoice
         if (!$order->canInvoice()) {
-            return $this->responseSuccess(__('Order is already processed'));
+            return $this->responseSuccess(
+                __('Order is already processed'),
+                ['order_id' => $order->getIncrementId()]
+            );
         }
 
         // Check if the Xendit invoice not belong to the order
@@ -313,7 +361,10 @@ class Notification extends Action implements CsrfAwareActionInterface
 
             // Create invoice for order
             $this->invoiceOrder($order, $transactionId);
-            return $this->responseSuccess(__('Transaction paid'));
+            return $this->responseSuccess(
+                __('Transaction paid'),
+                ['order_id' => $order->getIncrementId(), 'xendit_transaction_id' => $transactionId]
+            );
         } else { //FAILED or EXPIRED
             if ($order->getStatus() != Order::STATE_CANCELED) {
                 $this->getCheckoutHelper()
@@ -325,7 +376,11 @@ class Notification extends Action implements CsrfAwareActionInterface
                 "Xendit payment " . strtolower($paymentStatus) . ". Transaction ID: $transactionId"
             );
             $this->orderRepository->save($order);
-            return $this->responseError(__('Transaction not paid'), __('FAILED'));
+            return $this->responseError(
+                __('Transaction not paid'),
+                __('FAILED'),
+                ['order_id' => $order->getIncrementId(), 'xendit_transaction_id' => $transactionId]
+            );
         }
     }
 
@@ -338,8 +393,7 @@ class Notification extends Action implements CsrfAwareActionInterface
     {
         $invoiceUrl = $this->dataHelper->getXenditApiUrl() . "/payment/xendit/invoice/$invoiceId";
 
-        $this->logger->info("getXenditInvoice");
-        $this->logger->info($invoiceUrl);
+        $this->logger->info("getXenditInvoice", ['get_invoice_url' => $invoiceUrl]);
         $invoiceMethod = Request::METHOD_GET;
 
         try {
@@ -354,13 +408,14 @@ class Notification extends Action implements CsrfAwareActionInterface
     }
 
     /**
-     * @param $order
-     * @param $transactionId
+     * @param Order $order
+     * @param string $transactionId
+     * @return void
      * @throws LocalizedException
      */
-    private function invoiceOrder($order, $transactionId)
+    private function invoiceOrder(Order $order, string $transactionId)
     {
-        $this->logger->info("invoiceOrder");
+        $this->logger->info("invoiceOrder", ['order_id' => $order->getIncrementId(), 'xendit_transaction_id' => $transactionId]);
         if (!$order->canInvoice()) {
             throw new LocalizedException(
                 __('Cannot create an invoice.')

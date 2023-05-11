@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 10.0.3 (2023-05-11)
+Improvements:
+- Implementation debug logging
+
 ## 10.0.2 (2023-03-21)
 Improvements:
 - Update min/max total of Akulaku
