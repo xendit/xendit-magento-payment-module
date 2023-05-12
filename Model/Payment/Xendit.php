@@ -4,6 +4,7 @@ namespace Xendit\M2Invoice\Model\Payment;
 
 use Magento\Directory\Helper\Data as DirectoryHelper;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\OrderRepository;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
@@ -229,5 +230,24 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
         return array_map(function (OrderInterface $order) {
             return $order->getId();
         }, $orders->getItems());
+    }
+
+    /**
+     * @param string $incrementId
+     * @return OrderInterface
+     * @throws NoSuchEntityException
+     */
+    public function getOrderByIncrementId(string $incrementId): OrderInterface
+    {
+        $searchCriteria = $this->searchCriteriaBuilder->addFilter(
+            'main_table.' . OrderInterface::INCREMENT_ID,
+            $incrementId
+        )->create();
+
+        if (!($orderItems = $this->orderRepository->getList($searchCriteria)->getItems())) {
+            throw new NoSuchEntityException(__('Requested order doesn\'t exist'));
+        }
+
+        return reset($orderItems);
     }
 }

@@ -12,6 +12,7 @@ use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\Webapi\Exception;
+use Magento\Sales\Api\Data\TransactionInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Sales\Model\OrderFactory;
@@ -213,17 +214,20 @@ class Notification extends Action implements CsrfAwareActionInterface
 
     /**
      * @param string $incrementId
-     * @return \Magento\Framework\Controller\Result\Json|\Magento\Sales\Api\Data\OrderInterface
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return int|null
+     * @throws \Exception
      */
     protected function getOrderByIncrementId(string $incrementId)
     {
-        $order = $this->orderRepository->get($incrementId);
-        if (empty($order)) {
-            return $this->responseError(__('No order(s) found for order_id %1', $incrementId));
+        try {
+            $order = $this->xenditModel->getOrderByIncrementId($incrementId);
+            $this->logger->info('getOrderByIncrementId', ['increment_id' => $incrementId, 'order_id' => $order->getEntityId()]);
+
+            return $order->getEntityId();
+        } catch (\Exception $ex) {
+            $this->logger->error($ex->getMessage(), ['order_id' => $incrementId]);
+            throw new \Exception(__('#%1: %2', $incrementId, $ex->getMessage()));
         }
-        return $order->getEntityId();
     }
 
     /**
@@ -232,15 +236,18 @@ class Notification extends Action implements CsrfAwareActionInterface
      */
     protected function isMultiShippingOrder(string $successUrl): bool
     {
-        parse_str(parse_url($successUrl)['query'], $params);
+        $parseUrl = parse_url($successUrl);
+        if (empty($parseUrl['query'])) {
+            return false;
+        }
+        parse_str($parseUrl['query'], $params);
         return !empty($params['type']) && $params['type'] === 'multishipping';
     }
 
     /**
      * @param array $invoice
      * @return array
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Exception
      */
     protected function extractOrderIdsFromXenditInvoice(array $invoice): array
     {
@@ -250,6 +257,8 @@ class Notification extends Action implements CsrfAwareActionInterface
             if (!empty($invoice['success_redirect_url']) &&
                 $this->isMultiShippingOrder($invoice['success_redirect_url'])) {
                 $orderIds = array_map('trim', explode('-', $invoice['description']));
+
+                $this->logger->info('multiShippingOrder', ['order_ids' => $orderIds]);
             } else {
                 $orderIds[] = $this->getOrderByIncrementId($invoice['description']);
             }
@@ -261,9 +270,11 @@ class Notification extends Action implements CsrfAwareActionInterface
      * @param $callbackPayload
      * @return \Magento\Framework\Controller\Result\Json|null
      * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Payment\Gateway\Http\ClientException
+     * @throws \Exception
      */
     public function handleInvoiceCallback($callbackPayload)
     {
@@ -334,19 +345,24 @@ class Notification extends Action implements CsrfAwareActionInterface
 
         // Check if the Xendit invoice not belong to the order
         if (isset($invoice['description']) && $invoice['description'] !== $callbackDescription) {
-            return $this->responseError(__('Invoice is not for this order'));
+            return $this->responseError(
+                __('Invoice is not for this order'),
+                __('ERROR'),
+                ['callback_description' => $callbackDescription, 'invoice_description' => $invoice['description']]
+            );
         }
 
         // Start update the order status
         $this->logger->info($paymentStatus);
         if ($this->isXenditInvoicePaid($paymentStatus)) {
+            // Change order status
             $order->setState(Order::STATE_PROCESSING)
                 ->setStatus(Order::STATE_PROCESSING)
                 ->addCommentToStatusHistory("Xendit payment completed. Transaction ID: $transactionId");
 
             $payment = $order->getPayment();
             $payment->setTransactionId($transactionId);
-            $payment->addTransaction(Transaction::TYPE_CAPTURE, null, true);
+            $payment->addTransaction(TransactionInterface::TYPE_CAPTURE, null, true);
 
             if (!empty($invoice['credit_card_charge_id'])) {
                 $payment->setAdditionalInformation('xendit_charge_id', $invoice['credit_card_charge_id']);
@@ -357,6 +373,12 @@ class Notification extends Action implements CsrfAwareActionInterface
                 $payment->setAdditionalInformation('xendit_installment', $callbackPayload['installment']);
                 $payment->save();
             }
+
+            // insert xendit_transaction_id if order missing this
+            if (empty($order->getXenditTransactionId())) {
+                $order->setXenditTransactionId($transactionId);
+            }
+
             $this->orderRepository->save($order);
 
             // Create invoice for order
