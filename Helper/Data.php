@@ -449,7 +449,7 @@ class Data extends AbstractHelper
         // method name => frontend routing
         $listPayment = $this->getXenditPaymentList();
         $response = false;
-        if (!!array_key_exists($payment, $listPayment)) {
+        if (array_key_exists($payment, $listPayment)) {
             $response = $listPayment[$payment];
         }
 
@@ -557,7 +557,7 @@ class Data extends AbstractHelper
                     }
                 }, explode(",", $cardImages) ?? []),
                 function ($item) {
-                    return !!$item;
+                    return $item;
                 }
             );
         }

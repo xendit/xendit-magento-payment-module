@@ -191,7 +191,7 @@ class Invoice extends AbstractAction
                 'changePendingPaymentStatus success',
                 ['order_id' => $order->getIncrementId()]
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->getLogger()->error(
                 sprintf('changePendingPaymentStatus failed: %s', $e->getMessage()),
                 ['order_id' => $order->getIncrementId()]

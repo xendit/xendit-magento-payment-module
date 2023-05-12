@@ -76,12 +76,14 @@ class ConfigElementGroupPlugin
      */
     public function afterIsVisible(Group $group, $result)
     {
-        if (in_array($group->getId(), self::PAYMENT_GROUP) && !$group->hasChildren()) {
-            return false;
-        }
+        if (strpos($group->getPath(), 'xendit')) {
+            if (in_array($group->getId(), self::PAYMENT_GROUP) && !$group->hasChildren()) {
+                return false;
+            }
 
-        if ($this->helper->xenditPaymentMethod($group->getId())) {
-            return $this->helper->isAvailableOnCurrency($group->getId(), $this->getCurrentCurrency());
+            if ($this->helper->xenditPaymentMethod($group->getId())) {
+                return $this->helper->isAvailableOnCurrency($group->getId(), $this->getCurrentCurrency());
+            }
         }
         return $result;
     }
