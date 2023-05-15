@@ -76,7 +76,7 @@ class ConfigElementGroupPlugin
      */
     public function afterIsVisible(Group $group, $result)
     {
-        if (strpos($group->getPath(), 'xendit')) {
+        if (strpos($group->getPath(), 'xendit') !== false) {
             if (in_array($group->getId(), self::PAYMENT_GROUP) && !$group->hasChildren()) {
                 return false;
             }

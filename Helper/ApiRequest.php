@@ -2,11 +2,10 @@
 
 namespace Xendit\M2Invoice\Helper;
 
+use Magento\Framework\HTTP\Client\Curl as MagentoCurl;
 use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 use Xendit\M2Invoice\Model\Payment\Xendit;
-use Magento\Payment\Gateway\Http\ClientException;
-use Magento\Framework\HTTP\Client\Curl as MagentoCurl;
 use Zend\Http\Request;
 
 /**
@@ -54,6 +53,17 @@ class ApiRequest
         $this->magentoCurl = $magentoCurl;
     }
 
+    /**
+     * @param $url
+     * @param $method
+     * @param $requestData
+     * @param $isPublicRequest
+     * @param $preferredMethod
+     * @param $customOptions
+     * @param $customHeaders
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function request(
         $url,
         $method,
@@ -63,11 +73,9 @@ class ApiRequest
         $customOptions = [],
         $customHeaders = []
     ) {
-        $headers = $this->getHeaders($isPublicRequest, $preferredMethod, $customHeaders);
-
         try {
+            $headers = $this->getHeaders($isPublicRequest, $preferredMethod, $customHeaders);
             $this->magentoCurl->setHeaders($headers);
-
             $this->magentoCurl->setTimeout(30);
 
             if ($method == Request::METHOD_GET) {
@@ -84,14 +92,12 @@ class ApiRequest
                 );
             }
 
-            $jsonResponse = json_decode($this->magentoCurl->getBody(), true);
-        } catch (\Zend_Http_Client_Exception $e) {
-            throw new ClientException(__($e->getMessage()));
+            return json_decode($this->magentoCurl->getBody(), true);
         } catch (\Exception $e) {
-            throw $e;
+            throw new \Magento\Framework\Exception\LocalizedException(
+                new Phrase($e->getMessage())
+            );
         }
-
-        return $jsonResponse;
     }
 
     /**
