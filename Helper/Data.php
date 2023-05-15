@@ -30,7 +30,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '10.0.2';
+    const XENDIT_M2INVOICE_VERSION = '10.0.3';
 
     /**
      * @var StoreManagerInterface
@@ -449,7 +449,7 @@ class Data extends AbstractHelper
         // method name => frontend routing
         $listPayment = $this->getXenditPaymentList();
         $response = false;
-        if (!!array_key_exists($payment, $listPayment)) {
+        if (array_key_exists($payment, $listPayment)) {
             $response = $listPayment[$payment];
         }
 
@@ -557,7 +557,7 @@ class Data extends AbstractHelper
                     }
                 }, explode(",", $cardImages) ?? []),
                 function ($item) {
-                    return !!$item;
+                    return $item;
                 }
             );
         }

@@ -154,6 +154,15 @@
                     <validate>required-entry</validate>
                 </field>
 
+                <field id="debug" translate="label" type="select" sortOrder="67" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Debug mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>
+                        <![CDATA[Enable debug for payment flow.<br>
+                        Log path: <b>/var/log/xendit_payment.log</b>]]>
+                    </comment>
+                </field>
+
                 <group id="other_configurations" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Other Configurations</label>
                     <group id="virtual_accounts" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">

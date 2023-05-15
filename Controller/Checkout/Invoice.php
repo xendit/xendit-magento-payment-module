@@ -27,34 +27,46 @@ class Invoice extends AbstractAction
 
             if ($order->getState() === Order::STATE_NEW) {
                 $this->changePendingPaymentStatus($order);
+
                 $invoice = $this->createInvoice($apiData);
                 $this->addInvoiceData($order, $invoice);
-                $redirectUrl = $this->getXenditRedirectUrl($invoice, $apiData['preferred_method']);
 
+                $redirectUrl = $this->getXenditRedirectUrl($invoice, $apiData['preferred_method']);
+                $this->getLogger()->info(
+                    'Redirect customer to Xendit',
+                    ['order_id' => $order->getIncrementId(), 'redirect_url' => $redirectUrl]
+                );
                 $resultRedirect = $this->getRedirectFactory()->create();
                 $resultRedirect->setUrl($redirectUrl);
                 return $resultRedirect;
             } elseif ($order->getState() === Order::STATE_CANCELED) {
+                $this->getLogger()->info('Order is already canceled', ['order_id' => $order->getIncrementId()]);
+
                 $this->_redirect('checkout/cart');
             } else {
-                $this->getLogger()->debug('Order in unrecognized state: ' . $order->getState());
+                $this->getLogger()->info('Order in unrecognized state', ['state' => $order->getState(), 'order_id' => $order->getIncrementId()]);
                 $this->_redirect('checkout/cart');
             }
         } catch (\Throwable $e) {
+            $errorMessage = sprintf('xendit/checkout/invoice failed: Order #%s - %s', $order->getIncrementId(), $e->getMessage());
+
+            $this->getLogger()->error($errorMessage, ['order_id' => $order->getIncrementId()]);
             $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $e->getMessage());
             $this->getLogger()->debug($e->getTraceAsString());
 
-            $this->cancelOrder($order, $e->getMessage());
-
-            // log metric error
-            $this->metricHelper->sendMetric(
-                'magento2_checkout',
-                [
-                    'type' => 'error',
-                    'payment_method' => $this->getPreferredMethod($order),
-                    'error_message' => $e->getMessage()
-                ]
-            );
+            // cancel order
+            try {
+                $this->cancelOrder($order, $e->getMessage());
+                $this->metricHelper->sendMetric(
+                    'magento2_checkout',
+                    [
+                        'type' => 'error',
+                        'payment_method' => $this->getPreferredMethod($order),
+                        'error_message' => $errorMessage
+                    ]
+                );
+            } catch (\Exception $e) {
+            }
 
             return $this->redirectToCart($e->getMessage());
         }
@@ -124,6 +136,8 @@ class Invoice extends AbstractAction
 
         try {
             if (isset($requestData['preferred_method'])) {
+                $this->getLogger()->info('createInvoice start', ['data' => $requestData]);
+
                 $invoice = $this->getApiHelper()->request(
                     $invoiceUrl,
                     $invoiceMethod,
@@ -147,6 +161,7 @@ class Invoice extends AbstractAction
             );
         }
 
+        $this->getLogger()->info('createInvoice success', ['xendit_invoice' => $invoice]);
         return $invoice;
     }
 
@@ -163,32 +178,65 @@ class Invoice extends AbstractAction
     /**
      * @param Order $order
      * @return void
+     * @throws LocalizedException
      */
     private function changePendingPaymentStatus(Order $order)
     {
-        $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
-        $order->addCommentToStatusHistory("Pending Xendit payment.");
-        $this->getOrderRepo()->save($order);
+        try {
+            $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
+            $order->addCommentToStatusHistory("Pending Xendit payment.");
+            $this->getOrderRepo()->save($order);
+
+            $this->getLogger()->info(
+                'changePendingPaymentStatus success',
+                ['order_id' => $order->getIncrementId()]
+            );
+        } catch (\Exception $e) {
+            $this->getLogger()->error(
+                sprintf('changePendingPaymentStatus failed: %s', $e->getMessage()),
+                ['order_id' => $order->getIncrementId()]
+            );
+
+            throw new LocalizedException(
+                new Phrase($e->getMessage())
+            );
+        }
     }
 
     /**
      * @param Order $order
      * @param array $invoice
      * @return void
+     * @throws \Exception
      */
     private function addInvoiceData(Order $order, array $invoice)
     {
-        $payment = $order->getPayment();
-        $payment->setAdditionalInformation('payment_gateway', 'xendit');
-        if (isset($invoice['id'])) {
-            $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
-            $order->setXenditTransactionId($invoice['id']);
-        }
-        if (isset($invoice['expiry_date'])) {
-            $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
-        }
+        try {
+            $payment = $order->getPayment();
+            $payment->setAdditionalInformation('payment_gateway', 'xendit');
+            if (isset($invoice['id'])) {
+                $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
+                $order->setXenditTransactionId($invoice['id']);
+            }
+            if (isset($invoice['expiry_date'])) {
+                $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
+            }
 
-        $this->getOrderRepo()->save($order);
+            $this->getOrderRepo()->save($order);
+            $this->getLogger()->info(
+                'addInvoiceData success',
+                ['order_id' => $order->getIncrementId(), 'xendit_transaction_id' => $invoice['id']]
+            );
+        } catch (\Exception $e) {
+            $this->getLogger()->error(
+                sprintf('addInvoiceData failed: %s', $e->getMessage()),
+                ['order_id' => $order->getIncrementId(), 'xendit_transaction_id' => $invoice['id']]
+            );
+
+            throw new LocalizedException(
+                new Phrase($e->getMessage())
+            );
+        }
     }
 
     /**

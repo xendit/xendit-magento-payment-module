@@ -10,6 +10,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Phrase;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Multishipping\Model\Checkout\Type\Multishipping;
@@ -28,6 +29,7 @@ use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Helper\ErrorHandler;
 use Xendit\M2Invoice\Helper\Metric;
+use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 
 /**
  * Class AbstractAction
@@ -35,8 +37,6 @@ use Xendit\M2Invoice\Helper\Metric;
  */
 abstract class AbstractAction extends Action
 {
-    const LOG_FILE = 'xendit.log';
-
     /**
      * @var Session
      */
@@ -182,7 +182,7 @@ abstract class AbstractAction extends Action
         Context $context,
         CategoryFactory $categoryFactory,
         OrderFactory $orderFactory,
-        LoggerInterface $logger,
+        XenditLogger $logger,
         Data $dataHelper,
         Crypto $cryptoHelper,
         Checkout $checkoutHelper,
@@ -433,25 +433,34 @@ abstract class AbstractAction extends Action
     }
 
     /**
-     * @param $order
+     * @param Order $order
      * @param $failureReason
+     * @return Order
      * @throws LocalizedException
      */
-    protected function cancelOrder($order, $failureReason)
+    protected function cancelOrder(Order $order, $failureReason)
     {
         $orderState = Order::STATE_CANCELED;
-
         if ($order->getStatus() != $orderState) {
-            $order->setState($orderState)
+            try {
+                $message = "Order #" . $order->getIncrementId() . " was cancelled by Xendit because " . $failureReason;
+                $order->setState($orderState)
                     ->setStatus($orderState)
-                    ->addStatusHistoryComment("Order #" . $order->getIncrementId() . " was cancelled by Xendit because " . $failureReason);
-            $order->save();
+                    ->addStatusHistoryComment($message);
+                $this->orderRepo->save($order);
 
-            $this->getCheckoutHelper()->cancelOrderById($order->getId(), "Order #" . ($order->getId()) . " was rejected by Xendit");
-            $this->getCheckoutHelper()->restoreQuote(); //restore cart
+                $this->getCheckoutHelper()->cancelOrderById($order->getId(), "Order #" . ($order->getId()) . " was rejected by Xendit");
+                $this->getCheckoutHelper()->restoreQuote(); //restore cart
+
+                $this->logger->info($message);
+            } catch (\Exception $ex) {
+                $this->logger->error('Cancel order failed:' . $ex->getMessage(), ['order_id' => $order->getIncrementId()]);
+                throw new LocalizedException(
+                    new Phrase($ex->getMessage())
+                );
+            }
         }
-
-        return;
+        return $order;
     }
 
     /**
@@ -497,7 +506,7 @@ abstract class AbstractAction extends Action
      */
     protected function orderValidToCreateXenditInvoice(Order $order): bool
     {
-        if (!empty($order) && empty($order->getXenditTransactionId())) {
+        if (empty($order->getXenditTransactionId())) {
             return true;
         }
         return false;

@@ -70,13 +70,13 @@ class Metric
      * Log metrics to Datadog for monitoring
      *
      * @param array $requestData
-     * @return void
+     * @return mixed|void
      * @throws \Exception
      */
     public function trackMetricCount(array $requestData)
     {
         try {
-            $this->apiRequestHelper->request(
+            return $this->apiRequestHelper->request(
                 $this->dataHelper->getXenditApiUrl() . "/log/metrics/count",
                 \Zend\Http\Request::METHOD_POST,
                 $requestData
