@@ -30,7 +30,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '10.0.3';
+    const XENDIT_M2INVOICE_VERSION = '10.0.4';
 
     /**
      * @var StoreManagerInterface
