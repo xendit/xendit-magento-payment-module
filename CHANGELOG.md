@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 10.0.4 (2023-05-23)
+Improvements:
+- Update new ShopeePay icon
+
 ## 10.0.3 (2023-05-11)
 Improvements:
 - Implementation debug logging
