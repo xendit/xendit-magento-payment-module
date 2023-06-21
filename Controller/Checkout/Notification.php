@@ -420,6 +420,10 @@ class Notification extends Action implements CsrfAwareActionInterface
 
         try {
             $invoice = $this->apiHelper->request($invoiceUrl, $invoiceMethod);
+
+            if (isset($invoice['error_code'])) {
+                throw new LocalizedException(new Phrase($invoice['message']));
+            }
         } catch (LocalizedException $e) {
             throw new LocalizedException(
                 new Phrase($e->getMessage())
