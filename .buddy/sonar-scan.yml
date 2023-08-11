@@ -8,9 +8,6 @@
   actions:
     - action: 'Run SAST'
       type: RUN_DOCKER_CONTAINER
-      trigger_condition: VAR_IS
-      trigger_variable_value: "master"
-      trigger_variable_key: "BUDDY_EXECUTION_PULL_REQUEST_BASE_BRANCH"
       docker_image_name: xendit/sast
       docker_image_tag: latest
       integration_hash: 5e85761fc5f225000f97dd99
