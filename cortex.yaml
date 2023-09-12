@@ -9,3 +9,9 @@ info:
   x-cortex-owners:
   - type: GROUP
     name: xendit/tpi-dev
+  - email: adhiarta@xendit.co
+    type: EMAIL
+  x-cortex-service-groups:
+  - adhiarta@xendit.co
+  - P2
+  - TPI
