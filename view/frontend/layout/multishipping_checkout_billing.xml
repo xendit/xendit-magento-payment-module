@@ -46,6 +46,10 @@
                     <item name="dd_rcbc" xsi:type="string">Xendit_M2Invoice::multishipping/dd_rcbc.phtml</item>
                     <item name="lbc" xsi:type="string">Xendit_M2Invoice::multishipping/lbc.phtml</item>
                     <item name="bssva" xsi:type="string">Xendit_M2Invoice::multishipping/bssva.phtml</item>
+                    <item name="jeniuspay" xsi:type="string">Xendit_M2Invoice::multishipping/jeniuspay.phtml</item>
+                    <item name="dd_chinabank" xsi:type="string">Xendit_M2Invoice::multishipping/dd_chinabank.phtml</item>
+                    <item name="cimbva" xsi:type="string">Xendit_M2Invoice::multishipping/cimbva.phtml</item>
+                    <item name="dd_bdo_epay" xsi:type="string">Xendit_M2Invoice::multishipping/dd_bdo_epay.phtml</item>
                 </argument>
             </arguments>
         </referenceBlock>

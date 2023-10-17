@@ -177,6 +177,7 @@
                         <include path="Xendit_M2Invoice::virtual_account/bssva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/mandiriva.xml"/>
                         <include path="Xendit_M2Invoice::virtual_account/permatava.xml"/>
+                        <include path="Xendit_M2Invoice::virtual_account/cimbva.xml"/>
                     </group>
 
                     <group id="credit_cards" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -214,6 +215,7 @@
                         <include path="Xendit_M2Invoice::ewallets/grabpay.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/paymaya.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/shopeepayph.xml"/>
+                        <include path="Xendit_M2Invoice::ewallets/jeniuspay.xml"/>
                     </group>
 
                     <group id="direct_debit" translate="label" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -224,6 +226,8 @@
                         <include path="Xendit_M2Invoice::direct_debit/dd_bpi.xml"/>
                         <include path="Xendit_M2Invoice::direct_debit/dd_ubp.xml"/>
                         <include path="Xendit_M2Invoice::direct_debit/dd_rcbc.xml"/>
+                        <include path="Xendit_M2Invoice::direct_debit/dd_chinabank.xml"/>
+                        <include path="Xendit_M2Invoice::direct_debit/dd_bdo_epay.xml"/>
                     </group>
 
                     <group id="paylater" translate="label" sortOrder="98" showInDefault="1" showInWebsite="1" showInStore="1">

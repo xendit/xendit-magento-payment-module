@@ -30,7 +30,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '10.0.4';
+    const XENDIT_M2INVOICE_VERSION = '11.0.0';
 
     /**
      * @var StoreManagerInterface
@@ -436,7 +436,11 @@ class Data extends AbstractHelper
             "akulaku"           => "akulaku",
             "atome"             => "atome",
             "dd_rcbc"           => "dd_rcbc",
-            "lbc"               => "lbc"
+            "lbc"               => "lbc",
+            "jeniuspay"         => "jeniuspay",
+            "dd_chinabank"      => "dd_chinabank",
+            "cimbva"            => "cimbva",
+            "dd_bdo_epay"       => "dd_bdo_epay"
         ];
     }
 

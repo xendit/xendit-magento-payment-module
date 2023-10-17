@@ -161,6 +161,22 @@ define(
             {
                 type: 'bssva',
                 component: 'Xendit_M2Invoice/js/view/payment/method-renderer/bssva'
+            },
+            {
+                type: 'jeniuspay',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/jeniuspay'
+            },
+            {
+                type: 'dd_chinabank',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_chinabank'
+            },
+            {
+                type: 'cimbva',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/cimbva'
+            },
+            {
+                type: 'dd_bdo_epay',
+                component: 'Xendit_M2Invoice/js/view/payment/method-renderer/dd_bdo_epay'
             }
         );
         return Component.extend({});

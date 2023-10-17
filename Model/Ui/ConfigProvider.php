@@ -339,6 +339,34 @@ class ConfigProvider implements ConfigProviderInterface
                     'description' => $this->xenditHelper->getPaymentDescription("bssva"),
                     'image' => $this->xenditHelper->getPaymentImage('bssva')
                 ],
+                'jeniuspay' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("jeniuspay"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("jeniuspay"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("jeniuspay"),
+                    'description' => $this->xenditHelper->getPaymentDescription("jeniuspay"),
+                    'image' => $this->xenditHelper->getPaymentImage('jeniuspay')
+                ],
+                'dd_chinabank' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("dd_chinabank"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("dd_chinabank"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("dd_chinabank"),
+                    'description' => $this->xenditHelper->getPaymentDescription("dd_chinabank"),
+                    'image' => $this->xenditHelper->getPaymentImage('dd_chinabank')
+                ],
+                'cimbva' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("cimbva"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("cimbva"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("cimbva"),
+                    'description' => $this->xenditHelper->getPaymentDescription("cimbva"),
+                    'image' => $this->xenditHelper->getPaymentImage('cimbva')
+                ],
+                'dd_bdo_epay' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("dd_bdo_epay"),
+                    'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("dd_bdo_epay"),
+                    'max_order_amount' => $this->xenditHelper->getPaymentMaxOrderAmount("dd_bdo_epay"),
+                    'description' => $this->xenditHelper->getPaymentDescription("dd_bdo_epay"),
+                    'image' => $this->xenditHelper->getPaymentImage('dd_bdo_epay')
+                ],
             ]
         ];
     }
