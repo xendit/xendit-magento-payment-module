@@ -102,6 +102,7 @@ If the Xendit payment links expired, it will auto cancel the order via the webho
   - BSI
   - Mandiri
   - Permata
+  - CIMB
 - Retail Outlets
   - Alfamart
   - Indomaret
@@ -121,6 +122,7 @@ If the Xendit payment links expired, it will auto cancel the order via the webho
   - GrabPay (PH)
   - GCash (PH)
   - PayMaya (PH)
+  - JeniusPay
 - PayLater
   - Kredivo
   - BillEase (PH)
@@ -132,6 +134,8 @@ If the Xendit payment links expired, it will auto cancel the order via the webho
   - BRI
   - BPI (PH)
   - UBP (PH)
+  - ChinaBank (PH)
+  - BDO (PH)
 
 ## Refund Support
 Since v1.3.0, online refund (full and partial) is supported for payment through credit and debit card channel.

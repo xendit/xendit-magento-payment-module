@@ -162,6 +162,20 @@
                 <sort_order>7</sort_order>
                 <currency>IDR</currency>
             </bssva>
+            <cimbva>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\CIMBVA</model>
+                <title>Bank Transfer - CIMB</title>
+                <description>Bayar pesanan dengan transfer bank CIMB dengan virtual account melalui Xendit</description>
+                <min_order_total>10000</min_order_total>
+                <max_order_total>50000000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>8</sort_order>
+                <currency>IDR</currency>
+            </cimbva>
             <mandiriva>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -216,6 +230,20 @@
                 <sort_order>11</sort_order>
                 <currency>IDR</currency>
             </dana>
+            <jeniuspay>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\JeniusPay</model>
+                <title>JeniusPay</title>
+                <description>Bayar pesanan dengan JeniusPay melalui Xendit</description>
+                <min_order_total>1000</min_order_total>
+                <max_order_total>10000000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>11</sort_order>
+                <currency>IDR</currency>
+            </jeniuspay>
             <dd_bri>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -230,6 +258,34 @@
                 <sort_order>12</sort_order>
                 <currency>IDR</currency>
             </dd_bri>
+            <dd_bdo_epay>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\DDBDOEpay</model>
+                <title>Direct Debit (BDO)</title>
+                <description>Pay for orders using Direct Debit (BDO) via Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>50000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>12</sort_order>
+                <currency>PHP</currency>
+            </dd_bdo_epay>
+            <dd_chinabank>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\DDChinaBank</model>
+                <title>Direct Debit (ChinaBank)</title>
+                <description>Pay for orders using Direct Debit (ChinaBank) via Xendit</description>
+                <min_order_total>1</min_order_total>
+                <max_order_total>20000</max_order_total>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>12</sort_order>
+                <currency>PHP</currency>
+            </dd_chinabank>
             <indomaret>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -554,62 +610,6 @@
                 <sort_order>33</sort_order>
                 <currency>IDR</currency>
             </uangme>
-            <jeniuspay>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\JeniusPay</model>
-                <title>JeniusPay</title>
-                <description>Bayar pesanan dengan JeniusPay melalui Xendit</description>
-                <min_order_total>1000</min_order_total>
-                <max_order_total>10000000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>34</sort_order>
-                <currency>IDR</currency>
-            </jeniuspay>
-            <dd_chinabank>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\DDChinaBank</model>
-                <title>Direct Debit (ChinaBank)</title>
-                <description>Pay for orders using Direct Debit (ChinaBank) via Xendit</description>
-                <min_order_total>1</min_order_total>
-                <max_order_total>20000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>35</sort_order>
-                <currency>PHP</currency>
-            </dd_chinabank>
-            <cimbva>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\CIMBVA</model>
-                <title>Bank Transfer - CIMB</title>
-                <description>Bayar pesanan dengan transfer bank CIMB dengan virtual account melalui Xendit</description>
-                <min_order_total>10000</min_order_total>
-                <max_order_total>50000000000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>36</sort_order>
-                <currency>IDR</currency>
-            </cimbva>
-            <dd_bdo_epay>
-                <active>1</active>
-                <payment_action>initialize</payment_action>
-                <model>Xendit\M2Invoice\Model\Payment\DDBDOEpay</model>
-                <title>Direct Debit (BDO)</title>
-                <description>Pay for orders using Direct Debit (BDO) via Xendit</description>
-                <min_order_total>1</min_order_total>
-                <max_order_total>50000</max_order_total>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <sort_order>37</sort_order>
-                <currency>PHP</currency>
-            </dd_bdo_epay>
         </payment>
     </default>
 </config>
