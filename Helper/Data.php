@@ -439,7 +439,7 @@ class Data extends AbstractHelper
             "lbc"               => "lbc",
             "jeniuspay"         => "jeniuspay",
             "dd_chinabank"      => "dd_chinabank",
-            "cimbva"            => "cimbva",
+            "cimbva"            => "cimb",
             "dd_bdo_epay"       => "dd_bdo_epay"
         ];
     }
