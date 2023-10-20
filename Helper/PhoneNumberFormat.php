@@ -266,7 +266,7 @@ class PhoneNumberFormat extends AbstractHelper
      */
     public function formatNumber(string $phoneNumber, string $countryCode)
     {
-        if(empty($phoneNumber)){
+        if (empty($phoneNumber)) {
             return '';
         }
 
