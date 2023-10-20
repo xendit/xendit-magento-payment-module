@@ -7,7 +7,7 @@ use Xendit\M2Invoice\Helper\Data;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
-class TruncateDecimalTest extends TestCase
+class DataTest extends TestCase
 {
     /**
      * @var Data
@@ -28,8 +28,8 @@ class TruncateDecimalTest extends TestCase
      */
     public function testTruncateDecimal()
     {
-        $this->assertEquals($this->_dataHelper->truncateDecimal(100000.235), 100000);
-        $this->assertEquals($this->_dataHelper->truncateDecimal(100000.59), 100000);
-        $this->assertEquals($this->_dataHelper->truncateDecimal(100000.99), 100000);
+        $this->assertEquals(100000, $this->_dataHelper->truncateDecimal(100000.235));
+        $this->assertEquals(100000, $this->_dataHelper->truncateDecimal(100000.59));
+        $this->assertEquals(100000, $this->_dataHelper->truncateDecimal(100000.99));
     }
 }
