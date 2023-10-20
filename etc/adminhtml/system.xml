@@ -215,7 +215,7 @@
                         <include path="Xendit_M2Invoice::ewallets/grabpay.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/paymaya.xml"/>
                         <include path="Xendit_M2Invoice::ewallets/shopeepayph.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/jeniuspay.xml"/>
+<!--                        <include path="Xendit_M2Invoice::ewallets/jeniuspay.xml"/>-->
                     </group>
 
                     <group id="direct_debit" translate="label" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -227,7 +227,7 @@
                         <include path="Xendit_M2Invoice::direct_debit/dd_ubp.xml"/>
                         <include path="Xendit_M2Invoice::direct_debit/dd_rcbc.xml"/>
                         <include path="Xendit_M2Invoice::direct_debit/dd_chinabank.xml"/>
-                        <include path="Xendit_M2Invoice::direct_debit/dd_bdo_epay.xml"/>
+<!--                        <include path="Xendit_M2Invoice::direct_debit/dd_bdo_epay.xml"/>-->
                     </group>
 
                     <group id="paylater" translate="label" sortOrder="98" showInDefault="1" showInWebsite="1" showInStore="1">
