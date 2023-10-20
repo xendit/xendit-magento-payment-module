@@ -231,7 +231,7 @@
                 <currency>IDR</currency>
             </dana>
             <jeniuspay>
-                <active>1</active>
+                <active>0</active>
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\JeniusPay</model>
                 <title>JeniusPay</title>
@@ -259,7 +259,7 @@
                 <currency>IDR</currency>
             </dd_bri>
             <dd_bdo_epay>
-                <active>1</active>
+                <active>0</active>
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\DDBDOEpay</model>
                 <title>Direct Debit (BDO)</title>
