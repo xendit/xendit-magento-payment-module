@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 11.0.0 (2023-10-17)
+Improvements:
+- Raise AstraPay limit to 20M IDR
+- Add BDO Direct Debit
+- Add CIMB VA
+- Add Direct Debit (ChinaBank)
+- Add JeniusPay
+
 ## 10.0.4 (2023-05-23)
 Improvements:
 - Update new ShopeePay icon

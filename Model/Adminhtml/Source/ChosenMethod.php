@@ -58,6 +58,10 @@ class ChosenMethod implements ArrayInterface
             ['value' => 'atome', 'label' => __('Atome')],
             ['value' => 'dd_rcbc', 'label' => __('Direct Debit (RCBC)')],
             ['value' => 'lbc', 'label' => __('LBC')],
+            ['value' => 'jeniuspay', 'label' => __('Jenius Pay')],
+            ['value' => 'dd_chinabank', 'label' => __('Direct Debit (ChinaBank)')],
+            ['value' => 'cimbva', 'label' => __('Bank Transfer CIMB')],
+            ['value' => 'dd_bdo_epay', 'label' => __('Direct Debit (BDO)')],
         ];
 
         if (!$isMultiselect) {

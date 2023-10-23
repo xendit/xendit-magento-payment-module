@@ -30,7 +30,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '10.0.4';
+    const XENDIT_M2INVOICE_VERSION = '11.0.0';
 
     /**
      * @var StoreManagerInterface
@@ -108,6 +108,11 @@ class Data extends AbstractHelper
     protected $categoryRepository;
 
     /**
+     * @var PhoneNumberFormat $phoneNumberFormatHelper
+     */
+    protected $phoneNumberFormatHelper;
+
+    /**
      * Data constructor.
      *
      * @param Context $context
@@ -126,6 +131,7 @@ class Data extends AbstractHelper
      * @param OrderNotifier $orderNotifier
      * @param AssetRepository $assetRepository
      * @param CategoryRepository $categoryRepository
+     * @param PhoneNumberFormat $phoneNumberFormatHelper
      */
     public function __construct(
         Context $context,
@@ -143,7 +149,8 @@ class Data extends AbstractHelper
         DbTransaction $dbTransaction,
         OrderNotifier $orderNotifier,
         AssetRepository $assetRepository,
-        CategoryRepository $categoryRepository
+        CategoryRepository $categoryRepository,
+        \Xendit\M2Invoice\Helper\PhoneNumberFormat $phoneNumberFormatHelper
     ) {
         $this->storeManager = $storeManager;
         $this->xendit = $xendit;
@@ -160,6 +167,7 @@ class Data extends AbstractHelper
         $this->orderNotifier = $orderNotifier;
         $this->assetRepository = $assetRepository;
         $this->categoryRepository = $categoryRepository;
+        $this->phoneNumberFormatHelper = $phoneNumberFormatHelper;
 
         parent::__construct($context);
     }
@@ -436,7 +444,11 @@ class Data extends AbstractHelper
             "akulaku"           => "akulaku",
             "atome"             => "atome",
             "dd_rcbc"           => "dd_rcbc",
-            "lbc"               => "lbc"
+            "lbc"               => "lbc",
+            "jeniuspay"         => "jeniuspay",
+            "dd_chinabank"      => "dd_chinabank",
+            "cimbva"            => "cimb",
+            "dd_bdo_epay"       => "dd_bdo_epay"
         ];
     }
 
@@ -596,9 +608,13 @@ class Data extends AbstractHelper
         $customerObject = [
             'given_names' => $order->getCustomerFirstname(),
             'surname' => $order->getCustomerLastname(),
-            'email' => $order->getCustomerEmail(),
-            'mobile_number' => $shippingAddress->getTelephone()
+            'email' => $order->getCustomerEmail()
         ];
+
+        $mobileNumber = $this->phoneNumberFormatHelper->formatNumber($shippingAddress->getTelephone(), $shippingAddress->getCountryId());
+        if (!empty($mobileNumber)) {
+            $customerObject['mobile_number'] = $mobileNumber;
+        }
 
         $customerObject = array_filter($customerObject);
         $addressObject = $this->extractXenditInvoiceCustomerAddress($shippingAddress);
