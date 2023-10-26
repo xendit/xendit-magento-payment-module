@@ -267,10 +267,14 @@ class PhoneNumberFormat extends AbstractHelper
     public function formatNumber(string $phoneNumber, string $countryCode)
     {
         if (empty($phoneNumber)) {
-            return '';
+            return $phoneNumber;
         }
 
         $countryPhoneCode = $this->getCountryPhoneCode($countryCode);
+        if (empty($countryPhoneCode)) {
+            return $phoneNumber;
+        }
+
         return preg_replace('/^(?:\+?' . $countryPhoneCode . '|0)?/', '+' . $countryPhoneCode, $this->cleanUp($phoneNumber));
     }
 }
