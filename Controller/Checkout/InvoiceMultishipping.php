@@ -76,6 +76,10 @@ class InvoiceMultishipping extends AbstractAction
                 /** @var OrderItemInterface $orderItem */
                 foreach ($orderItems as $orderItem) {
                     $product = $orderItem->getProduct();
+                    if (!empty($orderItem->getParentItem())) {
+                        continue;
+                    }
+
                     $item = [
                         'reference_id' => $product->getId(),
                         'name' => $orderItem->getName(),

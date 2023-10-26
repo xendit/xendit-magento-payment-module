@@ -35,7 +35,9 @@ class PhoneNumberFormatTest extends TestCase
         $this->assertEquals('+6319876543219', $this->helper->formatNumber('198.765.432-19', 'PH'));
         $this->assertEquals('+6319876543219', $this->helper->formatNumber('+63198.765.432-19', 'PH'));
         $this->assertEquals('+6319876543219', $this->helper->formatNumber('63198.765.432-19 ', 'PH'));
-        $this->assertEquals('+6319876543219', $this->helper->formatNumber('63198.765.432-19 ', ''));
+
+        // in case country code is empty, we should respond the same phone number
+        $this->assertEquals('019876543219', $this->helper->formatNumber('019876543219', ''));
         $this->assertEquals('', $this->helper->formatNumber('', ''));
     }
 }
