@@ -85,6 +85,10 @@ class Invoice extends AbstractAction
         $items = [];
         /** @var OrderItemInterface $orderItem */
         foreach ($orderItems as $orderItem) {
+            if (!empty($orderItem->getParentItem())) {
+                continue;
+            }
+
             $product = $orderItem->getProduct();
             $item = [
                 'reference_id' => $product->getId(),
