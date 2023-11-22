@@ -167,7 +167,7 @@ class InvoiceMultishipping extends AbstractAction
      */
     private function createInvoice($requestData)
     {
-        $invoiceUrl = $this->getDataHelper()->getXenditApiUrl() . "/payment/xendit/invoice";
+        $invoiceUrl = $this->getDataHelper()->getXenditApiUrl() . "/tpi/payment/xendit/invoice";
         $invoiceMethod = Request::METHOD_POST;
 
         try {

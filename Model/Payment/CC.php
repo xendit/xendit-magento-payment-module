@@ -106,7 +106,7 @@ class CC extends AbstractInvoice
      */
     private function requestRefund($chargeId, $requestData)
     {
-        $refundUrl = $this->dataHelper->getXenditApiUrl() . "/payment/xendit/credit-card/charges/$chargeId/refund";
+        $refundUrl = $this->dataHelper->getXenditApiUrl() . "/tpi/payment/xendit/credit-card/charges/$chargeId/refund";
         $refundMethod = \Zend\Http\Request::METHOD_POST;
 
         try {
