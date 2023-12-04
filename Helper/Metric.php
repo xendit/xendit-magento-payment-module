@@ -77,7 +77,7 @@ class Metric
     {
         try {
             return $this->apiRequestHelper->request(
-                $this->dataHelper->getXenditApiUrl() . "/log/metrics/count",
+                $this->dataHelper->getXenditApiUrl() . "/tpi/log/metrics/count",
                 \Zend\Http\Request::METHOD_POST,
                 $requestData
             );

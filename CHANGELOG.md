@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 12.0.0 (2023-11-21)
+- Update xendit url
+
 ## 11.0.1 (2023-10-26)
 - Fix wrong subtotal in Xendit invoice (Remove Order child items)
 
