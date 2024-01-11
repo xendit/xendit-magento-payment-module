@@ -120,6 +120,12 @@ class Invoice extends AbstractAction
             'items' => $items
         ];
 
+        // Extract order fees and send it to Xendit invoice
+        $orderFees = $this->getDataHelper()->extractOrderFees($order);
+        if (!empty($orderFees)) {
+            $payload['fees'] = $orderFees;
+        }
+
         if (!empty($customerObject)) {
             $payload['customer'] = $customerObject;
         }
