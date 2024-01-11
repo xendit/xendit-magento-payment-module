@@ -28,6 +28,7 @@ class InvoiceMultishipping extends AbstractAction
         $currency = '';
         $billingEmail = '';
         $customerObject = [];
+        $feesObject = [];
 
         $orderIncrementIds = [];
         $preferredMethod = '';
@@ -95,6 +96,9 @@ class InvoiceMultishipping extends AbstractAction
                 if (empty($customerObject)) {
                     $customerObject = $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order);
                 }
+
+                // Extract order fees and send it to Xendit invoice
+                $feesObject[] = $this->getDataHelper()->extractOrderFees($order);
             }
 
             if ($orderProcessed) {
@@ -115,6 +119,11 @@ class InvoiceMultishipping extends AbstractAction
                 'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderIncrementIds),
                 'items' => $items
             ];
+
+            if (!empty($feesObject)) {
+                $requestData['fees'] = $this->getDataHelper()->mergeFeesObject($feesObject);
+            }
+
             if (!empty($customerObject)) {
                 $requestData['customer'] = $customerObject;
             }

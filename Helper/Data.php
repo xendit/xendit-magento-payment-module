@@ -30,7 +30,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '12.0.0';
+    const XENDIT_M2INVOICE_VERSION = '12.0.1';
 
     /**
      * @var StoreManagerInterface
@@ -662,5 +662,104 @@ class Data extends AbstractHelper
             }
         }
         return !empty($categoryNames) ? implode(', ', $categoryNames) : 'n/a';
+    }
+
+    /**
+     * Extract order fees
+     * @param Order $order
+     * @return array
+     */
+    public function extractOrderFees(Order $order): array
+    {
+        $fees = [
+            [
+                'type' => __('Discount'),
+                'value' => (float) $order->getDiscountAmount()
+            ],
+            [
+                'type' => __('Shipping fee'),
+                'value' => (float) $order->getShippingAmount()
+            ],
+            [
+                'type' => __('Tax fee'),
+                'value' => $order->getTaxAmount()
+            ]
+            ];
+
+        // Make sure it will cover the other fees
+        $otherFees = $this->getOtherFees($order);
+        if ($otherFees > 0) {
+            $fees[] = [
+                'type' => __('Other Fees'),
+                'value' => $this->getOtherFees($order)
+            ];
+        }
+
+        return array_values(
+            array_filter($fees, function ($value) {
+                return $value['value'] != 0;
+            }, ARRAY_FILTER_USE_BOTH)
+        );
+    }
+
+    /**
+     * Get other fees amount
+     * In case order has the other fees not Magento standard
+     *
+     * @param Order $order
+     * @return float
+     */
+    public function getOtherFees(Order $order): float
+    {
+        return $order->getTotalDue() - (float)array_sum(
+            [
+                    $order->getSubtotal(), // items total
+                    $order->getTaxAmount(),
+                    $order->getShippingAmount(),
+                    $order->getDiscountAmount()
+                ]
+        );
+    }
+
+    /**
+     * Merge Fees object
+     *
+     * @param array $feesObject
+     * @return array
+     */
+    public function mergeFeesObject(array $feesObject = []): array
+    {
+        if (empty($feesObject)) {
+            return [];
+        }
+
+        $mergedFeesObject = [];
+        foreach ($feesObject as $feeObject) {
+            foreach ($feeObject as $fee) {
+                /** @var \Magento\Framework\Phrase $type */
+                $type = $fee['type'];
+                $typeLabel = $type->getText();
+                $value = $fee['value'];
+
+                if (isset($mergedFeesObject[$typeLabel])) {
+                    $mergedFeesObject[$typeLabel] = (float)$mergedFeesObject[$typeLabel] + $value;
+                } else {
+                    $mergedFeesObject[$typeLabel] = $value;
+                }
+            }
+        }
+
+        if (empty($mergedFeesObject)) {
+            return [];
+        }
+
+        $response = [];
+        foreach ($mergedFeesObject as $typeLabel => $value) {
+            $response[] = [
+                'type' => $typeLabel,
+                'value' => $value
+            ];
+        }
+        return $response;
     }
 }

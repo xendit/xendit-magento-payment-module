@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 12.0.1 (2024-01-11)
+- Support Xendit invoice fees
+
 ## 12.0.0 (2023-11-21)
 - Update xendit url
 
