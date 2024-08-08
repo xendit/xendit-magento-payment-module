@@ -117,6 +117,39 @@ Install sample data:
 php bin/magento sampledata:deploy
 ```
 
+### Alternative (Non auth)
+
+You can also get the sample data by adding several package from composer, add this package into your `composer.json` installation
+
+```
+"magento/module-bundle-sample-data": "100.4.*",
+"magento/module-catalog-rule-sample-data": "100.4.*",
+"magento/module-catalog-sample-data": "100.4.*",
+"magento/module-cms-sample-data": "100.4.*",
+"magento/module-configurable-sample-data": "100.4.*",
+"magento/module-customer-sample-data": "100.4.*",
+"magento/module-downloadable-sample-data": "100.4.*",
+"magento/module-grouped-product-sample-data": "100.4.*",
+"magento/module-msrp-sample-data": "100.4.*",
+"magento/module-offline-shipping-sample-data": "100.4.*",
+"magento/module-product-links-sample-data": "100.4.*",
+"magento/module-review-sample-data": "100.4.*",
+"magento/module-sales-rule-sample-data": "100.4.*",
+"magento/module-sales-sample-data": "100.4.*",
+"magento/module-swatches-sample-data": "100.4.*",
+"magento/module-tax-sample-data": "100.4.*",
+"magento/module-theme-sample-data": "100.4.*",
+"magento/module-widget-sample-data": "100.4.*",
+"magento/module-wishlist-sample-data": "100.4.*",
+"magento/sample-data-media": "100.4.*"
+```
+
+and run
+
+```
+composer update
+```
+
 ## Installation Troubleshoot
 ### Magento 2.3
 If you encounter this problem when trying to install Magento inside docker
