@@ -15,7 +15,7 @@ FILES_TO_COPY="Block Controller etc External Gateway Helper Logger Model Plugin 
 if [ "$SOURCE_DIR" = "devilbox" ]; then
     DESTINATION="../devilbox/data/www/magento/magento2/app/code/Xendit/M2Invoice"
 elif [ "$SOURCE_DIR" = "demosites" ]; then
-    DESTINATION="../public_html/app/code/Xendit/M2_Invoice"
+    DESTINATION="../public_html/app/code/Xendit/M2Invoice"
 else
     echo "Invalid source directory"
     exit 1
