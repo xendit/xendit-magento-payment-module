@@ -439,7 +439,6 @@ class Data extends AbstractHelper
             "dp_ecpay_school"   => "dp_ecpay_school",
             "cashalo"           => "cashalo",
             "shopeepayph"       => "shopeepay",
-            "uangme"            => "uangme",
             "astrapay"          => "astrapay",
             "akulaku"           => "akulaku",
             "atome"             => "atome",
