@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 12.0.2 (2024-11-25)
+## 12.0.3 (2024-11-25)
 - Remove UangMe as a payment method (regular & invoice multishipping)
 
 ## 12.0.1 (2024-01-11)
