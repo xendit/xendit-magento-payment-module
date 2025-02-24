@@ -23,7 +23,7 @@ use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 use Xendit\M2Invoice\Model\Payment\Xendit;
-use Zend\Http\Request;
+use Laminas\Http\Request;
 
 /**
  * Class Notification
