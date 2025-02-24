@@ -5,7 +5,6 @@ namespace Xendit\M2Invoice\Model\Adminhtml\Source;
 use Magento\Framework\Model\Context;
 use Magento\SalesRule\Model\ResourceModel\Rule\CollectionFactory;
 use Magento\Framework\Serialize\Serializer\Json as MagentoSerializerJson;
-// use Xendit\M2Invoice\External\Serialize\Serializer\Json  as XenditSerializerJson;
 
 /**
  * Class CartRule
@@ -52,18 +51,12 @@ class CartRule implements \Magento\Framework\Option\ArrayInterface
     public function __construct(
         Context $context,
         CollectionFactory $ruleCollectionFactory,
-        MagentoSerializerJson $magentoSerializerJson,
-        // XenditSerializerJson $xenditSerializerJson
+        MagentoSerializerJson $magentoSerializerJson
     ) {
         $this->ruleCollectionFactory = $ruleCollectionFactory;
         $this->cache = $context->getCacheManager();
         $this->magentoSerializerJson = $magentoSerializerJson;
-        $this->xenditSerializerJson = $xenditSerializerJson;
-        // if (interface_exists("Magento\Framework\Serialize\Serializer\Json")) {
-            $this->serializer = $this->magentoSerializerJson;
-        // } else {
-        //     $this->serializer = $this->xenditSerializerJson;
-        // }
+        $this->serializer = $this->magentoSerializerJson;
     }
 
     /**
