@@ -89,7 +89,9 @@ php bin/magento setup:install \
 --admin-use-security-key=1 \
 --session-save=files \
 --use-sample-data \
---elasticsearch-host=elasticsearch
+--search-engine=elasticsearch7 \
+--elasticsearch-host=elasticsearch \
+--elasticsearch-port=9200
 ```
 
 To include Xendit_M2Invoice module without composer, copy the inner `Xendit` folder into your `MAGENTO_DIR/app/code`
@@ -116,6 +118,8 @@ Install sample data:
 ```
 php bin/magento sampledata:deploy
 ```
+
+After that run setup & compile command again
 
 ### Alternative (Non auth)
 

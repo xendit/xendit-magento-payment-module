@@ -1,4 +1,7 @@
 # CHANGELOG
+## 12.0.4 (2025-02-25)
+- Fix Undefined variable $xenditSerializerJson
+- Upgrade using Laminas\Http\Request from previous Zend\Http\Request on several class
 
 ## 12.0.3 (2024-11-25)
 - Remove UangMe as a payment method (regular & invoice multishipping)

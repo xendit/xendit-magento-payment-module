@@ -7,7 +7,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order;
-use Zend\Http\Request;
+use Laminas\Http\Request;
 
 /**
  * Class InvoiceMultishipping

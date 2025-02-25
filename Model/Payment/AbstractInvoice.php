@@ -16,7 +16,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Xendit\M2Invoice\Helper\ApiRequest;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Framework\Serialize\Serializer\Json as MagentoSerializerJson;
-use Xendit\M2Invoice\External\Serialize\Serializer\Json  as XenditSerializerJson;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Customer\Model\Session as CustomerSession;
 use Xendit\M2Invoice\Helper\Metric;
@@ -109,7 +108,6 @@ class AbstractInvoice extends AbstractMethod
      * @param RuleRepository $ruleRepo
      * @param CartRepositoryInterface $quoteRepository
      * @param MagentoSerializerJson $magentoSerializerJson
-     * @param XenditSerializerJson $xenditSerializerJson
      * @param CustomerSession $customerSession
      */
     public function __construct(
@@ -126,7 +124,7 @@ class AbstractInvoice extends AbstractMethod
         RuleRepository $ruleRepo,
         CartRepositoryInterface $quoteRepository,
         MagentoSerializerJson $magentoSerializerJson,
-        XenditSerializerJson $xenditSerializerJson,
+        // XenditSerializerJson $xenditSerializerJson,
         CustomerSession $customerSession,
         Metric $metricHelper
     ) {
@@ -147,15 +145,9 @@ class AbstractInvoice extends AbstractMethod
         $this->ruleRepo                 = $ruleRepo;
         $this->quoteRepository          = $quoteRepository;
         $this->magentoSerializerJson    = $magentoSerializerJson;
-        $this->xenditSerializerJson     = $xenditSerializerJson;
         $this->customerSession          = $customerSession;
         $this->metricHelper             = $metricHelper;
-
-        if (interface_exists("Magento\Framework\Serialize\Serializer\Json")) {
-            $this->serializer = $this->magentoSerializerJson;
-        } else {
-            $this->serializer = $this->xenditSerializerJson;
-        }
+        $this->serializer               = $this->magentoSerializerJson;
     }
 
     /**

@@ -6,7 +6,7 @@ use Magento\Framework\HTTP\Client\Curl as MagentoCurl;
 use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 use Xendit\M2Invoice\Model\Payment\Xendit;
-use Zend\Http\Request;
+use Laminas\Http\Request;
 
 /**
  * Class ApiRequest

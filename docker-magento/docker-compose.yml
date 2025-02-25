@@ -1,10 +1,10 @@
 version: '3'
 services:
     web:
-        image: webdevops/php-apache-dev:7.4
+        image: webdevops/php-apache-dev:8.2
         container_name: web
         restart: always
-        user: application
+        user: root
         environment:
           - WEB_ALIAS_DOMAIN=magento24.local
           - WEB_DOCUMENT_ROOT=/app/pub
@@ -15,7 +15,7 @@ services:
           - PHP_POST_MAX_SIZE=500M
           - PHP_UPLOAD_MAX_FILESIZE=1024M
         volumes:
-          - ./magento2:/app:cached
+          - ./magento2:/app
         ports:
           - "80:80"
           - "443:443"
@@ -53,9 +53,11 @@ services:
         container_name: elasticsearch
         ports:
             - "9200:9200"
-            - "9300:9300"
         environment:
             - discovery.type=single-node
+            - network.host=0.0.0.0  # Changed from localhost
+            - http.port=9200
+            - cluster.name=elasticsearch
         volumes:
             - elasticsearch_data:/var/lib/elastisearch
 volumes:

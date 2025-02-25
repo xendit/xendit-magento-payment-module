@@ -23,7 +23,7 @@ use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Data;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 use Xendit\M2Invoice\Model\Payment\Xendit;
-use Zend\Http\Request;
+use Laminas\Http\Request;
 
 /**
  * Class Notification
@@ -146,7 +146,7 @@ class Notification extends Action implements CsrfAwareActionInterface
     {
         $post = $this->getRequest()->getContent();
         $callbackPayload = json_decode($post, true);
-        $this->logger->info("callbackPayload", $callbackPayload);
+        $this->logger->info("callbackPayload", array('payload' => $callbackPayload));
 
         try {
             // Invoice: Regular CC, Ewallet, Retail Outlet, PayLater
