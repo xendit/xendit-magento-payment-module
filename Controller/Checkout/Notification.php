@@ -146,7 +146,7 @@ class Notification extends Action implements CsrfAwareActionInterface
     {
         $post = $this->getRequest()->getContent();
         $callbackPayload = json_decode($post, true);
-        $this->logger->info("callbackPayload", $callbackPayload);
+        $this->logger->info("callbackPayload", array('payload' => $callbackPayload));
 
         try {
             // Invoice: Regular CC, Ewallet, Retail Outlet, PayLater
