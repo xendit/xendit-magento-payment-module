@@ -1,0 +1,43 @@
+- pipeline: '[xendit-magento-payment-module] Publish Plugin Notification'
+  trigger_mode: ON_EVERY_PUSH
+  ref_name: (refs/tags/v\d+\.\d+\.\d+$)
+  ref_type: WILDCARD
+  fetch_all_refs: true
+  trigger_condition: ALWAYS
+  worker_assignment: TAGS
+  variables:
+    - key: INVOICE_SLACK_GROUP
+      value: "@checkout-devs"
+      description: invoice slack group
+    - key: PUBLISH_URL
+      value: "https://commercedeveloper.adobe.com/extensions/versions/xendit-m2invoice"
+      description: publish url
+  actions:
+    - action: Prepare Env Variables
+      type: BUILD
+      integration_hash: "5e85761fc5f225000f97dd99"
+      trigger_condition: ALWAYS
+      working_directory: "/buddy/xendit-magento-payment-module"
+      region: ap-southeast-1
+      docker_image_name: "xendit/alpine"
+      docker_image_tag: "1.0"
+      execute_commands:
+      - set -e
+      - COMMIT_DATE_ISO="$(git show ${BUDDY_EXECUTION_REVISION} --format=%cd --date=iso | head -n 1)"
+      - export COMMIT_DATE=$(LC_TIME="C" TZ="Asia/Jakarta" date +'%y.%m.%d-%H.%M' --date="${COMMIT_DATE_ISO}")
+      - export RELEASE_TAG="${BUDDY_EXECUTION_REVISION_SHORT}-${COMMIT_DATE}-${APP_ENV_MODE}"
+      - export COMMIT_MESSAGE="$(git log -1 --pretty=oneline --abbrev-commit --format=\"%B\" | head -n 1)"
+      - export CHANGE_CAUSE="${RELEASE_TAG} - ${COMMIT_MESSAGE}"
+      - export VERSION_TAG="${BUDDY_EXECUTION_TAG}"
+      - export GIT_TAG="${BUDDY_EXECUTION_TAG}"
+      - export GIT_BRANCH="${BUDDY_EXECUTION_BRANCH}"
+      shell: BASH
+    - action: Notify deployment finished to tpi-plugin-release
+      type: SLACK
+      integration_hash: 5ea6524a42eba4000eb35fbb
+      trigger_condition: ALWAYS
+      channel: C08G5D33LE9
+      channel_name: tpi-plugin-release
+      attachments:
+        - '{"fallback":"$BUDDY_PIPELINE_NAME execution
+          #$BUDDY_EXECUTION_ID","color":"good","fields":[{"title":"*[$BUDDY_PROJECT_NAME]*","value":"✅ New version $VERSION_TAG of $BUDDY_PROJECT_NAME detected! \n Please release zip with `bash bin/release.sh` command within the projects \n and publish the zip file manually through [this link]($PUBLISH_URL) \n cc: $INVOICE_SLACK_GROUP","short":false}]}'
