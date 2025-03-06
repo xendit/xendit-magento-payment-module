@@ -12,6 +12,18 @@
     - key: PUBLISH_URL
       value: "https://commercedeveloper.adobe.com/extensions/versions/xendit-m2invoice"
       description: publish url
+    - key: VERSION_TAG
+      value: ""
+      description: version tag
+      settable: true
+    - key: PIPELINE_ID
+      value: ""
+      description: pipeline id
+      settable: true
+    - key: DOWNLOAD_LINK
+      value: ""
+      description: download link for the release.zip
+      settable: true
   actions:
     - action: Prepare Env Variables
       type: BUILD
@@ -23,21 +35,30 @@
       docker_image_tag: "1.0"
       execute_commands:
       - set -e
-      - COMMIT_DATE_ISO="$(git show ${BUDDY_EXECUTION_REVISION} --format=%cd --date=iso | head -n 1)"
-      - export COMMIT_DATE=$(LC_TIME="C" TZ="Asia/Jakarta" date +'%y.%m.%d-%H.%M' --date="${COMMIT_DATE_ISO}")
-      - export RELEASE_TAG="${BUDDY_EXECUTION_REVISION_SHORT}-${COMMIT_DATE}-${APP_ENV_MODE}"
-      - export COMMIT_MESSAGE="$(git log -1 --pretty=oneline --abbrev-commit --format=\"%B\" | head -n 1)"
-      - export CHANGE_CAUSE="${RELEASE_TAG} - ${COMMIT_MESSAGE}"
       - export VERSION_TAG="${BUDDY_EXECUTION_TAG}"
-      - export GIT_TAG="${BUDDY_EXECUTION_TAG}"
-      - export GIT_BRANCH="${BUDDY_EXECUTION_BRANCH}"
+      - export PIPELINE_ID="${BUDDY_PIPELINE_ID}"
+      - export DOWNLOAD_LINK="https://buddy.tidnex.com/xendit-inc/$BUDDY_PROJECT_NAME/pipelines/pipeline/$PIPELINE_ID/browse/download/release.zip?slot=1"
       shell: BASH
-    - action: Notify deployment finished to tpi-plugin-release
+    - action: Prepare Release Zip File
+      type: BUILD
+      integration_hash: "5e85761fc5f225000f97dd99"
+      trigger_condition: ALWAYS
+      working_directory: "/buddy/xendit-magento-payment-module"
+      region: ap-southeast-1
+      docker_image_name: "xendit/alpine"
+      docker_image_tag: "1.0"
+      execute_commands:
+      - set -e
+      - apk add --no-cache zip
+      - bash bin/release.sh
+      shell: BASH
+    - action: Notify deployment finished to plugin-tpi-release
       type: SLACK
       integration_hash: 5ea6524a42eba4000eb35fbb
       trigger_condition: ALWAYS
-      channel: C08G5D33LE9
-      channel_name: tpi-plugin-release
+      channel: C08FYE230G7
+      channel_name: plugin-tpi-release
+      content: "[#$BUDDY_EXECUTION_ID] *$BUDDY_PIPELINE_NAME Finished* <$BUDDY_INVOKER_URL|$BUDDY_INVOKER_NAME>"
       attachments:
         - '{"fallback":"$BUDDY_PIPELINE_NAME execution
-          #$BUDDY_EXECUTION_ID","color":"good","fields":[{"title":"*[$BUDDY_PROJECT_NAME]*","value":"✅ New version $VERSION_TAG of $BUDDY_PROJECT_NAME detected! \n Please release zip with `bash bin/release.sh` command within the projects \n and publish the zip file manually through [this link]($PUBLISH_URL) \n cc: $INVOICE_SLACK_GROUP","short":false}]}'
+          #$BUDDY_EXECUTION_ID","color":"good","fields":[{"title":"*[$BUDDY_PROJECT_NAME]*","value":"✅ New version $VERSION_TAG of $BUDDY_PROJECT_NAME detected! \n Please download the release zip file through this <$DOWNLOAD_LINK|link> \n and publish the zip file manually through <$PUBLISH_URL|here> \n cc: $INVOICE_SLACK_GROUP","short":true}]}'
