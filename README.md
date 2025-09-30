@@ -1,7 +1,9 @@
 ## xendit-magento-payment-module
 Xendit PG integration plugin with Magento 2.x
+- [Setup on Magento](#setup-on-magento) = setup if you want to use this module
+- [Development](./DEV.md) = see this file if you want to contribute
 
-## Setup
+## Setup on Magento
 ### System requirements
 This module has been tested against the following tech stacks:
 
@@ -91,7 +93,7 @@ After the code is inside the `MAGENTO_DIR`, proceed to run these commands:
 If the Xendit payment links expired, it will auto cancel the order via the webhook.
 
 ## Supported Payment Method
-- Credit and Debit Card 
+- Credit and Debit Card
   - Installment
   - Subscription
 - Virtual Accounts
