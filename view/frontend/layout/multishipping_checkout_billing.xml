@@ -8,47 +8,7 @@
         <referenceBlock name="checkout_billing">
             <arguments>
                 <argument name="form_templates" xsi:type="array">
-                    <item name="cc" xsi:type="string">Xendit_M2Invoice::multishipping/cc.phtml</item>
-                    <item name="alfamart" xsi:type="string">Xendit_M2Invoice::multishipping/alfamart.phtml</item>
-                    <item name="bcava" xsi:type="string">Xendit_M2Invoice::multishipping/bcava.phtml</item>
-                    <item name="bniva" xsi:type="string">Xendit_M2Invoice::multishipping/bniva.phtml</item>
-                    <item name="briva" xsi:type="string">Xendit_M2Invoice::multishipping/briva.phtml</item>
-                    <item name="mandiriva" xsi:type="string">Xendit_M2Invoice::multishipping/mandiriva.phtml</item>
-                    <item name="permatava" xsi:type="string">Xendit_M2Invoice::multishipping/permatava.phtml</item>
-                    <item name="ovo" xsi:type="string">Xendit_M2Invoice::multishipping/ovo.phtml</item>
-                    <item name="shopeepay" xsi:type="string">Xendit_M2Invoice::multishipping/shopeepay.phtml</item>
-                    <item name="dana" xsi:type="string">Xendit_M2Invoice::multishipping/dana.phtml</item>
-                    <item name="indomaret" xsi:type="string">Xendit_M2Invoice::multishipping/indomaret.phtml</item>
-                    <item name="linkaja" xsi:type="string">Xendit_M2Invoice::multishipping/linkaja.phtml</item>
-                    <item name="qris" xsi:type="string">Xendit_M2Invoice::multishipping/qris.phtml</item>
-                    <item name="dd_bri" xsi:type="string">Xendit_M2Invoice::multishipping/dd_bri.phtml</item>
-                    <item name="kredivo" xsi:type="string">Xendit_M2Invoice::multishipping/kredivo.phtml</item>
-                    <item name="gcash" xsi:type="string">Xendit_M2Invoice::multishipping/gcash.phtml</item>
-                    <item name="grabpay" xsi:type="string">Xendit_M2Invoice::multishipping/grabpay.phtml</item>
-                    <item name="paymaya" xsi:type="string">Xendit_M2Invoice::multishipping/paymaya.phtml</item>
-                    <item name="dd_bpi" xsi:type="string">Xendit_M2Invoice::multishipping/dd_bpi.phtml</item>
-                    <item name="seven_eleven" xsi:type="string">Xendit_M2Invoice::multishipping/seven_eleven.phtml</item>
-                    <item name="dd_ubp" xsi:type="string">Xendit_M2Invoice::multishipping/dd_ubp.phtml</item>
-                    <item name="billease" xsi:type="string">Xendit_M2Invoice::multishipping/billease.phtml</item>
-                    <item name="cebuana" xsi:type="string">Xendit_M2Invoice::multishipping/cebuana.phtml</item>
-                    <item name="dp_palawan" xsi:type="string">Xendit_M2Invoice::multishipping/dp_palawan.phtml</item>
-                    <item name="dp_mlhuillier" xsi:type="string">Xendit_M2Invoice::multishipping/dp_mlhuillier.phtml</item>
-                    <item name="dp_ecpay_loan" xsi:type="string">Xendit_M2Invoice::multishipping/dp_ecpay_loan.phtml</item>
-                    <item name="dp_ecpay_school" xsi:type="string">Xendit_M2Invoice::multishipping/dp_ecpay_school.phtml</item>
-                    <item name="bjbva" xsi:type="string">Xendit_M2Invoice::multishipping/bjbva.phtml</item>
-                    <item name="bsiva" xsi:type="string">Xendit_M2Invoice::multishipping/bsiva.phtml</item>
-                    <item name="cashalo" xsi:type="string">Xendit_M2Invoice::multishipping/cashalo.phtml</item>
-                    <item name="shopeepayph" xsi:type="string">Xendit_M2Invoice::multishipping/shopeepayph.phtml</item>
-                    <item name="astrapay" xsi:type="string">Xendit_M2Invoice::multishipping/astrapay.phtml</item>
-                    <item name="akulaku" xsi:type="string">Xendit_M2Invoice::multishipping/akulaku.phtml</item>
-                    <item name="atome" xsi:type="string">Xendit_M2Invoice::multishipping/atome.phtml</item>
-                    <item name="dd_rcbc" xsi:type="string">Xendit_M2Invoice::multishipping/dd_rcbc.phtml</item>
-                    <item name="lbc" xsi:type="string">Xendit_M2Invoice::multishipping/lbc.phtml</item>
-                    <item name="bssva" xsi:type="string">Xendit_M2Invoice::multishipping/bssva.phtml</item>
-                    <item name="jeniuspay" xsi:type="string">Xendit_M2Invoice::multishipping/jeniuspay.phtml</item>
-                    <item name="dd_chinabank" xsi:type="string">Xendit_M2Invoice::multishipping/dd_chinabank.phtml</item>
-                    <item name="cimbva" xsi:type="string">Xendit_M2Invoice::multishipping/cimbva.phtml</item>
-                    <item name="dd_bdo_epay" xsi:type="string">Xendit_M2Invoice::multishipping/dd_bdo_epay.phtml</item>
+                    <item name="unified" xsi:type="string">Xendit_M2Invoice::multishipping/unified.phtml</item>                    
                 </argument>
             </arguments>
         </referenceBlock>

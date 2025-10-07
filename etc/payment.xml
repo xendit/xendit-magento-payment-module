@@ -9,7 +9,7 @@ This code marks the payment method as allowed for the multishipping checkout sce
 https://github.com/magento/magento2/blob/2.2.0-rc2.1/app/code/Magento/Multishipping/Model/Payment/Method/Specification/Enabled.php#L13-L29
 -->
 	<methods>
-        <method name='xendit'>
+        <method name='unified'>
             <allow_multiple_address>1</allow_multiple_address>
         </method>
     </methods>

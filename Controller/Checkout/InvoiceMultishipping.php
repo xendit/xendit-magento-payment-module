@@ -31,7 +31,6 @@ class InvoiceMultishipping extends AbstractAction
         $feesObject = [];
 
         $orderIncrementIds = [];
-        $preferredMethod = '';
         $orderIds = $this->getMultiShippingOrderIds();
         $rawOrderIds = implode('-', $orderIds);
 
@@ -50,9 +49,6 @@ class InvoiceMultishipping extends AbstractAction
                     return $this->redirectToCart($message);
                 }
 
-                if (empty($preferredMethod)) {
-                    $preferredMethod = $this->getPreferredMethod($order);
-                }
                 $orderIncrementIds[] = $order->getRealOrderId();
 
                 $orderState = $order->getState();
@@ -111,9 +107,7 @@ class InvoiceMultishipping extends AbstractAction
                 'description' => $rawOrderIds,
                 'amount' => $transactionAmount,
                 'currency' => $currency,
-                'preferred_method' => $preferredMethod,
                 'client_type' => 'INTEGRATION',
-                'payment_methods' => json_encode([strtoupper($preferredMethod)]),
                 'platform_callback_url' => $this->getXenditCallbackUrl(),
                 'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
                 'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderIncrementIds),
@@ -131,7 +125,7 @@ class InvoiceMultishipping extends AbstractAction
             $invoice = $this->createInvoice($requestData);
             $this->addInvoiceData($orders, $invoice);
 
-            $redirectUrl = $this->getXenditRedirectUrl($invoice, $preferredMethod);
+            $redirectUrl = $this->getXenditRedirectUrl($invoice);
             $this->getLogger()->info(
                 'Redirect customer to Xendit',
                 array_merge($this->getLogContext($orders, $invoice), ['redirect_url' => $redirectUrl])
@@ -158,7 +152,6 @@ class InvoiceMultishipping extends AbstractAction
                     'magento2_checkout',
                     [
                         'type' => 'error',
-                        'payment_method' => $preferredMethod,
                         'error_message' => $message
                     ]
                 );
@@ -180,29 +173,27 @@ class InvoiceMultishipping extends AbstractAction
         $invoiceMethod = Request::METHOD_POST;
 
         try {
-            if (isset($requestData['preferred_method'])) {
-                $this->getLogger()->info('createInvoice start', ['data' => $requestData]);
+            $this->getLogger()->info('createInvoice start', ['data' => $requestData]);
 
-                $invoice = $this->getApiHelper()->request(
-                    $invoiceUrl,
-                    $invoiceMethod,
-                    $requestData,
-                    false,
-                    $requestData['preferred_method']
+            $invoice = $this->getApiHelper()->request(
+                $invoiceUrl,
+                $invoiceMethod,
+                $requestData,
+                false
+            );
+            if (isset($invoice['error_code'])) {
+                $message = $this->getErrorHandler()->mapInvoiceErrorCode(
+                    $invoice['error_code'],
+                    str_replace('{{currency}}', $requestData['currency'], $invoice['message'] ?? '')
                 );
-                if (isset($invoice['error_code'])) {
-                    $message = $this->getErrorHandler()->mapInvoiceErrorCode(
-                        $invoice['error_code'],
-                        str_replace('{{currency}}', $requestData['currency'], $invoice['message'] ?? '')
-                    );
-                    throw new LocalizedException(
-                        new Phrase($message)
-                    );
-                }
-
-                $this->getLogger()->info('createInvoice success', ['xendit_invoice' => $invoice]);
-                return $invoice;
+                throw new LocalizedException(
+                    new Phrase($message)
+                );
             }
+
+            $this->getLogger()->info('createInvoice success', ['xendit_invoice' => $invoice]);
+            return $invoice;
+
         } catch (LocalizedException $e) {
             throw new LocalizedException(
                 new Phrase($e->getMessage())
@@ -212,12 +203,11 @@ class InvoiceMultishipping extends AbstractAction
 
     /**
      * @param $invoice
-     * @param $preferredMethod
      * @return string
      */
-    private function getXenditRedirectUrl($invoice, $preferredMethod)
+    private function getXenditRedirectUrl($invoice)
     {
-        return (isset($invoice['invoice_url'])) ? $invoice['invoice_url'] . "#$preferredMethod" : '';
+        return (isset($invoice['invoice_url'])) ? $invoice['invoice_url'] : '';
     }
 
     /**
