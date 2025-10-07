@@ -5,7 +5,7 @@ namespace Xendit\M2Invoice\Model\Ui;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Payment\Model\CcConfig;
 use Xendit\M2Invoice\Gateway\Config\Config;
-use Xendit\M2Invoice\Model\Payment\CC;
+
 use Xendit\M2Invoice\Model\Payment\Xendit;
 use Xendit\M2Invoice\Helper\Data as XenditHelper;
 
@@ -21,11 +21,6 @@ class ConfigProvider implements ConfigProviderInterface
     private $xendit;
 
     /**
-     * @var CC
-     */
-    private $cc;
-
-    /**
      * @var CcConfig
      */
     private $ccConfig;
@@ -38,18 +33,15 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * ConfigProvider constructor.
      * @param Xendit $xendit
-     * @param CC $cc
      * @param CcConfig $ccConfig
      * @param XenditHelper $xenditHelper
      */
     public function __construct(
         Xendit $xendit,
-        CC $cc,
         CcConfig $ccConfig,
         XenditHelper $xenditHelper
     ) {
         $this->xendit = $xendit;
-        $this->cc = $cc;
         $this->ccConfig = $ccConfig;
         $this->xenditHelper = $xenditHelper;
     }
