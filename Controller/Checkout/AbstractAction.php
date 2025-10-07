@@ -530,20 +530,6 @@ abstract class AbstractAction extends Action
     }
 
     /**
-     * Get preferred payment from order
-     *
-     * @param Order $order
-     * @return false|string
-     */
-    protected function getPreferredMethod(Order $order)
-    {
-        $payment = $order->getPayment();
-        return $this->getDataHelper()->xenditPaymentMethod(
-            $payment->getMethod()
-        );
-    }
-
-    /**
      * @param string $orderByIncrementId
      * @return Order
      */

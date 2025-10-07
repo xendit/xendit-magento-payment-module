@@ -288,14 +288,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return mixed
-     */
-    public function getChosenMethods()
-    {
-        return $this->xendit->getChosenMethods();
-    }
-
-    /**
      * @return array
      */
     public function getEnabledPromo()

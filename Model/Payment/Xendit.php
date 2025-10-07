@@ -155,14 +155,6 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * @return mixed
      */
-    public function getChosenMethods()
-    {
-        return $this->getConfigData('chosen_methods');
-    }
-
-    /**
-     * @return mixed
-     */
     public function getIsActive()
     {
         return $this->getConfigData('active');
