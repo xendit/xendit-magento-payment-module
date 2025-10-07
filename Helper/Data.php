@@ -279,13 +279,7 @@ class Data extends AbstractHelper
         return $this->xendit->getEnvironment();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAllowedMethod()
-    {
-        return $this->xendit->getAllowedMethod();
-    }
+
 
     /**
      * @return array
