@@ -7,6 +7,7 @@ use Magento\Checkout\Model\Session;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\State as AppState;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Exception\LocalizedException;
@@ -153,6 +154,11 @@ abstract class AbstractAction extends Action
     protected $metricHelper;
 
     /**
+     * @var AppState
+     */
+    private $appState;
+
+    /**
      * AbstractAction constructor.
      *
      * @param Session $checkoutSession
@@ -173,9 +179,10 @@ abstract class AbstractAction extends Action
      * @param DbTransaction $dbTransaction
      * @param CustomerSession $customerSession
      * @param ErrorHandler $errorHandler
-     * @param State $state
+     * @param \Magento\Multishipping\Model\Checkout\Type\Multishipping\State $state
      * @param Multishipping $multishipping
      * @param Metric $metricHelper
+     * @param AppState $appState
      */
     public function __construct(
         Session $checkoutSession,
@@ -196,9 +203,10 @@ abstract class AbstractAction extends Action
         DbTransaction $dbTransaction,
         CustomerSession $customerSession,
         ErrorHandler $errorHandler,
-        State $state,
+        \Magento\Multishipping\Model\Checkout\Type\Multishipping\State $state,
         Multishipping $multishipping,
-        Metric $metricHelper
+        Metric $metricHelper,
+        AppState $appState
     ) {
         parent::__construct($context);
 
@@ -225,6 +233,7 @@ abstract class AbstractAction extends Action
         $this->state = $state;
         $this->multishipping = $multishipping;
         $this->metricHelper = $metricHelper;
+        $this->appState = $appState;
     }
 
     /**
@@ -477,8 +486,16 @@ abstract class AbstractAction extends Action
      */
     protected function getXenditCallbackUrl()
     {
-        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
+        // Check for custom callback URL in configuration first, but only in developer mode
+        if ($this->appState->getMode() === AppState::MODE_DEVELOPER) {
+            $customCallbackUrl = $this->getDataHelper()->getCustomCallbackUrl();
 
+            if (!empty($customCallbackUrl)) {
+                return rtrim($customCallbackUrl, '/') . '/xendit/checkout/notification';
+            }
+        }
+
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
         return $baseUrl . 'xendit/checkout/notification';
     }
 

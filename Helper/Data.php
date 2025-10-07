@@ -312,6 +312,14 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @return mixed
+     */
+    public function getCustomCallbackUrl()
+    {
+        return $this->scopeConfig->getValue('payment/xendit/custom_callback_url', ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
      * @return array
      * @throws \Magento\Framework\Exception\FileSystemException
      */
