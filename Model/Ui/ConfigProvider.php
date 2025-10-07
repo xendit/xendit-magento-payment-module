@@ -72,6 +72,11 @@ class ConfigProvider implements ConfigProviderInterface
                     'years' => ['cc' => $this->ccConfig->getCcYears()],
                     'has_verification' => $this->ccConfig->hasVerification()
                 ],
+                'unified' => [
+                    'title' => $this->xenditHelper->getPaymentTitle("unified"),
+                    'description' => $this->xenditHelper->getPaymentDescription("unified"),
+                    'image' => $this->xenditHelper->getPaymentImage("xendit")
+                ],
                 'dana' => [
                     'title' => $this->xenditHelper->getPaymentTitle("dana"),
                     'min_order_amount' => $this->xenditHelper->getPaymentMinOrderAmount("dana"),

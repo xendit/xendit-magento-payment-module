@@ -22,6 +22,19 @@
                 <external_id_prefix>magento-xendit</external_id_prefix>
                 <debug>0</debug>
             </xendit>
+            <unified>
+                <active>1</active>
+                <payment_action>initialize</payment_action>
+                <model>Xendit\M2Invoice\Model\Payment\Unified</model>
+                <title>Xendit - Cards, Virtual Accounts, Ewallets, QR, Direct Debit</title>
+                <description>Bayar pesanan melalui Xendit</description>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <sort_order>1</sort_order>
+                <!-- no currency to allow all -->
+                <!-- <currency>IDR</currency> -->
+            </unified>
             <akulaku>
                 <active>1</active>
                 <payment_action>initialize</payment_action>
@@ -38,7 +51,8 @@
             </akulaku>
             <alfamart>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>initialize</payment_action><!-- You can use another method like
+                capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\Alfamart</model>
                 <title>Alfamart</title>
                 <description>Bayar pesanan dengan membayar di Alfamart melalui Xendit</description>
@@ -80,10 +94,12 @@
             </atome>
             <bcava>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>initialize</payment_action><!-- You can use another method like
+                capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\BCAVA</model>
                 <title>Bank Transfer - BCA</title>
-                <description>Bayar pesanan dengan transfer bank BCA dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank BCA dengan virtual account melalui
+                    Xendit</description>
                 <min_order_total>10000</min_order_total>
                 <max_order_total>9999999999999</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -94,10 +110,12 @@
             </bcava>
             <bjbva>
                 <active>1</active>
-                <payment_action>initialize</payment_action><!-- You can use another method like capture -->
+                <payment_action>initialize</payment_action><!-- You can use another method like
+                capture -->
                 <model>Xendit\M2Invoice\Model\Payment\BJBVA</model>
                 <title>Bank Transfer - BJB</title>
-                <description>Bayar pesanan dengan transfer bank BJB dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank BJB dengan virtual account melalui
+                    Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>50000000000</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -111,7 +129,8 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\BNIVA</model>
                 <title>Bank Transfer - BNI</title>
-                <description>Bayar pesanan dengan transfer bank BNI dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank BNI dengan virtual account melalui
+                    Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>50000000000</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -125,7 +144,8 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\BRIVA</model>
                 <title>Bank Transfer - BRI</title>
-                <description>Bayar pesanan dengan transfer bank BRI dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank BRI dengan virtual account melalui
+                    Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>50000000000</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -139,7 +159,8 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\BSIVA</model>
                 <title>Bank Transfer - BSI</title>
-                <description>Bayar pesanan dengan transfer bank BSI dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank BSI dengan virtual account melalui
+                    Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>50000000000</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -153,7 +174,8 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\BSSVA</model>
                 <title>Bank Transfer - BSS</title>
-                <description>Bayar pesanan dengan transfer bank BSS dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank BSS dengan virtual account melalui
+                    Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>50000000000</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -167,7 +189,8 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\CIMBVA</model>
                 <title>Bank Transfer - CIMB</title>
-                <description>Bayar pesanan dengan transfer bank CIMB dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank CIMB dengan virtual account melalui
+                    Xendit</description>
                 <min_order_total>10000</min_order_total>
                 <max_order_total>50000000000</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -181,7 +204,8 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\MandiriVA</model>
                 <title>Bank Transfer - Mandiri</title>
-                <description>Bayar pesanan dengan transfer bank Mandiri dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank Mandiri dengan virtual account
+                    melalui Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>50000000000</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -195,7 +219,8 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\PermataVA</model>
                 <title>Bank Transfer - Permata</title>
-                <description>Bayar pesanan dengan transfer bank Permata dengan virtual account melalui Xendit</description>
+                <description>Bayar pesanan dengan transfer bank Permata dengan virtual account
+                    melalui Xendit</description>
                 <min_order_total>1</min_order_total>
                 <max_order_total>9999999999</max_order_total>
                 <is_gateway>1</is_gateway>
@@ -206,7 +231,8 @@
             </permatava>
             <cc>
                 <active>1</active>
-                <payment_action>authorize</payment_action><!-- You can use another method like capture  -->
+                <payment_action>authorize</payment_action><!-- You can use another method like
+                capture  -->
                 <model>Xendit\M2Invoice\Model\Payment\CC</model>
                 <title>Credit and Debit Cards</title>
                 <description>Bayar pesanan dengan kartu kredit atau debit anda melalui Xendit</description>
@@ -291,7 +317,8 @@
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Indomaret</model>
                 <title>Indomaret</title>
-                <description>Bayar pesanan dengan membayar di Indomaret, Indogrosir, Superindo, atau i.saku melalui Xendit</description>
+                <description>Bayar pesanan dengan membayar di Indomaret, Indogrosir, Superindo, atau
+                    i.saku melalui Xendit</description>
                 <min_order_total>10000</min_order_total>
                 <max_order_total>5000000</max_order_total>
                 <is_gateway>1</is_gateway>

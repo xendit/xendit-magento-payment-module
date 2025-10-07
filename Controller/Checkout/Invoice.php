@@ -31,7 +31,7 @@ class Invoice extends AbstractAction
                 $invoice = $this->createInvoice($apiData);
                 $this->addInvoiceData($order, $invoice);
 
-                $redirectUrl = $this->getXenditRedirectUrl($invoice, $apiData['preferred_method']);
+                $redirectUrl = $this->getXenditRedirectUrl($invoice);
                 $this->getLogger()->info(
                     'Redirect customer to Xendit',
                     ['order_id' => $order->getIncrementId(), 'redirect_url' => $redirectUrl]
@@ -61,7 +61,6 @@ class Invoice extends AbstractAction
                     'magento2_checkout',
                     [
                         'type' => 'error',
-                        'payment_method' => $this->getPreferredMethod($order),
                         'error_message' => $errorMessage
                     ]
                 );
@@ -80,7 +79,6 @@ class Invoice extends AbstractAction
     private function getApiRequestData(Order $order)
     {
         $orderId = $order->getRealOrderId();
-        $preferredMethod = $this->getPreferredMethod($order);
         $orderItems = $order->getAllItems();
         $items = [];
         /** @var OrderItemInterface $orderItem */
@@ -111,9 +109,7 @@ class Invoice extends AbstractAction
             'description' => $orderId,
             'amount' => $amount,
             'currency' => $order->getBaseCurrencyCode(),
-            'preferred_method' => $preferredMethod,
             'client_type' => 'INTEGRATION',
-            'payment_methods' => json_encode([strtoupper($preferredMethod)]),
             'platform_callback_url' => $this->getXenditCallbackUrl(),
             'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(),
             'failure_redirect_url' => $this->getDataHelper()->getFailureUrl([$orderId]),
@@ -145,17 +141,14 @@ class Invoice extends AbstractAction
         $invoice = '';
 
         try {
-            if (isset($requestData['preferred_method'])) {
-                $this->getLogger()->info('createInvoice start', ['data' => $requestData]);
+            $this->getLogger()->info('createInvoice start', ['data' => $requestData]);
 
-                $invoice = $this->getApiHelper()->request(
-                    $invoiceUrl,
-                    $invoiceMethod,
-                    $requestData,
-                    false,
-                    $requestData['preferred_method']
-                );
-            }
+            $invoice = $this->getApiHelper()->request(
+                $invoiceUrl,
+                $invoiceMethod,
+                $requestData,
+                false
+            );
             if (isset($invoice['error_code'])) {
                 $message = $this->getErrorHandler()->mapInvoiceErrorCode(
                     $invoice['error_code'],
@@ -177,12 +170,11 @@ class Invoice extends AbstractAction
 
     /**
      * @param $invoice
-     * @param $preferredMethod
      * @return string
      */
-    private function getXenditRedirectUrl($invoice, $preferredMethod)
+    private function getXenditRedirectUrl($invoice)
     {
-        return $invoice['invoice_url'] . "#$preferredMethod";
+        return $invoice['invoice_url'];
     }
 
     /**
