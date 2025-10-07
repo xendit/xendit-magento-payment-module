@@ -162,6 +162,13 @@
                         Log path: <b>/var/log/xendit_payment.log</b>]]>
                     </comment>
                 </field>
+                <field id="custom_callback_url" translate="label" type="text" sortOrder="69" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Custom Callback URL</label>
+                    <comment>
+                        <![CDATA[Override default callback URL for local development (e.g., https://your-ngrok-url.com). Leave empty to use store base URL.]]>
+                    </comment>
+                    <frontend_model>Xendit\M2Invoice\Block\Adminhtml\System\Config\DeveloperModeField</frontend_model>
+                </field>
 
                 <group id="other_configurations" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Other Configurations</label>

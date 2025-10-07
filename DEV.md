@@ -62,13 +62,36 @@
    4. Run `php bin/magento setup:upgrade`
    5. Run `rm -rf generated && php bin/magento setup:upgrade && php bin/magento cache:clean`
    6. Visit `https://magento.local` to see the products of sample data
-8. Finally to check everything
+8. Check if Magento us running and Have xendit
    1. Open `https://magento24.local/admin/`
    2. Login username: `admin` password: `abcd1234`
    3. Navigate to `Stores (sidebar) > Configuration > Sales > Payment Methods`
    4. In the `Other Payment Methods`, you should see `Xendit`
    5. See [image](./docs/imgs/magento-admin-xendit.png)
 
+## 3. Testing Paying Locally
+1. Generate Xendit Public and Private Key
+   1. Have a xendit test account
+   2. Go to `Xendit Dashboard > Settings` create Private API Key
+   3. Copy both public and private key
+2. Set it up in Magento
+   1. Go to Magento Admin
+   2. Navigate to `Stores (sidebar) > Configuration > Sales > Payment Methods`
+   3. Go to `Xendit` and input the public and private key
+3. Setup custom callback url to receive payment notification
+   1. Modify `magento2/etc/env.php` to `'MAGE_MODE' => 'developer'` instead of `default`
+   2. Install a tunneling tool like [ngrok](https://ngrok.com/): `brew install ngrok`
+   3. Start ngrok to tunnel your local Magento: `ngrok http https://magento24.local`
+   4. Copy the HTTPS ngrok URL (e.g., `https://abc123.ngrok.io`)
+   5. In Magento Admin, go to `Stores > Configuration > Sales > Payment Methods > Xendit`
+   6. Set the "Custom Callback URL" field to your ngrok URL (e.g., `https://abc123.ngrok.io`)
+   7. Now xendit payment links webhooks will be sent to your local development environment
+4. Do test payment
+   1. Open `https://magento.local`
+   2. Buy anything. Add to Cart. Fill up shipping.
+   3. Pick `mandiri va` and you will get redirect to Xendit Payment Link
+   4. Click `Simulate Payment in the banner`
+   5. After you will get redirected back, and should see a success.
 
 ## Tips
 1. Run `./bin/sync-plugin.sh` to sync changes when developing
