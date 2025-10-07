@@ -113,10 +113,6 @@
         <plugin name="xenditXenditQuotePayment" type="Xendit\M2Invoice\Plugin\QuotePaymentPlugin"/>
     </type>
 
-    <type name="Magento\Config\Model\Config\Structure\Element\Group">
-        <plugin name="xenditConfigElementGroup" type="Xendit\M2Invoice\Plugin\ConfigElementGroupPlugin"/>
-    </type>
-
     <type name="Xendit\M2Invoice\Logger\Handler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
