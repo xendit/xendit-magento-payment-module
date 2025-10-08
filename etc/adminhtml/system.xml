@@ -8,15 +8,7 @@
                     <h2>Manage Payment Gateway Connection</h2>
                     <script type="text/javascript">//<![CDATA[
                         require(['jquery'], function(){
-                            var allPaymentMethodDescription = 'Use all payment method that is provided by Xendit';
-                            var specificPaymentMethodDescription = 'Use specific payment method that is provided by Xendit';
-                            var specificSelectionMethodDescription = 'Choose specific payment method that you want to choose. Use <strong>CTRL (CMD) + Click</strong> to choose more than one payment method';
-
                             var envValue = jQuery("select[id*='xendit_xendit_env']");
-                            var paymentSelectionValue = jQuery("select[id*='xendit_allowed_method']");
-                            var paymentSelectionDescription = jQuery("select[id*='xendit_allowed_method']").siblings('.note').children()[0];
-                            var specificSelection = jQuery("select[id*='xendit_chosen_methods']");
-                            var specificSelectionDescription = jQuery("select[id*='xendit_chosen_methods']").siblings('.note').children()[0];
 
                             function dynamicShow() {
                                 var isTestValue = envValue.val() === 'test';
@@ -43,50 +35,9 @@
                                 dynamicShow();
                             });
 
-                            function shouldEnableSpecificMethod() {
-                                var isSpecific = paymentSelectionValue.val() === 'specific';
 
-                                if (isSpecific) {
-                                    paymentSelectionDescription.innerHTML = specificPaymentMethodDescription;
-                                    specificSelectionDescription.innerHTML = specificSelectionMethodDescription;
-                                    specificSelection.prop('disabled', false);
-                                } else {
-                                    paymentSelectionDescription.innerHTML = allPaymentMethodDescription;
-                                    specificSelectionDescription.innerHTML = allPaymentMethodDescription;
-                                    specificSelection.prop('disabled', true);
-                                }
-                            }
-                            paymentSelectionValue.change(function () {
-                                shouldEnableSpecificMethod();
-                            });
-
-                            function shouldDisplayAdditionalKYCWarningMethod() {
-                                var currentValue = specificSelection.val();
-
-                                if (currentValue.includes('ovo') || currentValue.includes('alfamart') || currentValue.includes('bcava') || currentValue.includes('dana')) {
-                                    displayAdditionalKYCWarning(true);
-                                } else {
-                                    displayAdditionalKYCWarning(false);
-                                }
-                            }
-                            function displayAdditionalKYCWarning(shouldShow) {
-                                var defaultText = specificSelectionMethodDescription;
-
-                                var newText = defaultText + ' - <span style="color:red;">You are choosing a payment method that requires you to re-register to your AM</span>';
-
-                                if (shouldShow) {
-                                    specificSelection.siblings('.note').children()[0].innerHTML = newText;
-                                } else {
-                                    specificSelection.siblings('.note').children()[0].innerHTML = defaultText;
-                                }
-                            }
-                            specificSelection.change(function () {
-                                shouldDisplayAdditionalKYCWarningMethod();
-                            });
 
                             dynamicShow();
-<!--                            shouldEnableSpecificMethod();-->
-                            specificSelection.prop('size', 6);
 
                             var externalIdPrefix = jQuery("input[id*='xendit_external_id_prefix']");
                             jQuery(externalIdPrefix).attr("placeholder", "magento-xendit");
@@ -172,82 +123,12 @@
 
                 <group id="other_configurations" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Other Configurations</label>
-                    <group id="virtual_accounts" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Virtual Accounts</label>
-                        <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
-                        <attribute type="expanded">0</attribute>
-                        <include path="Xendit_M2Invoice::virtual_account/bcava.xml"/>
-                        <include path="Xendit_M2Invoice::virtual_account/bjbva.xml"/>
-                        <include path="Xendit_M2Invoice::virtual_account/bniva.xml"/>
-                        <include path="Xendit_M2Invoice::virtual_account/briva.xml"/>
-                        <include path="Xendit_M2Invoice::virtual_account/bsiva.xml"/>
-                        <include path="Xendit_M2Invoice::virtual_account/bssva.xml"/>
-                        <include path="Xendit_M2Invoice::virtual_account/mandiriva.xml"/>
-                        <include path="Xendit_M2Invoice::virtual_account/permatava.xml"/>
-                        <include path="Xendit_M2Invoice::virtual_account/cimbva.xml"/>
-                    </group>
-
                     <group id="credit_cards" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Credit Cards</label>
                         <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
                         <attribute type="expanded">0</attribute>
                         <include path="Xendit_M2Invoice::credit_card/cc.xml"/>
-                    </group>
-
-                    <group id="retail_outlets" translate="label" sortOrder="94" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Retail Outlets</label>
-                        <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
-                        <attribute type="expanded">0</attribute>
-                        <include path="Xendit_M2Invoice::retail_outlets/alfamart.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/indomaret.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/seven_eleven.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/cebuana.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/dp_palawan.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/dp_mlhuillier.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/dp_ecpay_loan.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/dp_ecpay_school.xml"/>
-                        <include path="Xendit_M2Invoice::retail_outlets/lbc.xml"/>
-                    </group>
-
-                    <group id="ewallets" translate="label" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Ewallets</label>
-                        <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
-                        <attribute type="expanded">0</attribute>
-                        <include path="Xendit_M2Invoice::ewallets/dana.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/ovo.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/linkaja.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/shopeepay.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/qris.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/gcash.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/grabpay.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/paymaya.xml"/>
-                        <include path="Xendit_M2Invoice::ewallets/shopeepayph.xml"/>
-<!--                        <include path="Xendit_M2Invoice::ewallets/jeniuspay.xml"/>-->
-                    </group>
-
-                    <group id="direct_debit" translate="label" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Direct Debit</label>
-                        <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
-                        <attribute type="expanded">0</attribute>
-                        <include path="Xendit_M2Invoice::direct_debit/dd_bri.xml"/>
-                        <include path="Xendit_M2Invoice::direct_debit/dd_bpi.xml"/>
-                        <include path="Xendit_M2Invoice::direct_debit/dd_ubp.xml"/>
-                        <include path="Xendit_M2Invoice::direct_debit/dd_rcbc.xml"/>
-                        <include path="Xendit_M2Invoice::direct_debit/dd_chinabank.xml"/>
-<!--                        <include path="Xendit_M2Invoice::direct_debit/dd_bdo_epay.xml"/>-->
-                    </group>
-
-                    <group id="paylater" translate="label" sortOrder="98" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>PayLater</label>
-                        <frontend_model>\Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
-                        <attribute type="expanded">0</attribute>
-                        <include path="Xendit_M2Invoice::paylater/kredivo.xml"/>
-                        <include path="Xendit_M2Invoice::paylater/billease.xml"/>
-                        <include path="Xendit_M2Invoice::paylater/cashalo.xml"/>
-                        <include path="Xendit_M2Invoice::paylater/astrapay.xml"/>
-                        <include path="Xendit_M2Invoice::paylater/akulaku.xml"/>
-                        <include path="Xendit_M2Invoice::paylater/atome.xml"/>
-                    </group>
+                    </group>                    
                 </group>
 
                 <group id="card_promo_configurations" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">

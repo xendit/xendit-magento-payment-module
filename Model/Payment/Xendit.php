@@ -144,21 +144,7 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
         return $this->getConfigData('ui_url');
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAllowedMethod()
-    {
-        return $this->getConfigData('allowed_method');
-    }
 
-    /**
-     * @return mixed
-     */
-    public function getChosenMethods()
-    {
-        return $this->getConfigData('chosen_methods');
-    }
 
     /**
      * @return mixed

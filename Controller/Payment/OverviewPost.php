@@ -133,24 +133,16 @@ class OverviewPost extends Checkout
             $baseUrl = $this->storeManager->getStore()->getBaseUrl();
 
             //XENDIT PAYMENT METHOD
-            $xenditPaymentMethod = $this->xenditHelper->xenditPaymentMethod($paymentInstance->getMethod());
             $orderIds = $this->_getCheckout()->getOrderIds();
-            if ($xenditPaymentMethod) {
-                if (empty($orderIds)) {
-                    $this->messageManager->addError(
-                        __('Failed to create order.')
-                    );
-                    $this->_redirect('*/*/billing');
-                }
-                $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping';
-                $this->_redirect($redirect);
-            } else {
-                //OTHERS
-                $this->_getState()->setActiveStep(State::STEP_SUCCESS);
-                $this->_getCheckout()->getCheckoutSession()->clearQuote();
-                $this->_getCheckout()->getCheckoutSession()->setDisplaySuccess(true);
-                $this->_redirect('*/*/success');
+
+            if (empty($orderIds)) {
+                $this->messageManager->addError(
+                    __('Failed to create order.')
+                );
+                $this->_redirect('*/*/billing');
             }
+            $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping';
+            $this->_redirect($redirect);
         } catch (PaymentException $e) {
             $message = $e->getMessage();
             if (!empty($message)) {

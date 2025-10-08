@@ -279,21 +279,7 @@ class Data extends AbstractHelper
         return $this->xendit->getEnvironment();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAllowedMethod()
-    {
-        return $this->xendit->getAllowedMethod();
-    }
 
-    /**
-     * @return mixed
-     */
-    public function getChosenMethods()
-    {
-        return $this->xendit->getChosenMethods();
-    }
 
     /**
      * @return array
@@ -407,72 +393,6 @@ class Data extends AbstractHelper
             default:
                 return $type;
         }
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getXenditPaymentList(): array
-    {
-        return [
-            "cc"                => "credit_card",
-            "bcava"             => "bca",
-            "bniva"             => "bni",
-            "bjbva"             => "bjb",
-            "briva"             => "bri",
-            "bsiva"             => "bsi",
-            "bssva"             => "sahabat_sampoerna",
-            "mandiriva"         => "mandiri",
-            "permatava"         => "permata",
-            "alfamart"          => "alfamart",
-            "ovo"               => "ovo",
-            "dana"              => "dana",
-            "linkaja"           => "linkaja",
-            "shopeepay"         => "shopeepay",
-            "indomaret"         => "indomaret",
-            "qris"              => "qris",
-            "dd_bri"            => "dd_bri",
-            "kredivo"           => "kredivo",
-            "gcash"             => "gcash",
-            "grabpay"           => "grabpay",
-            "paymaya"           => "paymaya",
-            "dd_bpi"            => "dd_bpi",
-            "seven_eleven"      => "7eleven",
-            "dd_ubp"            => "dd_ubp",
-            "billease"          => "billease",
-            "cebuana"           => "cebuana",
-            "dp_palawan"        => "dp_palawan",
-            "dp_mlhuillier"     => "dp_mlhuillier",
-            "dp_ecpay_loan"     => "dp_ecpay_loan",
-            "dp_ecpay_school"   => "dp_ecpay_school",
-            "cashalo"           => "cashalo",
-            "shopeepayph"       => "shopeepay",
-            "astrapay"          => "astrapay",
-            "akulaku"           => "akulaku",
-            "atome"             => "atome",
-            "dd_rcbc"           => "dd_rcbc",
-            "lbc"               => "lbc",
-            "jeniuspay"         => "jeniuspay",
-            "dd_chinabank"      => "dd_chinabank",
-            "cimbva"            => "cimb",
-            "dd_bdo_epay"       => "dd_bdo_epay"
-        ];
-    }
-
-    /**
-     * @param $payment
-     * @return false|string
-     */
-    public function xenditPaymentMethod($payment)
-    {
-        // method name => frontend routing
-        $listPayment = $this->getXenditPaymentList();
-        $response = false;
-        if (array_key_exists($payment, $listPayment)) {
-            $response = $listPayment[$payment];
-        }
-
-        return $response;
     }
 
     /**
