@@ -254,8 +254,7 @@ class Notification extends Action implements CsrfAwareActionInterface
         $orderIds = $this->xenditModel->getOrderIdsByTransactionId($invoice['id']);
         if (empty($orderIds)) {
             // Give the second chance to get order from callback description (order_id)
-            if (
-                !empty($invoice['success_redirect_url']) &&
+            if (!empty($invoice['success_redirect_url']) &&
                 $this->isMultiShippingOrder($invoice['success_redirect_url'])
             ) {
                 $orderIds = array_map('trim', explode('-', $invoice['description']));
@@ -329,8 +328,7 @@ class Notification extends Action implements CsrfAwareActionInterface
 
         // Check if order is canceled
         try {
-            if (
-                $this->checkoutHelper->canRevertOrderStatusToPending($order)
+            if ($this->checkoutHelper->canRevertOrderStatusToPending($order)
                 && $this->isXenditInvoicePaid($paymentStatus)
             ) {
                 $this->checkoutHelper->revertCancelledOrderToPending($order);

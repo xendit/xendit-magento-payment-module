@@ -1,0 +1,1 @@
+phpcbf --standard=PSR2 --ignore=vendor,docker-magento --extensions=php .
