@@ -1,4 +1,8 @@
 # CHANGELOG
+## 12.1.0 (2025-10-08)
+- single xendit button for checkout
+- cleanup cc and cc subscriptions and promo
+
 ## 12.0.4 (2025-02-25)
 - Fix Undefined variable $xenditSerializerJson
 - Upgrade using Laminas\Http\Request from previous Zend\Http\Request on several class
