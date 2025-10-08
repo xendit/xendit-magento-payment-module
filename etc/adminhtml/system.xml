@@ -129,8 +129,7 @@
                     <comment>
                         <![CDATA[Override default callback URL for local development (e.g., https://your-ngrok-url.com). Leave empty to use store base URL.]]>
                     </comment>
-                    <frontend_model>
-                        Xendit\M2Invoice\Block\Adminhtml\System\Config\DeveloperModeField</frontend_model>
+                    <frontend_model>Xendit\M2Invoice\Block\Adminhtml\System\Config\DeveloperModeField</frontend_model>
                 </field>
 
                 <group id="other_configurations" translate="label" sortOrder="92" showInDefault="1"
