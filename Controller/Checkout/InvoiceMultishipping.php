@@ -193,7 +193,6 @@ class InvoiceMultishipping extends AbstractAction
 
             $this->getLogger()->info('createInvoice success', ['xendit_invoice' => $invoice]);
             return $invoice;
-
         } catch (LocalizedException $e) {
             throw new LocalizedException(
                 new Phrase($e->getMessage())

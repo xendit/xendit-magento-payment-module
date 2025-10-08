@@ -282,14 +282,6 @@ class Data extends AbstractHelper
 
 
     /**
-     * @return array
-     */
-    public function getEnabledPromo()
-    {
-        return $this->xendit->getEnabledPromo();
-    }
-
-    /**
      * @return mixed
      */
     public function getIsActive()
@@ -311,7 +303,7 @@ class Data extends AbstractHelper
      */
     public function jsonData()
     {
-        $inputs = json_decode((string) $this->fileSystem->fileGetContents((string)'php://input'), (bool) true);
+        $inputs = json_decode((string) $this->fileSystem->fileGetContents((string) 'php://input'), (bool) true);
         $methods = $this->_request->getServer('REQUEST_METHOD');
 
         if (empty($inputs) === true && $methods === 'POST') {
@@ -475,34 +467,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get Credit & debit images
-     *
-     * @param string $code
-     * @return array|false[]|string[]|void|void[]
-     */
-    public function getCreditCardImages(string $code)
-    {
-        $cardImages = $this->scopeConfig->getValue("payment/$code/images", ScopeInterface::SCOPE_STORE);
-        if (!empty($cardImages)) {
-            return array_filter(
-                array_map(function ($cardImage) {
-                    try {
-                        $cardIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/cards/' . $cardImage . '.svg');
-                        if ($cardIcon && $cardIcon->getSourceFile()) {
-                            return $cardIcon->geturl();
-                        }
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-                }, explode(",", $cardImages) ?? []),
-                function ($item) {
-                    return $item;
-                }
-            );
-        }
-    }
-
-    /**
      * @param string $payment
      * @param string $currency
      * @return bool
@@ -522,7 +486,7 @@ class Data extends AbstractHelper
      */
     public function truncateDecimal($amount)
     {
-        return floor((double)$amount);
+        return floor((double) $amount);
     }
 
     /**
@@ -611,7 +575,7 @@ class Data extends AbstractHelper
                 'type' => __('Tax fee'),
                 'value' => $order->getTaxAmount()
             ]
-            ];
+        ];
 
         // Make sure it will cover the other fees
         $otherFees = $this->getOtherFees($order);
@@ -638,13 +602,13 @@ class Data extends AbstractHelper
      */
     public function getOtherFees(Order $order): float
     {
-        return $order->getTotalDue() - (float)array_sum(
+        return $order->getTotalDue() - (float) array_sum(
             [
-                    $order->getSubtotal(), // items total
-                    $order->getTaxAmount(),
-                    $order->getShippingAmount(),
-                    $order->getDiscountAmount()
-                ]
+                $order->getSubtotal(), // items total
+                $order->getTaxAmount(),
+                $order->getShippingAmount(),
+                $order->getDiscountAmount()
+            ]
         );
     }
 
@@ -669,7 +633,7 @@ class Data extends AbstractHelper
                 $value = $fee['value'];
 
                 if (isset($mergedFeesObject[$typeLabel])) {
-                    $mergedFeesObject[$typeLabel] = (float)$mergedFeesObject[$typeLabel] + $value;
+                    $mergedFeesObject[$typeLabel] = (float) $mergedFeesObject[$typeLabel] + $value;
                 } else {
                     $mergedFeesObject[$typeLabel] = $value;
                 }

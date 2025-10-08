@@ -120,12 +120,6 @@ class OverviewPost extends Checkout
 
             $payment = $this->getRequest()->getPost('payment');
             $paymentInstance = $this->_getCheckout()->getQuote()->getPayment();
-            if (isset($payment['cc_number'])) {
-                $paymentInstance->setCcNumber($payment['cc_number']);
-            }
-            if (isset($payment['cc_cid'])) {
-                $paymentInstance->setCcCid($payment['cc_cid']);
-            }
 
             $this->_getCheckout()->createOrders();
             $this->_getState()->setCompleteStep(State::STEP_OVERVIEW);

@@ -95,17 +95,17 @@ class Notification extends Action implements CsrfAwareActionInterface
      * @param OrderRepository $orderRepository
      */
     public function __construct(
-        Context             $context,
-        JsonFactory         $jsonResultFactory,
-        Checkout            $checkoutHelper,
-        OrderFactory        $orderFactory,
-        Data                $dataHelper,
-        ApiRequest          $apiHelper,
-        XenditLogger        $logger,
-        DbTransaction       $dbTransaction,
-        InvoiceService      $invoiceService,
-        Xendit              $xenditModel,
-        OrderRepository     $orderRepository
+        Context $context,
+        JsonFactory $jsonResultFactory,
+        Checkout $checkoutHelper,
+        OrderFactory $orderFactory,
+        Data $dataHelper,
+        ApiRequest $apiHelper,
+        XenditLogger $logger,
+        DbTransaction $dbTransaction,
+        InvoiceService $invoiceService,
+        Xendit $xenditModel,
+        OrderRepository $orderRepository
     ) {
         parent::__construct($context);
         $this->jsonResultFactory = $jsonResultFactory;
@@ -255,7 +255,8 @@ class Notification extends Action implements CsrfAwareActionInterface
         if (empty($orderIds)) {
             // Give the second chance to get order from callback description (order_id)
             if (!empty($invoice['success_redirect_url']) &&
-                $this->isMultiShippingOrder($invoice['success_redirect_url'])) {
+                $this->isMultiShippingOrder($invoice['success_redirect_url'])
+            ) {
                 $orderIds = array_map('trim', explode('-', $invoice['description']));
 
                 $this->logger->info('multiShippingOrder', ['order_ids' => $orderIds]);
@@ -328,7 +329,8 @@ class Notification extends Action implements CsrfAwareActionInterface
         // Check if order is canceled
         try {
             if ($this->checkoutHelper->canRevertOrderStatusToPending($order)
-                && $this->isXenditInvoicePaid($paymentStatus)) {
+                && $this->isXenditInvoicePaid($paymentStatus)
+            ) {
                 $this->checkoutHelper->revertCancelledOrderToPending($order);
             }
         } catch (\Exception $e) {
@@ -364,16 +366,11 @@ class Notification extends Action implements CsrfAwareActionInterface
             $payment->setTransactionId($transactionId);
             $payment->addTransaction(TransactionInterface::TYPE_CAPTURE, null, true);
 
+            // TODO: check if still needed
             if (!empty($invoice['credit_card_charge_id'])) {
                 $payment->setAdditionalInformation('xendit_charge_id', $invoice['credit_card_charge_id']);
                 $payment->save();
             }
-
-            if ($invoice['payment_channel'] == 'CARD_INSTALLMENT' && !empty($callbackPayload['installment'])) {
-                $payment->setAdditionalInformation('xendit_installment', $callbackPayload['installment']);
-                $payment->save();
-            }
-
             // insert xendit_transaction_id if order missing this
             if (empty($order->getXenditTransactionId())) {
                 $order->setXenditTransactionId($transactionId);
@@ -460,7 +457,7 @@ class Notification extends Action implements CsrfAwareActionInterface
          * Look Magento/Sales/Model/Order/Invoice.register() for CAPTURE_OFFLINE explanation.
          * Basically, if !config/can_capture and config/is_gateway and CAPTURE_OFFLINE and
          * Payment.IsTransactionPending => pay (Invoice.STATE = STATE_PAID...)
-        */
+         */
         if ($transactionId) {
             $invoice->setTransactionId($transactionId);
         }

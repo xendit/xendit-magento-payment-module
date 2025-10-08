@@ -33,7 +33,6 @@ class Redirect extends AbstractAction
                 return $this->redirectToCart($failureReason);
             }
 
-            // CC Subscription
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
 
@@ -63,7 +62,7 @@ class Redirect extends AbstractAction
             $failureReasonInsight
         ));
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), ['_secure' => false]);
         return $resultRedirect;
     }
 }
