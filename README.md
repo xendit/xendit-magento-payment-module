@@ -95,7 +95,6 @@ If the Xendit payment links expired, it will auto cancel the order via the webho
 ## Supported Payment Method
 - Credit and Debit Card
   - Installment
-  - Subscription
 - Virtual Accounts
   - BCA
   - BJB
@@ -145,8 +144,8 @@ Since v1.3.0, online refund (full and partial) is supported for payment through 
 ## Multishipping Support
 Since v2.0.0, multishipping checkout is supported for all payment methods.
 
-## Installment & Subscription
-Since v2.2.0, merchant can setup installment & subscription payment methods via credit card.
+## Installment
+Since v2.2.0, merchant can setup installment payment methods via credit card.
 
 ## Unit Testing
 To run unit test, run this command from you `MAGENTO_DIR`:

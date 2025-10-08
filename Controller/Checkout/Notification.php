@@ -368,12 +368,6 @@ class Notification extends Action implements CsrfAwareActionInterface
                 $payment->setAdditionalInformation('xendit_charge_id', $invoice['credit_card_charge_id']);
                 $payment->save();
             }
-
-            if ($invoice['payment_channel'] == 'CARD_INSTALLMENT' && !empty($callbackPayload['installment'])) {
-                $payment->setAdditionalInformation('xendit_installment', $callbackPayload['installment']);
-                $payment->save();
-            }
-
             // insert xendit_transaction_id if order missing this
             if (empty($order->getXenditTransactionId())) {
                 $order->setXenditTransactionId($transactionId);

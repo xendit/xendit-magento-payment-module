@@ -475,34 +475,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Get Credit & debit images
-     *
-     * @param string $code
-     * @return array|false[]|string[]|void|void[]
-     */
-    public function getCreditCardImages(string $code)
-    {
-        $cardImages = $this->scopeConfig->getValue("payment/$code/images", ScopeInterface::SCOPE_STORE);
-        if (!empty($cardImages)) {
-            return array_filter(
-                array_map(function ($cardImage) {
-                    try {
-                        $cardIcon = $this->assetRepository->createAsset('Xendit_M2Invoice::images/methods/cards/' . $cardImage . '.svg');
-                        if ($cardIcon && $cardIcon->getSourceFile()) {
-                            return $cardIcon->geturl();
-                        }
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-                }, explode(",", $cardImages) ?? []),
-                function ($item) {
-                    return $item;
-                }
-            );
-        }
-    }
-
-    /**
      * @param string $payment
      * @param string $currency
      * @return bool

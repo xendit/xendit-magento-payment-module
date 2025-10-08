@@ -33,7 +33,6 @@ class Redirect extends AbstractAction
                 return $this->redirectToCart($failureReason);
             }
 
-            // CC Subscription
             if ($payment->getAdditionalInformation('xendit_redirect_url') !== null) {
                 $redirectUrl = $payment->getAdditionalInformation('xendit_redirect_url');
 
