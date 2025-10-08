@@ -1,5 +1,7 @@
 {
+  // tells vscode php intellisense to ignore
   "php.files.exclude": {
+    // no need to have intellisense for docker-magento since it's just magento2
     "**/docker-magento/**": true
   }
 }
