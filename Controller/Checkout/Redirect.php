@@ -62,7 +62,7 @@ class Redirect extends AbstractAction
             $failureReasonInsight
         ));
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
-        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), [ '_secure'=> false ]);
+        $resultRedirect->setUrl($this->_url->getUrl('checkout/cart'), ['_secure' => false]);
         return $resultRedirect;
     }
 }

@@ -1,0 +1,5 @@
+{
+  "php.files.exclude": {
+    "**/docker-magento/**": true
+  }
+}
