@@ -1,7 +1,7 @@
 version: '3'
 services:
     web:
-        image: webdevops/php-apache-dev:8.3
+        image: webdevops/php-apache-dev:8.4
         container_name: web
         restart: always
         user: root
