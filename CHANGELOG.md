@@ -1,4 +1,8 @@
 # CHANGELOG
+
+## 12.1.1 (2025-10-08)
+- support php 8.4
+
 ## 12.1.0 (2025-10-08)
 - single xendit button for checkout
 - cleanup cc and cc subscriptions and promo
@@ -75,7 +79,7 @@ Features:
 - Add new IDR payment Akulaku
 
 Improvements:
-- Webhook update order status improvements 
+- Webhook update order status improvements
 
 ## 4.0.1 (2022-08-01)
 Improvements:
