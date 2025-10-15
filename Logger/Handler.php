@@ -6,6 +6,7 @@ use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Logger\Handler\Base;
 use Magento\Store\Model\ScopeInterface;
 use Monolog\Logger;
+use Monolog\LogRecord;
 
 /**
  * Class Handler
@@ -32,16 +33,17 @@ class Handler extends Base
     }
 
     /**
-     * @param array $record
+     * @param array|LogRecord $record
      * @return bool
      */
-    public function isHandling(array $record): bool
+    public function isHandling(array|LogRecord $record): bool
     {
         $isDebugEnabled = (bool)$this->scopeConfig->getValue("payment/xendit/debug", ScopeInterface::SCOPE_STORE);
         if ($isDebugEnabled) {
             return true;
         }
 
-        return $record['level'] >= \Monolog\Logger::WARNING;
+        $level = $record instanceof LogRecord ? $record->level->value : $record['level'];
+        return $level >= \Monolog\Logger::WARNING;
     }
 }

@@ -127,7 +127,7 @@ php bin/magento setup:install \
 --admin-use-security-key=1 \
 --session-save=files \
 --use-sample-data \
---search-engine=elasticsearch7 \
+--search-engine=elasticsearch8 \
 --elasticsearch-host=elasticsearch \
 --elasticsearch-port=9200
 ```
