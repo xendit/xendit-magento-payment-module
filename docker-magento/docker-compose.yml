@@ -1,7 +1,7 @@
 version: '3'
 services:
     web:
-        image: webdevops/php-apache-dev:8.3
+        image: webdevops/php-apache-dev:8.4
         container_name: web
         restart: always
         user: root
@@ -49,15 +49,17 @@ services:
         depends_on:
           - mysql
     elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
         container_name: elasticsearch
         ports:
             - "9200:9200"
         environment:
             - discovery.type=single-node
-            - network.host=0.0.0.0  # Changed from localhost
+            - network.host=0.0.0.0
             - http.port=9200
             - cluster.name=elasticsearch
+            - xpack.security.enabled=false
+            - xpack.security.http.ssl.enabled=false
         volumes:
             - elasticsearch_data:/var/lib/elastisearch
 volumes:
