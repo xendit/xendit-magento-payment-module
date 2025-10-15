@@ -4,17 +4,17 @@
 
 ## 1. Machine Setup
 1. Use Mac with Silicon
-2. Install `php@8.3`
-   1. Run `brew install php@8.3`
+2. Install `php@8.4`
+   1. Run `brew install php@8.4`
    2. Bonus: `brew install brew-php-switcher` for easy php version switching
 3. Use `orbstack` for running docker containers
-   1. Why? because `webdevops/php-apache-dev:8.3` doesn't work on ARM64 because of its apached ssl failing. [see this issue](https://github.com/webdevops/Dockerfile/issues/433). Weirdly, testing in orbstack works.
+   1. Why? because `webdevops/php-apache-dev:8.4` doesn't work on ARM64 because of its apached ssl failing. [see this issue](https://github.com/webdevops/Dockerfile/issues/433). Weirdly, testing in orbstack works.
    2. Run `brew install orbstack`
    3. Run `Orbstack` in Application
 ## 2. Local Magento2.4 Setup w/ Xendit Module
 1. Clone `magento2` in `./docker-magento/`
    1. Run `git clone https://github.com/magento/magento2.git`
-   2. `git checkout 2.4`
+   2. `git checkout 2.4.8`
    3. This will take some time
 2. Add local domain
    1. Why? this is needed to match the `base-url-secure` later on magento installation.
