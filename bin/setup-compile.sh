@@ -10,6 +10,9 @@ else
     echo "module is enabled"
 fi
 
+# Clear generated code first
+rm -rf generated/code/ generated/metadata/ var/di/ var/generation/
+
 php bin/magento setup:upgrade &&
 php bin/magento setup:di:compile &&
 php bin/magento cache:flush &&
