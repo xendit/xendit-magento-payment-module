@@ -1,6 +1,12 @@
 #!/bin/bash
 
-DEST="docker-magento/magento2/app/code/Xendit/M2Invoice"
+SOURCE_DIR="${1:-docker-magento}"
+
+if [ "$SOURCE_DIR" = "demosites" ]; then
+    DEST="../public_html/app/code/Xendit/M2Invoice"
+elif [ "$SOURCE_DIR" = "docker-magento" ]; then
+    DEST="docker-magento/magento2/app/code/Xendit/M2Invoice"
+fi
 
 # Initial sync
 rsync -av --delete --exclude='docker-magento' --exclude='.git' . $DEST/
