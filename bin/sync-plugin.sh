@@ -1,15 +1,17 @@
 #!/bin/bash
 
 SOURCE_DIR="${1:-docker-magento}"
-FILES_TO_COPY="Block Controller etc External Gateway Helper Logger Model Plugin Setup Test view CHANGELOG.md LICENSE README.md registration.php composer.json"
 
 if [ "$SOURCE_DIR" = "demosites" ]; then
-    DESTINATION="../public_html/app/code/Xendit/M2Invoice"
+    DESTINATION="../magento-demo.xendit.co/public_html/app/code/Xendit/M2Invoice"
 
     echo "Destination: $DESTINATION"
 
-    # Copy files to the destination directory
-    cp -r $FILES_TO_COPY $DESTINATION || mkdir -p $DESTINATION && cp -r $FILES_TO_COPY $DESTINATION
+    # Create destination directory if it doesn't exist
+    mkdir -p $DESTINATION
+
+    # Copy all files except docker-magento and .git directories
+    rsync -av --exclude='docker-magento' --exclude='.git' . $DESTINATION/
 
     # Check if the copy was successful
     if [ $? -eq 0 ]; then
