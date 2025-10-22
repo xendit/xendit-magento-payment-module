@@ -1,4 +1,6 @@
 # CHANGELOG
+## 12.1.2 (2025-10-22)
+- backward compat with php 7
 
 ## 12.1.1 (2025-10-08)
 - support php 8.4
