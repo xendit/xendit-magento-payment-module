@@ -59,6 +59,7 @@
          1. Use `public` as username and `secret` as password
       4. Here's an [image](./docs/imgs/adobe-marketplace-accesskey.png)
    3. Run `php bin/magento sampledata:deploy`
+      1. (optional) If you encounter `curl error 28 while downloading https://repo.packagist.org/packages.json: Failed to connect to repo.packagist.org port 443 after 10007 ms: Timeout was reached` when downloading from composer, you may need to run this command first before retrying `composer config -g repo.packagist composer https://packagist.org`
    4. Run `php bin/magento setup:upgrade`
    5. Run `rm -rf generated && php bin/magento setup:upgrade && php bin/magento cache:clean`
    6. Visit `https://magento.local` to see the products of sample data
