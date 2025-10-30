@@ -1,4 +1,7 @@
 # CHANGELOG
+## 12.1.3 (2025-10-30)
+- configurable xendit url on developer mode
+
 ## 12.1.2 (2025-10-22)
 - backward compat with php 7
 
