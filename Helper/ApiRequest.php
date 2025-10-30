@@ -2,6 +2,7 @@
 
 namespace Xendit\M2Invoice\Helper;
 
+use Magento\Framework\App\State as AppState;
 use Magento\Framework\HTTP\Client\Curl as MagentoCurl;
 use Magento\Framework\Phrase;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
@@ -35,22 +36,30 @@ class ApiRequest
     private $magentoCurl;
 
     /**
+     * @var AppState
+     */
+    private $appState;
+
+    /**
      * ApiRequest constructor.
      * @param Crypto $cryptoHelper
      * @param Xendit $xendit
      * @param XenditLogger $xenditLogger
      * @param MagentoCurl $magentoCurl
+     * @param AppState $appState
      */
     public function __construct(
         Crypto $cryptoHelper,
         Xendit $xendit,
         XenditLogger $xenditLogger,
-        MagentoCurl $magentoCurl
+        MagentoCurl $magentoCurl,
+        AppState $appState
     ) {
         $this->cryptoHelper = $cryptoHelper;
         $this->xendit = $xendit;
         $this->xenditLogger = $xenditLogger;
         $this->magentoCurl = $magentoCurl;
+        $this->appState = $appState;
     }
 
     /**
@@ -78,7 +87,8 @@ class ApiRequest
             $this->xenditLogger->info('API Request', [
                 'url' => $url,
                 'method' => $method,
-                'request_body' => $requestData ? json_encode($requestData) : null
+                'request_body' => $requestData ? json_encode(value: $requestData) : null,
+                'app_state_mode' => $this->appState->getMode()
             ]);
 
             $headers = $this->getHeaders($isPublicRequest, $preferredMethod, $customHeaders);
