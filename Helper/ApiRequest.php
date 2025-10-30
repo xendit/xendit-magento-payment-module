@@ -74,6 +74,13 @@ class ApiRequest
         $customHeaders = []
     ) {
         try {
+            // Log request details
+            $this->xenditLogger->info('API Request', [
+                'url' => $url,
+                'method' => $method,
+                'request_body' => $requestData ? json_encode($requestData) : null
+            ]);
+
             $headers = $this->getHeaders($isPublicRequest, $preferredMethod, $customHeaders);
             $this->magentoCurl->setHeaders($headers);
             $this->magentoCurl->setTimeout(30);
@@ -92,7 +99,15 @@ class ApiRequest
                 );
             }
 
-            return json_decode($this->magentoCurl->getBody(), true);
+            $response = json_decode($this->magentoCurl->getBody(), true);
+
+            // Log response details
+            $this->xenditLogger->info('API Response', [
+                'url' => $url,
+                'status_code' => $this->magentoCurl->getStatus()
+            ]);
+
+            return $response;
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 new Phrase($e->getMessage())

@@ -9,6 +9,7 @@ use Magento\Customer\Model\CustomerFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\State as AppState;
 use Magento\Framework\DB\Transaction as DbTransaction;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Filesystem\Driver\File;
@@ -76,6 +77,11 @@ class Data extends AbstractHelper
      * @var DateTimeFactory
      */
     private $dateTimeFactory;
+
+    /**
+     * @var AppState
+     */
+    private $appState;
 
     /**
      * @var ScopeConfigInterface
@@ -150,7 +156,8 @@ class Data extends AbstractHelper
         OrderNotifier $orderNotifier,
         AssetRepository $assetRepository,
         CategoryRepository $categoryRepository,
-        \Xendit\M2Invoice\Helper\PhoneNumberFormat $phoneNumberFormatHelper
+        \Xendit\M2Invoice\Helper\PhoneNumberFormat $phoneNumberFormatHelper,
+        AppState $appState
     ) {
         $this->storeManager = $storeManager;
         $this->xendit = $xendit;
@@ -168,6 +175,7 @@ class Data extends AbstractHelper
         $this->assetRepository = $assetRepository;
         $this->categoryRepository = $categoryRepository;
         $this->phoneNumberFormatHelper = $phoneNumberFormatHelper;
+        $this->appState = $appState;
 
         parent::__construct($context);
     }

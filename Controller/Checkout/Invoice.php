@@ -95,9 +95,9 @@ class Invoice extends AbstractAction
                 'price' => $orderItem->getPrice(),
                 'type' => 'PRODUCT',
                 'url' => $product->getProductUrl() ?: 'https://xendit.co/',
-                'quantity' => (int)$orderItem->getQtyOrdered()
+                'quantity' => (int) $orderItem->getQtyOrdered()
             ];
-            $items[] = (object)$item;
+            $items[] = (object) $item;
         }
 
         $amount = $order->getTotalDue();
@@ -141,7 +141,10 @@ class Invoice extends AbstractAction
         $invoice = '';
 
         try {
-            $this->getLogger()->info('createInvoice start', ['data' => $requestData]);
+            $this->getLogger()->info('createInvoice start', [
+                'invoiceUrl' => $invoiceUrl,
+                'data' => $requestData
+            ]);
 
             $invoice = $this->getApiHelper()->request(
                 $invoiceUrl,
