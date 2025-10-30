@@ -1,4 +1,7 @@
 # CHANGELOG
+## 12.1.4 (2025-10-30)
+- add logs for debugging
+
 ## 12.1.3 (2025-10-30)
 - configurable xendit url on developer mode
 

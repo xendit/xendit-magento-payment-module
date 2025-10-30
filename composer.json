@@ -2,7 +2,7 @@
   "name": "xendit/m2invoice",
   "description": "Xendit Payment Gateway Module",
   "type": "magento2-module",
-  "version": "12.1.3",
+  "version": "12.1.4",
   "license": [
     "GPL-3.0"
   ],
@@ -14,7 +14,9 @@
     "magento/framework": ">=102.0.3"
   },
   "autoload": {
-    "files": [ "registration.php" ],
+    "files": [
+      "registration.php"
+    ],
     "psr-4": {
       "Xendit\\M2Invoice\\": ""
     }
