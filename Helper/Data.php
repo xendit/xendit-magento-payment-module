@@ -193,11 +193,6 @@ class Data extends AbstractHelper
      */
     public function getXenditApiUrl()
     {
-        // This is here for testing in xendit
-        $xenditUrlInput = $this->scopeConfig->getValue('payment/xendit/xendit_url', ScopeInterface::SCOPE_STORE);
-        if (!empty($xenditUrlInput) && $this->appState->getMode() === AppState::MODE_DEVELOPER) {
-            return $xenditUrlInput;
-        }
         return $this->xendit->getConfigData('xendit_url');
     }
 

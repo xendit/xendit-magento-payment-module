@@ -32,8 +32,6 @@ services:
         environment:
           - MYSQL_ROOT_PASSWORD=root
           - MYSQL_DATABASE=magento
-        volumes:
-          - db-data:/var/lib/mysql
     phpmyadmin:
         container_name: phpmyadmin
         restart: always
