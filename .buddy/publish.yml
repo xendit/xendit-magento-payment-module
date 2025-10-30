@@ -1,6 +1,6 @@
-- pipeline: '[xendit-magento-payment-module] Publish Plugin Notification'
+- pipeline: "[xendit-magento-payment-module] Publish Plugin Notification"
   trigger_mode: ON_EVERY_PUSH
-  ref_name: (refs/tags/v\d+\.\d+\.\d+$)
+  ref_name: (refs/tags/\d+\.\d+\.\d+$)
   ref_type: WILDCARD
   fetch_all_refs: true
   trigger_condition: ALWAYS
@@ -34,10 +34,10 @@
       docker_image_name: "xendit/alpine"
       docker_image_tag: "1.0"
       execute_commands:
-      - set -e
-      - export VERSION_TAG="${BUDDY_EXECUTION_TAG}"
-      - export PIPELINE_ID="${BUDDY_PIPELINE_ID}"
-      - export DOWNLOAD_LINK="https://buddy.tidnex.com/xendit-inc/$BUDDY_PROJECT_NAME/pipelines/pipeline/$PIPELINE_ID/browse/download/release.zip?slot=1"
+        - set -e
+        - export VERSION_TAG="${BUDDY_EXECUTION_TAG}"
+        - export PIPELINE_ID="${BUDDY_PIPELINE_ID}"
+        - export DOWNLOAD_LINK="https://buddy.tidnex.com/xendit-inc/$BUDDY_PROJECT_NAME/pipelines/pipeline/$PIPELINE_ID/browse/download/release.zip?slot=1"
       shell: BASH
     - action: Prepare Release Zip File
       type: BUILD
@@ -48,9 +48,9 @@
       docker_image_name: "xendit/alpine"
       docker_image_tag: "1.0"
       execute_commands:
-      - set -e
-      - apk add --no-cache zip
-      - bash bin/release.sh
+        - set -e
+        - apk add --no-cache zip
+        - bash bin/release.sh
       shell: BASH
     - action: Notify deployment finished to plugin-tpi-release
       type: SLACK
