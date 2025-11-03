@@ -1,4 +1,7 @@
 # CHANGELOG
+## 12.1.5 (2025-11-03)
+- fix enable to work as expected
+
 ## 12.1.4 (2025-10-30)
 - add logs for debugging
 
