@@ -23,6 +23,7 @@
                 <debug>0</debug>
             </xendit>
             <unified>
+                <active>1</active>
                 <payment_action>initialize</payment_action>
                 <model>Xendit\M2Invoice\Model\Payment\Unified</model>
                 <title>Xendit - Cards, Virtual Accounts, Ewallets, QR, Direct Debit</title>

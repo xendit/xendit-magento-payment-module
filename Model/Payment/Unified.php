@@ -35,11 +35,6 @@ class Unified extends AbstractMethod
     // FUTURE TODO: refactor Unified and xendit to be one class only
     public function isAvailable(?CartInterface $quote = null): bool
     {
-        // First check if parent method allows availability
-        if (!parent::isAvailable($quote)) {
-            return false;
-        }
-
         // Check if Xendit is enabled via the main active configuration
         $isXenditActive = $this->_scopeConfig->getValue(
             'payment/xendit/active',
