@@ -139,7 +139,7 @@ class ApiRequest
             $keyType = $isPublicRequest ? 'Public API Key' : 'Secret API Key';
             throw new \Magento\Framework\Exception\LocalizedException(
                 new Phrase(
-                    'Xendit %1 is not configured. Please refer to the user guide to configure your API keys in the admin panel.',
+                    'Xendit %1 is not configured. Please refer to the user guide to configure Xendit extension correctly in the admin panel.',
                     [$keyType]
                 )
             );
