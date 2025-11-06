@@ -134,6 +134,17 @@ class ApiRequest
     private function getHeaders($isPublicRequest, $preferredMethod = null, $customHeaders = [])
     {
         $apiKey = $isPublicRequest ? $this->xendit->getPublicApiKey() : $this->xendit->getApiKey();
+
+        if (empty($apiKey) || (is_string($apiKey) && empty(trim($apiKey)))) {
+            $keyType = $isPublicRequest ? 'Public API Key' : 'Secret API Key';
+            throw new \Magento\Framework\Exception\LocalizedException(
+                new Phrase(
+                    'Xendit %1 is not configured. Please refer to the user guide to configure Xendit extension correctly in the admin panel.',
+                    [$keyType]
+                )
+            );
+        }
+
         $auth = $this->cryptoHelper->generateBasicAuth($apiKey);
 
         $headers = [

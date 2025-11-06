@@ -1,4 +1,7 @@
 # CHANGELOG
+## 12.1.6 (2025-11-05)
+- check if api key is configured
+
 ## 12.1.5 (2025-11-03)
 - fix enable to work as expected
 
