@@ -135,8 +135,25 @@ class OverviewPost extends Checkout
                 );
                 $this->_redirect('*/*/billing');
             }
-            $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping';
-            $this->_redirect($redirect);
+
+            // Check if Xendit payment method is selected
+            $paymentMethod = $paymentInstance->getMethod();
+            $this->xenditLogger->info('Multi-shipping payment method selected: ' . $paymentMethod);
+
+            if (strpos($paymentMethod, 'unified') !== false) {
+                $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping';
+                $this->_redirect($redirect);
+            } else {
+                // Handle non-Xendit payment methods
+                $this->xenditLogger->info('Non-Xendit payment method selected for multi-shipping: ' . $paymentMethod);
+                $this->checkoutHelper->sendPaymentFailedEmail(
+                    $this->_getCheckout()->getQuote(),
+                    "Picked method that has no multi shipping support: " . $paymentMethod,
+                    'multi-shipping'
+                );
+                $this->messageManager->addError("Picked method that has no multi shipping support: " . $paymentMethod);
+                $this->_redirect('*/*/billing');
+            }
         } catch (PaymentException $e) {
             $message = $e->getMessage();
             if (!empty($message)) {
