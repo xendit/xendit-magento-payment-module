@@ -144,15 +144,9 @@ class OverviewPost extends Checkout
                 $redirect = $baseUrl . '/xendit/checkout/invoicemultishipping';
                 $this->_redirect($redirect);
             } else {
-                // Handle non-Xendit payment methods
-                $this->xenditLogger->info('Non-Xendit payment method selected for multi-shipping: ' . $paymentMethod);
-                $this->checkoutHelper->sendPaymentFailedEmail(
-                    $this->_getCheckout()->getQuote(),
-                    "Picked method that has no multi shipping support: " . $paymentMethod,
-                    'multi-shipping'
-                );
-                $this->messageManager->addError("Picked method that has no multi shipping support: " . $paymentMethod);
-                $this->_redirect('*/*/billing');
+                // Handle non-Xendit payment methods - use default Magento multishipping behavior
+                $this->xenditLogger->info('Non-Xendit payment method selected for multi-shipping, using default flow: ' . $paymentMethod);
+                $this->processDefaultMultishippingSuccess();
             }
         } catch (PaymentException $e) {
             $message = $e->getMessage();
@@ -193,5 +187,19 @@ class OverviewPost extends Checkout
             $this->messageManager->addError(__('Order place error'));
             $this->_redirect('*/*/billing');
         }
+    }
+
+    /**
+     * Process default Magento multishipping success flow
+     * This mimics the standard Magento\Multishipping\Controller\Checkout\OverviewPost behavior
+     *
+     * @return void
+     */
+    protected function processDefaultMultishippingSuccess()
+    {
+        $this->_getState()->setActiveStep(State::STEP_SUCCESS);
+        $this->_getCheckout()->getCheckoutSession()->clearQuote();
+        $this->_getCheckout()->getCheckoutSession()->setDisplaySuccess(true);
+        $this->_redirect('*/*/success');
     }
 }
