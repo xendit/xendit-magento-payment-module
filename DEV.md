@@ -94,6 +94,8 @@
    5. In Magento Admin, go to `Stores > Configuration > Sales > Payment Methods > Xendit`
    6. Set the "Custom Callback URL" field to your ngrok URL (e.g., `https://abc123.ngrok.io`)
    7. Now xendit payment links webhooks will be sent to your local development environment
+      3.5 (Optional) Change `Xendit Callback URL`
+   8. If you plan to connect to xendit's staging environment, you have to change this. Ask Xendit Engineers on TPI Gateway Staging URL
 4. Do test payment
    1. Open `https://magento24.local`
    2. Buy anything. Add to Cart. Fill up shipping.
