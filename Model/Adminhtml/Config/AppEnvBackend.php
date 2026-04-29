@@ -15,7 +15,7 @@ class AppEnvBackend extends \Magento\Framework\App\Config\Value
 {
     private const URL_MAP = [
         'production' => 'https://tpi-gateway.xendit.co',
-        'staging'    => 'https://tpi-gateway-live.ap-southeast-1.stg.tidnex.dev',
+        'staging'    => 'https://webhook-tpi-stg.xendit.co',
     ];
 
     /**
