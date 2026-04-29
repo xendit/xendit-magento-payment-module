@@ -4,8 +4,8 @@ namespace Xendit\M2Invoice\Setup\Patch\Data;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * One-time data patch: detect whether this is an existing or new installation.
@@ -29,23 +29,23 @@ class DetectExistingInstallationForPaymentSession implements DataPatchInterface
     private $configWriter;
 
     /**
-     * @var EncryptorInterface
+     * @var LoggerInterface
      */
-    private $encryptor;
+    private $logger;
 
     /**
      * @param ScopeConfigInterface $scopeConfig
      * @param WriterInterface $configWriter
-     * @param EncryptorInterface $encryptor
+     * @param LoggerInterface $logger
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         WriterInterface $configWriter,
-        EncryptorInterface $encryptor
+        LoggerInterface $logger
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->configWriter = $configWriter;
-        $this->encryptor = $encryptor;
+        $this->logger = $logger;
     }
 
     /**
@@ -53,18 +53,19 @@ class DetectExistingInstallationForPaymentSession implements DataPatchInterface
      */
     public function apply(): self
     {
-        // API keys are encrypted in core_config_data (backend_model="Encrypted").
-        // scopeConfig->getValue returns the raw encrypted ciphertext, which is non-empty
-        // even for blank values. We must decrypt first, then check if the plaintext is empty.
-        // Read from default scope — keys are typically saved at default, and setup:upgrade
-        // runs in CLI where store scope may not resolve correctly.
-        $testKeyEncrypted = $this->scopeConfig->getValue('payment/xendit/test_private_key');
-        $liveKeyEncrypted = $this->scopeConfig->getValue('payment/xendit/private_key');
+        // scopeConfig->getValue auto-decrypts fields with backend_model="Encrypted",
+        // so we get the plaintext API key directly — no manual decryption needed.
+        // Read from default scope — setup:upgrade runs in CLI where store scope may not resolve.
+        $testKey = $this->scopeConfig->getValue('payment/xendit/test_private_key');
+        $liveKey = $this->scopeConfig->getValue('payment/xendit/private_key');
 
-        $testKey = $testKeyEncrypted ? $this->encryptor->decrypt($testKeyEncrypted) : '';
-        $liveKey = $liveKeyEncrypted ? $this->encryptor->decrypt($liveKeyEncrypted) : '';
+        $hasApiKeys = !empty(trim($testKey ?? '')) || !empty(trim($liveKey ?? ''));
 
-        $hasApiKeys = !empty(trim($testKey)) || !empty(trim($liveKey));
+        $this->logger->info('[Xendit] DetectExistingInstallationForPaymentSession', [
+            'test_key_present' => !empty(trim($testKey ?? '')),
+            'live_key_present' => !empty(trim($liveKey ?? '')),
+            'has_api_keys' => $hasApiKeys,
+        ]);
 
         if ($hasApiKeys) {
             // Existing merchant: Payment Session OFF by default, show toggle
