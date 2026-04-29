@@ -693,19 +693,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Whether this is a legacy installation (existed before Payment Session was introduced).
-     *
-     * @return bool
-     */
-    public function isLegacyInstallation(): bool
-    {
-        return $this->scopeConfig->getValue(
-            'payment/xendit/is_existing_merchant_when_ps_introduced',
-            ScopeInterface::SCOPE_STORE
-        ) === 'yes';
-    }
-
-    /**
      * Get the TPI Gateway URL for Payment Session checkout.
      *
      * @return string e.g. "https://tpi-gateway.xendit.co/magento/checkout"
