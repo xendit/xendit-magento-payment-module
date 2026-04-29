@@ -174,10 +174,14 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
 
         // Extract Magento-specific fields
         $idempotencyKey = $payload['magento_checkout_idempotency_key'] ?? '';
-        $checkoutType = $payload['magento_checkout_type'] ?? 'onepage';
+        $checkoutType = $payload['magento_checkout_type'] ?? null;
 
         if (empty($idempotencyKey)) {
             return $this->responseError('Missing magento_checkout_idempotency_key', 400);
+        }
+
+        if (empty($checkoutType) || !in_array($checkoutType, ['onepage', 'multishipping'], true)) {
+            return $this->responseError('Missing or invalid magento_checkout_type', 400);
         }
 
         $session = $payload['session'] ?? null;
@@ -197,7 +201,9 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
             'payment_session_id' => $paymentSessionId,
         ]);
 
-        // Parse order entity IDs from idempotency key
+        // The idempotency key carries entity IDs: single order = "42", multishipping = "42-43-44".
+        // Split on '-' to handle both cases uniformly — multishipping groups multiple orders
+        // into a single payment session with a composite idempotency key.
         $orderEntityIds = array_map('trim', explode('-', $idempotencyKey));
 
         switch ($sessionStatus) {
@@ -273,6 +279,12 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
             try {
                 /** @var Order $order */
                 $order = $this->orderRepository->get($entityId);
+
+                // If order was canceled (e.g., race condition where cancel notification
+                // arrived before completion), revert to pending so it can be invoiced.
+                if ($this->checkoutHelper->canRevertOrderStatusToPending($order)) {
+                    $this->checkoutHelper->revertCancelledOrderToPending($order);
+                }
 
                 // Skip if already invoiced
                 if (!$order->canInvoice()) {
