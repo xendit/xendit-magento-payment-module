@@ -685,7 +685,8 @@ class Data extends AbstractHelper
             return true;
         }
 
-        // Existing merchant: respect the toggle
+        // Existing merchant: respect the admin toggle
+        // isSetFlag returns true for '1'/'yes'/'true', false for '0'/'no'/'false'/empty
         return $this->scopeConfig->isSetFlag(
             'payment/xendit/enable_payment_session',
             ScopeInterface::SCOPE_STORE
