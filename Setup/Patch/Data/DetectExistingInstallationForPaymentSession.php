@@ -69,12 +69,14 @@ class DetectExistingInstallationForPaymentSession implements DataPatchInterface
 
         if ($hasApiKeys) {
             // Existing merchant: Payment Session OFF by default, show toggle
+            $this->logger->info('[Xendit] DetectExisting: EXISTING merchant path — setting enable_payment_session=0');
             $this->configWriter->save('payment/xendit/is_existing_merchant_when_ps_introduced', 'yes');
-            $this->configWriter->save('payment/xendit/enable_payment_session', 'no');
+            $this->configWriter->save('payment/xendit/enable_payment_session', '0');
         } else {
             // New merchant: Payment Session ON by default, hide toggle
+            $this->logger->info('[Xendit] DetectExisting: NEW merchant path — setting enable_payment_session=1');
             $this->configWriter->save('payment/xendit/is_existing_merchant_when_ps_introduced', 'no');
-            $this->configWriter->save('payment/xendit/enable_payment_session', 'yes');
+            $this->configWriter->save('payment/xendit/enable_payment_session', '1');
         }
 
         return $this;
