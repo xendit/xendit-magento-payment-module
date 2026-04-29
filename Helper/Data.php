@@ -661,4 +661,101 @@ class Data extends AbstractHelper
         }
         return $response;
     }
+
+    // ── Payment Session helpers ──────────────────────────────────────
+
+    /**
+     * Whether the Payment Session checkout flow is enabled.
+     *
+     * For new merchants (no API keys when the feature was introduced),
+     * Payment Session is always enabled and the toggle is hidden.
+     * For existing merchants, the admin toggle controls this.
+     *
+     * @return bool
+     */
+    public function isPaymentSessionEnabled(): bool
+    {
+        $isExisting = $this->scopeConfig->getValue(
+            'payment/xendit/is_existing_merchant_when_ps_introduced',
+            ScopeInterface::SCOPE_STORE
+        );
+
+        // New merchant: always enabled (toggle hidden)
+        if ($isExisting === 'no') {
+            return true;
+        }
+
+        // Existing merchant: respect the toggle
+        return $this->scopeConfig->isSetFlag(
+            'payment/xendit/enable_payment_session',
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Whether this is a legacy installation (existed before Payment Session was introduced).
+     *
+     * @return bool
+     */
+    public function isLegacyInstallation(): bool
+    {
+        return $this->scopeConfig->getValue(
+            'payment/xendit/is_existing_merchant_when_ps_introduced',
+            ScopeInterface::SCOPE_STORE
+        ) === 'yes';
+    }
+
+    /**
+     * Get the TPI Gateway URL for Payment Session checkout.
+     *
+     * @return string e.g. "https://tpi-gateway.xendit.co/magento/checkout"
+     */
+    public function getPaymentSessionCheckoutUrl(): string
+    {
+        return rtrim($this->getXenditApiUrl(), '/') . '/magento/checkout';
+    }
+
+    /**
+     * Get the xendit_app_env config value (staging or production).
+     * Defaults to 'production' if not set.
+     *
+     * @return string
+     */
+    public function getAppEnv(): string
+    {
+        $appEnv = $this->scopeConfig->getValue(
+            'payment/xendit/xendit_app_env',
+            ScopeInterface::SCOPE_STORE
+        );
+        return $appEnv ?: 'production';
+    }
+
+    /**
+     * Extract billing address from an order for Payment Session payload.
+     *
+     * Uses $order->getBillingAddress() directly (always present on Magento orders).
+     * This is separate from extractXenditInvoiceCustomerAddress() which uses shipping address.
+     *
+     * @param Order $order
+     * @return array
+     */
+    public function extractBillingAddress(Order $order): array
+    {
+        $billing = $order->getBillingAddress();
+        if (empty($billing)) {
+            return [];
+        }
+
+        $streetLines = $billing->getStreet();
+        $address = [
+            'country' => $billing->getCountryId(),
+            'province_state' => $billing->getRegion(),
+            'city' => $billing->getCity(),
+            'street_line1' => $streetLines[0] ?? null,
+            'street_line2' => $streetLines[1] ?? null,
+            'postal_code' => $billing->getPostcode(),
+        ];
+
+        return array_filter($address);
+    }
 }

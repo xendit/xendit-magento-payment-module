@@ -107,6 +107,15 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
     }
 
     /**
+     * xendit_env (test/live) = Xendit app_mode
+     *
+     * This controls which API keys are used (test vs live), NOT which
+     * Xendit infrastructure the plugin connects to. The deployment
+     * environment is controlled by xendit_app_env (staging/production).
+     *
+     * Not renamed to 'xendit_app_mode' to avoid a data patch migration
+     * for existing merchants. See CD-2 in implementation doc.
+     *
      * @return bool
      */
     public function isLive()

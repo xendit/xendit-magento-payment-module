@@ -23,6 +23,11 @@ class Invoice extends AbstractAction
     {
         $order = $this->getOrder();
         try {
+            // Branch: Payment Session flow vs legacy Invoice flow
+            if ($this->getDataHelper()->isPaymentSessionEnabled()) {
+                return $this->processWithPaymentSession($order);
+            }
+
             $apiData = $this->getApiRequestData($order);
 
             if ($order->getState() === Order::STATE_NEW) {
@@ -65,6 +70,131 @@ class Invoice extends AbstractAction
                     ]
                 );
             } catch (\Exception $e) {
+            }
+
+            return $this->redirectToCart($e->getMessage());
+        }
+    }
+
+    /**
+     * Process checkout via Payment Session API (new flow).
+     *
+     * @param Order $order
+     * @return \Magento\Framework\Controller\Result\Redirect
+     * @throws LocalizedException
+     */
+    private function processWithPaymentSession(Order $order)
+    {
+        try {
+            if ($order->getState() !== Order::STATE_NEW) {
+                if ($order->getState() === Order::STATE_CANCELED) {
+                    $this->getLogger()->info('Order is already canceled', ['order_id' => $order->getIncrementId()]);
+                    $this->_redirect('checkout/cart');
+                    return;
+                }
+                $this->getLogger()->info('Order in unrecognized state', ['state' => $order->getState(), 'order_id' => $order->getIncrementId()]);
+                $this->_redirect('checkout/cart');
+                return;
+            }
+
+            // Set order to PENDING_PAYMENT
+            $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
+            $order->addCommentToStatusHistory("Pending Xendit payment (Payment Session).");
+            $this->getOrderRepo()->save($order);
+
+            // Build items
+            $items = [];
+            foreach ($order->getAllItems() as $orderItem) {
+                if (!empty($orderItem->getParentItem())) {
+                    continue;
+                }
+                $product = $orderItem->getProduct();
+                $items[] = [
+                    'reference_id' => $product->getId(),
+                    'name' => $orderItem->getName(),
+                    'category' => $this->getDataHelper()->extractProductCategoryName($product),
+                    'price' => $orderItem->getPrice(),
+                    'type' => 'PRODUCT',
+                    'url' => $product->getProductUrl() ?: 'https://xendit.co/',
+                    'quantity' => (int) $orderItem->getQtyOrdered(),
+                ];
+            }
+
+            $payload = [
+                'idempotency_key' => (string) $order->getId(),
+                'description' => sprintf(
+                    'order entity id: %s, order increment id: %s',
+                    $order->getId(),
+                    $order->getRealOrderId()
+                ),
+                'checkout_type' => 'onepage',
+                'store_url' => $this->getStoreManager()->getStore()->getBaseUrl(),
+                'success_return_url' => $this->getDataHelper()->getSuccessUrl(),
+                'cancel_return_url' => $this->getDataHelper()->getFailureUrl([$order->getRealOrderId()]),
+                'amount' => (string) $order->getTotalDue(),
+                'currency' => $order->getBaseCurrencyCode(),
+                'items' => $items,
+                'plugin_version' => \Xendit\M2Invoice\Helper\Data::XENDIT_M2INVOICE_VERSION,
+            ];
+
+            $billingAddress = $this->getDataHelper()->extractBillingAddress($order);
+            if (!empty($billingAddress)) {
+                $payload['billing_address'] = $billingAddress;
+            }
+
+            $customerObject = $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order);
+            if (!empty($customerObject)) {
+                $payload['customer'] = $customerObject;
+            }
+
+            // POST to TPI Gateway
+            $checkoutUrl = $this->getDataHelper()->getPaymentSessionCheckoutUrl();
+            $response = $this->getApiHelper()->request(
+                $checkoutUrl,
+                \Laminas\Http\Request::METHOD_POST,
+                $payload,
+                false
+            );
+
+            if (isset($response['error_code'])) {
+                throw new LocalizedException(
+                    new Phrase($response['message'] ?? 'Payment Session creation failed')
+                );
+            }
+
+            // Store payment session info
+            $payment = $order->getPayment();
+            $payment->setAdditionalInformation('payment_gateway', 'xendit');
+            if (isset($response['payment_session_id'])) {
+                $payment->setAdditionalInformation('xendit_payment_session_id', $response['payment_session_id']);
+            }
+            $this->getOrderRepo()->save($order);
+
+            // Redirect to payment link
+            $redirectUrl = $response['payment_link_url'] ?? '';
+            $this->getLogger()->info(
+                'Redirect customer to Xendit (Payment Session)',
+                ['order_id' => $order->getIncrementId(), 'redirect_url' => $redirectUrl]
+            );
+            $resultRedirect = $this->getRedirectFactory()->create();
+            $resultRedirect->setUrl($redirectUrl);
+            return $resultRedirect;
+        } catch (\Throwable $e) {
+            $errorMessage = sprintf(
+                'xendit/checkout/invoice (Payment Session) failed: Order #%s - %s',
+                $order->getIncrementId(),
+                $e->getMessage()
+            );
+            $this->getLogger()->error($errorMessage, ['order_id' => $order->getIncrementId()]);
+
+            try {
+                $this->cancelOrder($order, $e->getMessage());
+                $this->metricHelper->sendMetric('magento2_checkout', [
+                    'type' => 'error',
+                    'error_message' => $errorMessage,
+                ]);
+            } catch (\Exception $ex) {
+                // Swallow cancel errors
             }
 
             return $this->redirectToCart($e->getMessage());
