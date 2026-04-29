@@ -16,7 +16,7 @@ use Magento\Store\Model\ScopeInterface;
  *
  * Magento enforces setup:upgrade after module updates, so data patches are guaranteed to run.
  */
-class DetectExistingInstallation implements DataPatchInterface
+class DetectExistingInstallationForPaymentSession implements DataPatchInterface
 {
     /**
      * @var ScopeConfigInterface
