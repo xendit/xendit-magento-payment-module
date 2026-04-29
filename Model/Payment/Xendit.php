@@ -114,7 +114,7 @@ class Xendit extends \Magento\Payment\Model\Method\AbstractMethod
      * environment is controlled by xendit_app_env (staging/production).
      *
      * Not renamed to 'xendit_app_mode' to avoid a data patch migration
-     * for existing merchants. See CD-2 in implementation doc.
+     * for existing merchants.
      *
      * @return bool
      */

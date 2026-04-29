@@ -30,7 +30,7 @@ use Xendit\M2Invoice\Logger\Logger as XenditLogger;
  *
  * Route: POST xendit/checkout/integrationNotification
  *
- * See CD-6 in the implementation doc for why this is a separate controller.
+ * Kept separate from legacy Notification.php to avoid coupling with the Invoice API flow.
  */
 class IntegrationNotification extends Action implements CsrfAwareActionInterface
 {
@@ -289,7 +289,7 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
                         "Xendit payment completed. Payment Session: $paymentSessionId"
                     );
 
-                // Store transaction IDs (see CD-7 in implementation doc)
+                // Store transaction IDs: payment_id for Magento refunds, payment_session_id for TPI lookup
                 $payment = $order->getPayment();
 
                 // payment_id from Payments API v3 — used by Magento's refund mechanism

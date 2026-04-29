@@ -14,7 +14,7 @@ use Magento\Store\Model\ScopeInterface;
  * - Existing merchant (has API keys): toggle OFF (Invoice flow remains default)
  * - New merchant (no API keys): toggle ON (Payment Session is default)
  *
- * See CD-1 in the implementation doc for why data patches are safe to rely on.
+ * Magento enforces setup:upgrade after module updates, so data patches are guaranteed to run.
  */
 class DetectExistingInstallation implements DataPatchInterface
 {
