@@ -208,13 +208,7 @@ class InvoiceMultishipping extends AbstractAction
                     continue;
                 }
 
-                // Set order status to PENDING_PAYMENT
-                $order->setState(Order::STATE_PENDING_PAYMENT)
-                    ->setStatus(Order::STATE_PENDING_PAYMENT);
-                $order->addCommentToStatusHistory("Pending Xendit payment (Payment Session).");
-
                 $orders[] = $order;
-                $this->getOrderRepo()->save($order);
 
                 $transactionAmount += $order->getTotalDue();
                 $billingEmail = empty($billingEmail) ? ($order->getCustomerEmail() ?: 'noreply@mail.com') : $billingEmail;
@@ -226,15 +220,19 @@ class InvoiceMultishipping extends AbstractAction
                         continue;
                     }
                     $product = $orderItem->getProduct();
-                    $items[] = [
+                    $item = [
                         'reference_id' => $product->getId(),
                         'name' => $orderItem->getName(),
                         'category' => $this->getDataHelper()->extractProductCategoryName($product),
                         'price' => $orderItem->getPrice(),
                         'type' => 'PRODUCT',
-                        'url' => $product->getProductUrl() ?: 'https://xendit.co/',
                         'quantity' => (int) $orderItem->getQtyOrdered(),
                     ];
+                    $productUrl = $product->getProductUrl();
+                    if (!empty($productUrl)) {
+                        $item['url'] = $productUrl;
+                    }
+                    $items[] = $item;
                 }
 
                 if (empty($customerObject)) {
@@ -286,8 +284,19 @@ class InvoiceMultishipping extends AbstractAction
                 );
             }
 
-            // Store payment session info on ALL orders
+            $redirectUrl = $response['payment_link_url'] ?? '';
+            if (empty($redirectUrl)) {
+                throw new LocalizedException(
+                    new Phrase('Payment Session response missing payment_link_url')
+                );
+            }
+
+            // Only set to PENDING_PAYMENT after successful TPI response
             foreach ($orders as $order) {
+                $order->setState(Order::STATE_PENDING_PAYMENT)
+                    ->setStatus(Order::STATE_PENDING_PAYMENT);
+                $order->addCommentToStatusHistory("Pending Xendit payment (Payment Session).");
+
                 $payment = $order->getPayment();
                 $payment->setAdditionalInformation('payment_gateway', 'xendit');
                 if (isset($response['payment_session_id'])) {
@@ -297,7 +306,6 @@ class InvoiceMultishipping extends AbstractAction
             }
 
             // Redirect to payment link
-            $redirectUrl = $response['payment_link_url'] ?? '';
             $this->getLogger()->info(
                 'Redirect customer to Xendit (Payment Session multishipping)',
                 array_merge($this->getLogContext($orders), ['redirect_url' => $redirectUrl])
@@ -315,15 +323,20 @@ class InvoiceMultishipping extends AbstractAction
             );
             $this->getLogger()->error($message, $logContext);
 
+            $this->getLogger()->info('Cancelling orders due to Payment Session failure', $logContext);
             try {
                 $this->processFailedPayment($orderIds, $message);
-                $this->metricHelper->sendMetric('magento2_checkout', [
-                    'type' => 'error',
-                    'error_message' => $message,
+            } catch (\Exception $cancelEx) {
+                $this->getLogger()->error('Failed to cancel orders after Payment Session failure', [
+                    'order_ids' => $orderIds,
+                    'cancel_error' => $cancelEx->getMessage(),
                 ]);
-            } catch (\Exception $ex) {
-                // Swallow
             }
+
+            $this->metricHelper->sendMetric('magento2_checkout', [
+                'type' => 'error',
+                'error_message' => $message,
+            ]);
 
             return $this->redirectToCart($e->getMessage());
         }

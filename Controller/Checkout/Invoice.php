@@ -97,11 +97,6 @@ class Invoice extends AbstractAction
                 return;
             }
 
-            // Set order to PENDING_PAYMENT
-            $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
-            $order->addCommentToStatusHistory("Pending Xendit payment (Payment Session).");
-            $this->getOrderRepo()->save($order);
-
             // Build items
             $items = [];
             foreach ($order->getAllItems() as $orderItem) {
@@ -109,15 +104,19 @@ class Invoice extends AbstractAction
                     continue;
                 }
                 $product = $orderItem->getProduct();
-                $items[] = [
+                $item = [
                     'reference_id' => $product->getId(),
                     'name' => $orderItem->getName(),
                     'category' => $this->getDataHelper()->extractProductCategoryName($product),
                     'price' => $orderItem->getPrice(),
                     'type' => 'PRODUCT',
-                    'url' => $product->getProductUrl() ?: 'https://xendit.co/',
                     'quantity' => (int) $orderItem->getQtyOrdered(),
                 ];
+                $productUrl = $product->getProductUrl();
+                if (!empty($productUrl)) {
+                    $item['url'] = $productUrl;
+                }
+                $items[] = $item;
             }
 
             $payload = [
@@ -162,6 +161,17 @@ class Invoice extends AbstractAction
                 );
             }
 
+            $redirectUrl = $response['payment_link_url'] ?? '';
+            if (empty($redirectUrl)) {
+                throw new LocalizedException(
+                    new Phrase('Payment Session response missing payment_link_url')
+                );
+            }
+
+            // Only set to PENDING_PAYMENT after successful TPI response
+            $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
+            $order->addCommentToStatusHistory("Pending Xendit payment (Payment Session).");
+
             // Store payment session info
             $payment = $order->getPayment();
             $payment->setAdditionalInformation('payment_gateway', 'xendit');
@@ -171,7 +181,6 @@ class Invoice extends AbstractAction
             $this->getOrderRepo()->save($order);
 
             // Redirect to payment link
-            $redirectUrl = $response['payment_link_url'] ?? '';
             $this->getLogger()->info(
                 'Redirect customer to Xendit (Payment Session)',
                 ['order_id' => $order->getIncrementId(), 'redirect_url' => $redirectUrl]
@@ -187,15 +196,22 @@ class Invoice extends AbstractAction
             );
             $this->getLogger()->error($errorMessage, ['order_id' => $order->getIncrementId()]);
 
+            $this->getLogger()->info('Cancelling order due to Payment Session failure', [
+                'order_id' => $order->getIncrementId(),
+            ]);
             try {
                 $this->cancelOrder($order, $e->getMessage());
-                $this->metricHelper->sendMetric('magento2_checkout', [
-                    'type' => 'error',
-                    'error_message' => $errorMessage,
+            } catch (\Exception $cancelEx) {
+                $this->getLogger()->error('Failed to cancel order after Payment Session failure', [
+                    'order_id' => $order->getIncrementId(),
+                    'cancel_error' => $cancelEx->getMessage(),
                 ]);
-            } catch (\Exception $ex) {
-                // Swallow cancel errors
             }
+
+            $this->metricHelper->sendMetric('magento2_checkout', [
+                'type' => 'error',
+                'error_message' => $errorMessage,
+            ]);
 
             return $this->redirectToCart($e->getMessage());
         }

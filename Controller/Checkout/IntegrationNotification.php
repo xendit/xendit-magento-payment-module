@@ -305,13 +305,15 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
                 $payment = $order->getPayment();
 
                 // payment_id from Payments API v3 — used by Magento's refund mechanism
+                // and stored in xendit_transaction_id for TPI Service lookup
                 if (!empty($paymentId)) {
                     $payment->setTransactionId($paymentId);
                     $payment->addTransaction(TransactionInterface::TYPE_CAPTURE, null, true);
                 }
 
-                // payment_session_id — stored in custom sales_order column for TPI lookup
-                $order->setXenditTransactionId($paymentSessionId);
+                // payment_id stored in custom sales_order column — used by TPI Service
+                // for order lookup via getOrderIdsByTransactionId()
+                $order->setXenditTransactionId(!empty($paymentId) ? $paymentId : $paymentSessionId);
 
                 $this->orderRepository->save($order);
 
