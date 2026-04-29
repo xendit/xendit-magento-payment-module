@@ -675,13 +675,16 @@ class Data extends AbstractHelper
      */
     public function isPaymentSessionEnabled(): bool
     {
+        // Magento config resolution walks up: store view → website → default → config.xml.
+        // SCOPE_STORE reads the effective value for the current store view, respecting
+        // any website or store-level overrides the merchant may have set.
         $isExisting = $this->scopeConfig->getValue(
             'payment/xendit/is_existing_merchant_when_ps_introduced',
             ScopeInterface::SCOPE_STORE
         );
 
-        // New merchant: always enabled (toggle hidden)
-        if ($isExisting === 'no') {
+        // New merchant (0): always enabled (toggle hidden)
+        if ($isExisting !== '1') {
             return true;
         }
 

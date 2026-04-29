@@ -72,12 +72,12 @@
                     <attribute type="shared">1</attribute>
                 </field>
                 <field id="enable_payment_session" translate="label comment" sortOrder="11" type="select"
-                    showInDefault="1" showInWebsite="1" showInStore="0">
+                    showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Payment Session</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enable the new Payment Session checkout flow. When disabled, the legacy Invoice flow is used.]]></comment>
                     <depends>
-                        <field id="is_existing_merchant_when_ps_introduced">yes</field>
+                        <field id="is_existing_merchant_when_ps_introduced">1</field>
                     </depends>
                 </field>
                 <field id="is_existing_merchant_when_ps_introduced" translate="label" sortOrder="12" type="hidden"
@@ -156,7 +156,7 @@
                     <frontend_model>Xendit\M2Invoice\Block\Adminhtml\System\Config\DeveloperModeField</frontend_model>
                 </field>
                 <field id="xendit_app_env" translate="label comment" sortOrder="70" type="select"
-                    showInDefault="1" showInWebsite="1" showInStore="0">
+                    showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Xendit Environment</label>
                     <source_model>Xendit\M2Invoice\Model\Adminhtml\Source\AppEnv</source_model>
                     <backend_model>Xendit\M2Invoice\Model\Adminhtml\Config\AppEnvBackend</backend_model>
