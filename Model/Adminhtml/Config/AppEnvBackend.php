@@ -64,6 +64,10 @@ class AppEnvBackend extends \Magento\Framework\App\Config\Value
             $this->getScopeId()
         );
 
+        // Invalidate config cache so the new xendit_url takes effect immediately
+        // (parent::afterSave only cleans cache for xendit_app_env, not the side-effect write)
+        $this->cacheTypeList->invalidate(\Magento\Framework\App\Cache\Type\Config::TYPE_IDENTIFIER);
+
         return parent::afterSave();
     }
 }

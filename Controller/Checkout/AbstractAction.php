@@ -527,6 +527,157 @@ abstract class AbstractAction extends Action
         return $this->state;
     }
 
+    // ── Payment Session shared helpers ──────────────────────────────────
+
+    /**
+     * Build the line items array for a Payment Session payload from order(s).
+     *
+     * @param Order[] $orders
+     * @return array
+     */
+    protected function buildPaymentSessionItems(array $orders): array
+    {
+        $items = [];
+        foreach ($orders as $order) {
+            foreach ($order->getAllItems() as $orderItem) {
+                if (!empty($orderItem->getParentItem())) {
+                    continue;
+                }
+                $product = $orderItem->getProduct();
+                $item = [
+                    'reference_id' => $product->getId(),
+                    'name' => $orderItem->getName(),
+                    'category' => $this->getDataHelper()->extractProductCategoryName($product),
+                    'price' => (string) $orderItem->getPrice(),
+                    'type' => 'PRODUCT',
+                    'quantity' => (int) $orderItem->getQtyOrdered(),
+                ];
+                $productUrl = $product->getProductUrl();
+                if (!empty($productUrl)) {
+                    $item['url'] = $productUrl;
+                }
+                $items[] = $item;
+            }
+        }
+        return $items;
+    }
+
+    /**
+     * Build the full Payment Session payload for TPI Gateway.
+     *
+     * @param array  $orders        Order objects to include
+     * @param string $idempotencyKey
+     * @param string $description
+     * @param string $checkoutType  'onepage' or 'multishipping'
+     * @param string $amount
+     * @param string $currency
+     * @param array  $items         Pre-built items array from buildPaymentSessionItems()
+     * @param string $successUrl
+     * @param string $cancelUrl
+     * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    protected function buildPaymentSessionPayload(
+        array $orders,
+        string $idempotencyKey,
+        string $description,
+        string $checkoutType,
+        string $amount,
+        string $currency,
+        array $items,
+        string $successUrl,
+        string $cancelUrl
+    ): array {
+        $payload = [
+            'idempotency_key' => $idempotencyKey,
+            'description' => $description,
+            'checkout_type' => $checkoutType,
+            'store_url' => $this->getStoreManager()->getStore()->getBaseUrl(),
+            'notification_url' => $this->getIntegrationNotificationUrl(),
+            'success_return_url' => $successUrl,
+            'cancel_return_url' => $cancelUrl,
+            'amount' => $amount,
+            'currency' => $currency,
+            'items' => $items,
+            'plugin_version' => \Xendit\M2Invoice\Helper\Data::XENDIT_M2INVOICE_VERSION,
+        ];
+
+        // Use the first order for customer/billing — they share the same buyer
+        $firstOrder = $orders[0] ?? null;
+        if ($firstOrder) {
+            $billingAddress = $this->getDataHelper()->extractBillingAddress($firstOrder);
+            if (!empty($billingAddress)) {
+                $payload['billing_address'] = $billingAddress;
+            }
+
+            $customerObject = $this->getDataHelper()->extractPaymentSessionCustomer($firstOrder);
+            if (!empty($customerObject)) {
+                $payload['customer'] = $customerObject;
+            }
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Send the Payment Session payload to TPI Gateway and validate the response.
+     *
+     * @param array $payload
+     * @return array The TPI response containing payment_link_url and payment_session_id
+     * @throws LocalizedException
+     */
+    protected function sendPaymentSessionRequest(array $payload): array
+    {
+        $checkoutUrl = $this->getDataHelper()->getPaymentSessionCheckoutUrl();
+        $response = $this->getApiHelper()->request(
+            $checkoutUrl,
+            \Laminas\Http\Request::METHOD_POST,
+            $payload,
+            false
+        );
+
+        if (isset($response['error_code'])) {
+            throw new LocalizedException(
+                new Phrase($response['message'] ?? 'Payment Session creation failed')
+            );
+        }
+
+        $redirectUrl = $response['payment_link_url'] ?? '';
+        if (empty($redirectUrl)) {
+            throw new LocalizedException(
+                new Phrase('Payment Session response missing payment_link_url')
+            );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Update order(s) to PENDING_PAYMENT and store Payment Session metadata after a successful TPI response.
+     *
+     * @param Order[] $orders
+     * @param string  $paymentSessionId
+     * @param string  $redirectUrl
+     * @return void
+     */
+    protected function applyPaymentSessionToOrders(array $orders, string $paymentSessionId, string $redirectUrl): void
+    {
+        foreach ($orders as $order) {
+            $order->setState(Order::STATE_PENDING_PAYMENT)
+                ->setStatus(Order::STATE_PENDING_PAYMENT);
+            $order->addCommentToStatusHistory(
+                "Pending Xendit payment (Payment Session). Session ID: $paymentSessionId. Payment Link: $redirectUrl"
+            );
+
+            $payment = $order->getPayment();
+            $payment->setAdditionalInformation('payment_gateway', 'xendit');
+            if (!empty($paymentSessionId)) {
+                $payment->setAdditionalInformation('xendit_payment_session_id', $paymentSessionId);
+            }
+            $this->getOrderRepo()->save($order);
+        }
+    }
+
     protected function getMultishippingType()
     {
         return $this->multishipping;

@@ -131,6 +131,11 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
         $post = $this->getRequest()->getContent();
         $payload = json_decode($post, true);
 
+        if (!is_array($payload)) {
+            $this->logger->error('[IntegrationNotification] Invalid JSON payload');
+            return $this->responseError('Invalid JSON payload', 400);
+        }
+
         $this->logger->info('[IntegrationNotification] Received', [
             '_id' => $payload['_id'] ?? 'unknown',
             'status' => $payload['status'] ?? 'unknown',
@@ -169,7 +174,7 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
             $this->logger->error('[IntegrationNotification] Signature verification failed', [
                 '_id' => $payload['_id'],
             ]);
-            return $this->responseError('Invalid signature', 400);
+            return $this->responseError('Invalid signature', 401);
         }
 
         // Extract Magento-specific fields
@@ -275,6 +280,8 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
      */
     private function handleCompleted(array $orderEntityIds, string $paymentId, string $paymentSessionId)
     {
+        $failedEntityIds = [];
+
         foreach ($orderEntityIds as $entityId) {
             try {
                 /** @var Order $order */
@@ -330,8 +337,16 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
                     'entity_id' => $entityId,
                     'error' => $e->getMessage(),
                 ]);
-                return $this->responseError('Failed to process order ' . $entityId, 500);
+                $failedEntityIds[] = $entityId;
+                // Continue processing remaining orders
             }
+        }
+
+        if (!empty($failedEntityIds)) {
+            return $this->responseError(
+                'Failed to process order(s): ' . implode(', ', $failedEntityIds),
+                500
+            );
         }
 
         return $this->responseSuccess('Payment completed');
@@ -354,7 +369,7 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
                 /** @var Order $order */
                 $order = $this->orderRepository->get($entityId);
 
-                if ($order->getStatus() === Order::STATE_CANCELED) {
+                if ($order->getState() === Order::STATE_CANCELED) {
                     $this->logger->info('[IntegrationNotification] Order already canceled', [
                         'order_id' => $order->getIncrementId(),
                     ]);

@@ -97,92 +97,27 @@ class Invoice extends AbstractAction
                 return;
             }
 
-            // Build items
-            $items = [];
-            foreach ($order->getAllItems() as $orderItem) {
-                if (!empty($orderItem->getParentItem())) {
-                    continue;
-                }
-                $product = $orderItem->getProduct();
-                $item = [
-                    'reference_id' => $product->getId(),
-                    'name' => $orderItem->getName(),
-                    'category' => $this->getDataHelper()->extractProductCategoryName($product),
-                    'price' => (string) $orderItem->getPrice(),
-                    'type' => 'PRODUCT',
-                    'quantity' => (int) $orderItem->getQtyOrdered(),
-                ];
-                $productUrl = $product->getProductUrl();
-                if (!empty($productUrl)) {
-                    $item['url'] = $productUrl;
-                }
-                $items[] = $item;
-            }
+            $orders = [$order];
+            $items = $this->buildPaymentSessionItems($orders);
 
-            $payload = [
-                'idempotency_key' => (string) $order->getId(),
-                'description' => sprintf(
-                    'order entity id: %s, order increment id: %s',
-                    $order->getId(),
-                    $order->getRealOrderId()
-                ),
-                'checkout_type' => 'onepage',
-                'store_url' => $this->getStoreManager()->getStore()->getBaseUrl(),
-                'notification_url' => $this->getIntegrationNotificationUrl(),
-                'success_return_url' => $this->getDataHelper()->getSuccessUrl(),
-                'cancel_return_url' => $this->getDataHelper()->getFailureUrl([$order->getRealOrderId()]),
-                'amount' => (string) $order->getTotalDue(),
-                'currency' => $order->getBaseCurrencyCode(),
-                'items' => $items,
-                'plugin_version' => \Xendit\M2Invoice\Helper\Data::XENDIT_M2INVOICE_VERSION,
-            ];
-
-            $billingAddress = $this->getDataHelper()->extractBillingAddress($order);
-            if (!empty($billingAddress)) {
-                $payload['billing_address'] = $billingAddress;
-            }
-
-            $customerObject = $this->getDataHelper()->extractPaymentSessionCustomer($order);
-            if (!empty($customerObject)) {
-                $payload['customer'] = $customerObject;
-            }
-
-            // POST to TPI Gateway
-            $checkoutUrl = $this->getDataHelper()->getPaymentSessionCheckoutUrl();
-            $response = $this->getApiHelper()->request(
-                $checkoutUrl,
-                \Laminas\Http\Request::METHOD_POST,
-                $payload,
-                false
+            $payload = $this->buildPaymentSessionPayload(
+                $orders,
+                (string) $order->getId(),
+                sprintf('order entity id: %s, order increment id: %s', $order->getId(), $order->getRealOrderId()),
+                'onepage',
+                (string) $order->getTotalDue(),
+                $order->getBaseCurrencyCode(),
+                $items,
+                $this->getDataHelper()->getSuccessUrl(),
+                $this->getDataHelper()->getFailureUrl([$order->getRealOrderId()])
             );
 
-            if (isset($response['error_code'])) {
-                throw new LocalizedException(
-                    new Phrase($response['message'] ?? 'Payment Session creation failed')
-                );
-            }
+            $response = $this->sendPaymentSessionRequest($payload);
 
-            $redirectUrl = $response['payment_link_url'] ?? '';
-            if (empty($redirectUrl)) {
-                throw new LocalizedException(
-                    new Phrase('Payment Session response missing payment_link_url')
-                );
-            }
-
-            // Only set to PENDING_PAYMENT after successful TPI response
+            $redirectUrl = $response['payment_link_url'];
             $paymentSessionId = $response['payment_session_id'] ?? '';
-            $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
-            $order->addCommentToStatusHistory(
-                "Pending Xendit payment (Payment Session). Session ID: $paymentSessionId. Payment Link: $redirectUrl"
-            );
 
-            // Store payment session info
-            $payment = $order->getPayment();
-            $payment->setAdditionalInformation('payment_gateway', 'xendit');
-            if (!empty($paymentSessionId)) {
-                $payment->setAdditionalInformation('xendit_payment_session_id', $paymentSessionId);
-            }
-            $this->getOrderRepo()->save($order);
+            $this->applyPaymentSessionToOrders($orders, $paymentSessionId, $redirectUrl);
 
             // Redirect to payment link
             $this->getLogger()->info(

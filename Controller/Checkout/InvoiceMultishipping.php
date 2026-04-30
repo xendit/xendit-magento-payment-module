@@ -176,11 +176,7 @@ class InvoiceMultishipping extends AbstractAction
     {
         $transactionAmount = 0;
         $orders = [];
-        $items = [];
         $currency = '';
-        $billingEmail = '';
-        $customerObject = [];
-        $billingAddress = [];
 
         $orderIncrementIds = [];
         $orderIds = $this->getMultiShippingOrderIds();
@@ -211,103 +207,29 @@ class InvoiceMultishipping extends AbstractAction
                 $orders[] = $order;
 
                 $transactionAmount += $order->getTotalDue();
-                $billingEmail = empty($billingEmail) ? ($order->getCustomerEmail() ?: 'noreply@mail.com') : $billingEmail;
                 $currency = $order->getBaseCurrencyCode();
-
-                // Aggregate items
-                foreach ($order->getAllItems() as $orderItem) {
-                    if (!empty($orderItem->getParentItem())) {
-                        continue;
-                    }
-                    $product = $orderItem->getProduct();
-                    $item = [
-                        'reference_id' => $product->getId(),
-                        'name' => $orderItem->getName(),
-                        'category' => $this->getDataHelper()->extractProductCategoryName($product),
-                        'price' => (string) $orderItem->getPrice(),
-                        'type' => 'PRODUCT',
-                        'quantity' => (int) $orderItem->getQtyOrdered(),
-                    ];
-                    $productUrl = $product->getProductUrl();
-                    if (!empty($productUrl)) {
-                        $item['url'] = $productUrl;
-                    }
-                    $items[] = $item;
-                }
-
-                if (empty($customerObject)) {
-                    $customerObject = $this->getDataHelper()->extractPaymentSessionCustomer($order);
-                }
-
-                if (empty($billingAddress)) {
-                    $billingAddress = $this->getDataHelper()->extractBillingAddress($order);
-                }
             }
 
-            $payload = [
-                'idempotency_key' => $rawOrderIds,
-                'description' => sprintf(
-                    'order entity id: %s, order increment id: %s',
-                    $rawOrderIds,
-                    implode('-', $orderIncrementIds)
-                ),
-                'checkout_type' => 'multishipping',
-                'store_url' => $this->getStoreManager()->getStore()->getBaseUrl(),
-                'notification_url' => $this->getIntegrationNotificationUrl(),
-                'success_return_url' => $this->getDataHelper()->getSuccessUrl(true),
-                'cancel_return_url' => $this->getDataHelper()->getFailureUrl($orderIncrementIds),
-                'amount' => (string) $transactionAmount,
-                'currency' => $currency,
-                'items' => $items,
-                'plugin_version' => \Xendit\M2Invoice\Helper\Data::XENDIT_M2INVOICE_VERSION,
-            ];
+            $items = $this->buildPaymentSessionItems($orders);
 
-            if (!empty($billingAddress)) {
-                $payload['billing_address'] = $billingAddress;
-            }
-
-            if (!empty($customerObject)) {
-                $payload['customer'] = $customerObject;
-            }
-
-            // POST to TPI Gateway
-            $checkoutUrl = $this->getDataHelper()->getPaymentSessionCheckoutUrl();
-            $response = $this->getApiHelper()->request(
-                $checkoutUrl,
-                \Laminas\Http\Request::METHOD_POST,
-                $payload,
-                false
+            $payload = $this->buildPaymentSessionPayload(
+                $orders,
+                $rawOrderIds,
+                sprintf('order entity id: %s, order increment id: %s', $rawOrderIds, implode('-', $orderIncrementIds)),
+                'multishipping',
+                (string) $transactionAmount,
+                $currency,
+                $items,
+                $this->getDataHelper()->getSuccessUrl(true),
+                $this->getDataHelper()->getFailureUrl($orderIncrementIds)
             );
 
-            if (isset($response['error_code'])) {
-                throw new LocalizedException(
-                    new Phrase($response['message'] ?? 'Payment Session creation failed')
-                );
-            }
+            $response = $this->sendPaymentSessionRequest($payload);
 
-            $redirectUrl = $response['payment_link_url'] ?? '';
-            if (empty($redirectUrl)) {
-                throw new LocalizedException(
-                    new Phrase('Payment Session response missing payment_link_url')
-                );
-            }
-
-            // Only set to PENDING_PAYMENT after successful TPI response
+            $redirectUrl = $response['payment_link_url'];
             $paymentSessionId = $response['payment_session_id'] ?? '';
-            foreach ($orders as $order) {
-                $order->setState(Order::STATE_PENDING_PAYMENT)
-                    ->setStatus(Order::STATE_PENDING_PAYMENT);
-                $order->addCommentToStatusHistory(
-                    "Pending Xendit payment (Payment Session). Session ID: $paymentSessionId. Payment Link: $redirectUrl"
-                );
 
-                $payment = $order->getPayment();
-                $payment->setAdditionalInformation('payment_gateway', 'xendit');
-                if (!empty($paymentSessionId)) {
-                    $payment->setAdditionalInformation('xendit_payment_session_id', $paymentSessionId);
-                }
-                $this->getOrderRepo()->save($order);
-            }
+            $this->applyPaymentSessionToOrders($orders, $paymentSessionId, $redirectUrl);
 
             // Redirect to payment link
             $this->getLogger()->info(
