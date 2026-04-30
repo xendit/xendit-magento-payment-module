@@ -128,6 +128,7 @@ class Invoice extends AbstractAction
                 ),
                 'checkout_type' => 'onepage',
                 'store_url' => $this->getStoreManager()->getStore()->getBaseUrl(),
+                'notification_url' => $this->getIntegrationNotificationUrl(),
                 'success_return_url' => $this->getDataHelper()->getSuccessUrl(),
                 'cancel_return_url' => $this->getDataHelper()->getFailureUrl([$order->getRealOrderId()]),
                 'amount' => (string) $order->getTotalDue(),

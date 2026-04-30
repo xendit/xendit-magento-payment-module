@@ -253,6 +253,7 @@ class InvoiceMultishipping extends AbstractAction
                 ),
                 'checkout_type' => 'multishipping',
                 'store_url' => $this->getStoreManager()->getStore()->getBaseUrl(),
+                'notification_url' => $this->getIntegrationNotificationUrl(),
                 'success_return_url' => $this->getDataHelper()->getSuccessUrl(true),
                 'cancel_return_url' => $this->getDataHelper()->getFailureUrl($orderIncrementIds),
                 'amount' => (string) $transactionAmount,

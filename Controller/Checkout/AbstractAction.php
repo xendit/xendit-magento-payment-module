@@ -481,6 +481,8 @@ abstract class AbstractAction extends Action
     }
 
     /**
+     * Get the callback URL for the legacy Invoice notification endpoint.
+     *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -497,6 +499,27 @@ abstract class AbstractAction extends Action
 
         $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
         return $baseUrl . 'xendit/checkout/notification';
+    }
+
+    /**
+     * Get the callback URL for the Payment Session integration notification endpoint.
+     * TPI Service sends signed notifications to this URL on payment session status changes.
+     *
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    protected function getIntegrationNotificationUrl()
+    {
+        if ($this->appState->getMode() === AppState::MODE_DEVELOPER) {
+            $customCallbackUrl = $this->getDataHelper()->getCustomCallbackUrl();
+
+            if (!empty($customCallbackUrl)) {
+                return rtrim($customCallbackUrl, '/') . '/xendit/checkout/integrationNotification';
+            }
+        }
+
+        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
+        return $baseUrl . 'xendit/checkout/integrationNotification';
     }
 
     protected function getStateMultishipping()
