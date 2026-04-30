@@ -298,7 +298,7 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
                 $order->setState(Order::STATE_PROCESSING)
                     ->setStatus(Order::STATE_PROCESSING)
                     ->addCommentToStatusHistory(
-                        "Xendit payment completed. Payment Session: $paymentSessionId"
+                        "Xendit payment completed. Payment ID: $paymentId. Payment Session: $paymentSessionId"
                     );
 
                 // Store transaction IDs: payment_id for Magento refunds, payment_session_id for TPI lookup
