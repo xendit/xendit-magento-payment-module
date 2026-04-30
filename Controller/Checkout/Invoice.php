@@ -108,7 +108,7 @@ class Invoice extends AbstractAction
                     'reference_id' => $product->getId(),
                     'name' => $orderItem->getName(),
                     'category' => $this->getDataHelper()->extractProductCategoryName($product),
-                    'price' => $orderItem->getPrice(),
+                    'price' => (string) $orderItem->getPrice(),
                     'type' => 'PRODUCT',
                     'quantity' => (int) $orderItem->getQtyOrdered(),
                 ];
