@@ -170,14 +170,17 @@ class Invoice extends AbstractAction
             }
 
             // Only set to PENDING_PAYMENT after successful TPI response
+            $paymentSessionId = $response['payment_session_id'] ?? '';
             $order->setState(Order::STATE_PENDING_PAYMENT)->setStatus(Order::STATE_PENDING_PAYMENT);
-            $order->addCommentToStatusHistory("Pending Xendit payment (Payment Session).");
+            $order->addCommentToStatusHistory(
+                "Pending Xendit payment (Payment Session). Session ID: $paymentSessionId. Payment Link: $redirectUrl"
+            );
 
             // Store payment session info
             $payment = $order->getPayment();
             $payment->setAdditionalInformation('payment_gateway', 'xendit');
-            if (isset($response['payment_session_id'])) {
-                $payment->setAdditionalInformation('xendit_payment_session_id', $response['payment_session_id']);
+            if (!empty($paymentSessionId)) {
+                $payment->setAdditionalInformation('xendit_payment_session_id', $paymentSessionId);
             }
             $this->getOrderRepo()->save($order);
 
