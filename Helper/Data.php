@@ -722,6 +722,53 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Extract customer for Payment Session payload.
+     *
+     * Differs from extractXenditInvoiceCustomerFromOrder() which uses the legacy Invoice API
+     * format (given_names/surname at top level). Payment Session expects given_names/surname
+     * nested under individual_detail.
+     *
+     * @param Order $order
+     * @return array
+     */
+    public function extractPaymentSessionCustomer(Order $order): array
+    {
+        $shippingAddress = $order->getShippingAddress();
+
+        $customer = [];
+
+        $email = $order->getCustomerEmail();
+        if (!empty($email)) {
+            $customer['email'] = $email;
+        }
+
+        if ($shippingAddress) {
+            $mobileNumber = $this->phoneNumberFormatHelper->formatNumber(
+                $shippingAddress->getTelephone(),
+                $shippingAddress->getCountryId()
+            );
+            if (!empty($mobileNumber)) {
+                $customer['mobile_number'] = $mobileNumber;
+            }
+        }
+
+        $givenNames = $order->getCustomerFirstname();
+        $surname = $order->getCustomerLastname();
+        if (!empty($givenNames) || !empty($surname)) {
+            $individualDetail = [];
+            if (!empty($givenNames)) {
+                $individualDetail['given_names'] = $givenNames;
+            }
+            if (!empty($surname)) {
+                $individualDetail['surname'] = $surname;
+            }
+            $customer['individual_detail'] = $individualDetail;
+        }
+
+        return $customer;
+    }
+
+    /**
      * Extract billing address from an order for Payment Session payload.
      *
      * Uses $order->getBillingAddress() directly (always present on Magento orders).

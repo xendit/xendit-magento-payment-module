@@ -236,7 +236,7 @@ class InvoiceMultishipping extends AbstractAction
                 }
 
                 if (empty($customerObject)) {
-                    $customerObject = $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order);
+                    $customerObject = $this->getDataHelper()->extractPaymentSessionCustomer($order);
                 }
 
                 if (empty($billingAddress)) {

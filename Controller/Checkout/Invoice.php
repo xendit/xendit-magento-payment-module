@@ -141,7 +141,7 @@ class Invoice extends AbstractAction
                 $payload['billing_address'] = $billingAddress;
             }
 
-            $customerObject = $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order);
+            $customerObject = $this->getDataHelper()->extractPaymentSessionCustomer($order);
             if (!empty($customerObject)) {
                 $payload['customer'] = $customerObject;
             }
