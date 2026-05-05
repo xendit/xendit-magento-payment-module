@@ -603,7 +603,7 @@ abstract class AbstractAction extends Action
         ];
 
         // Use the first order for customer/billing — they share the same buyer
-        $firstOrder = $orders[0] ?? null;
+        $firstOrder = is_array($orders) && count($orders) > 0 ? $orders[0] : null;
         if ($firstOrder) {
             $billingAddress = $this->getDataHelper()->extractBillingAddress($firstOrder);
             if (!empty($billingAddress)) {
