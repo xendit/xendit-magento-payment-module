@@ -784,7 +784,11 @@ class Data extends AbstractHelper
             return [];
         }
 
-        $streetLines = $billing->getStreet();
+        $streetLinesRaw = $billing->getStreet();
+        $streetLines = is_array($streetLinesRaw)
+            ? $streetLinesRaw
+            : (empty($streetLinesRaw) ? [] : [$streetLinesRaw]);
+
         $address = [
             'country' => $billing->getCountryId(),
             'province_state' => $billing->getRegion(),

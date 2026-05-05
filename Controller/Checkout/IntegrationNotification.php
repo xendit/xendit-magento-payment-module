@@ -165,8 +165,15 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
     private function handleNotification(array $payload)
     {
         // Validate required fields
-        if (empty($payload['_id']) || empty($payload['signature'])) {
-            return $this->responseError('Missing required fields (_id, signature)', 400);
+        $requiredFields = ['_id', 'signature', 'magento_checkout_idempotency_key', 'magento_checkout_type'];
+        $missingFields = [];
+        foreach ($requiredFields as $field) {
+            if (!isset($payload[$field]) || empty($payload[$field])) {
+                $missingFields[] = $field;
+            }
+        }
+        if (!empty($missingFields)) {
+            return $this->responseError('Missing required fields: ' . implode(', ', $missingFields), 400);
         }
 
         // Verify ECDSA signature
@@ -178,15 +185,11 @@ class IntegrationNotification extends Action implements CsrfAwareActionInterface
         }
 
         // Extract Magento-specific fields
-        $idempotencyKey = $payload['magento_checkout_idempotency_key'] ?? '';
-        $checkoutType = $payload['magento_checkout_type'] ?? null;
+        $idempotencyKey = $payload['magento_checkout_idempotency_key'];
+        $checkoutType = $payload['magento_checkout_type'];
 
-        if (empty($idempotencyKey)) {
-            return $this->responseError('Missing magento_checkout_idempotency_key', 400);
-        }
-
-        if (empty($checkoutType) || !in_array($checkoutType, ['onepage', 'multishipping'], true)) {
-            return $this->responseError('Missing or invalid magento_checkout_type', 400);
+        if (!in_array($checkoutType, ['onepage', 'multishipping'], true)) {
+            return $this->responseError('Invalid magento_checkout_type: ' . $checkoutType, 400);
         }
 
         $session = $payload['session'] ?? null;
