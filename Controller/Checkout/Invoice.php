@@ -23,6 +23,11 @@ class Invoice extends AbstractAction
     {
         $order = $this->getOrder();
         try {
+            // Branch: Payment Session flow vs legacy Invoice flow
+            if ($this->getDataHelper()->isPaymentSessionEnabled()) {
+                return $this->processWithPaymentSession($order);
+            }
+
             $apiData = $this->getApiRequestData($order);
 
             if ($order->getState() === Order::STATE_NEW) {
@@ -66,6 +71,86 @@ class Invoice extends AbstractAction
                 );
             } catch (\Exception $e) {
             }
+
+            return $this->redirectToCart($e->getMessage());
+        }
+    }
+
+    /**
+     * Process checkout via Payment Session API (new flow).
+     *
+     * @param Order $order
+     * @return \Magento\Framework\Controller\Result\Redirect
+     * @throws LocalizedException
+     */
+    private function processWithPaymentSession(Order $order)
+    {
+        try {
+            if ($order->getState() !== Order::STATE_NEW) {
+                if ($order->getState() === Order::STATE_CANCELED) {
+                    $this->getLogger()->info('Order is already canceled', ['order_id' => $order->getIncrementId()]);
+                    $this->_redirect('checkout/cart');
+                    return;
+                }
+                $this->getLogger()->info('Order in unrecognized state', ['state' => $order->getState(), 'order_id' => $order->getIncrementId()]);
+                $this->_redirect('checkout/cart');
+                return;
+            }
+
+            $orders = [$order];
+            $items = $this->buildPaymentSessionItems($orders);
+
+            $payload = $this->buildPaymentSessionPayload(
+                $orders,
+                (string) $order->getId(),
+                sprintf('order entity id: %s, order increment id: %s', $order->getId(), $order->getRealOrderId()),
+                'onepage',
+                (string) $order->getTotalDue(),
+                $order->getBaseCurrencyCode(),
+                $items,
+                $this->getDataHelper()->getSuccessUrl(),
+                $this->getDataHelper()->getFailureUrl([$order->getRealOrderId()])
+            );
+
+            $response = $this->sendPaymentSessionRequest($payload);
+
+            $redirectUrl = $response['payment_link_url'];
+            $paymentSessionId = $response['payment_session_id'] ?? '';
+
+            $this->applyPaymentSessionToOrders($orders, $paymentSessionId, $redirectUrl);
+
+            // Redirect to payment link
+            $this->getLogger()->info(
+                'Redirect customer to Xendit (Payment Session)',
+                ['order_id' => $order->getIncrementId(), 'redirect_url' => $redirectUrl]
+            );
+            $resultRedirect = $this->getRedirectFactory()->create();
+            $resultRedirect->setUrl($redirectUrl);
+            return $resultRedirect;
+        } catch (\Throwable $e) {
+            $errorMessage = sprintf(
+                'xendit/checkout/invoice (Payment Session) failed: Order #%s - %s',
+                $order->getIncrementId(),
+                $e->getMessage()
+            );
+            $this->getLogger()->error($errorMessage, ['order_id' => $order->getIncrementId()]);
+
+            $this->getLogger()->info('Cancelling order due to Payment Session failure', [
+                'order_id' => $order->getIncrementId(),
+            ]);
+            try {
+                $this->cancelOrder($order, $e->getMessage());
+            } catch (\Exception $cancelEx) {
+                $this->getLogger()->error('Failed to cancel order after Payment Session failure', [
+                    'order_id' => $order->getIncrementId(),
+                    'cancel_error' => $cancelEx->getMessage(),
+                ]);
+            }
+
+            $this->metricHelper->sendMetric('magento2_checkout', [
+                'type' => 'error',
+                'error_message' => $errorMessage,
+            ]);
 
             return $this->redirectToCart($e->getMessage());
         }

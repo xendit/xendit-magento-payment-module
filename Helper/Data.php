@@ -661,4 +661,143 @@ class Data extends AbstractHelper
         }
         return $response;
     }
+
+    // ── Payment Session helpers ──────────────────────────────────────
+
+    /**
+     * Whether the Payment Session checkout flow is enabled.
+     *
+     * For new merchants (no API keys when the feature was introduced),
+     * Payment Session is always enabled and the toggle is hidden.
+     * For existing merchants, the admin toggle controls this.
+     *
+     * @return bool
+     */
+    public function isPaymentSessionEnabled(): bool
+    {
+        // Magento config resolution walks up: store view → website → default → config.xml.
+        // SCOPE_STORE reads the effective value for the current store view, respecting
+        // any website or store-level overrides the merchant may have set.
+        $isExisting = $this->scopeConfig->getValue(
+            'payment/xendit/is_existing_merchant_when_ps_introduced',
+            ScopeInterface::SCOPE_STORE
+        );
+
+        // New merchant (0): always enabled (toggle hidden)
+        if ($isExisting !== '1') {
+            return true;
+        }
+
+        // Existing merchant: respect the admin toggle
+        // isSetFlag returns true for '1'/'yes'/'true', false for '0'/'no'/'false'/empty
+        return $this->scopeConfig->isSetFlag(
+            'payment/xendit/enable_payment_session',
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Get the TPI Gateway URL for Payment Session checkout.
+     *
+     * @return string e.g. "https://tpi-gateway.xendit.co/magento/checkout"
+     */
+    public function getPaymentSessionCheckoutUrl(): string
+    {
+        return rtrim($this->getXenditApiUrl(), '/') . '/magento/checkout';
+    }
+
+    /**
+     * Get the xendit_app_env config value (staging or production).
+     * Defaults to 'production' if not set.
+     *
+     * @return string
+     */
+    public function getAppEnv(): string
+    {
+        $appEnv = $this->scopeConfig->getValue(
+            'payment/xendit/xendit_app_env',
+            ScopeInterface::SCOPE_STORE
+        );
+        return $appEnv ?: 'production';
+    }
+
+    /**
+     * Extract customer for Payment Session payload.
+     *
+     * Differs from extractXenditInvoiceCustomerFromOrder() which uses the legacy Invoice API
+     * format (given_names/surname at top level). Payment Session expects given_names/surname
+     * nested under individual_detail.
+     *
+     * @param Order $order
+     * @return array
+     */
+    public function extractPaymentSessionCustomer(Order $order): array
+    {
+        $shippingAddress = $order->getShippingAddress();
+
+        $customer = [];
+
+        $email = $order->getCustomerEmail();
+        if (!empty($email)) {
+            $customer['email'] = $email;
+        }
+
+        if ($shippingAddress) {
+            $mobileNumber = $this->phoneNumberFormatHelper->formatNumber(
+                $shippingAddress->getTelephone(),
+                $shippingAddress->getCountryId()
+            );
+            if (!empty($mobileNumber)) {
+                $customer['mobile_number'] = $mobileNumber;
+            }
+        }
+
+        $givenNames = $order->getCustomerFirstname();
+        $surname = $order->getCustomerLastname();
+        if (!empty($givenNames) || !empty($surname)) {
+            $individualDetail = [];
+            if (!empty($givenNames)) {
+                $individualDetail['given_names'] = $givenNames;
+            }
+            if (!empty($surname)) {
+                $individualDetail['surname'] = $surname;
+            }
+            $customer['individual_detail'] = $individualDetail;
+        }
+
+        return $customer;
+    }
+
+    /**
+     * Extract billing address from an order for Payment Session payload.
+     *
+     * Uses $order->getBillingAddress() directly (always present on Magento orders).
+     * This is separate from extractXenditInvoiceCustomerAddress() which uses shipping address.
+     *
+     * @param Order $order
+     * @return array
+     */
+    public function extractBillingAddress(Order $order): array
+    {
+        $billing = $order->getBillingAddress();
+        if (empty($billing)) {
+            return [];
+        }
+
+        $streetLinesRaw = $billing->getStreet();
+        $streetLines = is_array($streetLinesRaw)
+            ? $streetLinesRaw
+            : (empty($streetLinesRaw) ? [] : [$streetLinesRaw]);
+
+        $address = [
+            'country' => $billing->getCountryId(),
+            'province_state' => $billing->getRegion(),
+            'city' => $billing->getCity(),
+            'street_line1' => $streetLines[0] ?? null,
+            'street_line2' => $streetLines[1] ?? null,
+            'postal_code' => $billing->getPostcode(),
+        ];
+
+        return array_filter($address);
+    }
 }

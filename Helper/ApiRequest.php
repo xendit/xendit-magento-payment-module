@@ -110,12 +110,21 @@ class ApiRequest
             }
 
             $response = json_decode($this->magentoCurl->getBody(), true);
+            $statusCode = $this->magentoCurl->getStatus();
 
-            // Log response details
-            $this->xenditLogger->info('API Response', [
-                'url' => $url,
-                'status_code' => $this->magentoCurl->getStatus()
-            ]);
+            if ($statusCode >= 400) {
+                $this->xenditLogger->error('API Response Error', [
+                    'url' => $url,
+                    'status_code' => $statusCode,
+                    'response_body' => $response,
+                ]);
+            } else {
+                // Log response details
+                $this->xenditLogger->info('API Response', [
+                    'url' => $url,
+                    'status_code' => $statusCode,
+                ]);
+            }
 
             return $response;
         } catch (\Exception $e) {

@@ -1,44 +1,63 @@
 # CHANGELOG
+
+## 13.0.0 (2026-05-05)
+
+- Payment Session checkout flow enabled through toggling in admin
+
 ## 12.1.6 (2025-11-05)
+
 - check if api key is configured
 
 ## 12.1.5 (2025-11-03)
+
 - fix enable to work as expected
 
 ## 12.1.4 (2025-10-30)
+
 - add logs for debugging
 
 ## 12.1.3 (2025-10-30)
+
 - configurable xendit url on developer mode
 
 ## 12.1.2 (2025-10-22)
+
 - backward compat with php 7
 
 ## 12.1.1 (2025-10-08)
+
 - support php 8.4
 
 ## 12.1.0 (2025-10-08)
+
 - single xendit button for checkout
 - cleanup cc and cc subscriptions and promo
 
 ## 12.0.4 (2025-02-25)
+
 - Fix Undefined variable $xenditSerializerJson
 - Upgrade using Laminas\Http\Request from previous Zend\Http\Request on several class
 
 ## 12.0.3 (2024-11-25)
+
 - Remove UangMe as a payment method (regular & invoice multishipping)
 
 ## 12.0.1 (2024-01-11)
+
 - Support Xendit invoice fees
 
 ## 12.0.0 (2023-11-21)
+
 - Update xendit url
 
 ## 11.0.1 (2023-10-26)
+
 - Fix wrong subtotal in Xendit invoice (Remove Order child items)
 
 ## 11.0.0 (2023-10-17)
+
 Improvements:
+
 - Raise AstraPay limit to 20M IDR
 - Add BDO Direct Debit
 - Add CIMB VA
@@ -46,90 +65,130 @@ Improvements:
 - Add JeniusPay
 
 ## 10.0.4 (2023-05-23)
+
 Improvements:
+
 - Update new ShopeePay icon
 
 ## 10.0.3 (2023-05-11)
+
 Improvements:
+
 - Implementation debug logging
 
 ## 10.0.2 (2023-03-21)
+
 Improvements:
+
 - Update min/max total of Akulaku
 
 ## 10.0.1 (2023-02-13)
+
 Improvements:
+
 - Fix the order item price
 
 ## 10.0.0 (2023-01-10)
+
 Features:
+
 - Add new IDR payment: BSS VA
 
 ## 9.0.1 (2022-12-16)
+
 Features:
+
 - Implement Xendit metric
 - Fix get payment_method from URL query
 
 ## 9.0.0 (2022-10-26)
+
 Features:
+
 - Add new IDR payment: Atome
 
 ## 8.0.0 (2022-10-26)
+
 Features:
+
 - Add new PH payment: LBC
 
 ## 7.0.0 (2022-10-12)
+
 Features:
+
 - Add new PH payment: ECPay School
 
 ## 6.0.0 (2022-09-06)
+
 Features:
+
 - Add new PH payment: Direct debit RCBC
 - Change payment icon for PayMaya
 - Reduce QRIS limit to 1 IDR
 
 ## 5.0.0 (2022-08-19)
+
 Features:
+
 - Add new IDR payment Akulaku
 
 Improvements:
+
 - Webhook update order status improvements
 
 ## 4.0.1 (2022-08-01)
+
 Improvements:
+
 - Compatible with PHP 8.1.0
 
 ## 4.0.0 (2022-07-26)
+
 Improvements:
+
 - Add new IDR payment: AstraPay
 - Published repo to Packagist
 
 ## 3.9.1 (2022-07-12)
+
 Improvements:
+
 - Multishipping checkout with Xendit payment improvements
 
 ## 3.9.0 (2022-06-28)
+
 Improvements:
+
 - Remove the CC subscription
 
 ## 3.8.0 (2022-05-09)
+
 Features:
+
 - Add new IDR payment: Uangme
 
 ## 3.7.0 (2022-04-06)
+
 Features:
+
 - Add new PH payment: ShopeePay
 
 ## 3.6.0 (2022-03-22)
+
 Features:
+
 - Add new PH payment: Cashalo
 
 ## 3.5.0 (2022-03-08)
+
 Improvements:
+
 - Code refactoring
 - Update extension compatible with Magento 2.4.3
 
 ## 3.4.0 (2022-02-18)
+
 Features:
 
 - Add new PH payment methods:
@@ -152,26 +211,35 @@ Features:
 - Add payment icons
 
 Improvements:
+
 - Fix truncate decimal amount on refunding for Credit card
 - Hide/Show the payment setting based on the currency
 
 ## 3.3.1 (2021-11-25)
+
 Improvements:
+
 - Fix rounding amount on create invoice
 - Hide payment if Xendit setting disabled
 
 ## 3.3.0 (2021-11-11)
+
 Improvements:
+
 - Migrate QRIS (QR Codes) to XenInvoice
 - Add category on create invoice
 
 ## 3.2.0 (2021-11-02)
+
 Improvements:
+
 - Migrate Kredivo to XenInvoice
 - Data housekeeping
 
 ## 3.1.0 (2021-10-03)
+
 Improvements:
+
 - Add Shopeepay payment method
 - Add WA and SMS notification
 
@@ -362,6 +430,7 @@ Features:
 Initial version
 
 Features:
+
 - Standard Xendit payment method:
   - Cards payment
   - Mandiri Bank Transfer

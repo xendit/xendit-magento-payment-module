@@ -19,6 +19,9 @@
                 <test_validation_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <validation_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
 
+                <enable_payment_session>0</enable_payment_session>
+                <is_existing_merchant_when_ps_introduced>0</is_existing_merchant_when_ps_introduced>
+                <xendit_app_env>production</xendit_app_env>
                 <external_id_prefix>magento-xendit</external_id_prefix>
                 <debug>0</debug>
             </xendit>

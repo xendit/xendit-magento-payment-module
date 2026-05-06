@@ -21,6 +21,11 @@ class InvoiceMultishipping extends AbstractAction
      */
     public function execute()
     {
+        // Branch: Payment Session flow vs legacy Invoice flow
+        if ($this->getDataHelper()->isPaymentSessionEnabled()) {
+            return $this->processMultishippingWithPaymentSession();
+        }
+
         $transactionAmount = 0;
         $orderProcessed = false;
         $orders = [];
@@ -157,6 +162,107 @@ class InvoiceMultishipping extends AbstractAction
                 );
             } catch (\Exception $ex) {
             }
+
+            return $this->redirectToCart($e->getMessage());
+        }
+    }
+
+    /**
+     * Process multishipping checkout via Payment Session API (new flow).
+     *
+     * @return \Magento\Framework\Controller\Result\Redirect|null
+     */
+    private function processMultishippingWithPaymentSession()
+    {
+        $transactionAmount = 0;
+        $orders = [];
+        $currency = '';
+
+        $orderIncrementIds = [];
+        $orderIds = $this->getMultiShippingOrderIds();
+        $rawOrderIds = implode('-', $orderIds);
+
+        try {
+            if (empty($orderIds)) {
+                $message = __('The order not exist');
+                $this->getLogger()->info($message, ['order_ids' => $orderIds]);
+                return $this->redirectToCart($message);
+            }
+
+            foreach ($orderIds as $orderId) {
+                $order = $this->getOrderRepo()->get($orderId);
+                if (!$this->orderValidToCreateXenditInvoice($order)) {
+                    $message = __('Order processed');
+                    $this->getLogger()->info($message, ['order_id' => $orderId]);
+                    return $this->redirectToCart($message);
+                }
+
+                $orderIncrementIds[] = $order->getRealOrderId();
+
+                $orderState = $order->getState();
+                if ($orderState === Order::STATE_PROCESSING && !$order->canInvoice()) {
+                    continue;
+                }
+
+                $orders[] = $order;
+
+                $transactionAmount += $order->getTotalDue();
+                $currency = $order->getBaseCurrencyCode();
+            }
+
+            $items = $this->buildPaymentSessionItems($orders);
+
+            $payload = $this->buildPaymentSessionPayload(
+                $orders,
+                $rawOrderIds,
+                sprintf('order entity id: %s, order increment id: %s', $rawOrderIds, implode('-', $orderIncrementIds)),
+                'multishipping',
+                (string) $transactionAmount,
+                $currency,
+                $items,
+                $this->getDataHelper()->getSuccessUrl(true),
+                $this->getDataHelper()->getFailureUrl($orderIncrementIds)
+            );
+
+            $response = $this->sendPaymentSessionRequest($payload);
+
+            $redirectUrl = $response['payment_link_url'];
+            $paymentSessionId = $response['payment_session_id'] ?? '';
+
+            $this->applyPaymentSessionToOrders($orders, $paymentSessionId, $redirectUrl);
+
+            // Redirect to payment link
+            $this->getLogger()->info(
+                'Redirect customer to Xendit (Payment Session multishipping)',
+                array_merge($this->getLogContext($orders), ['redirect_url' => $redirectUrl])
+            );
+
+            $resultRedirect = $this->getRedirectFactory()->create();
+            $resultRedirect->setUrl($redirectUrl);
+            return $resultRedirect;
+        } catch (\Throwable $e) {
+            $logContext = $this->getLogContext($orders);
+            $message = sprintf(
+                'Exception caught on xendit/checkout/invoicemultishipping (Payment Session): Order_ids %s - %s',
+                implode(', ', $logContext['order_ids'] ?? []),
+                $e->getMessage()
+            );
+            $this->getLogger()->error($message, $logContext);
+
+            $this->getLogger()->info('Cancelling orders due to Payment Session failure', $logContext);
+            try {
+                $this->processFailedPayment($orderIds, $message);
+            } catch (\Exception $cancelEx) {
+                $this->getLogger()->error('Failed to cancel orders after Payment Session failure', [
+                    'order_ids' => $orderIds,
+                    'cancel_error' => $cancelEx->getMessage(),
+                ]);
+            }
+
+            $this->metricHelper->sendMetric('magento2_checkout', [
+                'type' => 'error',
+                'error_message' => $message,
+            ]);
 
             return $this->redirectToCart($e->getMessage());
         }
