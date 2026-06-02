@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 13.0.1 (2026-06-03)
+
+- Fix Signature Verification (DER conversion for OpenSSL)
+
 ## 13.0.0 (2026-05-05)
 
 - Payment Session checkout flow enabled through toggling in admin

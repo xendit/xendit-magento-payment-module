@@ -67,48 +67,55 @@ class SignatureVerifier
      *
      * WebCrypto's ECDSA produces raw signatures (r and s concatenated).
      * PHP's openssl_verify expects DER-encoded ASN.1 format.
-     * For P-384: raw signature is 96 bytes (48 bytes r + 48 bytes s).
+     * For P-384: raw signature is always exactly 96 bytes (48 bytes r + 48 bytes s).
+     * DER-encoded P-384 signatures are typically ~102-104 bytes.
+     *
+     * IMPORTANT: Length check must come before the 0x30 byte check because a raw
+     * signature's first byte may coincidentally be 0x30 (the DER SEQUENCE tag),
+     * causing false DER detection (~1 in 256 signatures).
      *
      * @param string $signature Raw signature bytes
      * @return string DER-encoded signature
      */
     private function rawToDerSignature(string $signature): string
     {
-        // If already DER-encoded (starts with SEQUENCE tag 0x30), return as-is
+        // P-384 raw signature is always exactly 96 bytes — always convert to DER.
+        // Check length first to avoid false DER detection when first byte is 0x30.
+        if (strlen($signature) === 96) {
+            $r = substr($signature, 0, 48);
+            $s = substr($signature, 48, 48);
+
+            // Strip leading zero bytes
+            $r = ltrim($r, "\0");
+            if (empty($r)) {
+                $r = "\0";
+            }
+            $s = ltrim($s, "\0");
+            if (empty($s)) {
+                $s = "\0";
+            }
+
+            // Add leading zero byte if high bit is set (ASN.1 INTEGER is signed)
+            if (ord($r[0]) & 0x80) {
+                $r = "\0" . $r;
+            }
+            if (ord($s[0]) & 0x80) {
+                $s = "\0" . $s;
+            }
+
+            $derR = "\x02" . chr(strlen($r)) . $r;
+            $derS = "\x02" . chr(strlen($s)) . $s;
+            $der = "\x30" . chr(strlen($derR . $derS)) . $derR . $derS;
+
+            return $der;
+        }
+
+        // Not 96 bytes — check if it looks like valid DER (starts with SEQUENCE tag)
         if (strlen($signature) > 0 && ord($signature[0]) === 0x30) {
             return $signature;
         }
 
-        // P-384 raw signature = 96 bytes (48 r + 48 s)
-        if (strlen($signature) !== 96) {
-            return $signature;
-        }
-
-        $r = substr($signature, 0, 48);
-        $s = substr($signature, 48, 48);
-
-        // Strip leading zero bytes
-        $r = ltrim($r, "\0");
-        if (empty($r)) {
-            $r = "\0";
-        }
-        $s = ltrim($s, "\0");
-        if (empty($s)) {
-            $s = "\0";
-        }
-
-        // Add leading zero byte if high bit is set (ASN.1 INTEGER is signed)
-        if (ord($r[0]) & 0x80) {
-            $r = "\0" . $r;
-        }
-        if (ord($s[0]) & 0x80) {
-            $s = "\0" . $s;
-        }
-
-        $derR = "\x02" . chr(strlen($r)) . $r;
-        $derS = "\x02" . chr(strlen($s)) . $s;
-        $der = "\x30" . chr(strlen($derR . $derS)) . $derR . $derS;
-
-        return $der;
+        // Unknown format — pass through and let openssl_verify handle it
+        return $signature;
     }
 }
