@@ -247,7 +247,7 @@ class PhoneNumberFormat extends AbstractHelper
         if (empty($countryCode)) {
             return '';
         }
-        return self::COUNTRY_CODE_PHONE_MAPPING[$countryCode] ?: '';
+        return self::COUNTRY_CODE_PHONE_MAPPING[$countryCode] ?? '';
     }
 
     /**
