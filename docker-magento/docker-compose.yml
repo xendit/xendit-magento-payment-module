@@ -1,67 +1,64 @@
-version: '3'
+version: "3"
 services:
-    web:
-        image: webdevops/php-apache-dev:8.4
-        container_name: web
-        restart: always
-        user: root
-        environment:
-          - WEB_ALIAS_DOMAIN=magento24.local
-          - WEB_DOCUMENT_ROOT=/app/pub
-          - PHP_DATE_TIMEZONE=EST
-          - PHP_DISPLAY_ERRORS=1
-          - PHP_MEMORY_LIMIT=2048M
-          - PHP_MAX_EXECUTION_TIME=300
-          - PHP_POST_MAX_SIZE=500M
-          - PHP_UPLOAD_MAX_FILESIZE=1024M
-        volumes:
-          - ./magento2:/app
-        ports:
-          - "80:80"
-          - "443:443"
-          - "32823:22"
-        links:
-          - mysql
-          - elasticsearch
-    mysql:
-        image: mariadb:10.4
-        container_name: mysql
-        restart: always
-        ports:
-          - "3306:3306"
-        environment:
-          - MYSQL_ROOT_PASSWORD=root
-          - MYSQL_DATABASE=magento
-    phpmyadmin:
-        container_name: phpmyadmin
-        restart: always
-        image: phpmyadmin/phpmyadmin:latest
-        environment:
-          - MYSQL_ROOT_PASSWORD=root
-          - PMA_USER=root
-          - PMA_PASSWORD=root
-        ports:
-          - "8080:80"
-        links:
-          - mysql:db
-        depends_on:
-          - mysql
-    elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
-        container_name: elasticsearch
-        ports:
-            - "9200:9200"
-        environment:
-            - discovery.type=single-node
-            - network.host=0.0.0.0
-            - http.port=9200
-            - cluster.name=elasticsearch
-            - xpack.security.enabled=false
-            - xpack.security.http.ssl.enabled=false
-        volumes:
-            - elasticsearch_data:/var/lib/elastisearch
+  web:
+    image: webdevops/php-apache-dev:8.4
+    container_name: web
+    user: root
+    environment:
+      - WEB_ALIAS_DOMAIN=magento24.local
+      - WEB_DOCUMENT_ROOT=/app/pub
+      - PHP_DATE_TIMEZONE=EST
+      - PHP_DISPLAY_ERRORS=1
+      - PHP_MEMORY_LIMIT=2048M
+      - PHP_MAX_EXECUTION_TIME=300
+      - PHP_POST_MAX_SIZE=500M
+      - PHP_UPLOAD_MAX_FILESIZE=1024M
+    volumes:
+      - ./magento2:/app
+    ports:
+      - "80:80"
+      - "443:443"
+      - "32823:22"
+    links:
+      - mysql
+      - elasticsearch
+  mysql:
+    image: mariadb:10.4
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=magento
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    ports:
+      - "8080:80"
+    links:
+      - mysql:db
+    depends_on:
+      - mysql
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+      - http.port=9200
+      - cluster.name=elasticsearch
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    volumes:
+      - elasticsearch_data:/var/lib/elastisearch
 volumes:
-    db-data:
-        external: false
-    elasticsearch_data:
-        external: false
+  db-data:
+    external: false
+  elasticsearch_data:
+    external: false
