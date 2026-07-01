@@ -37,7 +37,7 @@
         - set -e
         - export VERSION_TAG="${BUDDY_EXECUTION_TAG}"
         - export PIPELINE_ID="${BUDDY_PIPELINE_ID}"
-        - export DOWNLOAD_LINK="https://buddy.tidnex.com/xendit-inc/$BUDDY_PROJECT_NAME/pipelines/pipeline/$PIPELINE_ID/browse/download/release.zip?slot=1"
+        - export DOWNLOAD_LINK="https://asia.buddy.works/xendit/$BUDDY_PROJECT_NAME/pipelines/pipeline/$PIPELINE_ID/browse/download/release.zip?slot=1"
       shell: BASH
     - action: Prepare Release Zip File
       type: BUILD
