@@ -36,11 +36,6 @@ class SignatureVerifier
         $derSignature = $this->rawToDerSignature($signatureBytes);
         $result = openssl_verify($message, $derSignature, $pubKey, OPENSSL_ALGO_SHA384);
 
-        // Free key resource for PHP < 8.0
-        if (PHP_VERSION_ID < 80000) {
-            openssl_free_key($pubKey);
-        }
-
         return $result === 1;
     }
 
