@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 13.0.2 (2026-07-03)
+
+- Fix PHP 8.5 compatibility: remove deprecated `openssl_free_key()` call
+- Fix PHP 8.5 compatibility: replace deprecated `(double)` cast with `(float)`
+
 ## 13.0.1 (2026-06-03)
 
 - Fix Signature Verification (DER conversion for OpenSSL)
