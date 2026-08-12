@@ -31,7 +31,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '12.0.1';
+    const XENDIT_M2INVOICE_VERSION = '13.1.0';
 
     /**
      * @var StoreManagerInterface
@@ -667,33 +667,15 @@ class Data extends AbstractHelper
     /**
      * Whether the Payment Session checkout flow is enabled.
      *
-     * For new merchants (no API keys when the feature was introduced),
-     * Payment Session is always enabled and the toggle is hidden.
-     * For existing merchants, the admin toggle controls this.
+     * As of v13.1.0, Payment Session is always enabled for all merchants.
+     * The toggle has been removed — this method now unconditionally returns true.
      *
-     * @return bool
+     * @return bool Always returns true
+     * @deprecated Will be removed in v14.0.0 along with all legacy Invoice code
      */
     public function isPaymentSessionEnabled(): bool
     {
-        // Magento config resolution walks up: store view → website → default → config.xml.
-        // SCOPE_STORE reads the effective value for the current store view, respecting
-        // any website or store-level overrides the merchant may have set.
-        $isExisting = $this->scopeConfig->getValue(
-            'payment/xendit/is_existing_merchant_when_ps_introduced',
-            ScopeInterface::SCOPE_STORE
-        );
-
-        // New merchant (0): always enabled (toggle hidden)
-        if ($isExisting !== '1') {
-            return true;
-        }
-
-        // Existing merchant: respect the admin toggle
-        // isSetFlag returns true for '1'/'yes'/'true', false for '0'/'no'/'false'/empty
-        return $this->scopeConfig->isSetFlag(
-            'payment/xendit/enable_payment_session',
-            ScopeInterface::SCOPE_STORE
-        );
+        return true;
     }
 
     /**

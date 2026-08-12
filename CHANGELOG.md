@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 13.1.0 (2026-08-12)
+
+**BREAKING CHANGE:** Payment Session is now always enabled for all merchants.
+
+- Remove Payment Session toggle from admin configuration
+- `isPaymentSessionEnabled()` now always returns `true`
+- Legacy Invoice flow is deprecated and will be removed in v14.0.0
+- Existing merchants using legacy Invoice flow will automatically switch to Payment Session on upgrade
+
+**Migration notes:**
+
+- Run `bin/magento setup:upgrade` after updating
+- All checkouts will use the Payment Session flow
+- In-flight Invoice orders will still complete via the existing webhook handler (`Notification.php`)
+- To rollback, downgrade to v13.0.x
+
 ## 13.0.2 (2026-07-03)
 
 - Fix PHP 8.5 compatibility: remove deprecated `openssl_free_key()` call
