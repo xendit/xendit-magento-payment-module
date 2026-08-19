@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 14.0.0 (2026-08-19)
+## 14.1.0 (2026-08-19)
 
 **BREAKING CHANGE:** Legacy Invoice flow removed. Payment Session is now the only checkout flow.
 
