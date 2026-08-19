@@ -40,6 +40,17 @@
 
 
                             dynamicShow();
+
+                            var externalIdPrefix = jQuery("input[id*='xendit_external_id_prefix']");
+                            jQuery(externalIdPrefix).attr("placeholder", "magento-xendit");
+                            jQuery(externalIdPrefix).attr("maxlength", 50);
+
+                            var defaultText = "Format: {Prefix}-{Store Name}-{Order ID}<br>Example: <b>"+externalIdPrefix.val()+"-mystore-245</b>";
+                            externalIdPrefix.siblings('.note').children()[0].innerHTML = defaultText;
+                            externalIdPrefix.change(function () {
+                                var newText = "Format: {Prefix}-{Store Name}-{Order ID}<br>Example: <b>"+externalIdPrefix.val()+"-mystore-245</b>";
+                                externalIdPrefix.siblings('.note').children()[0].innerHTML = newText;
+                            });
                         });
                     </script>
                 ]]></comment>

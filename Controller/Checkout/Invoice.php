@@ -70,6 +70,9 @@ class Invoice extends AbstractAction
             $this->getLogger()->debug('Exception caught on xendit/checkout/invoice: ' . $e->getMessage());
             $this->getLogger()->debug($e->getTraceAsString());
 
+            $this->getLogger()->info('Cancelling order due to Payment Session failure', [
+                'order_id' => $order->getIncrementId(),
+            ]);
             try {
                 $this->cancelOrder($order, $e->getMessage());
                 $this->metricHelper->sendMetric('magento2_checkout', [
