@@ -15,6 +15,10 @@ use Psr\Log\LoggerInterface;
  * - New merchant (no API keys): toggle ON (Payment Session is default)
  *
  * Magento enforces setup:upgrade after module updates, so data patches are guaranteed to run.
+ *
+ * @deprecated As of v14.0.0, this patch is a no-op. Payment Session is always enabled and the
+ *             toggle config keys it writes (enable_payment_session, is_existing_merchant_when_ps_introduced)
+ *             no longer exist. The patch file is kept so Magento does not attempt to re-run it.
  */
 class DetectExistingInstallationForPaymentSession implements DataPatchInterface
 {

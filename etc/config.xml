@@ -21,7 +21,6 @@
 
                 <!-- Payment Session config removed in v13.1.0 — Payment Session is now always enabled -->
                 <xendit_app_env>production</xendit_app_env>
-                <external_id_prefix>magento-xendit</external_id_prefix>
                 <debug>0</debug>
             </xendit>
             <unified>

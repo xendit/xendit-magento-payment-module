@@ -4,10 +4,7 @@ namespace Xendit\M2Invoice\Controller\Checkout;
 
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Phrase;
-use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order;
-use Laminas\Http\Request;
 
 /**
  * Class InvoiceMultishipping
@@ -20,159 +17,6 @@ class InvoiceMultishipping extends AbstractAction
      * @throws LocalizedException
      */
     public function execute()
-    {
-        // Branch: Payment Session flow vs legacy Invoice flow
-        if ($this->getDataHelper()->isPaymentSessionEnabled()) {
-            return $this->processMultishippingWithPaymentSession();
-        }
-
-        $transactionAmount = 0;
-        $orderProcessed = false;
-        $orders = [];
-        $items = [];
-        $currency = '';
-        $billingEmail = '';
-        $customerObject = [];
-        $feesObject = [];
-
-        $orderIncrementIds = [];
-        $orderIds = $this->getMultiShippingOrderIds();
-        $rawOrderIds = implode('-', $orderIds);
-
-        try {
-            if (empty($orderIds)) {
-                $message = __('The order not exist');
-                $this->getLogger()->info($message, ['order_ids' => $orderIds]);
-                return $this->redirectToCart($message);
-            }
-
-            foreach ($orderIds as $orderId) {
-                $order = $this->getOrderRepo()->get($orderId);
-                if (!$this->orderValidToCreateXenditInvoice($order)) {
-                    $message = __('Order processed');
-                    $this->getLogger()->info($message, ['order_id' => $orderId]);
-                    return $this->redirectToCart($message);
-                }
-
-                $orderIncrementIds[] = $order->getRealOrderId();
-
-                $orderState = $order->getState();
-                if ($orderState === Order::STATE_PROCESSING && !$order->canInvoice()) {
-                    $orderProcessed = true;
-                    continue;
-                }
-
-                // Set order status to PENDING_PAYMENT
-                $order->setState(Order::STATE_PENDING_PAYMENT)
-                    ->setStatus(Order::STATE_PENDING_PAYMENT);
-                $order->addCommentToStatusHistory("Pending Xendit payment.");
-
-                $orders[] = $order;
-                $this->getOrderRepo()->save($order);
-
-                $transactionAmount += $order->getTotalDue();
-                $billingEmail = empty($billingEmail) ? ($order->getCustomerEmail() ?: 'noreply@mail.com') : $billingEmail;
-                $currency = $order->getBaseCurrencyCode();
-
-                $orderItems = $order->getAllItems();
-                /** @var OrderItemInterface $orderItem */
-                foreach ($orderItems as $orderItem) {
-                    $product = $orderItem->getProduct();
-                    if (!empty($orderItem->getParentItem())) {
-                        continue;
-                    }
-
-                    $item = [
-                        'reference_id' => $product->getId(),
-                        'name' => $orderItem->getName(),
-                        'category' => $this->getDataHelper()->extractProductCategoryName($product),
-                        'price' => $orderItem->getPrice(),
-                        'type' => 'PRODUCT',
-                        'url' => $product->getProductUrl() ?: 'https://xendit.co/',
-                        'quantity' => (int)$orderItem->getQtyOrdered()
-                    ];
-                    $items[] = (object)$item;
-                }
-
-                if (empty($customerObject)) {
-                    $customerObject = $this->getDataHelper()->extractXenditInvoiceCustomerFromOrder($order);
-                }
-
-                // Extract order fees and send it to Xendit invoice
-                $feesObject[] = $this->getDataHelper()->extractOrderFees($order);
-            }
-
-            if ($orderProcessed) {
-                return $this->_redirect('multishipping/checkout/success');
-            }
-
-            $requestData = [
-                'external_id' => $this->getDataHelper()->getExternalId($rawOrderIds),
-                'payer_email' => $billingEmail,
-                'description' => $rawOrderIds,
-                'amount' => $transactionAmount,
-                'currency' => $currency,
-                'client_type' => 'INTEGRATION',
-                'platform_callback_url' => $this->getXenditCallbackUrl(),
-                'success_redirect_url' => $this->getDataHelper()->getSuccessUrl(true),
-                'failure_redirect_url' => $this->getDataHelper()->getFailureUrl($orderIncrementIds),
-                'items' => $items
-            ];
-
-            if (!empty($feesObject)) {
-                $requestData['fees'] = $this->getDataHelper()->mergeFeesObject($feesObject);
-            }
-
-            if (!empty($customerObject)) {
-                $requestData['customer'] = $customerObject;
-            }
-
-            $invoice = $this->createInvoice($requestData);
-            $this->addInvoiceData($orders, $invoice);
-
-            $redirectUrl = $this->getXenditRedirectUrl($invoice);
-            $this->getLogger()->info(
-                'Redirect customer to Xendit',
-                array_merge($this->getLogContext($orders, $invoice), ['redirect_url' => $redirectUrl])
-            );
-
-            $resultRedirect = $this->getRedirectFactory()->create();
-            $resultRedirect->setUrl($redirectUrl);
-            return $resultRedirect;
-        } catch (\Throwable $e) {
-            $logContext = $this->getLogContext($orders);
-            $message = sprintf(
-                'Exception caught on xendit/checkout/invoicemultishipping: Order_ids %s - %s',
-                implode(', ', $logContext['order_ids'] ?? []),
-                $e->getMessage()
-            );
-            $this->getLogger()->error($message, $logContext);
-
-            try {
-                // cancel orders
-                $this->processFailedPayment($orderIds, $message);
-
-                // log metric error
-                $this->metricHelper->sendMetric(
-                    'magento2_checkout',
-                    [
-                        'type' => 'error',
-                        'error_message' => $message
-                    ]
-                );
-            } catch (\Exception $ex) {
-            }
-
-            return $this->redirectToCart($e->getMessage());
-        }
-    }
-
-    /**
-     * Process multishipping checkout via Payment Session API (new flow).
-     *
-     * @return \Magento\Framework\Controller\Result\Redirect|null
-     */
-    private function processMultishippingWithPaymentSession()
     {
         $transactionAmount = 0;
         $orders = [];
@@ -231,7 +75,6 @@ class InvoiceMultishipping extends AbstractAction
 
             $this->applyPaymentSessionToOrders($orders, $paymentSessionId, $redirectUrl);
 
-            // Redirect to payment link
             $this->getLogger()->info(
                 'Redirect customer to Xendit (Payment Session multishipping)',
                 array_merge($this->getLogContext($orders), ['redirect_url' => $redirectUrl])
@@ -243,15 +86,18 @@ class InvoiceMultishipping extends AbstractAction
         } catch (\Throwable $e) {
             $logContext = $this->getLogContext($orders);
             $message = sprintf(
-                'Exception caught on xendit/checkout/invoicemultishipping (Payment Session): Order_ids %s - %s',
+                'Exception caught on xendit/checkout/invoicemultishipping: Order_ids %s - %s',
                 implode(', ', $logContext['order_ids'] ?? []),
                 $e->getMessage()
             );
             $this->getLogger()->error($message, $logContext);
 
-            $this->getLogger()->info('Cancelling orders due to Payment Session failure', $logContext);
             try {
                 $this->processFailedPayment($orderIds, $message);
+                $this->metricHelper->sendMetric('magento2_checkout', [
+                    'type' => 'error',
+                    'error_message' => $message,
+                ]);
             } catch (\Exception $cancelEx) {
                 $this->getLogger()->error('Failed to cancel orders after Payment Session failure', [
                     'order_ids' => $orderIds,
@@ -259,94 +105,7 @@ class InvoiceMultishipping extends AbstractAction
                 ]);
             }
 
-            $this->metricHelper->sendMetric('magento2_checkout', [
-                'type' => 'error',
-                'error_message' => $message,
-            ]);
-
             return $this->redirectToCart($e->getMessage());
-        }
-    }
-
-    /**
-     * @param $requestData
-     * @return mixed
-     * @throws LocalizedException
-     */
-    private function createInvoice($requestData)
-    {
-        $invoiceUrl = $this->getDataHelper()->getXenditApiUrl() . "/tpi/payment/xendit/invoice";
-        $invoiceMethod = Request::METHOD_POST;
-
-        try {
-            $this->getLogger()->info('createInvoice start', ['data' => $requestData]);
-
-            $invoice = $this->getApiHelper()->request(
-                $invoiceUrl,
-                $invoiceMethod,
-                $requestData,
-                false
-            );
-            if (isset($invoice['error_code'])) {
-                $message = $this->getErrorHandler()->mapInvoiceErrorCode(
-                    $invoice['error_code'],
-                    str_replace('{{currency}}', $requestData['currency'], $invoice['message'] ?? '')
-                );
-                throw new LocalizedException(
-                    new Phrase($message)
-                );
-            }
-
-            $this->getLogger()->info('createInvoice success', ['xendit_invoice' => $invoice]);
-            return $invoice;
-        } catch (LocalizedException $e) {
-            throw new LocalizedException(
-                new Phrase($e->getMessage())
-            );
-        }
-    }
-
-    /**
-     * @param $invoice
-     * @return string
-     */
-    private function getXenditRedirectUrl($invoice)
-    {
-        return (isset($invoice['invoice_url'])) ? $invoice['invoice_url'] : '';
-    }
-
-    /**
-     * @param array $orders
-     * @param array $invoice
-     * @return void
-     * @throws LocalizedException
-     */
-    private function addInvoiceData(array $orders, array $invoice)
-    {
-        try {
-            foreach ($orders as $order) {
-                $payment = $order->getPayment();
-                $payment->setAdditionalInformation('payment_gateway', 'xendit');
-                if (isset($invoice['id'])) {
-                    $payment->setAdditionalInformation('xendit_invoice_id', $invoice['id']);
-                    $order->setXenditTransactionId($invoice['id']);
-                }
-                if (isset($invoice['expiry_date'])) {
-                    $payment->setAdditionalInformation('xendit_invoice_exp_date', $invoice['expiry_date']);
-                }
-                $this->getOrderRepo()->save($order);
-            }
-
-            $this->getLogger()->info('addInvoiceData success', $this->getLogContext($orders, $invoice));
-        } catch (\Exception $e) {
-            $this->getLogger()->error(
-                sprintf('addInvoiceData failed: %s', $e->getMessage()),
-                $this->getLogContext($orders, $invoice)
-            );
-
-            throw new LocalizedException(
-                new Phrase($e->getMessage())
-            );
         }
     }
 

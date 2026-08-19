@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## 14.0.0 (2026-08-19)
+
+**BREAKING CHANGE:** Legacy Invoice flow removed. Payment Session is now the only checkout flow.
+
+- Delete `Controller/Checkout/Notification.php` — legacy Invoice webhook handler removed; `/xendit/checkout/notification` returns 404
+- Delete `Helper/ErrorHandler.php` — only used by legacy Invoice API calls
+- Remove legacy Invoice methods from `Controller/Checkout/Invoice.php`: `getApiRequestData()`, `createInvoice()`, `getXenditRedirectUrl()`, `changePendingPaymentStatus()`, `addInvoiceData()`
+- Remove legacy Invoice methods from `Controller/Checkout/InvoiceMultishipping.php`: `createInvoice()`, `getXenditRedirectUrl()`, `addInvoiceData()`
+- Remove from `Controller/Checkout/AbstractAction.php`: `getXenditCallbackUrl()`, `getErrorHandler()`, `ErrorHandler` dependency
+- Remove from `Helper/Data.php`: `isPaymentSessionEnabled()`, `extractXenditInvoiceCustomerFromOrder()`, `extractXenditInvoiceCustomerAddress()`, `getExternalId()`, `getExternalIdPrefix()`, `extractOrderFees()`, `mergeFeesObject()`
+- Remove `external_id_prefix` admin config field and default value
+- Inline Payment Session flow directly in `execute()` for both `Invoice` and `InvoiceMultishipping` controllers
+
+**Migration notes:**
+
+- Run `bin/magento setup:upgrade` after updating
+- All in-flight Invoice orders must have settled/expired before upgrading (Xendit invoices expire within 24-48h)
+- New orders use Payment Session exclusively; webhooks arrive at `/xendit/checkout/integrationNotification`
+- To rollback, downgrade to v13.1.0
+
 ## 13.1.0 (2026-08-12)
 
 **BREAKING CHANGE:** Payment Session is now always enabled for all merchants.

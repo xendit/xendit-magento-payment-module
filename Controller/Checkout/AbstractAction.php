@@ -28,7 +28,6 @@ use Xendit\M2Invoice\Helper\ApiRequest;
 use Xendit\M2Invoice\Helper\Checkout;
 use Xendit\M2Invoice\Helper\Crypto;
 use Xendit\M2Invoice\Helper\Data;
-use Xendit\M2Invoice\Helper\ErrorHandler;
 use Xendit\M2Invoice\Helper\Metric;
 use Xendit\M2Invoice\Logger\Logger as XenditLogger;
 
@@ -134,11 +133,6 @@ abstract class AbstractAction extends Action
     private $customerSession;
 
     /**
-     * @var ErrorHandler
-     */
-    private $errorHandler;
-
-    /**
      * @var State
      */
     private $state;
@@ -178,7 +172,6 @@ abstract class AbstractAction extends Action
      * @param InvoiceService $invoiceService
      * @param DbTransaction $dbTransaction
      * @param CustomerSession $customerSession
-     * @param ErrorHandler $errorHandler
      * @param \Magento\Multishipping\Model\Checkout\Type\Multishipping\State $state
      * @param Multishipping $multishipping
      * @param Metric $metricHelper
@@ -202,7 +195,6 @@ abstract class AbstractAction extends Action
         InvoiceService $invoiceService,
         DbTransaction $dbTransaction,
         CustomerSession $customerSession,
-        ErrorHandler $errorHandler,
         \Magento\Multishipping\Model\Checkout\Type\Multishipping\State $state,
         Multishipping $multishipping,
         Metric $metricHelper,
@@ -229,7 +221,6 @@ abstract class AbstractAction extends Action
         $this->invoiceService = $invoiceService;
         $this->dbTransaction = $dbTransaction;
         $this->customerSession = $customerSession;
-        $this->errorHandler = $errorHandler;
         $this->state = $state;
         $this->multishipping = $multishipping;
         $this->metricHelper = $metricHelper;
@@ -334,14 +325,6 @@ abstract class AbstractAction extends Action
     protected function getDataHelper()
     {
         return $this->dataHelper;
-    }
-
-    /**
-     * @return ErrorHandler
-     */
-    protected function getErrorHandler()
-    {
-        return $this->errorHandler;
     }
 
     /**
@@ -478,27 +461,6 @@ abstract class AbstractAction extends Action
     protected function getStoreManager()
     {
         return $this->storeManager;
-    }
-
-    /**
-     * Get the callback URL for the legacy Invoice notification endpoint.
-     *
-     * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    protected function getXenditCallbackUrl()
-    {
-        // Check for custom callback URL in configuration first, but only in developer mode
-        if ($this->appState->getMode() === AppState::MODE_DEVELOPER) {
-            $customCallbackUrl = $this->getDataHelper()->getCustomCallbackUrl();
-
-            if (!empty($customCallbackUrl)) {
-                return rtrim($customCallbackUrl, '/') . '/xendit/checkout/notification';
-            }
-        }
-
-        $baseUrl = $this->getStoreManager()->getStore()->getBaseUrl(UrlInterface::URL_TYPE_LINK);
-        return $baseUrl . 'xendit/checkout/notification';
     }
 
     /**
