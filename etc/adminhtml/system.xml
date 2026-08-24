@@ -108,16 +108,6 @@
                     <attribute type="shared">1</attribute>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="external_id_prefix" translate="label" type="text" sortOrder="67"
-                    showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>External ID Prefix</label>
-                    <comment>
-                        <![CDATA[Format: {Prefix}-{Store Name}-{Order ID}<br>
-                        Example: <b>magento-xendit-mystore-245</b>]]>
-                    </comment>
-                    <validate>required-entry</validate>
-                </field>
-
                 <field id="debug" translate="label" type="select" sortOrder="67" showInDefault="1"
                     showInWebsite="1" showInStore="1">
                     <label>Enable Debug mode</label>

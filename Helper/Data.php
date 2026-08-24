@@ -31,7 +31,7 @@ use Xendit\M2Invoice\Model\Payment\Xendit;
  */
 class Data extends AbstractHelper
 {
-    const XENDIT_M2INVOICE_VERSION = '13.1.0';
+    const XENDIT_M2INVOICE_VERSION = '14.1.0';
 
     /**
      * @var StoreManagerInterface
@@ -228,30 +228,6 @@ class Data extends AbstractHelper
             'order_ids' => $orderIds
         ]);
         return $this->_getUrl('xendit/checkout/failure', ['_query' => $parameters]);
-    }
-
-    /**
-     * @param $orderId
-     * @param bool $duplicate
-     * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getExternalId($orderId, $duplicate = false)
-    {
-        $defaultExtId = $this->getExternalIdPrefix() . "-$orderId";
-        if ($duplicate) {
-            return uniqid() . "-" . $defaultExtId;
-        }
-        return $defaultExtId;
-    }
-
-    /**
-     * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getExternalIdPrefix()
-    {
-        return $this->xendit->getConfigData('external_id_prefix') . "-" . $this->getStoreName();
     }
 
     /**
@@ -498,53 +474,6 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param Order $order
-     * @return array
-     */
-    public function extractXenditInvoiceCustomerFromOrder(Order $order): array
-    {
-        $shippingAddress = $order->getShippingAddress();
-        $customerObject = [
-            'given_names' => $order->getCustomerFirstname(),
-            'surname' => $order->getCustomerLastname(),
-            'email' => $order->getCustomerEmail()
-        ];
-
-        $mobileNumber = $this->phoneNumberFormatHelper->formatNumber($shippingAddress->getTelephone(), $shippingAddress->getCountryId());
-        if (!empty($mobileNumber)) {
-            $customerObject['mobile_number'] = $mobileNumber;
-        }
-
-        $customerObject = array_filter($customerObject);
-        $addressObject = $this->extractXenditInvoiceCustomerAddress($shippingAddress);
-        if (!empty($addressObject)) {
-            $customerObject['addresses'] = [$addressObject];
-        }
-        return $customerObject;
-    }
-
-    /**
-     * @param $shippingAddress
-     * @return array
-     */
-    public function extractXenditInvoiceCustomerAddress($shippingAddress): array
-    {
-        if (empty($shippingAddress)) {
-            return [];
-        }
-
-        $address = [
-            'street_line1' => $shippingAddress->getData('street'),
-            'city' => $shippingAddress->getData('city'),
-            'state' => $shippingAddress->getData('region'),
-            'postal_code' => $shippingAddress->getData('postcode'),
-            'country' => $shippingAddress->getData('country_id')
-        ];
-
-        return array_filter($address);
-    }
-
-    /**
      * @param Product $product
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -563,120 +492,7 @@ class Data extends AbstractHelper
         return !empty($categoryNames) ? implode(', ', $categoryNames) : 'n/a';
     }
 
-    /**
-     * Extract order fees
-     * @param Order $order
-     * @return array
-     */
-    public function extractOrderFees(Order $order): array
-    {
-        $fees = [
-            [
-                'type' => __('Discount'),
-                'value' => (float) $order->getDiscountAmount()
-            ],
-            [
-                'type' => __('Shipping fee'),
-                'value' => (float) $order->getShippingAmount()
-            ],
-            [
-                'type' => __('Tax fee'),
-                'value' => $order->getTaxAmount()
-            ]
-        ];
-
-        // Make sure it will cover the other fees
-        $otherFees = $this->getOtherFees($order);
-        if ($otherFees > 0) {
-            $fees[] = [
-                'type' => __('Other Fees'),
-                'value' => $this->getOtherFees($order)
-            ];
-        }
-
-        return array_values(
-            array_filter($fees, function ($value) {
-                return $value['value'] != 0;
-            }, ARRAY_FILTER_USE_BOTH)
-        );
-    }
-
-    /**
-     * Get other fees amount
-     * In case order has the other fees not Magento standard
-     *
-     * @param Order $order
-     * @return float
-     */
-    public function getOtherFees(Order $order): float
-    {
-        return $order->getTotalDue() - (float) array_sum(
-            [
-                $order->getSubtotal(), // items total
-                $order->getTaxAmount(),
-                $order->getShippingAmount(),
-                $order->getDiscountAmount()
-            ]
-        );
-    }
-
-    /**
-     * Merge Fees object
-     *
-     * @param array $feesObject
-     * @return array
-     */
-    public function mergeFeesObject(array $feesObject = []): array
-    {
-        if (empty($feesObject)) {
-            return [];
-        }
-
-        $mergedFeesObject = [];
-        foreach ($feesObject as $feeObject) {
-            foreach ($feeObject as $fee) {
-                /** @var \Magento\Framework\Phrase $type */
-                $type = $fee['type'];
-                $typeLabel = $type->getText();
-                $value = $fee['value'];
-
-                if (isset($mergedFeesObject[$typeLabel])) {
-                    $mergedFeesObject[$typeLabel] = (float) $mergedFeesObject[$typeLabel] + $value;
-                } else {
-                    $mergedFeesObject[$typeLabel] = $value;
-                }
-            }
-        }
-
-        if (empty($mergedFeesObject)) {
-            return [];
-        }
-
-        $response = [];
-        foreach ($mergedFeesObject as $typeLabel => $value) {
-            $response[] = [
-                'type' => $typeLabel,
-                'value' => $value
-            ];
-        }
-        return $response;
-    }
-
     // ── Payment Session helpers ──────────────────────────────────────
-
-    /**
-     * Whether the Payment Session checkout flow is enabled.
-     *
-     * As of v13.1.0, Payment Session is always enabled for all merchants.
-     * The toggle has been removed — this method now unconditionally returns true.
-     *
-     * @return bool Always returns true
-     * @deprecated Will be removed in v14.0.0 along with all legacy Invoice code
-     */
-    public function isPaymentSessionEnabled(): bool
-    {
-        return true;
-    }
 
     /**
      * Get the TPI Gateway URL for Payment Session checkout.
@@ -705,10 +521,6 @@ class Data extends AbstractHelper
 
     /**
      * Extract customer for Payment Session payload.
-     *
-     * Differs from extractXenditInvoiceCustomerFromOrder() which uses the legacy Invoice API
-     * format (given_names/surname at top level). Payment Session expects given_names/surname
-     * nested under individual_detail.
      *
      * @param Order $order
      * @return array
@@ -752,9 +564,6 @@ class Data extends AbstractHelper
 
     /**
      * Extract billing address from an order for Payment Session payload.
-     *
-     * Uses $order->getBillingAddress() directly (always present on Magento orders).
-     * This is separate from extractXenditInvoiceCustomerAddress() which uses shipping address.
      *
      * @param Order $order
      * @return array
